@@ -1,0 +1,3 @@
+[submodule "reference/hedera-protobuf"]
+	path = reference/hedera-protobuf
+	url = https://github.com/hashgraph/hedera-protobuf.git

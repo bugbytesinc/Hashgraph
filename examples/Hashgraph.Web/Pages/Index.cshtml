@@ -1,0 +1,109 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Get Balance";
+}
+    <p>This site was created using .net Core 3 as a proof of concept exploring the feasibility of accessing the Hedera Network using a .net implementation.  Thus far, only the bare minimum required to check a balance has been implemented. Given the nascent nature of the network and this implementation, one must enter the (payer) account&rsquo;s private key for signing the transaction to query an account balance.  Nothing is stored or collected outside of hosting service provider logs, but we do rely on the <a href="https://www.nuget.org/packages/NSec.Cryptography/" target="_blank">NSec.Cryptography</a> library for signing the transaction.  If you do not trust that library, azure, or us to process the key, PLEASE DO NOT PROCEED.  Ideally the transaction would be signed by an hedera wallet browser plugin in the future, but we&rsquo;re not there yet.</p>
+    <form method="post">
+        <div class="input-group">
+            <label for="GetBalanceRequest_GatewayName">Test Network:</label>
+            <div>
+                <label for="GetBalanceRequest_GatewayName">Address</label>
+                <input asp-for="GetBalanceRequest.GatewayName" />
+            </div>
+            <div>
+                <label for="GetBalanceRequest_GatewayPort">Port</label>
+                <input asp-for="GetBalanceRequest.GatewayPort" />
+            </div>
+        </div>
+        <div class="input-error">
+            <span asp-validation-for="GetBalanceRequest.GatewayName"></span>
+            <span asp-validation-for="GetBalanceRequest.GatewayPort"></span>
+        </div>
+        <div class="input-group">
+            <label for="GetBalanceRequest_GatewayRealmNum">Node Account:</label>
+            <div>
+                <label for="GetBalanceRequest_GatewayRealmNum">Realm</label>
+                <input asp-for="GetBalanceRequest.GatewayRealmNum" />
+            </div>
+            <div>
+                <label for="GetBalanceRequest_GatewayShardNum">Shard</label>
+                <input asp-for="GetBalanceRequest.GatewayShardNum" />
+            </div>
+            <div>
+                <label for="GetBalanceRequest_GatewayAccountNum">Number</label>
+                <input asp-for="GetBalanceRequest.GatewayAccountNum" />
+            </div>
+        </div>
+        <div class="input-error">
+            <span asp-validation-for="GetBalanceRequest.GatewayRealmNum"></span>
+            <span asp-validation-for="GetBalanceRequest.GatewayShardNum"></span>
+            <span asp-validation-for="GetBalanceRequest.GatewayAccountNum"></span>
+        </div>
+        <div class="input-group">
+            <label for="GetBalanceRequest_PayerRealmNum">Payer Account:</label>
+            <div>
+                <label for="GetBalanceRequest.PayerRealmNum">Realm</label>
+                <input asp-for="GetBalanceRequest.PayerRealmNum" />
+            </div>
+            <div>
+                <label for="GetBalanceRequest_PayerShardNum">Shard</label>
+                <input asp-for="GetBalanceRequest.PayerShardNum" />
+            </div>
+            <div>
+                <label for="GetBalanceRequest_PayerAccountNum">Number</label>
+                <input asp-for="GetBalanceRequest.PayerAccountNum" />
+            </div>
+        </div>
+        <div class="input-error">
+            <span asp-validation-for="GetBalanceRequest.PayerRealmNum"></span>
+            <span asp-validation-for="GetBalanceRequest.PayerShardNum"></span>
+            <span asp-validation-for="GetBalanceRequest.PayerAccountNum"></span>
+        </div>
+        <div class="input-group">
+            <label for="GetBalanceRequest_PayerPrivateKey">Payer Signing Key</label>
+            <div>
+                <label for="GetBalanceRequest_PayerPrivateKey">Private Key in Hex</label>
+                <input asp-for="GetBalanceRequest.PayerPrivateKey" />
+            </div>
+        </div>
+        <div class="input-error">
+            <span asp-validation-for="GetBalanceRequest.PayerPrivateKey"></span>
+        </div>
+        <div class="input-group">
+            <label for="GetBalanceRequest_AccountRealmNum">Account to Query:</label>
+            <div>
+                <label for="GetBalanceRequest_AccountRealmNum">Realm</label>
+                <input asp-for="GetBalanceRequest.AccountRealmNum" />
+            </div>
+            <div>
+                <label for="GetBalanceRequest_AccountShardNum">Shard</label>
+                <input asp-for="GetBalanceRequest.AccountShardNum" />
+            </div>
+            <div>
+                <label for="GetBalanceRequest_AccountAccountNum">Number</label>
+                <input asp-for="GetBalanceRequest.AccountAccountNum" />
+            </div>
+        </div>
+        <div class="input-error">
+            <span asp-validation-for="GetBalanceRequest.AccountRealmNum"></span>
+            <span asp-validation-for="GetBalanceRequest.AccountShardNum"></span>
+            <span asp-validation-for="GetBalanceRequest.AccountAccountNum"></span>
+        </div>
+        <div>
+            <input type="submit" value="Get Balance" />
+        </div>
+        <div>
+            <div asp-validation-summary="ModelOnly"></div>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="server-error">Server returned an error:</div>
+            <div class="server-error">@Model.ErrorMessage</div>
+        }
+
+        @if (Model.Balance.HasValue)
+        {
+            <div class="account-balance">Account <span>@(Model.GetBalanceRequest.AccountRealmNum).@(Model.GetBalanceRequest.AccountShardNum).@(Model.GetBalanceRequest.AccountAccountNum)</span> Balance: <span>@($"{Model.Balance:N0}")</span> tinybars.</div>
+        }
+    </form>

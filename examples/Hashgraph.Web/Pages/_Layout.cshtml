@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Hashgraph</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        NOTE: This site is a proof of concept for accessing a Hedera Test Network using .Net Core.
+        Do not enter any private keys for accounts containing real value.  Query balances at your own risk.
+    </header>
+    <section>
+        @RenderBody()
+    </section>
+    @RenderSection("Scripts", required: false)
+    <footer>
+        NOTE: This site is a proof of concept for accessing a Hedera Test Network using .Net Core.
+        Do not enter any private keys for accounts containing real value.  Query balances at your own risk.
+    </footer>
+</body>
+</html>

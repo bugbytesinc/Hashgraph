@@ -1,0 +1,104 @@
+﻿html {
+  position: relative;
+  min-height: 100%;
+  font-size: 125%;
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-content: stretch;
+}
+
+header, footer {
+    color: red;
+    background: yellow;    
+    padding: 1rem;
+    flex-grow: 0;
+    flex-shrink: 0;
+    align-items: stretch;
+}
+
+body > section {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-y: auto;
+}
+p {
+    margin: 1rem;
+}
+form {
+    margin: 1rem;
+}
+
+input {
+    font-size: 1rem;
+    margin-right: 0.4rem;
+    padding-left: 0.2rem;
+}
+
+input[type=number] {
+    font-size: 1rem;
+    width: 4rem;
+}
+
+input[type=submit] {
+    font-size: 1rem;
+    padding: 0.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+}
+
+.input-group>div{
+    display: flex;
+    flex-direction: column;
+}
+.input-group>label{
+    min-width: 9rem;
+}
+.input-group > div > label{
+    color: #606060;
+    font-size: 0.6rem;
+}
+
+
+.server-error {
+    color: red;
+    margin: 1rem 0;
+}
+.account-balance{
+    color: green;
+    font-size: 1.2rem;
+    margin: 1rem 0;
+}
+.account-balance > span {
+    font-weight: bold;
+}
+.field-validation-error {
+    color: red;
+    font-size: 0.8em;
+}
+.validation-summary-errors {
+    font-weight: bold;
+    color: red;
+}
+.input-validation-error {
+    border-color: red;
+}

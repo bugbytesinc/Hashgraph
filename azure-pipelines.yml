@@ -1,0 +1,68 @@
+#  Required Variables set by external Pipeline Configuration
+#
+#  buildConfiguration:             Build Configuration Type, for example 'Release'
+#  Build.ArtifactStagingDirectory: Directory to stage artifact assembly.
+#  nugetConnection:                Nuget Publishing Service Connection Name.
+#  test:network:address:           Test Network DNS name, for example 'testnet.hedera.com'
+#  test:network:port:              Test Network port number
+#  test:server:number:             Network Node Address Number receiving Network Requests (assumes Realm = 0, Shard = 0)
+#  test:account:number:            Address number of the account making requests (assumes Realm = 0, Shard = 0)
+#  test:account:publicKey:         Public Key of test account making requests of the network, encoded in Hex (last 32 bytes)
+#  test:account:privateKey:        Private Key of test account making requests of the network, encoded in Hex
+
+steps:
+- task: DotNetCoreInstaller@0
+  displayName: 'Ensure .Net Core 3'  
+  inputs:
+    version: '3.0.100-preview4-011223' # Need .net core 3 or greater to support protobuf
+
+- task: DotNetCoreCLI@2
+  displayName: Restore Dependencies  
+  inputs:
+    command: restore
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: Build Projects  
+  inputs:
+    command: build
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Run Automated Tests  
+  inputs:
+    command: test
+    projects: 'test/**/*.csproj'
+    nobuild: true
+    arguments: '--configuration $(buildConfiguration)'
+    publishTestResults: true
+  env:
+    'network:address': $(test:network:address)
+    'network:port': $(test:network:port)
+    'server:number': $(test:server:number)
+    'account:number': $(test:account:number)
+    'account:publicKey': $(test:account:publicKey)
+    'account:privateKey': $(test:account:privateKey)
+
+- task: DotNetCoreCLI@2
+  displayName: Create NuGet Packages  
+  inputs:
+    command: pack
+    projects: src/**/*.csproj
+    nobuild: true
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1  
+  displayName: Save Package Artifacts  
+  inputs:
+    artifactName: packages
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+
+- task: NuGetCommand@2
+  displayName: Publish NugGet Packages  
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), not(eq('n/a',coalesce(variables['nugetConnection'],'n/a'))))
+  inputs:
+    command: push
+    nuGetFeedType: external
+    publishFeedCredentials: $(nugetConnection)
