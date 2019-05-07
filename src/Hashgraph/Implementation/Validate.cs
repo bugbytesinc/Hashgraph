@@ -4,13 +4,13 @@ namespace Hashgraph.Implementation
 {
     internal static class Validate
     {
-        internal static void validatePreCheckResult(ResponseHeader header)
+        internal static void ValidatePreCheckResult(ResponseCodeEnum code)
         {
-            if (header.NodeTransactionPrecheckCode == ResponseCodeEnum.Ok)
+            if (code == ResponseCodeEnum.Ok)
             {
                 return;
             }
-            throw new GatewayException($"Failed Pre-Check: {header.NodeTransactionPrecheckCode}", (PrecheckResponse)header.NodeTransactionPrecheckCode);
+            throw new GatewayException($"Failed Pre-Check: {code}", (PrecheckResponse)code);
         }
     }
 }

@@ -14,9 +14,9 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
             Require.PayerInContext(context);
-            var transfers = Transactions.CreateProtoTransferList((context.Payer, -context.Fee), (context.Gateway, context.Fee));
-            var transactionId = Transactions.GetOrCreateProtoTransactionID(context);
-            var transactionBody = Transactions.CreateProtoTransactionBody(context, transfers, transactionId, "Get Account Info");
+            var transfers = Transactions.CreateCryptoTransferList((context.Payer, -context.Fee), (context.Gateway, context.Fee));
+            var transactionId = Transactions.GetOrCreateTransactionID(context);
+            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Info");
             var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer);
             var query = new Query
             {
@@ -26,24 +26,22 @@ namespace Hashgraph
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var data = await Transactions.ExecuteQueryWithRetryAsync(context, query, instantiateExecuteCryptoGetInfoAsyncMethod, extractCryptoGetInfoResponseHeader);
-            Validate.validatePreCheckResult(data.Header);
+            var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateExecuteCryptoGetInfoAsyncMethod, checkForRetry);
+            Validate.ValidatePreCheckResult(data.Header.NodeTransactionPrecheckCode);
             return Protobuf.FromAccountInfo(data.AccountInfo);
 
-            Func<Query, Task<CryptoGetInfoResponse>> instantiateExecuteCryptoGetInfoAsyncMethod(Channel channel)
+            static Func<Query, Task<CryptoGetInfoResponse>> instantiateExecuteCryptoGetInfoAsyncMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
-                return executeCryptoGetInfoAsync;
-
-                async Task<CryptoGetInfoResponse> executeCryptoGetInfoAsync(Query query)
-                {
-                    return (await client.getAccountInfoAsync(query)).CryptoGetInfo;
-                }
+                return async (Query query) => (await client.getAccountInfoAsync(query)).CryptoGetInfo;
             }
 
-            static ResponseHeader extractCryptoGetInfoResponseHeader(CryptoGetInfoResponse response)
+            static bool checkForRetry(CryptoGetInfoResponse response)
             {
-                return response.Header;
+                var code = response.Header.NodeTransactionPrecheckCode;
+                return
+                    code == ResponseCodeEnum.Busy ||
+                    code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
     }

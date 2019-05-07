@@ -1,5 +1,5 @@
 ﻿using Hashgraph.Test.Fixtures;
-using Hashgraph;
+using NSec.Cryptography;
 using System;
 using Xunit;
 
@@ -101,7 +101,7 @@ namespace Hashgraph.Tests
             {
                 new Account(realmNum, shardNum, accountNum, signingKey);
             });
-            Assert.StartsWith("Private Key does not appear to be encoded in Hex.", exception.Message);
+            Assert.StartsWith("Key does not appear to be encoded in Hex.", exception.Message);
         }
         [Fact(DisplayName = "Truncated Hex in Private key throws Exception")]
         public void TruncatedValueForKeyThrowsErrorOddNumberOfChars()
@@ -114,7 +114,7 @@ namespace Hashgraph.Tests
             {
                 new Account(realmNum, shardNum, accountNum, signingKey);
             });
-            Assert.StartsWith("Private Key does not appear to be properly encoded in Hex, found an odd number of characters.", exception.Message);
+            Assert.StartsWith("Key does not appear to be properly encoded in Hex, found an odd number of characters.", exception.Message);
         }
         [Fact(DisplayName = "Invalid Bytes in Private key throws Exception")]
         public void InvalidBytesForValueForKeyThrowsError()
@@ -128,6 +128,34 @@ namespace Hashgraph.Tests
                 new Account(realmNum, shardNum, accountNum, signingKey);
             });
             Assert.StartsWith("The private key was not provided in a recognizable Ed25519 format.", exception.Message);
+        }
+        [Fact(DisplayName = "Equivalent Accounts are considered Equal")]
+        public void EquivalentAccountsAreConsideredEqual()
+        {
+            var realmNum = Generator.Integer(0, 200);
+            var shardNum = Generator.Integer(0, 200);
+            var accountNum = Generator.Integer(0, 200);
+            var account1 = new Account(realmNum, shardNum, accountNum, EXAMPLE_KEY);
+            var account2 = new Account(realmNum, shardNum, accountNum, EXAMPLE_KEY);
+            Assert.Equal(account1, account2);
+            Assert.True(account1 == account2);
+            Assert.False(account1 != account2);
+        }
+        [Fact(DisplayName = "Disimilar Accounts are not considered Equal")]
+        public void DisimilarAccountsAreNotConsideredEqual()
+        {
+            using (var key = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport }))
+            {
+                var privateKey = BitConverter.ToString(key.Export(KeyBlobFormat.PkixPrivateKey)).Replace("-", "");
+                var realmNum = Generator.Integer(0, 200);
+                var shardNum = Generator.Integer(0, 200);
+                var accountNum = Generator.Integer(0, 200);
+                var account1 = new Account(realmNum, shardNum, accountNum, EXAMPLE_KEY);
+                var account2 = new Account(realmNum, shardNum, accountNum, privateKey);
+                Assert.NotEqual(account1, account2);
+                Assert.False(account1 == account2);
+                Assert.True(account1 != account2);
+            }
         }
     }
 }

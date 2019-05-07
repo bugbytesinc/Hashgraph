@@ -4,25 +4,18 @@ using System;
 
 namespace Hashgraph
 {
-    public sealed class Account : Address, ISigner, IDisposable
+    public sealed class Account : Address, ISigner, IDisposable, IEquatable<Account>
     {
         private Key _key;
 
         public Account(long realmNum, long shardNum, long accountNum, string privateKeyInHex) :
-            this(realmNum, shardNum, accountNum, EecodeByteArrayFromHexString(privateKeyInHex))
+            this(realmNum, shardNum, accountNum, Signatures.DecodeByteArrayFromHexString(privateKeyInHex))
         {
         }
         public Account(long realmNum, long shardNum, long accountNum, ReadOnlySpan<byte> privateKey) :
             base(realmNum, shardNum, accountNum)
         {
-            try
-            {
-                _key = Key.Import(SignatureAlgorithm.Ed25519, privateKey, KeyBlobFormat.PkixPrivateKey);
-            }
-            catch (FormatException fe)
-            {
-                throw new ArgumentOutOfRangeException("The private key was not provided in a recognizable Ed25519 format.", fe);
-            }
+            _key = Signatures.ImportPrivateEd25519KeyFromBytes(privateKey);
         }
         byte[] ISigner.Sign(ReadOnlySpan<byte> data)
         {
@@ -36,33 +29,50 @@ namespace Hashgraph
             }
             GC.SuppressFinalize(this);
         }
-        private static byte[] EecodeByteArrayFromHexString(String privateKeyInHex)
+        public bool Equals(Account other)
         {
-            if (privateKeyInHex == null)
+            if (other is null)
             {
-                throw new ArgumentNullException(nameof(privateKeyInHex), "Private Key cannot be null.");
+                return false;
             }
-            else if (String.IsNullOrWhiteSpace(privateKeyInHex))
+            return
+                RealmNum == other.RealmNum &&
+                ShardNum == other.ShardNum &&
+                AccountNum == other.AccountNum &&
+                _key.PublicKey.Equals(other._key.PublicKey);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(privateKeyInHex), "Private Key cannot be empty.");
+                return false;
             }
-            else if (privateKeyInHex.Length % 2 != 0)
+            if (ReferenceEquals(this, obj))
             {
-                throw new ArgumentOutOfRangeException(nameof(privateKeyInHex), "Private Key does not appear to be properly encoded in Hex, found an odd number of characters.");
+                return true;
             }
-            try
+            if (obj is Account other)
             {
-                byte[] result = new byte[privateKeyInHex.Length / 2];
-                for (int i = 0; i < privateKeyInHex.Length; i += 2)
-                {
-                    result[i / 2] = Convert.ToByte(privateKeyInHex.Substring(i, 2), 16);
-                }
-                return result;
+                return Equals(other);
             }
-            catch (FormatException fe)
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return $"Account:{RealmNum}:{ShardNum}:{AccountNum}:{_key.PublicKey.GetHashCode()}".GetHashCode();
+        }
+        public static bool operator ==(Account left, Account right)
+        {
+            if (left is null)
             {
-                throw new ArgumentOutOfRangeException("Private Key does not appear to be encoded in Hex.", fe);
+                return right is null;
             }
+            return left.Equals(right);
+        }
+        public static bool operator !=(Account left, Account right)
+        {
+            return !(left == right);
         }
     }
 }

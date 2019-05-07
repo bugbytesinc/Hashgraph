@@ -14,9 +14,9 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
             Require.PayerInContext(context);
-            var transfers = Transactions.CreateProtoTransferList((context.Payer, -context.Fee), (context.Gateway, context.Fee));
-            var transactionId = Transactions.GetOrCreateProtoTransactionID(context);
-            var transactionBody = Transactions.CreateProtoTransactionBody(context, transfers, transactionId, "Get Account Balance");
+            var transfers = Transactions.CreateCryptoTransferList((context.Payer, -context.Fee), (context.Gateway, context.Fee));            
+            var transactionId = Transactions.GetOrCreateTransactionID(context);
+            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Balance");
             var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer);
             var query = new Query
             {
@@ -26,24 +26,22 @@ namespace Hashgraph
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var data = await Transactions.ExecuteQueryWithRetryAsync(context, query, instantiateExecuteCryptoGetBalanceAsyncMethod, extractCryptoAccountBalanceResponseHeader);
-            Validate.validatePreCheckResult(data.Header);
-            return data.Balance;
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateExecuteCryptoGetBalanceAsyncMethod, checkForRetry);
+            Validate.ValidatePreCheckResult(response.Header.NodeTransactionPrecheckCode);
+            return response.Balance;
 
-            Func<Query, Task<CryptoGetAccountBalanceResponse>> instantiateExecuteCryptoGetBalanceAsyncMethod(Channel channel)
+            static Func<Query, Task<CryptoGetAccountBalanceResponse>> instantiateExecuteCryptoGetBalanceAsyncMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
-                return executeCryptoGetBalanceAsync;
-
-                async Task<CryptoGetAccountBalanceResponse> executeCryptoGetBalanceAsync(Query query)
-                {
-                    return (await client.cryptoGetBalanceAsync(query)).CryptogetAccountBalance;
-                }
+                return async (Query query) => (await client.cryptoGetBalanceAsync(query)).CryptogetAccountBalance;
             }
 
-            static ResponseHeader extractCryptoAccountBalanceResponseHeader(CryptoGetAccountBalanceResponse response)
+            static bool checkForRetry(CryptoGetAccountBalanceResponse response)
             {
-                return response.Header;
+                var code = response.Header.NodeTransactionPrecheckCode;
+                return
+                    code == ResponseCodeEnum.Busy ||
+                    code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
     }

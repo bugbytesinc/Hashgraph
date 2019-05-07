@@ -46,7 +46,7 @@ $ git clone --recurse-submodules https://github.com/bugbytesinc/Hashgraph.git
 ```
 
 ## Build Status
-[![Build Status](https://bugbytes.visualstudio.com/Hashgrap/_apis/build/status/Hashgrap%20Continuous%20Build?branchName=master)](https://bugbytes.visualstudio.com/Hashgrap/_build/latest?definitionId=27&branchName=master)
+[![Build Status](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20Continuous%20Build?branchName=master)](https://bugbytes.visualstudio.com/Hashgraph/_build/latest?definitionId=27&branchName=master)
 
 ## Build Requirements
 This project relies protobuf support found in .net core 3, 

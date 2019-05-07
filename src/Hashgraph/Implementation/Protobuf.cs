@@ -1,7 +1,6 @@
 ﻿using Google.Protobuf;
 using Proto;
 using System;
-using System.Text;
 
 namespace Hashgraph.Implementation
 {
@@ -20,6 +19,19 @@ namespace Hashgraph.Implementation
             return TransactionID.Parser.ParseFrom((transaction as IData).Data.ToArray());
         }
 
+        internal static ShardID ToShardID(long shardNum)
+        {
+            return new ShardID { ShardNum = shardNum };
+        }
+        internal static RealmID ToRealmID(long realmNum, long shardNum)
+        {
+            return new RealmID
+            {
+                RealmNum = realmNum,
+                ShardNum = shardNum
+            };
+        }
+
         internal static AccountID ToAccountID(Address address)
         {
             return new AccountID
@@ -28,6 +40,10 @@ namespace Hashgraph.Implementation
                 ShardNum = address.ShardNum,
                 AccountNum = address.AccountNum
             };
+        }
+        internal static Address FromAccountID(AccountID accountId)
+        {
+            return new Address(accountId.RealmNum, accountId.ShardNum, accountId.AccountNum);
         }
         internal static Duration ToDuration(TimeSpan timespan)
         {
@@ -79,28 +95,13 @@ namespace Hashgraph.Implementation
                 new Address(proxyId.RealmNum, proxyId.ShardNum, proxyId.AccountNum),
                 accountInfo.ProxyFraction,
                 accountInfo.ProxyReceived,
-                EncodeByteArrayToHexString(accountInfo.Key.Ed25519.ToByteArray()),
+                Signatures.EncodeByteArrayToHexString(accountInfo.Key.Ed25519.ToByteArray()),
                 accountInfo.Balance,
                 accountInfo.GenerateSendRecordThreshold,
                 accountInfo.GenerateReceiveRecordThreshold,
                 accountInfo.ReceiverSigRequired,
                 FromTimestamp(accountInfo.ExpirationTime),
                 FromDuration(accountInfo.AutoRenewPeriod));
-        }
-
-        private static string EncodeByteArrayToHexString(ReadOnlySpan<byte> bytes)
-        {
-            var size = bytes.Length * 2;
-            if (size == 0)
-            {
-                return string.Empty;
-            }
-            var buff = new StringBuilder(size, size);
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                buff.AppendFormat("{0:x2}", bytes[i]);
-            }
-            return buff.ToString();
         }
     }
 }

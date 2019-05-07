@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Grpc.Core;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Hashgraph.Implementation
@@ -7,14 +9,20 @@ namespace Hashgraph.Implementation
     {
         private readonly ContextStack? _parent;
         private readonly Dictionary<string, object?> _map;
+        private readonly ConcurrentDictionary<string, Channel> _channels;
 
         public Gateway Gateway { get => get<Gateway>(nameof(Gateway)); set => set(nameof(Gateway), value); }
         public Account Payer { get => get<Account>(nameof(Payer)); set => set(nameof(Payer), value); }
         public long Fee { get => get<long>(nameof(Fee)); set => set(nameof(Fee), value); }
         public TimeSpan TransactionDuration { get => get<TimeSpan>(nameof(TransactionDuration)); set => set(nameof(TransactionDuration), value); }
-        public int BusyRetryCount { get => get<int>(nameof(BusyRetryCount)); set => set(nameof(BusyRetryCount), value); }
-        public TimeSpan BusyRetryDelay { get => get<TimeSpan>(nameof(BusyRetryDelay)); set => set(nameof(BusyRetryDelay), value); }
+        public ulong CreateAccountCreateRecordSendThreshold { get => get<ulong>(nameof(CreateAccountCreateRecordSendThreshold)); set => set(nameof(CreateAccountCreateRecordSendThreshold), value); }
+        public ulong CreateAcountRequireSignatureReceiveThreshold { get => get<ulong>(nameof(CreateAcountRequireSignatureReceiveThreshold)); set => set(nameof(CreateAcountRequireSignatureReceiveThreshold), value); }
+        public bool CreateAccountAlwaysRequireReceiveSignature { get => get<bool>(nameof(CreateAccountAlwaysRequireReceiveSignature)); set => set(nameof(CreateAccountAlwaysRequireReceiveSignature), value); }
+        public TimeSpan CreateAccountAutoRenewPeriod { get => get<TimeSpan>(nameof(CreateAccountAutoRenewPeriod)); set => set(nameof(CreateAccountAutoRenewPeriod), value); }
+        public int RetryCount { get => get<int>(nameof(RetryCount)); set => set(nameof(RetryCount), value); }
+        public TimeSpan RetryDelay { get => get<TimeSpan>(nameof(RetryDelay)); set => set(nameof(RetryDelay), value); }
         public string Memo { get => get<string>(nameof(Memo)); set => set(nameof(Memo), value); }
+        public bool GenerateRecord { get => get<bool>(nameof(GenerateRecord)); set => set(nameof(GenerateRecord), value); }
         public Transaction Transaction { get => get<Transaction>(nameof(Transaction)); set => set(nameof(Transaction), value); }
         public Action<Transaction> OnTransactionCreated { get => get<Action<Transaction>>(nameof(OnTransactionCreated)); set => set(nameof(OnTransactionCreated), value); }
 
@@ -22,6 +30,7 @@ namespace Hashgraph.Implementation
         {
             _parent = parent;
             _map = new Dictionary<string, object?>();
+            _channels = parent?._channels ?? new ConcurrentDictionary<string, Channel>();
         }
         public void Reset(string name)
         {
@@ -30,10 +39,15 @@ namespace Hashgraph.Implementation
                 case nameof(Gateway):
                 case nameof(Payer):
                 case nameof(Fee):
-                case nameof(BusyRetryCount):
-                case nameof(BusyRetryDelay):
+                case nameof(RetryCount):
+                case nameof(RetryDelay):
                 case nameof(TransactionDuration):
+                case nameof(CreateAccountCreateRecordSendThreshold):
+                case nameof(CreateAcountRequireSignatureReceiveThreshold):
+                case nameof(CreateAccountAlwaysRequireReceiveSignature):
+                case nameof(CreateAccountAutoRenewPeriod):
                 case nameof(Memo):
+                case nameof(GenerateRecord):
                 case nameof(Transaction):
                 case nameof(OnTransactionCreated):
                     _map.Remove(name);
@@ -42,6 +56,11 @@ namespace Hashgraph.Implementation
                     throw new ArgumentOutOfRangeException($"'{name}' is not a valid property to reset.");
             }
         }
+        public Channel GetChannel()
+        {
+            return _channels.GetOrAdd(Gateway.Url, url => new Channel(Gateway.Url, ChannelCredentials.Insecure));
+        }
+
 
         // Value is forced to be set, but shouldn't be used
         // if method returns false, ignore nullable warnings
