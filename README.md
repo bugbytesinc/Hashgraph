@@ -1,4 +1,4 @@
-# HashgraphNet
+# Hashgraph
 .NET Core Client Library for Hedera Hashgraph
 
 ## Example

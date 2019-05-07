@@ -38,24 +38,26 @@ namespace Hashgraph.Web.Pages
             }
             try
             {
-                var client = new Client(ctx =>
+                await using (var client = new Client(ctx =>
+                 {
+                     ctx.Gateway = new Gateway(
+                         $"{GetBalanceRequest.GatewayName}:{GetBalanceRequest.GatewayPort}",
+                         GetBalanceRequest.GatewayRealmNum,
+                         GetBalanceRequest.GatewayShardNum,
+                         GetBalanceRequest.GatewayAccountNum);
+                     ctx.Payer = new Account(
+                         GetBalanceRequest.PayerRealmNum,
+                         GetBalanceRequest.PayerShardNum,
+                         GetBalanceRequest.PayerAccountNum,
+                         GetBalanceRequest.PayerPrivateKey);
+                 }))
                 {
-                    ctx.Gateway = new Gateway(
-                        $"{GetBalanceRequest.GatewayName}:{GetBalanceRequest.GatewayPort}",
-                        GetBalanceRequest.GatewayRealmNum,
-                        GetBalanceRequest.GatewayShardNum,
-                        GetBalanceRequest.GatewayAccountNum);
-                    ctx.Payer = new Account(
-                        GetBalanceRequest.PayerRealmNum,
-                        GetBalanceRequest.PayerShardNum,
-                        GetBalanceRequest.PayerAccountNum,
-                        GetBalanceRequest.PayerPrivateKey);
-                });
-                Balance = await client.GetAccountBalanceAsync(
-                    new Address(
-                        GetBalanceRequest.AccountRealmNum,
-                        GetBalanceRequest.AccountShardNum,
-                        GetBalanceRequest.AccountAccountNum));
+                    Balance = await client.GetAccountBalanceAsync(
+                        new Address(
+                            GetBalanceRequest.AccountRealmNum,
+                            GetBalanceRequest.AccountShardNum,
+                            GetBalanceRequest.AccountAccountNum));
+                }
             }
             catch (Exception ex)
             {
