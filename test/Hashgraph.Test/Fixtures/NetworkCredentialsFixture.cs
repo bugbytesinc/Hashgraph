@@ -1,7 +1,5 @@
-﻿using Hashgraph;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Hashgraph.Test.Fixtures
@@ -47,6 +45,7 @@ namespace Hashgraph.Test.Fixtures
             {
                 ctx.Gateway = CreateDefaultGateway();
                 ctx.Payer = CreateDefaultAccount();
+                ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
             });
         }
 

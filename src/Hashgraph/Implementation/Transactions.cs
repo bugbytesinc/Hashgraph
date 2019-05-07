@@ -3,18 +3,19 @@ using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Hashgraph
 {
     internal static class Transactions
     {
-        internal static TransactionID GetOrCreateProtoTransactionID(ContextStack context)
+        internal static TransactionID GetOrCreateTransactionID(ContextStack context)
         {
             var preExistingTransaction = context.Transaction;
             if (preExistingTransaction == null)
             {
-                var transactionId = CreateNewProtoTransactionID(context.Payer, DateTime.UtcNow);
+                var transactionId = CreateNewTransactionID(context.Payer, DateTime.UtcNow);
                 var transaction = Protobuf.FromTransactionId(transactionId);
                 foreach (var handler in context.GetAll<Action<Transaction>>(nameof(context.OnTransactionCreated)))
                 {
@@ -28,7 +29,7 @@ namespace Hashgraph
             }
         }
 
-        internal static TransactionID CreateNewProtoTransactionID(Account payer, DateTime dateTime)
+        internal static TransactionID CreateNewTransactionID(Account payer, DateTime dateTime)
         {
             return new TransactionID
             {
@@ -36,7 +37,7 @@ namespace Hashgraph
                 AccountID = Protobuf.ToAccountID(payer)
             };
         }
-        internal static TransferList CreateProtoTransferList(params (Address address, long amount)[] list)
+        internal static TransferList CreateCryptoTransferList(params (Address address, long amount)[] list)
         {
             var transfers = new TransferList();
             foreach (var transfer in list)
@@ -49,7 +50,7 @@ namespace Hashgraph
             }
             return transfers;
         }
-        internal static TransactionBody CreateProtoTransactionBody(ContextStack context, TransferList transfers, TransactionID transactionId, string defaultMemo)
+        internal static TransactionBody CreateEmptyTransactionBody(ContextStack context, TransactionID transactionId, string defaultMemo)
         {
             return new TransactionBody
             {
@@ -57,12 +58,15 @@ namespace Hashgraph
                 NodeAccountID = Protobuf.ToAccountID(context.Gateway),
                 TransactionFee = (ulong)context.Fee,
                 TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
+                GenerateRecord = context.GenerateRecord,
                 Memo = context.Memo ?? defaultMemo ?? "",
-                CryptoTransfer = new CryptoTransferTransactionBody
-                {
-                    Transfers = transfers
-                }
             };
+        }
+        internal static TransactionBody CreateCryptoTransferTransactionBody(ContextStack context, TransferList transfers, TransactionID transactionId, string defaultMemo)
+        {
+            var body = CreateEmptyTransactionBody(context, transactionId, defaultMemo);
+            body.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
+            return body;
         }
 
         internal static SignatureList SignProtoTransactionBody(TransactionBody transactionBody, params ISigner[] signers)
@@ -87,38 +91,29 @@ namespace Hashgraph
             };
         }
 
-        internal static async Task<TResponse> ExecuteQueryWithRetryAsync<TResponse>(ContextStack context, Query query, Func<Channel, Func<Query, Task<TResponse>>> instantiateQueryNetworkMethod, Func<TResponse, ResponseHeader> extractHeaderFromResponse)
+        internal static async Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> checkForRetry)
         {
-            var channel = new Channel(context.Gateway.Url, ChannelCredentials.Insecure);
-            try
+            // Temporary: we're echoing messages
+            // to the debug stream until we 
+            // design more thoughtful diagnostic hooks.
+            Debug.WriteLine($"Sending: {request}");
+            var sendRequest = instantiateRequestMethod(context.GetChannel());
+            var response = await sendRequest(request);
+            Debug.WriteLine($"Received: {response}");
+            var retryable = checkForRetry(response);
+            if (retryable)
             {
-                var queryNetwork = instantiateQueryNetworkMethod(channel);
-                var response = await queryNetwork(query);
-                var header = extractHeaderFromResponse(response);
-                if (ResponseContainsRetryableErrorCode(header))
+                var maxRetries = context.RetryCount;
+                var retryDelay = context.RetryDelay;
+                for (var retryCount = 0; retryCount < maxRetries && retryable; retryCount++)
                 {
-                    var maxRetries = context.BusyRetryCount;
-                    var retryStandoff = context.BusyRetryDelay;
-                    for (var retryCount = 0; retryCount < maxRetries && ResponseContainsRetryableErrorCode(header); retryCount++)
-                    {
-                        await Task.Delay(retryStandoff);
-                        response = await queryNetwork(query);
-                        header = extractHeaderFromResponse(response);
-                    }
+                    await Task.Delay(retryDelay*(retryCount+1));
+                    response = await sendRequest(request);
+                    Debug.WriteLine($"Received (try {retryCount+1}): {response}");
+                    retryable = checkForRetry(response);
                 }
-                return response;
             }
-            finally
-            {
-                await channel.ShutdownAsync();
-            }
-        }
-
-        private static bool ResponseContainsRetryableErrorCode(ResponseHeader header)
-        {
-            return
-                header.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||
-                header.NodeTransactionPrecheckCode == ResponseCodeEnum.InvalidTransactionStart;
+            return response;
         }
     }
 }

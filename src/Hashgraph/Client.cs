@@ -1,11 +1,14 @@
-﻿using Hashgraph.Implementation;
+﻿using Grpc.Core;
+using Hashgraph.Implementation;
 using System;
+using System.Collections.Concurrent;
 
 namespace Hashgraph
 {
     public sealed partial class Client
     {
         private readonly ContextStack _context;
+        private readonly ConcurrentDictionary<string, Channel> _channels;
         public Client(Action<IContext>? configure = null) : this(configure, null)
         {
         }
@@ -17,10 +20,15 @@ namespace Hashgraph
                 // Hard Code Defaults for Now.
                 _context.Fee = 100000;
                 _context.TransactionDuration = TimeSpan.FromSeconds(120);
-                _context.BusyRetryCount = 5;
-                _context.BusyRetryDelay = TimeSpan.FromMilliseconds(200);
+                _context.RetryCount = 5;
+                _context.RetryDelay = TimeSpan.FromMilliseconds(200);
+                _context.CreateAccountAutoRenewPeriod = TimeSpan.FromDays(31);
+                _context.CreateAccountCreateRecordSendThreshold = int.MaxValue;
+                _context.CreateAcountRequireSignatureReceiveThreshold = int.MaxValue;
+                _context.CreateAccountAlwaysRequireReceiveSignature = false;
             }
             configure?.Invoke(_context);
+            _channels = new ConcurrentDictionary<string, Channel>();
         }
         public void Configure(Action<IContext> configure)
         {

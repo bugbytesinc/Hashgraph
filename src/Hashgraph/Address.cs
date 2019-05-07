@@ -2,7 +2,7 @@
 
 namespace Hashgraph
 {
-    public class Address
+    public class Address : IEquatable<Address>
     {
         public long RealmNum { get; private set; }
         public long ShardNum { get; private set; }
@@ -25,6 +25,51 @@ namespace Hashgraph
             RealmNum = realmNum;
             ShardNum = shardNum;
             AccountNum = accountNum;
+        }
+
+        public bool Equals(Address other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+            return
+                RealmNum == other.RealmNum &&
+                ShardNum == other.ShardNum &&
+                AccountNum == other.AccountNum;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+            if (obj is Account other)
+            {
+                return Equals(other);
+            }
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return $"Address:{RealmNum}:{ShardNum}:{AccountNum}".GetHashCode();
+        }
+        public static bool operator ==(Address left, Address right)
+        {
+            if(left is null)
+            {
+                return right is null;
+            }
+            return left.Equals(right);
+        }
+        public static bool operator !=(Address left, Address right)
+        {
+            return !(left == right);
         }
     }
 }
