@@ -2,10 +2,12 @@
 using Hashgraph.Implementation;
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Hashgraph
 {
-    public sealed partial class Client
+    public sealed partial class Client : IAsyncDisposable
     {
         private readonly ContextStack _context;
         private readonly ConcurrentDictionary<string, Channel> _channels;
@@ -47,6 +49,11 @@ namespace Hashgraph
             var context = new ContextStack(_context);
             configure?.Invoke(context);
             return context;
+        }
+        public async ValueTask DisposeAsync()
+        {
+            await Task.WhenAll(_channels.Values.Select(channel => channel.ShutdownAsync()).ToArray());
+            _channels.Clear();
         }
     }
 }
