@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using NSec.Cryptography;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -59,7 +58,7 @@ namespace Hashgraph.Test.Crypto
                 var newAccount = new Account(newAddress.RealmNum, newAddress.ShardNum, newAddress.AccountNum, privateKey);
                 var info = await client.GetAccountInfoAsync(newAddress);
                 Assert.Equal(initialBalance, info.Balance);
-                Assert.Equal(publicKey, info.PublicKey);
+                Assert.Equal(publicKey.ToArray().TakeLast(32).ToArray(), info.PublicKey.ToArray());
 
                 var receipt = await client.TransferAsync(newAccount, _networkCredentials.CreateDefaultAccount(), (long)transferAmount);
                 var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(newAddress);
@@ -77,7 +76,7 @@ namespace Hashgraph.Test.Crypto
                 var newAccount = new Account(newAddress.RealmNum, newAddress.ShardNum, newAddress.AccountNum, privateKey);
                 var info = await client.GetAccountInfoAsync(newAddress);
                 Assert.Equal(initialBalance, info.Balance);
-                Assert.Equal(publicKey, info.PublicKey);
+                Assert.Equal(publicKey.ToArray().TakeLast(32).ToArray(), info.PublicKey.ToArray());
 
                 var receipt = await client.TransferAsync(newAccount, _networkCredentials.CreateDefaultAccount(), (long)initialBalance);
                 var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(newAddress);

@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -34,11 +33,11 @@ namespace Hashgraph
                 Sigs = signatures
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateCryptoDeleteAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(response.NodeTransactionPrecheckCode);
+            Validate.ValidatePreCheckResult(transactionId, response.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(transactionId, context);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new PrecheckException($"Account was deleted, but unable to get receipt to confirm.  Code {receipt.Status}", PrecheckResponse.Ok);
+                throw new TransactionException($"Account was deleted, but unable to get receipt to confirm.  Code {receipt.Status}");
             }
             return Protobuf.FromAccountID(receipt.AccountID);
 

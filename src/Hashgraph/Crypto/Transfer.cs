@@ -2,8 +2,6 @@
 using Hashgraph.Implementation;
 using Proto;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -28,11 +26,11 @@ namespace Hashgraph
                 Sigs = signatures
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateExecuteCryptoGetBalanceAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(response.NodeTransactionPrecheckCode);
+            Validate.ValidatePreCheckResult(transactionId, response.NodeTransactionPrecheckCode);
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransferException($"Transfer failed. Status: {record.Receipt.Status}");
+                throw new TransactionException($"Transfer failed. Status: {record.Receipt.Status}");
             }
             return record.ToString();
 

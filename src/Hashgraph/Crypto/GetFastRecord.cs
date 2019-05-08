@@ -12,14 +12,14 @@ namespace Hashgraph
         private async Task<TransactionRecord> GetFastRecordAsync(TransactionID transactionId, ContextStack context)
         {
             var query = new Query
-            {                
+            {
                 TransactionGetFastRecord = new TransactionGetFastRecordQuery
                 {
                     TransactionID = transactionId
                 }
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateGetTransactionReceiptsAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(response.Header.NodeTransactionPrecheckCode);
+            Validate.ValidatePreCheckResult(transactionId, response.Header.NodeTransactionPrecheckCode);
             return response.TransactionRecord;
 
             static Func<Query, Task<TransactionGetFastRecordResponse>> instantiateGetTransactionReceiptsAsyncMethod(Channel channel)

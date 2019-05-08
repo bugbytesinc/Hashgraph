@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf;
+using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace Hashgraph.Implementation
         public bool GenerateRecord { get => get<bool>(nameof(GenerateRecord)); set => set(nameof(GenerateRecord), value); }
         public Transaction Transaction { get => get<Transaction>(nameof(Transaction)); set => set(nameof(Transaction), value); }
         public Action<Transaction> OnTransactionCreated { get => get<Action<Transaction>>(nameof(OnTransactionCreated)); set => set(nameof(OnTransactionCreated), value); }
+        public Action<IMessage> OnSendingRequest { get => get<Action<IMessage>>(nameof(OnSendingRequest)); set => set(nameof(OnSendingRequest), value); }
+        public Action<int, IMessage> OnResponseReceived { get => get<Action<int, IMessage>>(nameof(OnResponseReceived)); set => set(nameof(OnResponseReceived), value); }
 
         public ContextStack(ContextStack? parent)
         {
@@ -50,6 +53,8 @@ namespace Hashgraph.Implementation
                 case nameof(GenerateRecord):
                 case nameof(Transaction):
                 case nameof(OnTransactionCreated):
+                case nameof(OnSendingRequest):
+                case nameof(OnResponseReceived):
                     _map.Remove(name);
                     break;
                 default:

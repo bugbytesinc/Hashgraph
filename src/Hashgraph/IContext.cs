@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Google.Protobuf;
+using System;
 
 namespace Hashgraph
 {
@@ -18,6 +19,8 @@ namespace Hashgraph
         TimeSpan RetryDelay { get; set; }
         Transaction Transaction { get; set; }
         Action<Transaction> OnTransactionCreated { get; set; }
+        Action<IMessage> OnSendingRequest { get; set; }
+        Action<int,IMessage> OnResponseReceived { get; set; }
         void Reset(string name);
     }
 }

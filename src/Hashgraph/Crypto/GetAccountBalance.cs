@@ -14,7 +14,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
             Require.PayerInContext(context);
-            var transfers = Transactions.CreateCryptoTransferList((context.Payer, -context.FeeLimit), (context.Gateway, context.FeeLimit));            
+            var transfers = Transactions.CreateCryptoTransferList((context.Payer, -context.FeeLimit), (context.Gateway, context.FeeLimit));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Balance");
             var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer);
@@ -27,7 +27,7 @@ namespace Hashgraph
                 }
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateExecuteCryptoGetBalanceAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(response.Header.NodeTransactionPrecheckCode);
+            Validate.ValidatePreCheckResult(transactionId, response.Header.NodeTransactionPrecheckCode);
             return response.Balance;
 
             static Func<Query, Task<CryptoGetAccountBalanceResponse>> instantiateExecuteCryptoGetBalanceAsyncMethod(Channel channel)

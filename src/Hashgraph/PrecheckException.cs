@@ -5,13 +5,11 @@ namespace Hashgraph
     public sealed class PrecheckException : Exception
     {
         public PrecheckResponse PrecheckResponseCode { get; private set; }
-        public PrecheckException(string message, PrecheckResponse code) : base(message)
+        public Transaction Transaction { get; private set; }
+        public PrecheckException(string message, Transaction transaction,  PrecheckResponse code) : base(message)
         {
             PrecheckResponseCode = code;
-        }
-        public PrecheckException(string message, PrecheckResponse code, Exception innerException) : base(message, innerException)
-        {
-            PrecheckResponseCode = code;
+            Transaction = transaction;
         }
     }
 }

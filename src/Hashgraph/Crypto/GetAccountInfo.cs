@@ -27,7 +27,7 @@ namespace Hashgraph
                 }
             };
             var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateExecuteCryptoGetInfoAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(data.Header.NodeTransactionPrecheckCode);
+            Validate.ValidatePreCheckResult(transactionId, data.Header.NodeTransactionPrecheckCode);
             return Protobuf.FromAccountInfo(data.AccountInfo);
 
             static Func<Query, Task<CryptoGetInfoResponse>> instantiateExecuteCryptoGetInfoAsyncMethod(Channel channel)

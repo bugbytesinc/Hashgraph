@@ -1,5 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
+
+using System;
 
 namespace Hashgraph.Implementation
 {
@@ -68,7 +69,7 @@ namespace Hashgraph.Implementation
 
         internal static void AmountArgument(long amount)
         {
-            if(amount < 1)
+            if (amount < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(amount), "The amount to transfer must be non-negative.");
             }
@@ -83,9 +84,9 @@ namespace Hashgraph.Implementation
             {
                 Keys.ImportPublicEd25519KeyFromBytes(publicKey);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new ArgumentOutOfRangeException(nameof(publicKey),ex.Message);
+                throw new ArgumentOutOfRangeException(nameof(publicKey), ex.Message);
             }
         }
     }

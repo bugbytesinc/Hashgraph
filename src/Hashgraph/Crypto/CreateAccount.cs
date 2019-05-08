@@ -37,11 +37,16 @@ namespace Hashgraph
                 Sigs = signatures
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateExecuteCreateAccountAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(response.NodeTransactionPrecheckCode);
+            Validate.ValidatePreCheckResult(transactionId, response.NodeTransactionPrecheckCode);
+
+            // todo: flesh out details of the transaction record to return.
+
+
+
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new PrecheckException($"Account was created, but unable to get receipt with new Account Address.  Code {record.Receipt.Status}", PrecheckResponse.Ok);
+                throw new TransactionException($"Account create request was accepted, but unable to get receipt with new Account Address.  Code {record.Receipt.Status}");
             }
             return Protobuf.FromAccountID(record.Receipt.AccountID);
 
@@ -58,6 +63,11 @@ namespace Hashgraph
                     code == ResponseCodeEnum.Busy ||
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
+        }
+
+        public static class CreateAccountResult
+        {
+
         }
     }
 }
