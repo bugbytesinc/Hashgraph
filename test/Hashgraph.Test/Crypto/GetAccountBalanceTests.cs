@@ -78,7 +78,7 @@ namespace Hashgraph.Test.Crypto
             await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
             {
                 var account = new Address(0, 0, 0);
-                var ex = await Assert.ThrowsAsync<GatewayException>(async () =>
+                var ex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });
@@ -96,7 +96,7 @@ namespace Hashgraph.Test.Crypto
                     cfg.Gateway = new Gateway($"{_networkCredentials.NetworkAddress}:{_networkCredentials.NetworkPort}", 0, 0, 0);
                 });
                 var account = _networkCredentials.CreateDefaultAccount();
-                var ex = await Assert.ThrowsAsync<GatewayException>(async () =>
+                var ex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });
@@ -111,10 +111,10 @@ namespace Hashgraph.Test.Crypto
             {
                 client.Configure(cfg =>
                 {
-                    cfg.Fee = 0;
+                    cfg.FeeLimit = 0;
                 });
                 var account = _networkCredentials.CreateDefaultAccount();
-                var ex = await Assert.ThrowsAsync<GatewayException>(async () =>
+                var ex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });

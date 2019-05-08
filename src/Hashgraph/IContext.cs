@@ -6,7 +6,7 @@ namespace Hashgraph
     {
         Gateway Gateway { get; set; }
         Account Payer { get; set; }
-        long Fee { get; set; }
+        long FeeLimit { get; set; }
         TimeSpan TransactionDuration { get; set; }
         ulong CreateAccountCreateRecordSendThreshold { get; set; }
         ulong CreateAcountRequireSignatureReceiveThreshold { get; set; }

@@ -32,7 +32,7 @@ namespace Hashgraph.Test.Crypto
                 Assert.True(info.Proxy.AccountNum > -1);
                 Assert.Equal(0, info.ProxyShareFraction);
                 Assert.Equal(0, info.ProxiedToAccount);
-                Assert.Equal(_networkCredentials.AccountPublicKey, info.PublicKeyInHex);
+                Assert.Equal(_networkCredentials.AccountPublicKey, info.PublicKey);
                 Assert.True(info.Balance > 0);
                 Assert.True(info.SendThresholdCreateRecord > 0);
                 Assert.True(info.ReceiveThresholdCreateRecord > 0);

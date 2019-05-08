@@ -4,6 +4,6 @@ namespace Hashgraph.Implementation
 {
     internal interface IData
     {
-        ReadOnlySpan<byte> Data { get; }
+        ReadOnlyMemory<byte> Data { get; }
     }
 }

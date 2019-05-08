@@ -16,8 +16,8 @@ namespace Hashgraph.Test.Fixtures
         public long AccountRealm { get { return getAsInt("account:realm"); } }
         public long AccountShard { get { return getAsInt("account:shard"); } }
         public long AccountNumber { get { return getAsInt("account:number"); } }
-        public string AccountPrivateKey { get { return _configuration["account:privateKey"]; } }
-        public string AccountPublicKey { get { return _configuration["account:publicKey"]; } }
+        public ReadOnlyMemory<byte> AccountPrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
+        public ReadOnlyMemory<byte> AccountPublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
 
         public NetworkCredentialsFixture()
         {

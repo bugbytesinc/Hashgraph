@@ -76,12 +76,12 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Test Account Private Key is not Empty")]
         public void AccountAccountPrivateKeyIsNotEmpty()
         {
-            Assert.NotEmpty(_networkCredentials.AccountPrivateKey);
+            Assert.False(_networkCredentials.AccountPrivateKey.IsEmpty);
         }
         [Fact(DisplayName = "Test Account Public Key is not Empty")]
         public void AccountAccountPublicKeyIsNotEmpty()
         {
-            Assert.NotEmpty(_networkCredentials.AccountPublicKey);
+            Assert.False(_networkCredentials.AccountPublicKey.IsEmpty);
         }
     }
 }

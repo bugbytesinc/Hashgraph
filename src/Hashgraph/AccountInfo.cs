@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 
 namespace Hashgraph
 {
@@ -37,9 +38,9 @@ namespace Hashgraph
         /// </summary>
         public long ProxiedToAccount { get; private set; }
         /// <summary>
-        /// Constructor, used internally.
+        /// Account's Ed25519 Public Key (typ without the 0x302a300506032b6570032100 format prefix)
         /// </summary>
-        public string PublicKeyInHex { get; private set; }
+        public ReadOnlyMemory<byte> PublicKey { get; private set; }
         /// <summary>
         /// Account Balance in Tinybars
         /// </summary>
@@ -78,7 +79,7 @@ namespace Hashgraph
         /// <summary>
         /// Constructor, for internal use.
         /// </summary>
-        internal AccountInfo(Address address, string accountContractId, bool deleted, Address proxy, int proxyShareFraction, long proxiedToAccount, string publicKeyInHex, ulong balance, ulong generateSendRecordThreshold, ulong generateReceiveRecordThreshold, bool receiveSignatureRequired, DateTime expiration, TimeSpan autoRenewPeriod)
+        internal AccountInfo(Address address, string accountContractId, bool deleted, Address proxy, int proxyShareFraction, long proxiedToAccount, byte[] publicKey, ulong balance, ulong generateSendRecordThreshold, ulong generateReceiveRecordThreshold, bool receiveSignatureRequired, DateTime expiration, TimeSpan autoRenewPeriod)
         {
             Address = address;
             SmartContractId = accountContractId;
@@ -86,7 +87,7 @@ namespace Hashgraph
             Proxy = proxy;
             ProxyShareFraction = proxyShareFraction;
             ProxiedToAccount = proxiedToAccount;
-            PublicKeyInHex = publicKeyInHex;
+            PublicKey = publicKey.AsMemory();
             Balance = balance;
             SendThresholdCreateRecord = generateSendRecordThreshold;
             ReceiveThresholdCreateRecord = generateReceiveRecordThreshold;

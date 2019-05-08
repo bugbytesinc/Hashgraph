@@ -18,7 +18,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
             Require.PayerInContext(context);
-            var transfers = Transactions.CreateCryptoTransferList((fromAccount, -amount),(toAddress,amount));
+            var transfers = Transactions.CreateCryptoTransferList((fromAccount, -amount), (toAddress, amount));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Transfer Crypto");
             var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer, fromAccount);
@@ -32,7 +32,7 @@ namespace Hashgraph
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new GatewayException($"Transfer request was accepted, but unable to get confirmation.  Code: {record.Receipt.Status}", PrecheckResponse.Ok);
+                throw new TransferException($"Transfer failed. Status: {record.Receipt.Status}");
             }
             return record.ToString();
 

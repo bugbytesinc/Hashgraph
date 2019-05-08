@@ -5,13 +5,13 @@ namespace Hashgraph
 {
     public class Transaction : IData
     {
-        private readonly byte[] _data;
+        private readonly ReadOnlyMemory<byte> _data;
 
-        ReadOnlySpan<byte> IData.Data { get { return _data; } }
+        ReadOnlyMemory<byte> IData.Data { get { return _data; } }
 
-        internal Transaction(ReadOnlySpan<byte> data)
+        internal Transaction(ReadOnlyMemory<byte> data)
         {
-            _data = data.ToArray();
+            _data = data;
         }
     }
 }

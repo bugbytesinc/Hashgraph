@@ -13,7 +13,7 @@ namespace Hashgraph.Implementation
 
         public Gateway Gateway { get => get<Gateway>(nameof(Gateway)); set => set(nameof(Gateway), value); }
         public Account Payer { get => get<Account>(nameof(Payer)); set => set(nameof(Payer), value); }
-        public long Fee { get => get<long>(nameof(Fee)); set => set(nameof(Fee), value); }
+        public long FeeLimit { get => get<long>(nameof(FeeLimit)); set => set(nameof(FeeLimit), value); }
         public TimeSpan TransactionDuration { get => get<TimeSpan>(nameof(TransactionDuration)); set => set(nameof(TransactionDuration), value); }
         public ulong CreateAccountCreateRecordSendThreshold { get => get<ulong>(nameof(CreateAccountCreateRecordSendThreshold)); set => set(nameof(CreateAccountCreateRecordSendThreshold), value); }
         public ulong CreateAcountRequireSignatureReceiveThreshold { get => get<ulong>(nameof(CreateAcountRequireSignatureReceiveThreshold)); set => set(nameof(CreateAcountRequireSignatureReceiveThreshold), value); }
@@ -38,7 +38,7 @@ namespace Hashgraph.Implementation
             {
                 case nameof(Gateway):
                 case nameof(Payer):
-                case nameof(Fee):
+                case nameof(FeeLimit):
                 case nameof(RetryCount):
                 case nameof(RetryDelay):
                 case nameof(TransactionDuration):

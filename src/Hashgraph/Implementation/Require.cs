@@ -12,6 +12,7 @@ namespace Hashgraph.Implementation
                 throw new InvalidOperationException("The Payer account has not been configured. Please check that 'Payer' is set in the Client context.");
             }
         }
+
         internal static void GatewayInContext(ContextStack context)
         {
             if (context.Gateway == null)
@@ -72,11 +73,20 @@ namespace Hashgraph.Implementation
                 throw new ArgumentOutOfRangeException(nameof(amount), "The amount to transfer must be non-negative.");
             }
         }
-
-        internal static void PublicKeyInHexArgument(string publicKeyInHex)
+        internal static void PublicKeyArgument(ReadOnlyMemory<byte> publicKey)
         {
-            // Throws argument exceptions if invalid.
-            Signatures.ImportPublicEd25519KeyFromBytes(Signatures.DecodeByteArrayFromHexString(publicKeyInHex));
+            if (publicKey.IsEmpty)
+            {
+                throw new ArgumentOutOfRangeException(nameof(publicKey), "The public key is required.");
+            }
+            try
+            {
+                Keys.ImportPublicEd25519KeyFromBytes(publicKey);
+            }
+            catch(Exception ex)
+            {
+                throw new ArgumentOutOfRangeException(nameof(publicKey),ex.Message);
+            }
         }
     }
 }

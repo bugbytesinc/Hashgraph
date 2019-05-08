@@ -74,7 +74,7 @@ namespace Hashgraph.Implementation
         {
             return EPOCH.AddTicks(timestamp.Seconds * TimeSpan.TicksPerSecond + timestamp.Nanos / NanosPerTick);
         }
-        internal static ReadOnlySpan<byte> toProtoBytes(IMessage message)
+        internal static ReadOnlyMemory<byte> toProtoBytes(IMessage message)
         {
             var size = message.CalculateSize();
             var buffer = new byte[size];
@@ -95,7 +95,7 @@ namespace Hashgraph.Implementation
                 new Address(proxyId.RealmNum, proxyId.ShardNum, proxyId.AccountNum),
                 accountInfo.ProxyFraction,
                 accountInfo.ProxyReceived,
-                Signatures.EncodeByteArrayToHexString(accountInfo.Key.Ed25519.ToByteArray()),
+                accountInfo.Key.Ed25519.ToByteArray(),
                 accountInfo.Balance,
                 accountInfo.GenerateSendRecordThreshold,
                 accountInfo.GenerateReceiveRecordThreshold,

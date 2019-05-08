@@ -14,7 +14,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
             Require.PayerInContext(context);
-            var transfers = Transactions.CreateCryptoTransferList((context.Payer, -context.Fee), (context.Gateway, context.Fee));            
+            var transfers = Transactions.CreateCryptoTransferList((context.Payer, -context.FeeLimit), (context.Gateway, context.FeeLimit));            
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Balance");
             var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer);

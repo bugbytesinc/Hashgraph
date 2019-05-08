@@ -38,7 +38,7 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(transactionId, context);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new GatewayException($"Account was deleted, but unable to get receipt to confirm.  Code {receipt.Status}", PrecheckResponse.Ok);
+                throw new PrecheckException($"Account was deleted, but unable to get receipt to confirm.  Code {receipt.Status}", PrecheckResponse.Ok);
             }
             return Protobuf.FromAccountID(receipt.AccountID);
 

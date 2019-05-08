@@ -20,11 +20,9 @@ namespace Hashgraph.Test.Crypto
             using (var key = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport }))
             {
                 var initialBalance = (ulong)Generator.Integer(10, 200);
-                var publicKey = BitConverter.ToString(key.Export(KeyBlobFormat.PkixPublicKey)).Replace("-", "");
-                var privateKey = BitConverter.ToString(key.Export(KeyBlobFormat.PkixPrivateKey)).Replace("-", "");
+                var (publicKey, privateKey) = Generator.KeyPair();
                 await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
                 {
-
                     var newAddress = await client.CreateAccountAsync(publicKey, initialBalance);
                     Assert.NotNull(newAddress);
                     Assert.Equal(_networkCredentials.ServerRealm, newAddress.RealmNum);
@@ -38,8 +36,9 @@ namespace Hashgraph.Test.Crypto
                     Assert.Equal(newAddress.AccountNum, info.Address.AccountNum);
                     Assert.False(info.Deleted);
 
-                    //var from = new Account(newAddress.RealmNum, newAddress.ShardNum, newAddress.AccountNum, privateKey);
-                    //await client.TransferAsync(from, _networkCredentials.CreateDefaultAccount(), (long)initialBalance);
+                    // Move remaining funds back to primary account.
+                    var from = new Account(newAddress.RealmNum, newAddress.ShardNum, newAddress.AccountNum, privateKey);
+                    await client.TransferAsync(from, _networkCredentials.CreateDefaultAccount(), (long)initialBalance);
 
                     // We should do the following when deleting an account is testable on the network.
                     //await client.DeleteAccountAsync(newAccount, _networkCredentials.CreateDefaultAccount());
@@ -49,11 +48,11 @@ namespace Hashgraph.Test.Crypto
                     //Assert.Equal(_networkCredentials.ServerShard, deletedAccount.ShardNum);
                     //Assert.True(deletedAccount.AccountNum > 0);
 
-                    //info = await client.GetAccountInfoAsync(newAddress);
-                    //Assert.Equal(0UL, info.Balance);
-                    //Assert.Equal(newAddress.RealmNum, info.Address.RealmNum);
-                    //Assert.Equal(newAddress.ShardNum, info.Address.ShardNum);
-                    //Assert.Equal(newAddress.AccountNum, info.Address.AccountNum);
+                    info = await client.GetAccountInfoAsync(newAddress);
+                    Assert.Equal(0UL, info.Balance);
+                    Assert.Equal(newAddress.RealmNum, info.Address.RealmNum);
+                    Assert.Equal(newAddress.ShardNum, info.Address.ShardNum);
+                    Assert.Equal(newAddress.AccountNum, info.Address.AccountNum);
                     //Assert.True(info.Deleted);
                 }
             }

@@ -3,24 +3,27 @@ using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hashgraph
 {
     public partial class Client
     {
-        public async Task<Address> CreateAccountAsync(string publicKeyInHex, ulong initialBalance, Action<IContext>? configure = null)
+        public async Task<Address> CreateAccountAsync(ReadOnlyMemory<byte> publicKey, ulong initialBalance, Action<IContext>? configure = null)
         {
-            Require.PublicKeyInHexArgument(publicKeyInHex);
+            Require.PublicKeyArgument(publicKey);
             Require.InitialBalanceArgument(initialBalance);
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
             Require.PayerInContext(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create Account");
+            // Create Account requires just the 32 bits of the public key, without the prefix.
+            var publicKeyWithoutPrefix = publicKey.ToArray().TakeLast(32).ToArray();
             transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
             {
-                Key = new Key { Ed25519 = ByteString.CopyFrom(Signatures.DecodeByteArrayFromHexString(publicKeyInHex)) },
+                Key = new Key { Ed25519 = ByteString.CopyFrom(publicKeyWithoutPrefix) },
                 InitialBalance = initialBalance,
                 SendRecordThreshold = context.CreateAccountCreateRecordSendThreshold,
                 ReceiveRecordThreshold = context.CreateAcountRequireSignatureReceiveThreshold,
@@ -38,7 +41,7 @@ namespace Hashgraph
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new GatewayException($"Account was created, but unable to get receipt with new Account Address.  Code {record.Receipt.Status}", PrecheckResponse.Ok);
+                throw new PrecheckException($"Account was created, but unable to get receipt with new Account Address.  Code {record.Receipt.Status}", PrecheckResponse.Ok);
             }
             return Protobuf.FromAccountID(record.Receipt.AccountID);
 

@@ -10,7 +10,7 @@ namespace Hashgraph.Implementation
             {
                 return;
             }
-            throw new GatewayException($"Failed Pre-Check: {code}", (PrecheckResponse)code);
+            throw new PrecheckException($"Failed Pre-Check: {code}", (PrecheckResponse)code);
         }
     }
 }
