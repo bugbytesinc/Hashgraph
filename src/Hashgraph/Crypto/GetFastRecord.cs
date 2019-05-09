@@ -21,6 +21,11 @@ namespace Hashgraph
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateGetTransactionReceiptsAsyncMethod, checkForRetry);
             if (response.TransactionRecord is null)
             {
+                var expiration = Protobuf.FromTimestamp(transactionId.TransactionValidStart).Add(context.TransactionDuration);
+                if(expiration < DateTime.UtcNow)
+                {
+                    throw new ConsensusException("Network failed to reach concensus before transaction request exired.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.Header.NodeTransactionPrecheckCode);
+                }
                 throw new PrecheckException("Failed to receive response from server within the given retry interval.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.Header.NodeTransactionPrecheckCode);
             }
             return response.TransactionRecord;
