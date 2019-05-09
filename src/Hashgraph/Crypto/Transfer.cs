@@ -21,7 +21,7 @@ namespace Hashgraph
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Transfer Crypto");
             var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer, fromAccount);
-            var request = new Proto.Transaction
+            var request = new Transaction
             {
                 Body = transactionBody,
                 Sigs = signatures
@@ -37,10 +37,10 @@ namespace Hashgraph
             result.Transfers = Protobuf.FromTransferList(record.TransferList);
             return result;
 
-            static Func<Proto.Transaction, Task<TransactionResponse>> instantiateExecuteCryptoGetBalanceAsyncMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> instantiateExecuteCryptoGetBalanceAsyncMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Proto.Transaction request) => await client.cryptoTransferAsync(request);
+                return async (Transaction request) => await client.cryptoTransferAsync(request);
             }
 
             static bool checkForRetry(TransactionResponse response)
