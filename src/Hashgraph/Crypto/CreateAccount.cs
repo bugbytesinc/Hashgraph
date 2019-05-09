@@ -41,9 +41,9 @@ namespace Hashgraph
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record));
+                throw new TransactionException($"Unable to create account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
             }
-            var result = Protobuf.FromTransactionRecord<CreateAccountRecord>(record);
+            var result = Protobuf.FromTransactionRecord<CreateAccountRecord>(record, transactionId);
             result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
             return result;
 

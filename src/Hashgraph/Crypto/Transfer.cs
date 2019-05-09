@@ -31,9 +31,9 @@ namespace Hashgraph
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to execute crypto transfer, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record));
-            }            
-            var result = Protobuf.FromTransactionRecord<TransferRecord>(record);
+                throw new TransactionException($"Unable to execute crypto transfer, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
+            }
+            var result = Protobuf.FromTransactionRecord<TransferRecord>(record, transactionId);
             result.Transfers = Protobuf.FromTransferList(record.TransferList);
             return result;
 

@@ -37,9 +37,9 @@ namespace Hashgraph
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to delete account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record));
+                throw new TransactionException($"Unable to delete account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
             }
-            var result = Protobuf.FromTransactionRecord<DeleteAccountRecord>(record);
+            var result = Protobuf.FromTransactionRecord<DeleteAccountRecord>(record, transactionId);
             result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
             return result;
 

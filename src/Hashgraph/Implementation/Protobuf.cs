@@ -97,11 +97,18 @@ namespace Hashgraph.Implementation
                 FromDuration(accountInfo.AutoRenewPeriod));
         }
 
-        internal static TRecord FromTransactionRecord<TRecord>(Proto.TransactionRecord record) where TRecord : TransactionRecord, new()
+        // Note: sometimes when this is being used to create
+        // a context for throwing an exception (because
+        // the transaction failed, or the server is too busy
+        // for the given retry settings) the transaction ID
+        // is not returned in the <code>TransactionRecord</code>.
+        // However, the calling context should allways know the
+        // transaction so it is passed in as a backup.
+        internal static TRecord FromTransactionRecord<TRecord>(Proto.TransactionRecord record, TransactionID originatingID) where TRecord : TransactionRecord, new()
         {
             return new TRecord
             {
-                Id = FromTransactionId(record.TransactionID),
+                Id = FromTransactionId(record.TransactionID ?? originatingID),
                 Status = (ResponseCode)record.Receipt.Status,
                 Hash = record.TransactionHash.ToByteArray(),
                 Concensus = FromTimestamp(record.ConsensusTimestamp),
