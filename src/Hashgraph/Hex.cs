@@ -3,8 +3,22 @@ using System.Text;
 
 namespace Hashgraph
 {
+    /// <summary>
+    /// Helper class for converting between bytes and Hex encoded string values.
+    /// </summary>
     public static class Hex
     {
+        /// <summary>
+        /// Converts string values encoded in Hex into bytes.
+        /// </summary>
+        /// <param name="hex">
+        /// A string containing a series of characters in hexadecimal format.
+        /// </param>
+        /// <returns>
+        /// A blob of bytes decoded from the hex string.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">If the input string is <code>null</code>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">If the string of characters is not valid Hex.</exception>
         public static ReadOnlyMemory<byte> ToBytes(string hex)
         {
             if (hex == null)
@@ -37,6 +51,15 @@ namespace Hashgraph
                 throw new ArgumentOutOfRangeException("String value does not appear to be properly encoded in Hex.", fe);
             }
         }
+        /// <summary>
+        /// Converts a blob of bytes into the corresponding hex encoded string.
+        /// </summary>
+        /// <param name="bytes">
+        /// Blob of bytes to turn into Hex.
+        /// </param>
+        /// <returns>
+        /// String value of the bytes in Hex.
+        /// </returns>
         public static string FromBytes(ReadOnlyMemory<byte> bytes)
         {
             var size = bytes.Length * 2;
@@ -45,7 +68,7 @@ namespace Hashgraph
                 return string.Empty;
             }
             var buff = new StringBuilder(size, size);
-            foreach(var b in bytes.Span)
+            foreach (var b in bytes.Span)
             {
                 buff.AppendFormat("{0:x2}", b);
             }

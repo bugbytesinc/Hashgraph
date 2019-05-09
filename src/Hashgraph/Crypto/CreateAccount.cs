@@ -10,6 +10,32 @@ namespace Hashgraph
 {
     public partial class Client
     {
+        /// <summary>
+        /// Creates a new network account with a given initial balance.
+        /// </summary>
+        /// <param name="publicKey">
+        /// The public Ed25519 key corresponding to the private key authorized 
+        /// to sign transactions on behalf of this new account.  The key 
+        /// length is expected to be 44 bytes long and start with the prefix 
+        /// of 0x302a300506032b6570032100.
+        /// </param>
+        /// <param name="initialBalance">
+        /// The initial balance that will be transferred from the 
+        /// <see cref="IContext.Payer"/> account to the new account 
+        /// upon creation.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction record with a description of the newly created account.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateAccountRecord> CreateAccountAsync(ReadOnlyMemory<byte> publicKey, ulong initialBalance, Action<IContext>? configure = null)
         {
             Require.PublicKeyArgument(publicKey);
@@ -61,12 +87,5 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
-
-#pragma warning disable CS8618 // Non-nullable field is uninitialized.
-        public class CreateAccountRecord : TransactionRecord
-        {
-            public Address Address { get; internal set; }
-        }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized.
     }
 }

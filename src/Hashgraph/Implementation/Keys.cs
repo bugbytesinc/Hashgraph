@@ -3,6 +3,10 @@ using System;
 
 namespace Hashgraph.Implementation
 {
+    /// <summary>
+    /// Internal helper class that provides conversion services 
+    /// between raw bytes and Ed25519 public and private keys.
+    /// </summary>
     internal static class Keys
     {
         private static readonly byte[] privateKeyPrefix = Hex.ToBytes("302e020100300506032b6570").ToArray();

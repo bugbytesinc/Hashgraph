@@ -2,6 +2,12 @@
 
 namespace Hashgraph.Implementation
 {
+    /// <summary>
+    /// Internal helper class providing validation checks for 
+    /// various methods, throwing invalid operation and argument 
+    /// exceptions when required information is missing from the 
+    /// context or parameter arguments.
+    /// </summary>
     internal static class Require
     {
         internal static Account PayerInContext(ContextStack context)

@@ -3,7 +3,7 @@
 namespace Hashgraph
 {
     /// <summary>
-    /// Pre-Check Response Codes - 1to1 mapping with protobuf ResponseCodeEnum
+    /// Pre-Check and Receipt Response Codes - 1to1 mapping with protobuf ResponseCodeEnum
     /// </summary>
     public enum ResponseCode
     {
@@ -180,9 +180,21 @@ namespace Hashgraph
         ///  payer signature is invalid
         /// </summary>
         [Description("INVALID_PAYER_SIGNATURE")] InvalidPayerSignature = 43,
+        /// <summary>
+        /// KEY_NOT_PROVIDED
+        /// </summary>
         [Description("KEY_NOT_PROVIDED")] KeyNotProvided = 44,
+        /// <summary>
+        /// INVALID_EXPIRATION_TIME
+        /// </summary>
         [Description("INVALID_EXPIRATION_TIME")] InvalidExpirationTime = 45,
+        /// <summary>
+        /// NO_WACL_KEY
+        /// </summary>
         [Description("NO_WACL_KEY")] NoWaclKey = 46,
+        /// <summary>
+        /// FILE_CONTENT_EMPTY
+        /// </summary>
         [Description("FILE_CONTENT_EMPTY")] FileContentEmpty = 47,
         /// <summary>
         /// The crypto transfer credit and debit don't equal to 0

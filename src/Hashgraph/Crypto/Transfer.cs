@@ -2,13 +2,34 @@
 using Hashgraph.Implementation;
 using Proto;
 using System;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Hashgraph
 {
     public partial class Client
     {
+        /// <summary>
+        /// Transfer tinybars from one account to another.
+        /// </summary>
+        /// <param name="fromAccount">
+        /// The account to transfer the tinybars from.  It will sign the 
+        /// transaction, but may not necessarily be the account 
+        /// <see cref="IContext.Payer">paying</see> the transaction fee.
+        /// </param>
+        /// <param name="toAddress">
+        /// The address receiving the tinybars.
+        /// </param>
+        /// <param name="amount">
+        /// The amount of tinybars to transfer.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer record describing the details of the concensus transaction.
+        /// </returns>
         public async Task<TransferRecord> TransferAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
         {
             Require.FromAccountArgument(fromAccount);
@@ -51,11 +72,5 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
-#pragma warning disable CS8618 // Non-nullable field is uninitialized.
-        public class TransferRecord : TransactionRecord
-        {
-            public ReadOnlyDictionary<Address, long> Transfers { get; internal set; }
-        }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized.
     }
 }

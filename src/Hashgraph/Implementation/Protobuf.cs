@@ -6,6 +6,12 @@ using System.Collections.ObjectModel;
 
 namespace Hashgraph.Implementation
 {
+    /// <summary>
+    /// Internal helper class providing methods to convert 
+    /// from protobuf messages into public objects exposed 
+    /// by the library and from public objects back into 
+    /// protobuf messages.
+    /// </summary>
     internal static class Protobuf
     {
         private static readonly DateTime EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
