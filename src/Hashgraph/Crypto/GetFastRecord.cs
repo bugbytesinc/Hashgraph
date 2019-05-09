@@ -8,7 +8,10 @@ namespace Hashgraph
 {
     public partial class Client
     {
-        // Preliminary Implementation not to rely upon yet
+        /// <summary>
+        /// Internal Helper function to retrieve the “fast” transaction record provided 
+        /// by the network following network consensus regarding a query or transaction.
+        /// </summary>
         private async Task<Proto.TransactionRecord> GetFastRecordAsync(TransactionID transactionId, ContextStack context)
         {
             var query = new Query

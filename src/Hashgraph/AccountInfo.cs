@@ -3,6 +3,11 @@ using System.Collections.Immutable;
 
 namespace Hashgraph
 {
+    /// <summary>
+    /// The information returned from the CreateAccountAsync Client method call.  
+    /// It represents the details concerning a Hedera Network Account, including 
+    /// the public key value to use in smart contract interaction.
+    /// </summary>
     public sealed class AccountInfo
     {
         /// <summary>
@@ -77,7 +82,7 @@ namespace Hashgraph
         /// </summary>
         public TimeSpan AutoRenewPeriod { get; private set; }
         /// <summary>
-        /// Constructor, for internal use.
+        /// Constructor, used internally to construct the <code>AccountInfo</code> object.
         /// </summary>
         internal AccountInfo(Address address, string accountContractId, bool deleted, Address proxy, int proxyShareFraction, long proxiedToAccount, byte[] publicKey, ulong balance, ulong generateSendRecordThreshold, ulong generateReceiveRecordThreshold, bool receiveSignatureRequired, DateTime expiration, TimeSpan autoRenewPeriod)
         {

@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace Hashgraph
 {
+    /// <summary>
+    /// Internal helper class providing protobuf message construction 
+    /// helpers and communication with the remote GRPC server.
+    /// </summary>
     internal static class Transactions
     {
         internal static TransactionID GetOrCreateTransactionID(ContextStack context)

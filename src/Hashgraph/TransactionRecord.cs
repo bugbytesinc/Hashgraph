@@ -1,16 +1,38 @@
-﻿using System;
+﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
+using System;
 
 namespace Hashgraph
 {
-#pragma warning disable CS8618 // Non-nullable field is uninitialized.
+    /// <summary>
+    /// The details returned from the network after consensus 
+    /// has been reached for a network request.
+    /// </summary>
     public class TransactionRecord
     {
+        /// <summary>
+        /// The Transaction ID associated with the request.
+        /// </summary>
         public TxId Id { get; internal set; }
+        /// <summary>
+        /// The response code returned from the server.
+        /// </summary>
         public ResponseCode Status { get; internal set; }
+        /// <summary>
+        /// Hash of the Transaction.
+        /// </summary>
         public ReadOnlyMemory<byte> Hash { get; internal set; }
+        /// <summary>
+        /// The consensus timestamp.
+        /// </summary>
         public DateTime Concensus { get; internal set; }
+        /// <summary>
+        /// The memo that was submitted with the transaction request.
+        /// </summary>
         public string Memo { get; internal set; }
+        /// <summary>
+        /// The fee that was charged by the network for processing the 
+        /// transaction and generating associated receipts and records.
+        /// </summary>
         public ulong Fee { get; internal set; }
     }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized.
 }
