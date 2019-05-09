@@ -3,7 +3,7 @@ using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
-using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -13,11 +13,11 @@ namespace Hashgraph
         internal static TransactionID GetOrCreateTransactionID(ContextStack context)
         {
             var preExistingTransaction = context.Transaction;
-            if (preExistingTransaction == null)
+            if (preExistingTransaction is null)
             {
-                var transactionId = CreateNewTransactionID(context.Payer, DateTime.UtcNow);
+                var transactionId = CreateNewTransactionID(Require.PayerInContext(context), DateTime.UtcNow);
                 var transaction = Protobuf.FromTransactionId(transactionId);
-                foreach (var handler in context.GetAll<Action<Transaction>>(nameof(context.OnTransactionCreated)))
+                foreach (var handler in context.GetAll<Action<TxId>>(nameof(context.OnTransactionCreated)))
                 {
                     handler(transaction);
                 }
@@ -33,7 +33,7 @@ namespace Hashgraph
         {
             return new TransactionID
             {
-                TransactionValidStart = Protobuf.toProtoTimestamp(dateTime),
+                TransactionValidStart = Protobuf.ToTimestamp(dateTime),
                 AccountID = Protobuf.ToAccountID(payer)
             };
         }
@@ -51,12 +51,12 @@ namespace Hashgraph
             return transfers;
         }
         internal static TransactionBody CreateEmptyTransactionBody(ContextStack context, TransactionID transactionId, string defaultMemo)
-        {
+        {            
             return new TransactionBody
             {
                 TransactionID = transactionId,
-                NodeAccountID = Protobuf.ToAccountID(context.Gateway),
-                TransactionFee = (ulong)context.Fee,
+                NodeAccountID = Protobuf.ToAccountID(Require.GatewayInContext(context)),
+                TransactionFee = (ulong)context.FeeLimit,
                 TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
                 GenerateRecord = context.GenerateRecord,
                 Memo = context.Memo ?? defaultMemo ?? "",
@@ -72,7 +72,7 @@ namespace Hashgraph
         internal static SignatureList SignProtoTransactionBody(TransactionBody transactionBody, params ISigner[] signers)
         {
             var signatures = new SignatureList();
-            var bytes = Protobuf.toProtoBytes(transactionBody);
+            var bytes = transactionBody.ToByteArray();
             foreach (var signer in signers)
             {
                 signatures.Sigs.Add(new Signature { Ed25519 = ByteString.CopyFrom(signer.Sign(bytes)) });
@@ -91,15 +91,14 @@ namespace Hashgraph
             };
         }
 
-        internal static async Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> checkForRetry)
+        internal static async Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> checkForRetry) where TRequest : IMessage where TResponse : IMessage
         {
-            // Temporary: we're echoing messages
-            // to the debug stream until we 
-            // design more thoughtful diagnostic hooks.
-            Debug.WriteLine($"Sending: {request}");
+            var callOnSendingHandlers = InstantiateOnSendingRequestHandler(context);
+            var callOnResponseReceivedHandlers = InstantiateOnResponseReceivedHandler(context);
             var sendRequest = instantiateRequestMethod(context.GetChannel());
+            callOnSendingHandlers(request);
             var response = await sendRequest(request);
-            Debug.WriteLine($"Received: {response}");
+            callOnResponseReceivedHandlers(0, response);
             var retryable = checkForRetry(response);
             if (retryable)
             {
@@ -107,13 +106,58 @@ namespace Hashgraph
                 var retryDelay = context.RetryDelay;
                 for (var retryCount = 0; retryCount < maxRetries && retryable; retryCount++)
                 {
-                    await Task.Delay(retryDelay*(retryCount+1));
+                    await Task.Delay(retryDelay * (retryCount + 1));
                     response = await sendRequest(request);
-                    Debug.WriteLine($"Received (try {retryCount+1}): {response}");
+                    callOnResponseReceivedHandlers(retryCount + 1, response);
                     retryable = checkForRetry(response);
                 }
             }
             return response;
+        }
+        private static Action<IMessage> InstantiateOnSendingRequestHandler(ContextStack context)
+        {
+            var handlers = context.GetAll<Action<IMessage>>(nameof(context.OnSendingRequest)).Where(h => h != null).ToArray();
+            if (handlers.Length > 0)
+            {
+                return (IMessage request) => ExecuteHandlers(handlers, request);
+            }
+            else
+            {
+                return NoOp;
+            }
+            static void ExecuteHandlers(Action<IMessage>[] handlers, IMessage request)
+            {
+                var data = new ReadOnlyMemory<byte>(request.ToByteArray());
+                foreach (var handler in handlers)
+                {
+                    handler(request);
+                }
+            }
+            static void NoOp(IMessage request)
+            {
+            }
+        }
+        private static Action<int, IMessage> InstantiateOnResponseReceivedHandler(ContextStack context)
+        {
+            var handlers = context.GetAll<Action<int, IMessage>>(nameof(context.OnResponseReceived)).Where(h => h != null).ToArray();
+            if (handlers.Length > 0)
+            {
+                return (int tryNumber, IMessage response) => ExecuteHandlers(handlers, tryNumber, response);
+            }
+            else
+            {
+                return NoOp;
+            }
+            static void ExecuteHandlers(Action<int, IMessage>[] handlers, int tryNumber, IMessage response)
+            {
+                foreach (var handler in handlers)
+                {
+                    handler(tryNumber, response);
+                }
+            }
+            static void NoOp(int tryNumber, IMessage response)
+            {
+            }
         }
     }
 }

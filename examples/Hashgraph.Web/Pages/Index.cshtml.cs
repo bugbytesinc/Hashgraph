@@ -49,7 +49,7 @@ namespace Hashgraph.Web.Pages
                          GetBalanceRequest.PayerRealmNum,
                          GetBalanceRequest.PayerShardNum,
                          GetBalanceRequest.PayerAccountNum,
-                         GetBalanceRequest.PayerPrivateKey);
+                         Hex.ToBytes(GetBalanceRequest.PayerPrivateKey));
                  }))
                 {
                     Balance = await client.GetAccountBalanceAsync(

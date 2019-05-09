@@ -4,6 +4,6 @@ namespace Hashgraph.Implementation
 {
     internal interface ISigner
     {
-        byte[] Sign(ReadOnlySpan<byte> data);
+        byte[] Sign(ReadOnlyMemory<byte> data);
     }
 }

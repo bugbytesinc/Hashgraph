@@ -12,12 +12,12 @@ namespace Hashgraph
         {
             Require.AddressArgument(address);
             var context = CreateChildContext(configure);
-            Require.GatewayInContext(context);
-            Require.PayerInContext(context);
-            var transfers = Transactions.CreateCryptoTransferList((context.Payer, -context.Fee), (context.Gateway, context.Fee));
+            var gateway = Require.GatewayInContext(context);
+            var payer = Require.PayerInContext(context);
+            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Info");
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer);
+            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
             var query = new Query
             {
                 CryptoGetInfo = new CryptoGetInfoQuery
@@ -27,7 +27,7 @@ namespace Hashgraph
                 }
             };
             var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateExecuteCryptoGetInfoAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(data.Header.NodeTransactionPrecheckCode);
+            Validate.ValidatePreCheckResult(transactionId, data.Header.NodeTransactionPrecheckCode);
             return Protobuf.FromAccountInfo(data.AccountInfo);
 
             static Func<Query, Task<CryptoGetInfoResponse>> instantiateExecuteCryptoGetInfoAsyncMethod(Channel channel)

@@ -8,18 +8,21 @@ namespace Hashgraph
     {
         private Key _key;
 
-        public Account(long realmNum, long shardNum, long accountNum, string privateKeyInHex) :
-            this(realmNum, shardNum, accountNum, Signatures.DecodeByteArrayFromHexString(privateKeyInHex))
-        {
-        }
-        public Account(long realmNum, long shardNum, long accountNum, ReadOnlySpan<byte> privateKey) :
+        public Account(long realmNum, long shardNum, long accountNum, ReadOnlyMemory<byte> privateKey) :
             base(realmNum, shardNum, accountNum)
         {
-            _key = Signatures.ImportPrivateEd25519KeyFromBytes(privateKey);
+            try
+            {
+                _key = Keys.ImportPrivateEd25519KeyFromBytes(privateKey);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentOutOfRangeException(nameof(privateKey), ex.Message);
+            }
         }
-        byte[] ISigner.Sign(ReadOnlySpan<byte> data)
+        byte[] ISigner.Sign(ReadOnlyMemory<byte> data)
         {
-            return SignatureAlgorithm.Ed25519.Sign(_key, data);
+            return SignatureAlgorithm.Ed25519.Sign(_key, data.Span);
         }
         public void Dispose()
         {

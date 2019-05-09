@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf;
+using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace Hashgraph.Implementation
         private readonly Dictionary<string, object?> _map;
         private readonly ConcurrentDictionary<string, Channel> _channels;
 
-        public Gateway Gateway { get => get<Gateway>(nameof(Gateway)); set => set(nameof(Gateway), value); }
-        public Account Payer { get => get<Account>(nameof(Payer)); set => set(nameof(Payer), value); }
-        public long Fee { get => get<long>(nameof(Fee)); set => set(nameof(Fee), value); }
+        public Gateway? Gateway { get => get<Gateway>(nameof(Gateway)); set => set(nameof(Gateway), value); }
+        public Account? Payer { get => get<Account>(nameof(Payer)); set => set(nameof(Payer), value); }
+        public long FeeLimit { get => get<long>(nameof(FeeLimit)); set => set(nameof(FeeLimit), value); }
         public TimeSpan TransactionDuration { get => get<TimeSpan>(nameof(TransactionDuration)); set => set(nameof(TransactionDuration), value); }
         public ulong CreateAccountCreateRecordSendThreshold { get => get<ulong>(nameof(CreateAccountCreateRecordSendThreshold)); set => set(nameof(CreateAccountCreateRecordSendThreshold), value); }
         public ulong CreateAcountRequireSignatureReceiveThreshold { get => get<ulong>(nameof(CreateAcountRequireSignatureReceiveThreshold)); set => set(nameof(CreateAcountRequireSignatureReceiveThreshold), value); }
@@ -21,10 +22,12 @@ namespace Hashgraph.Implementation
         public TimeSpan CreateAccountAutoRenewPeriod { get => get<TimeSpan>(nameof(CreateAccountAutoRenewPeriod)); set => set(nameof(CreateAccountAutoRenewPeriod), value); }
         public int RetryCount { get => get<int>(nameof(RetryCount)); set => set(nameof(RetryCount), value); }
         public TimeSpan RetryDelay { get => get<TimeSpan>(nameof(RetryDelay)); set => set(nameof(RetryDelay), value); }
-        public string Memo { get => get<string>(nameof(Memo)); set => set(nameof(Memo), value); }
+        public string? Memo { get => get<string>(nameof(Memo)); set => set(nameof(Memo), value); }
         public bool GenerateRecord { get => get<bool>(nameof(GenerateRecord)); set => set(nameof(GenerateRecord), value); }
-        public Transaction Transaction { get => get<Transaction>(nameof(Transaction)); set => set(nameof(Transaction), value); }
-        public Action<Transaction> OnTransactionCreated { get => get<Action<Transaction>>(nameof(OnTransactionCreated)); set => set(nameof(OnTransactionCreated), value); }
+        public TxId? Transaction { get => get<TxId>(nameof(Transaction)); set => set(nameof(Transaction), value); }
+        public Action<TxId>? OnTransactionCreated { get => get<Action<TxId>>(nameof(OnTransactionCreated)); set => set(nameof(OnTransactionCreated), value); }
+        public Action<IMessage>? OnSendingRequest { get => get<Action<IMessage>>(nameof(OnSendingRequest)); set => set(nameof(OnSendingRequest), value); }
+        public Action<int, IMessage>? OnResponseReceived { get => get<Action<int, IMessage>>(nameof(OnResponseReceived)); set => set(nameof(OnResponseReceived), value); }
 
         public ContextStack(ContextStack? parent)
         {
@@ -38,7 +41,7 @@ namespace Hashgraph.Implementation
             {
                 case nameof(Gateway):
                 case nameof(Payer):
-                case nameof(Fee):
+                case nameof(FeeLimit):
                 case nameof(RetryCount):
                 case nameof(RetryDelay):
                 case nameof(TransactionDuration):
@@ -50,6 +53,8 @@ namespace Hashgraph.Implementation
                 case nameof(GenerateRecord):
                 case nameof(Transaction):
                 case nameof(OnTransactionCreated):
+                case nameof(OnSendingRequest):
+                case nameof(OnResponseReceived):
                     _map.Remove(name);
                     break;
                 default:
@@ -58,7 +63,12 @@ namespace Hashgraph.Implementation
         }
         public Channel GetChannel()
         {
-            return _channels.GetOrAdd(Gateway.Url, url => new Channel(Gateway.Url, ChannelCredentials.Insecure));
+            var url = Gateway?.Url;
+            if(string.IsNullOrWhiteSpace(url))
+            {
+                throw new InvalidOperationException("A proper Gateway has not been configured.");
+            }
+            return _channels.GetOrAdd(url, url => new Channel(url, ChannelCredentials.Insecure));
         }
 
 

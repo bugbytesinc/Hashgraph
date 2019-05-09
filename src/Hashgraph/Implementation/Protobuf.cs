@@ -1,6 +1,8 @@
 ﻿using Google.Protobuf;
 using Proto;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Hashgraph.Implementation
 {
@@ -9,12 +11,12 @@ namespace Hashgraph.Implementation
         private static readonly DateTime EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private static readonly long NanosPerTick = 1_000_000_000L / TimeSpan.TicksPerSecond;
 
-        internal static Transaction FromTransactionId(TransactionID transactionId)
+        internal static TxId FromTransactionId(TransactionID transactionId)
         {
-            return new Transaction(toProtoBytes(transactionId));
+            return new TxId(transactionId.ToByteArray());
         }
 
-        internal static TransactionID ToTransactionID(Transaction transaction)
+        internal static TransactionID ToTransactionID(TxId transaction)
         {
             return TransactionID.Parser.ParseFrom((transaction as IData).Data.ToArray());
         }
@@ -59,7 +61,8 @@ namespace Hashgraph.Implementation
         {
             return TimeSpan.FromTicks(duration.Seconds * TimeSpan.TicksPerSecond + duration.Nanos / NanosPerTick);
         }
-        internal static Timestamp toProtoTimestamp(DateTime dateTime)
+
+        internal static Timestamp ToTimestamp(DateTime dateTime)
         {
             TimeSpan timespan = dateTime - EPOCH;
             long seconds = (long)timespan.TotalSeconds;
@@ -74,16 +77,6 @@ namespace Hashgraph.Implementation
         {
             return EPOCH.AddTicks(timestamp.Seconds * TimeSpan.TicksPerSecond + timestamp.Nanos / NanosPerTick);
         }
-        internal static ReadOnlySpan<byte> toProtoBytes(IMessage message)
-        {
-            var size = message.CalculateSize();
-            var buffer = new byte[size];
-            using (var stream = new CodedOutputStream(buffer))
-            {
-                message.WriteTo(stream);
-            }
-            return buffer;
-        }
         internal static AccountInfo FromAccountInfo(CryptoGetInfoResponse.Types.AccountInfo accountInfo)
         {
             var accountId = accountInfo.AccountID;
@@ -95,13 +88,44 @@ namespace Hashgraph.Implementation
                 new Address(proxyId.RealmNum, proxyId.ShardNum, proxyId.AccountNum),
                 accountInfo.ProxyFraction,
                 accountInfo.ProxyReceived,
-                Signatures.EncodeByteArrayToHexString(accountInfo.Key.Ed25519.ToByteArray()),
+                accountInfo.Key.Ed25519.ToByteArray(),
                 accountInfo.Balance,
                 accountInfo.GenerateSendRecordThreshold,
                 accountInfo.GenerateReceiveRecordThreshold,
                 accountInfo.ReceiverSigRequired,
                 FromTimestamp(accountInfo.ExpirationTime),
                 FromDuration(accountInfo.AutoRenewPeriod));
+        }
+
+        // Note: sometimes when this is being used to create
+        // a context for throwing an exception (because
+        // the transaction failed, or the server is too busy
+        // for the given retry settings) the transaction ID
+        // is not returned in the <code>TransactionRecord</code>.
+        // However, the calling context should allways know the
+        // transaction so it is passed in as a backup.
+        internal static TRecord FromTransactionRecord<TRecord>(Proto.TransactionRecord record, TransactionID originatingID) where TRecord : TransactionRecord, new()
+        {
+            return new TRecord
+            {
+                Id = FromTransactionId(record.TransactionID ?? originatingID),
+                Status = (ResponseCode)record.Receipt.Status,
+                Hash = record.TransactionHash.ToByteArray(),
+                Concensus = FromTimestamp(record.ConsensusTimestamp),
+                Memo = record.Memo,
+                Fee = record.TransactionFee
+            };
+        }
+        internal static ReadOnlyDictionary<Address, long> FromTransferList(TransferList transferList)
+        {
+            var results = new Dictionary<Address, long>();
+            foreach (var xfer in transferList.AccountAmounts)
+            {
+                var account = FromAccountID(xfer.AccountID);
+                results.TryGetValue(account, out long amount);
+                results[account] = amount + xfer.Amount;
+            }
+            return new ReadOnlyDictionary<Address, long>(results);
         }
     }
 }

@@ -3,6 +3,7 @@ using Hashgraph;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
@@ -10,9 +11,10 @@ namespace Hashgraph.Test.Crypto
     public class GetAccountBalanceTests
     {
         private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetAccountBalanceTests(NetworkCredentialsFixture networkCredentials)
+        public GetAccountBalanceTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
         {
             _networkCredentials = networkCredentials;
+            _networkCredentials.TestOutput = output;
         }
         [Fact(DisplayName = "Get Account Balance: Can Get Balance for Account")]
         public async Task CanGetTinybarBalanceForAccountAsync()
@@ -78,12 +80,12 @@ namespace Hashgraph.Test.Crypto
             await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
             {
                 var account = new Address(0, 0, 0);
-                var ex = await Assert.ThrowsAsync<GatewayException>(async () =>
+                var ex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });
-                Assert.Equal(PrecheckResponse.InvalidAccountId, ex.PrecheckResponseCode);
-                Assert.StartsWith("Failed Pre-Check: InvalidAccount", ex.Message);
+                Assert.Equal(ResponseCode.InvalidAccountId, ex.Status);
+                Assert.StartsWith("Transaction Failed Pre-Check: InvalidAccount", ex.Message);
             }
         }
         [Fact(DisplayName = "Get Account Balance: Invalid Node Account Throws Exception")]
@@ -96,12 +98,12 @@ namespace Hashgraph.Test.Crypto
                     cfg.Gateway = new Gateway($"{_networkCredentials.NetworkAddress}:{_networkCredentials.NetworkPort}", 0, 0, 0);
                 });
                 var account = _networkCredentials.CreateDefaultAccount();
-                var ex = await Assert.ThrowsAsync<GatewayException>(async () =>
+                var ex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });
-                Assert.Equal(PrecheckResponse.InvalidNodeAccount, ex.PrecheckResponseCode);
-                Assert.StartsWith("Failed Pre-Check: InvalidNodeAccount", ex.Message);
+                Assert.Equal(ResponseCode.InvalidNodeAccount, ex.Status);
+                Assert.StartsWith("Transaction Failed Pre-Check: InvalidNodeAccount", ex.Message);
             }
         }
         [Fact(DisplayName = "Get Account Balance: Insufficient Fees Throw Exception")]
@@ -111,15 +113,15 @@ namespace Hashgraph.Test.Crypto
             {
                 client.Configure(cfg =>
                 {
-                    cfg.Fee = 0;
+                    cfg.FeeLimit = 0;
                 });
                 var account = _networkCredentials.CreateDefaultAccount();
-                var ex = await Assert.ThrowsAsync<GatewayException>(async () =>
+                var ex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });
-                Assert.Equal(PrecheckResponse.InsufficientTxFee, ex.PrecheckResponseCode);
-                Assert.StartsWith("Failed Pre-Check: InsufficientTxFee", ex.Message);
+                Assert.Equal(ResponseCode.InsufficientTxFee, ex.Status);
+                Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", ex.Message);
             }
         }
     }

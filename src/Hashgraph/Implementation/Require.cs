@@ -1,27 +1,31 @@
 ﻿using System;
-using System.Linq;
 
 namespace Hashgraph.Implementation
 {
     internal static class Require
     {
-        internal static void PayerInContext(ContextStack context)
+        internal static Account PayerInContext(ContextStack context)
         {
-            if (context.Payer == null)
+            var payer = context.Payer;
+            if (payer is null)
             {
                 throw new InvalidOperationException("The Payer account has not been configured. Please check that 'Payer' is set in the Client context.");
             }
+            return payer;
         }
-        internal static void GatewayInContext(ContextStack context)
+
+        internal static Gateway GatewayInContext(ContextStack context)
         {
-            if (context.Gateway == null)
+            var gateway = context.Gateway;
+            if (gateway is null)
             {
                 throw new InvalidOperationException("Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
             }
+            return gateway;
         }
         internal static void AddressArgument(Address address)
         {
-            if (address == null)
+            if (address is null)
             {
                 throw new ArgumentNullException(nameof(address), "Account Address is is missing. Please check that it is not null.");
             }
@@ -36,7 +40,7 @@ namespace Hashgraph.Implementation
 
         internal static void AccountToDeleteArgument(Address accountToDelete)
         {
-            if (accountToDelete == null)
+            if (accountToDelete is null)
             {
                 throw new ArgumentNullException(nameof(accountToDelete), "Account to Delete is missing. Please check that it is not null.");
             }
@@ -44,14 +48,14 @@ namespace Hashgraph.Implementation
 
         internal static void TransferAccountArgument(Address transferAccount)
         {
-            if (transferAccount == null)
+            if (transferAccount is null)
             {
                 throw new ArgumentNullException(nameof(transferAccount), "Transfer account is is missing. Please check that it is not null.");
             }
         }
         internal static void FromAccountArgument(Account fromAccount)
         {
-            if (fromAccount == null)
+            if (fromAccount is null)
             {
                 throw new ArgumentNullException(nameof(fromAccount), "Account to transfer from is is missing. Please check that it is not null.");
             }
@@ -59,7 +63,7 @@ namespace Hashgraph.Implementation
 
         internal static void ToAddressArgument(Address toAddress)
         {
-            if (toAddress == null)
+            if (toAddress is null)
             {
                 throw new ArgumentNullException(nameof(toAddress), "Account to transfer to is is missing. Please check that it is not null.");
             }
@@ -67,16 +71,25 @@ namespace Hashgraph.Implementation
 
         internal static void AmountArgument(long amount)
         {
-            if(amount < 1)
+            if (amount < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(amount), "The amount to transfer must be non-negative.");
             }
         }
-
-        internal static void PublicKeyInHexArgument(string publicKeyInHex)
+        internal static void PublicKeyArgument(ReadOnlyMemory<byte> publicKey)
         {
-            // Throws argument exceptions if invalid.
-            Signatures.ImportPublicEd25519KeyFromBytes(Signatures.DecodeByteArrayFromHexString(publicKeyInHex));
+            if (publicKey.IsEmpty)
+            {
+                throw new ArgumentOutOfRangeException(nameof(publicKey), "The public key is required.");
+            }
+            try
+            {
+                Keys.ImportPublicEd25519KeyFromBytes(publicKey);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentOutOfRangeException(nameof(publicKey), ex.Message);
+            }
         }
     }
 }

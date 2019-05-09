@@ -5,7 +5,7 @@ namespace Hashgraph
     /// <summary>
     /// Pre-Check Response Codes - 1to1 mapping with protobuf ResponseCodeEnum
     /// </summary>
-    public enum PrecheckResponse
+    public enum ResponseCode
     {
         /// <summary>
         /// response codes for pre check validation

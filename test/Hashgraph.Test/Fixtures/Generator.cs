@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NSec.Cryptography;
+using System;
+using System.Linq;
 using System.Text;
 
 namespace Hashgraph.Test.Fixtures
@@ -41,6 +43,28 @@ namespace Hashgraph.Test.Fixtures
                 result[index] = String(minLength, maxLength);
             }
             return result;
+        }
+
+        public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) KeyPair()
+        {
+            // public prefix:  302a300506032b6570032100 
+            // private prefix: 302e020100300506032b6570
+
+            /*
+             * From Discord: Greg Scullard (Hedera Hashgraph)05/01/2019
+             * 
+             Check the public key and private key are the right way round (I've done it wrong myself a few times). The private key is the longest of the two.
+             If that isn't the issue, try with the encoded keys (they start with 302), there may be a bug with non encoded keys
+             If you don't have them to hand, you can prefix the public key with 302a300506032b6570032100 and the private key with 302e020100300506032b6570
+             this is common to all keys, it's ASN.1 Encoding that specifies the format of the data in the string.
+             so 20aa4780f.... becomes 302a300506032b657003210020aa4780f... for a public key
+             * */
+            using (var key = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport }))
+            {
+                var publicKey = key.Export(KeyBlobFormat.PkixPublicKey);
+                var privateKey = key.Export(KeyBlobFormat.PkixPrivateKey);
+                return (publicKey, privateKey);
+            }
         }
     }
 }

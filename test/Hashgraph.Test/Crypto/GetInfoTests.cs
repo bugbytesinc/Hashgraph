@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
@@ -9,9 +10,10 @@ namespace Hashgraph.Test.Crypto
     public class GetInfoTests
     {
         private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetInfoTests(NetworkCredentialsFixture networkCredentials)
+        public GetInfoTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
         {
             _networkCredentials = networkCredentials;
+            _networkCredentials.TestOutput = output;
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Account")]
         public async Task CanGetInfoForAccountAsync()
@@ -32,7 +34,7 @@ namespace Hashgraph.Test.Crypto
                 Assert.True(info.Proxy.AccountNum > -1);
                 Assert.Equal(0, info.ProxyShareFraction);
                 Assert.Equal(0, info.ProxiedToAccount);
-                Assert.Equal(_networkCredentials.AccountPublicKey, info.PublicKeyInHex);
+                Assert.Equal(_networkCredentials.AccountPublicKey.ToArray(), info.PublicKey.ToArray());
                 Assert.True(info.Balance > 0);
                 Assert.True(info.SendThresholdCreateRecord > 0);
                 Assert.True(info.ReceiveThresholdCreateRecord > 0);

@@ -20,7 +20,7 @@ namespace Hashgraph
             if (parent == null)
             {
                 // Hard Code Defaults for Now.
-                _context.Fee = 100000;
+                _context.FeeLimit = 100000;
                 _context.TransactionDuration = TimeSpan.FromSeconds(120);
                 _context.RetryCount = 5;
                 _context.RetryDelay = TimeSpan.FromMilliseconds(200);

@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -13,13 +12,13 @@ namespace Hashgraph
         // seem to be implemented on testnet at this moment.
         // Marked as private for now until we can confirm
         // it works and incorporate into automated test.
-        private async Task<Address> DeleteAccountAsync(Address accountToDelete, Address transferAccount, Action<IContext>? configure = null)
+        private async Task<DeleteAccountRecord> DeleteAccountAsync(Address accountToDelete, Address transferAccount, Action<IContext>? configure = null)
         {
             Require.AccountToDeleteArgument(accountToDelete);
             Require.TransferAccountArgument(transferAccount);
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
-            Require.PayerInContext(context);
+            var payer = Require.PayerInContext(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Delete Account");
             transactionBody.CryptoDelete = new CryptoDeleteTransactionBody
@@ -27,20 +26,22 @@ namespace Hashgraph
                 DeleteAccountID = Protobuf.ToAccountID(accountToDelete),
                 TransferAccountID = Protobuf.ToAccountID(transferAccount)
             };
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer);
+            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
             var request = new Proto.Transaction
             {
                 Body = transactionBody,
                 Sigs = signatures
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateCryptoDeleteAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(response.NodeTransactionPrecheckCode);
-            var receipt = await GetReceiptAsync(transactionId, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
+            Validate.ValidatePreCheckResult(transactionId, response.NodeTransactionPrecheckCode);
+            var record = await GetFastRecordAsync(transactionId, context);
+            if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new GatewayException($"Account was deleted, but unable to get receipt to confirm.  Code {receipt.Status}", PrecheckResponse.Ok);
+                throw new TransactionException($"Unable to delete account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
             }
-            return Protobuf.FromAccountID(receipt.AccountID);
+            var result = Protobuf.FromTransactionRecord<DeleteAccountRecord>(record, transactionId);
+            result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
+            return result;
 
             static Func<Proto.Transaction, Task<TransactionResponse>> instantiateCryptoDeleteAsyncMethod(Channel channel)
             {
@@ -56,5 +57,11 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
+#pragma warning disable CS8618 // Non-nullable field is uninitialized.
+        public class DeleteAccountRecord : TransactionRecord
+        {
+            public Address Address { get; internal set; }
+        }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized.
     }
 }
