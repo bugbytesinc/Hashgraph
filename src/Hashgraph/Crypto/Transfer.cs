@@ -2,24 +2,25 @@
 using Hashgraph.Implementation;
 using Proto;
 using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 namespace Hashgraph
 {
     public partial class Client
     {
-        public async Task<string> TransferAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
+        public async Task<TransferRecord> TransferAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
         {
             Require.FromAccountArgument(fromAccount);
             Require.ToAddressArgument(toAddress);
             Require.AmountArgument(amount);
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
-            Require.PayerInContext(context);
+            var payer = Require.PayerInContext(context);
             var transfers = Transactions.CreateCryptoTransferList((fromAccount, -amount), (toAddress, amount));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Transfer Crypto");
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer, fromAccount);
+            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer, fromAccount);
             var request = new Proto.Transaction
             {
                 Body = transactionBody,
@@ -30,9 +31,11 @@ namespace Hashgraph
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Transfer failed. Status: {record.Receipt.Status}");
-            }
-            return record.ToString();
+                throw new TransactionException($"Unable to execute crypto transfer, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record));
+            }            
+            var result = Protobuf.FromTransactionRecord<TransferRecord>(record);
+            result.Transfers = Protobuf.FromTransferList(record.TransferList);
+            return result;
 
             static Func<Proto.Transaction, Task<TransactionResponse>> instantiateExecuteCryptoGetBalanceAsyncMethod(Channel channel)
             {
@@ -48,5 +51,11 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
+#pragma warning disable CS8618 // Non-nullable field is uninitialized.
+        public class TransferRecord : TransactionRecord
+        {
+            public ReadOnlyDictionary<Address, long> Transfers { get; internal set; }
+        }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized.
     }
 }

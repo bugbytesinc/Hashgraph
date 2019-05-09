@@ -10,13 +10,13 @@ namespace Hashgraph
 {
     public partial class Client
     {
-        public async Task<Address> CreateAccountAsync(ReadOnlyMemory<byte> publicKey, ulong initialBalance, Action<IContext>? configure = null)
+        public async Task<CreateAccountRecord> CreateAccountAsync(ReadOnlyMemory<byte> publicKey, ulong initialBalance, Action<IContext>? configure = null)
         {
             Require.PublicKeyArgument(publicKey);
             Require.InitialBalanceArgument(initialBalance);
             var context = CreateChildContext(configure);
             Require.GatewayInContext(context);
-            Require.PayerInContext(context);
+            var payer = Require.PayerInContext(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create Account");
             // Create Account requires just the 32 bits of the public key, without the prefix.
@@ -30,27 +30,24 @@ namespace Hashgraph
                 ReceiverSigRequired = context.CreateAccountAlwaysRequireReceiveSignature,
                 AutoRenewPeriod = Protobuf.ToDuration(context.CreateAccountAutoRenewPeriod)
             };
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer);
-            var request = new Proto.Transaction
+            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
+            var request = new Transaction
             {
                 Body = transactionBody,
                 Sigs = signatures
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateExecuteCreateAccountAsyncMethod, checkForRetry);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateCreateAccountAsyncMethod, checkForRetry);
             Validate.ValidatePreCheckResult(transactionId, response.NodeTransactionPrecheckCode);
-
-            // todo: flesh out details of the transaction record to return.
-
-
-
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Account create request was accepted, but unable to get receipt with new Account Address.  Code {record.Receipt.Status}");
+                throw new TransactionException($"Unable to create account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record));
             }
-            return Protobuf.FromAccountID(record.Receipt.AccountID);
+            var result = Protobuf.FromTransactionRecord<CreateAccountRecord>(record);
+            result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
+            return result;
 
-            static Func<Proto.Transaction, Task<TransactionResponse>> instantiateExecuteCreateAccountAsyncMethod(Channel channel)
+            static Func<Proto.Transaction, Task<TransactionResponse>> instantiateCreateAccountAsyncMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Proto.Transaction transaction) => await client.createAccountAsync(transaction);
@@ -65,9 +62,11 @@ namespace Hashgraph
             }
         }
 
-        public static class CreateAccountResult
+#pragma warning disable CS8618 // Non-nullable field is uninitialized.
+        public class CreateAccountRecord : TransactionRecord
         {
-
+            public Address Address { get; internal set; }
         }
+#pragma warning restore CS8618 // Non-nullable field is uninitialized.
     }
 }

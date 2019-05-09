@@ -37,12 +37,12 @@ namespace Hashgraph.Test.Crypto
             var (publicKey, privateKey) = Generator.KeyPair();
             await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
             {
-                var newAddress = await client.CreateAccountAsync(publicKey, initialBalance);
-                var newBalance = await client.GetAccountBalanceAsync(newAddress);
+                var createResult = await client.CreateAccountAsync(publicKey, initialBalance);
+                var newBalance = await client.GetAccountBalanceAsync(createResult.Address);
                 Assert.Equal(initialBalance, newBalance);
 
-                var receipt = await client.TransferAsync(_networkCredentials.CreateDefaultAccount(), newAddress, transferAmount);
-                var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(newAddress);
+                var receipt = await client.TransferAsync(_networkCredentials.CreateDefaultAccount(), createResult.Address, transferAmount);
+                var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
                 Assert.Equal(initialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
             }
         }
@@ -54,14 +54,14 @@ namespace Hashgraph.Test.Crypto
             var (publicKey, privateKey) = Generator.KeyPair();
             await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
             {
-                var newAddress = await client.CreateAccountAsync(publicKey, initialBalance);
-                var newAccount = new Account(newAddress.RealmNum, newAddress.ShardNum, newAddress.AccountNum, privateKey);
-                var info = await client.GetAccountInfoAsync(newAddress);
+                var createResult = await client.CreateAccountAsync(publicKey, initialBalance);
+                var newAccount = new Account(createResult.Address.RealmNum, createResult.Address.ShardNum, createResult.Address.AccountNum, privateKey);
+                var info = await client.GetAccountInfoAsync(createResult.Address);
                 Assert.Equal(initialBalance, info.Balance);
                 Assert.Equal(publicKey.ToArray().TakeLast(32).ToArray(), info.PublicKey.ToArray());
 
                 var receipt = await client.TransferAsync(newAccount, _networkCredentials.CreateDefaultAccount(), (long)transferAmount);
-                var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(newAddress);
+                var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
                 Assert.Equal(initialBalance - (ulong)transferAmount, newBalanceAfterTransfer);
             }
         }
@@ -72,14 +72,14 @@ namespace Hashgraph.Test.Crypto
             var (publicKey, privateKey) = Generator.KeyPair();
             await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
             {
-                var newAddress = await client.CreateAccountAsync(publicKey, initialBalance);
-                var newAccount = new Account(newAddress.RealmNum, newAddress.ShardNum, newAddress.AccountNum, privateKey);
-                var info = await client.GetAccountInfoAsync(newAddress);
+                var createResult = await client.CreateAccountAsync(publicKey, initialBalance);
+                var newAccount = new Account(createResult.Address.RealmNum, createResult.Address.ShardNum, createResult.Address.AccountNum, privateKey);
+                var info = await client.GetAccountInfoAsync(createResult.Address);
                 Assert.Equal(initialBalance, info.Balance);
                 Assert.Equal(publicKey.ToArray().TakeLast(32).ToArray(), info.PublicKey.ToArray());
 
                 var receipt = await client.TransferAsync(newAccount, _networkCredentials.CreateDefaultAccount(), (long)initialBalance);
-                var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(newAddress);
+                var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
                 Assert.Equal(0UL, newBalanceAfterTransfer);
             }
         }

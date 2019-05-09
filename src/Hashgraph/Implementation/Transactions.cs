@@ -13,11 +13,11 @@ namespace Hashgraph
         internal static TransactionID GetOrCreateTransactionID(ContextStack context)
         {
             var preExistingTransaction = context.Transaction;
-            if (preExistingTransaction == null)
+            if (preExistingTransaction is null)
             {
-                var transactionId = CreateNewTransactionID(context.Payer, DateTime.UtcNow);
+                var transactionId = CreateNewTransactionID(Require.PayerInContext(context), DateTime.UtcNow);
                 var transaction = Protobuf.FromTransactionId(transactionId);
-                foreach (var handler in context.GetAll<Action<Transaction>>(nameof(context.OnTransactionCreated)))
+                foreach (var handler in context.GetAll<Action<TxId>>(nameof(context.OnTransactionCreated)))
                 {
                     handler(transaction);
                 }
@@ -33,7 +33,7 @@ namespace Hashgraph
         {
             return new TransactionID
             {
-                TransactionValidStart = Protobuf.toProtoTimestamp(dateTime),
+                TransactionValidStart = Protobuf.ToTimestamp(dateTime),
                 AccountID = Protobuf.ToAccountID(payer)
             };
         }
@@ -51,11 +51,11 @@ namespace Hashgraph
             return transfers;
         }
         internal static TransactionBody CreateEmptyTransactionBody(ContextStack context, TransactionID transactionId, string defaultMemo)
-        {
+        {            
             return new TransactionBody
             {
                 TransactionID = transactionId,
-                NodeAccountID = Protobuf.ToAccountID(context.Gateway),
+                NodeAccountID = Protobuf.ToAccountID(Require.GatewayInContext(context)),
                 TransactionFee = (ulong)context.FeeLimit,
                 TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
                 GenerateRecord = context.GenerateRecord,
@@ -72,7 +72,7 @@ namespace Hashgraph
         internal static SignatureList SignProtoTransactionBody(TransactionBody transactionBody, params ISigner[] signers)
         {
             var signatures = new SignatureList();
-            var bytes = Protobuf.toProtoBytes(transactionBody);
+            var bytes = transactionBody.ToByteArray();
             foreach (var signer in signers)
             {
                 signatures.Sigs.Add(new Signature { Ed25519 = ByteString.CopyFrom(signer.Sign(bytes)) });

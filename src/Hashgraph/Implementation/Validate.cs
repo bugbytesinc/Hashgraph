@@ -10,7 +10,7 @@ namespace Hashgraph.Implementation
             {
                 return;
             }
-            throw new PrecheckException($"Transaction Failed Pre-Check: {code}", Protobuf.FromTransactionId(transactionId), (PrecheckResponse)code);
+            throw new PrecheckException($"Transaction Failed Pre-Check: {code}", Protobuf.FromTransactionId(transactionId), (ResponseCode)code);
         }
     }
 }

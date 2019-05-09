@@ -9,7 +9,7 @@ namespace Hashgraph
     public partial class Client
     {
         // Preliminary Implementation not to rely upon yet
-        private async Task<TransactionRecord> GetFastRecordAsync(TransactionID transactionId, ContextStack context)
+        private async Task<Proto.TransactionRecord> GetFastRecordAsync(TransactionID transactionId, ContextStack context)
         {
             var query = new Query
             {

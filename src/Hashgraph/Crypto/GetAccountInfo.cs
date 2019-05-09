@@ -12,12 +12,12 @@ namespace Hashgraph
         {
             Require.AddressArgument(address);
             var context = CreateChildContext(configure);
-            Require.GatewayInContext(context);
-            Require.PayerInContext(context);
-            var transfers = Transactions.CreateCryptoTransferList((context.Payer, -context.FeeLimit), (context.Gateway, context.FeeLimit));
+            var gateway = Require.GatewayInContext(context);
+            var payer = Require.PayerInContext(context);
+            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Info");
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, context.Payer);
+            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
             var query = new Query
             {
                 CryptoGetInfo = new CryptoGetInfoQuery

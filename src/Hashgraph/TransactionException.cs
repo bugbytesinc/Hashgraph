@@ -4,11 +4,14 @@ namespace Hashgraph
 {
     public sealed class TransactionException : Exception
     {
-        public TransactionException(string message) : base(message)
+        public TransactionRecord TransactionRecord { get; private set; }
+        public TransactionException(string message, TransactionRecord transactionRecord) : base(message)
         {
+            TransactionRecord = transactionRecord;
         }
-        public TransactionException(string message, Exception innerException) : base(message, innerException)
+        public TransactionException(string message, TransactionRecord transactionRecord, Exception innerException) : base(message, innerException)
         {
+            TransactionRecord = transactionRecord;
         }
     }
 }

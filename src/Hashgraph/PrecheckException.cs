@@ -4,12 +4,12 @@ namespace Hashgraph
 {
     public sealed class PrecheckException : Exception
     {
-        public PrecheckResponse PrecheckResponseCode { get; private set; }
-        public Transaction Transaction { get; private set; }
-        public PrecheckException(string message, Transaction transaction,  PrecheckResponse code) : base(message)
+        public ResponseCode Status { get; private set; }
+        public TxId TxId { get; private set; }
+        public PrecheckException(string message, TxId transaction,  ResponseCode code) : base(message)
         {
-            PrecheckResponseCode = code;
-            Transaction = transaction;
+            Status = code;
+            TxId = transaction;
         }
     }
 }

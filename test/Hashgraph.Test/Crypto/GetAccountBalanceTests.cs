@@ -82,8 +82,8 @@ namespace Hashgraph.Test.Crypto
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });
-                Assert.Equal(PrecheckResponse.InvalidAccountId, ex.PrecheckResponseCode);
-                Assert.StartsWith("Failed Pre-Check: InvalidAccount", ex.Message);
+                Assert.Equal(ResponseCode.InvalidAccountId, ex.Status);
+                Assert.StartsWith("Transaction Failed Pre-Check: InvalidAccount", ex.Message);
             }
         }
         [Fact(DisplayName = "Get Account Balance: Invalid Node Account Throws Exception")]
@@ -100,8 +100,8 @@ namespace Hashgraph.Test.Crypto
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });
-                Assert.Equal(PrecheckResponse.InvalidNodeAccount, ex.PrecheckResponseCode);
-                Assert.StartsWith("Failed Pre-Check: InvalidNodeAccount", ex.Message);
+                Assert.Equal(ResponseCode.InvalidNodeAccount, ex.Status);
+                Assert.StartsWith("Transaction Failed Pre-Check: InvalidNodeAccount", ex.Message);
             }
         }
         [Fact(DisplayName = "Get Account Balance: Insufficient Fees Throw Exception")]
@@ -118,8 +118,8 @@ namespace Hashgraph.Test.Crypto
                 {
                     var balance = await client.GetAccountBalanceAsync(account);
                 });
-                Assert.Equal(PrecheckResponse.InsufficientTxFee, ex.PrecheckResponseCode);
-                Assert.StartsWith("Failed Pre-Check: InsufficientTxFee", ex.Message);
+                Assert.Equal(ResponseCode.InsufficientTxFee, ex.Status);
+                Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", ex.Message);
             }
         }
     }
