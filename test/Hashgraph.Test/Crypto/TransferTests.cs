@@ -83,5 +83,42 @@ namespace Hashgraph.Test.Crypto
                 Assert.Equal(0UL, newBalanceAfterTransfer);
             }
         }
+        [Fact(DisplayName = "Transfer Tests: Insufficient Funds Throws Error")]
+        public async Task InsufficientFundsThrowsError()
+        {
+            var initialBalance = (long)Generator.Integer(10, 100);
+            var transferAmount = initialBalance * 2;
+            var (publicKey, privateKey) = Generator.KeyPair();
+            await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
+            {
+                var address = (await client.CreateAccountAsync(publicKey, (ulong)initialBalance)).Address;
+                var account = new Account(address.RealmNum, address.ShardNum, address.AccountNum, privateKey);
+                var exception = await Assert.ThrowsAsync<TransactionException>(async () => {
+                    await client.TransferAsync(account, _networkCredentials.CreateDefaultAccount(), transferAmount);
+                });
+                Assert.StartsWith("Unable to execute crypto transfer, status: InsufficientAccountBalance",exception.Message);
+                Assert.NotNull(exception.TransactionRecord);
+                Assert.Equal(ResponseCode.InsufficientAccountBalance, exception.TransactionRecord.Status);
+            }
+        }
+        [Fact(DisplayName = "Transfer Tests: Insufficient Fee Throws Error")]
+        public async Task InsufficientFeeThrowsError()
+        {
+            var initialBalance = (long)Generator.Integer(10, 100);
+            var transferAmount = initialBalance/2;
+            var (publicKey, privateKey) = Generator.KeyPair();
+            await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
+            {
+                var address = (await client.CreateAccountAsync(publicKey, (ulong)initialBalance)).Address;
+                var account = new Account(address.RealmNum, address.ShardNum, address.AccountNum, privateKey);
+                var exception = await Assert.ThrowsAsync<PrecheckException>(async () => {
+                    await client.TransferAsync(account, _networkCredentials.CreateDefaultAccount(), transferAmount, ctx=> {
+                        ctx.FeeLimit = 1;
+                    });
+                });
+                Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", exception.Message);                
+                Assert.Equal(ResponseCode.InsufficientTxFee, exception.Status);
+            }
+        }
     }
 }
