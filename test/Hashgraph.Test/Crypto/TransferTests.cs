@@ -1,7 +1,9 @@
 ﻿using Hashgraph.Test.Fixtures;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
@@ -9,9 +11,10 @@ namespace Hashgraph.Test.Crypto
     public class TransferTests
     {
         private readonly NetworkCredentialsFixture _networkCredentials;
-        public TransferTests(NetworkCredentialsFixture networkCredentials)
+        public TransferTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
         {
             _networkCredentials = networkCredentials;
+            _networkCredentials.TestOutput = output;
         }
         [Fact(DisplayName = "Transfer Tests: Can Send to Gateway Node")]
         public async Task CanTransferCryptoToGatewayNode()
@@ -93,10 +96,11 @@ namespace Hashgraph.Test.Crypto
             {
                 var address = (await client.CreateAccountAsync(publicKey, (ulong)initialBalance)).Address;
                 var account = new Account(address.RealmNum, address.ShardNum, address.AccountNum, privateKey);
-                var exception = await Assert.ThrowsAsync<TransactionException>(async () => {
+                var exception = await Assert.ThrowsAsync<TransactionException>(async () =>
+                {
                     await client.TransferAsync(account, _networkCredentials.CreateDefaultAccount(), transferAmount);
                 });
-                Assert.StartsWith("Unable to execute crypto transfer, status: InsufficientAccountBalance",exception.Message);
+                Assert.StartsWith("Unable to execute crypto transfer, status: InsufficientAccountBalance", exception.Message);
                 Assert.NotNull(exception.TransactionRecord);
                 Assert.Equal(ResponseCode.InsufficientAccountBalance, exception.TransactionRecord.Status);
             }
@@ -105,18 +109,20 @@ namespace Hashgraph.Test.Crypto
         public async Task InsufficientFeeThrowsError()
         {
             var initialBalance = (long)Generator.Integer(10, 100);
-            var transferAmount = initialBalance/2;
+            var transferAmount = initialBalance / 2;
             var (publicKey, privateKey) = Generator.KeyPair();
             await using (var client = _networkCredentials.CreateClientWithDefaultConfiguration())
             {
                 var address = (await client.CreateAccountAsync(publicKey, (ulong)initialBalance)).Address;
                 var account = new Account(address.RealmNum, address.ShardNum, address.AccountNum, privateKey);
-                var exception = await Assert.ThrowsAsync<PrecheckException>(async () => {
-                    await client.TransferAsync(account, _networkCredentials.CreateDefaultAccount(), transferAmount, ctx=> {
+                var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
+                {
+                    await client.TransferAsync(account, _networkCredentials.CreateDefaultAccount(), transferAmount, ctx =>
+                    {
                         ctx.FeeLimit = 1;
                     });
                 });
-                Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", exception.Message);                
+                Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", exception.Message);
                 Assert.Equal(ResponseCode.InsufficientTxFee, exception.Status);
             }
         }

@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
@@ -9,9 +10,10 @@ namespace Hashgraph.Test.Crypto
     public class GetInfoTests
     {
         private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetInfoTests(NetworkCredentialsFixture networkCredentials)
+        public GetInfoTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
         {
             _networkCredentials = networkCredentials;
+            _networkCredentials.TestOutput = output;
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Account")]
         public async Task CanGetInfoForAccountAsync()

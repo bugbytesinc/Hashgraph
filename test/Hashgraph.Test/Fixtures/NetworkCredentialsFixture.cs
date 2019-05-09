@@ -1,8 +1,8 @@
 ﻿using Google.Protobuf;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Diagnostics;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Fixtures
 {
@@ -20,7 +20,7 @@ namespace Hashgraph.Test.Fixtures
         public long AccountNumber { get { return getAsInt("account:number"); } }
         public ReadOnlyMemory<byte> AccountPrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
         public ReadOnlyMemory<byte> AccountPublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
-        public bool OutputMessagesToDebug { get { return getAsBool("debug:outputmessages"); } }
+        public ITestOutputHelper TestOutput { get; set; }
 
         public NetworkCredentialsFixture()
         {
@@ -49,11 +49,8 @@ namespace Hashgraph.Test.Fixtures
                 ctx.Gateway = CreateDefaultGateway();
                 ctx.Payer = CreateDefaultAccount();
                 ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
-                if (OutputMessagesToDebug)
-                {
-                    ctx.OnSendingRequest = OutputSendingRequest;
-                    ctx.OnResponseReceived = OutputReceivResponse;
-                }
+                ctx.OnSendingRequest = OutputSendingRequest;
+                ctx.OnResponseReceived = OutputReceivResponse;
             });
         }
         private int getAsInt(string key)
@@ -74,14 +71,14 @@ namespace Hashgraph.Test.Fixtures
             }
             return false;
         }
-        private static void OutputSendingRequest(IMessage message)
+        private void OutputSendingRequest(IMessage message)
         {
-            Debug.WriteLine($"{DateTime.UtcNow} TX:     {JsonFormatter.Default.Format(message)}");
+            TestOutput?.WriteLine($"{DateTime.UtcNow} TX:     {JsonFormatter.Default.Format(message)}");
         }
 
-        private static void OutputReceivResponse(int tryNo, IMessage message)
+        private void OutputReceivResponse(int tryNo, IMessage message)
         {
-            Debug.WriteLine($"{DateTime.UtcNow} RX:({tryNo:00}) {JsonFormatter.Default.Format(message)}");
+            TestOutput?.WriteLine($"{DateTime.UtcNow} RX:({tryNo:00}) {JsonFormatter.Default.Format(message)}");
         }
 
         [CollectionDefinition(nameof(NetworkCredentialsFixture))]

@@ -3,6 +3,7 @@ using Hashgraph;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
@@ -10,9 +11,10 @@ namespace Hashgraph.Test.Crypto
     public class GetAccountBalanceTests
     {
         private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetAccountBalanceTests(NetworkCredentialsFixture networkCredentials)
+        public GetAccountBalanceTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
         {
             _networkCredentials = networkCredentials;
+            _networkCredentials.TestOutput = output;
         }
         [Fact(DisplayName = "Get Account Balance: Can Get Balance for Account")]
         public async Task CanGetTinybarBalanceForAccountAsync()

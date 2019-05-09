@@ -2,6 +2,7 @@
 using NSec.Cryptography;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
@@ -9,9 +10,10 @@ namespace Hashgraph.Test.Crypto
     public class CreateAccountTests
     {
         private readonly NetworkCredentialsFixture _networkCredentials;
-        public CreateAccountTests(NetworkCredentialsFixture networkCredentials)
+        public CreateAccountTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
         {
             _networkCredentials = networkCredentials;
+            _networkCredentials.TestOutput = output;
         }
         [Fact(DisplayName = "Create Account: Can Create Account")]
         public async Task CanCreateAccountAsync()
