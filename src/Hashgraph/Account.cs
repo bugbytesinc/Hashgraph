@@ -8,12 +8,36 @@ namespace Hashgraph
     /// Represents a Hedera Network Address with an associated 
     /// private key capable of signing transactions.
     /// </summary>
-    public sealed class Account : Address, ISigner, IDisposable, IEquatable<Account>
+    public sealed class Account : ISigner, IDisposable, IEquatable<Account>
     {
+        /// <summary>
+        /// Network Realm Number for Account
+        /// </summary>
+        public long RealmNum { get; private set; }
+        /// <summary>
+        /// Network Shard Number for Account
+        /// </summary>
+        public long ShardNum { get; private set; }
+        /// <summary>
+        /// Network Account Number for Account
+        /// </summary>
+        public long AccountNum { get; private set; }
         /// <summary>
         /// Private Key Implementation
         /// </summary>
-        private Key _key;
+        private readonly Key _key;
+        /// <summary>
+        /// Public Constructor, an <code>Account</code> is immutable after creation.
+        /// </summary>
+        /// <param name="address">
+        /// Network Address associated with this account.
+        /// </param>
+        /// <param name="privateKey">
+        /// Bytes representing an Ed25519 private key associated with this account for 
+        /// signing transactions.  It is expected to be 48 bytes in length, prefixed 
+        /// with <code>0x302e020100300506032b6570</code>.
+        /// </param>
+        public Account(Address address, ReadOnlyMemory<byte> privateKey) : this(address.RealmNum, address.ShardNum, address.AccountNum, privateKey) { }
         /// <summary>
         /// Public Constructor, an <code>Account</code> is immutable after creation.
         /// </summary>
@@ -31,9 +55,11 @@ namespace Hashgraph
         /// signing transactions.  It is expected to be 48 bytes in length, prefixed 
         /// with <code>0x302e020100300506032b6570</code>.
         /// </param>
-        public Account(long realmNum, long shardNum, long accountNum, ReadOnlyMemory<byte> privateKey) :
-            base(realmNum, shardNum, accountNum)
+        public Account(long realmNum, long shardNum, long accountNum, ReadOnlyMemory<byte> privateKey)
         {
+            RealmNum = Validate.RealmNumberArgument(realmNum);
+            ShardNum = Validate.ShardNumberArgument(shardNum);
+            AccountNum = Validate.AcountNumberArgument(accountNum);
             try
             {
                 _key = Keys.ImportPrivateEd25519KeyFromBytes(privateKey);
@@ -170,6 +196,17 @@ namespace Hashgraph
         public static bool operator !=(Account left, Account right)
         {
             return !(left == right);
+        }
+        /// <summary>
+        /// Implicit operator for converting Account to an Address
+        /// </summary>
+        /// <param name="account">
+        /// The Account containing the realm, shard and account number
+        /// address information to convert into an address object.
+        /// </param>
+        public static implicit operator Address(Account account)
+        {
+            return new Address(account.RealmNum, account.ShardNum, account.AccountNum);
         }
     }
 }

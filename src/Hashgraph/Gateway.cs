@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hashgraph.Implementation;
+using System;
 
 namespace Hashgraph
 {
@@ -12,12 +13,34 @@ namespace Hashgraph
     /// network address where the public network endpoint is located.
     /// This class is immutable once created.
     /// </remarks>
-    public sealed class Gateway : Address, IEquatable<Gateway>
+    public sealed class Gateway : IEquatable<Gateway>
     {
         /// <summary>
         /// The URL and port of the public Hedera Network access point.
         /// </summary>
         public string Url { get; private set; }
+        /// <summary>
+        /// Network Realm Number for Gateway Account
+        /// </summary>
+        public long RealmNum { get; private set; }
+        /// <summary>
+        /// Network Shard Number for Gateway Account
+        /// </summary>
+        public long ShardNum { get; private set; }
+        /// <summary>
+        /// Network Account Number for Gateway Account
+        /// </summary>
+        public long AccountNum { get; private set; }
+        /// <summary>
+        /// Public Constructor, a <code>Gateway</code> is immutable after creation.
+        /// </summary>
+        /// <param name="url">
+        /// The URL and port of the public Hedera Network access point.
+        /// </param>
+        /// <param name="address">
+        /// Main Network Node Address
+        /// </param>
+        public Gateway(string url, Address address) : this(url, address.RealmNum, address.ShardNum, address.AccountNum) { }
         /// <summary>
         /// Public Constructor, a <code>Gateway</code> is immutable after creation.
         /// </summary>
@@ -33,10 +56,12 @@ namespace Hashgraph
         /// <param name="accountNum">
         /// Main Network Node Account Number
         /// </param>
-        public Gateway(string url, long realmNum, long shardNum, long accountNum) :
-            base(realmNum, shardNum, accountNum)
+        public Gateway(string url, long realmNum, long shardNum, long accountNum)
         {
-            Url = url;
+            Url = Validate.UrlArgument(url);
+            RealmNum = Validate.RealmNumberArgument(realmNum);
+            ShardNum = Validate.ShardNumberArgument(shardNum);
+            AccountNum = Validate.AcountNumberArgument(accountNum);
         }
         /// <summary>
         /// Equality implementation.
@@ -139,6 +164,17 @@ namespace Hashgraph
         public static bool operator !=(Gateway left, Gateway right)
         {
             return !(left == right);
+        }
+        /// <summary>
+        /// Implicit operator for converting a Gateway to an Address
+        /// </summary>
+        /// <param name="gateway">
+        /// The Gateway object containing the realm, shard and account 
+        /// number address information to convert into an address object.
+        /// </param>
+        public static implicit operator Address(Gateway gateway)
+        {
+            return new Address(gateway.RealmNum, gateway.ShardNum, gateway.AccountNum);
         }
     }
 }

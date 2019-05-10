@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Hashgraph.Implementation;
+using System;
 
 namespace Hashgraph
 {
     /// <summary>
     /// Represents a Hedera Network Account Address.
     /// </summary>
-    public class Address : IEquatable<Address>
+    public sealed class Address : IEquatable<Address>
     {
         /// <summary>
         /// Network Realm Number for Account
@@ -33,21 +34,9 @@ namespace Hashgraph
         /// </param>
         public Address(long realmNum, long shardNum, long accountNum)
         {
-            if (realmNum < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(realmNum), "Realm Number cannot be negative.");
-            }
-            if (shardNum < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(shardNum), "Shard Number cannot be negative.");
-            }
-            if (accountNum < 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(accountNum), "Account Number cannot be negative.");
-            }
-            RealmNum = realmNum;
-            ShardNum = shardNum;
-            AccountNum = accountNum;
+            RealmNum = Validate.RealmNumberArgument(realmNum);
+            ShardNum = Validate.ShardNumberArgument(shardNum);
+            AccountNum = Validate.AcountNumberArgument(accountNum);
         }
         /// <summary>
         /// Equality implementation.
