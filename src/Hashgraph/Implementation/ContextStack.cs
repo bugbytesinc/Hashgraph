@@ -85,9 +85,16 @@ namespace Hashgraph.Implementation
         {
             for (ContextStack ctx = this; ctx != null; ctx = ctx._parent)
             {
-                if (ctx._map.TryGetValue(name, out object asObject) && asObject is T)
+                if (ctx._map.TryGetValue(name, out object asObject))
                 {
-                    value = (T)asObject;
+                    if(asObject is T)
+                    {
+                        value = (T)asObject;
+                    }
+                    else
+                    {
+                        value = default;
+                    }                    
                     return true;
                 }
             }
