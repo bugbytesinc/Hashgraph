@@ -11,7 +11,7 @@ namespace Hashgraph
     /// interface and can be compared to other transaction ids returned 
     /// from the library.
     /// </summary>
-    public class TxId : IData, IEquatable<TxId>
+    public sealed class TxId : IData, IEquatable<TxId>
     {
         /// <summary>
         /// Data storing the internal representation of the transaction id.  
