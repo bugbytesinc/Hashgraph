@@ -71,20 +71,24 @@ namespace Hashgraph
         /// <see cref="Client.Clone(Action{IContext})"/> method call.
         /// </param>
         private Client(Action<IContext>? configure, ContextStack? parent)
-        {
-            _context = new ContextStack(parent);
-            if (parent == null)
+        {            
+            if (parent is null)
             {
-                // Hard Code Defaults for Now.
-                _context.FeeLimit = 100000;
-                _context.TransactionDuration = TimeSpan.FromSeconds(120);
-                _context.RetryCount = 5;
-                _context.RetryDelay = TimeSpan.FromMilliseconds(200);
-                _context.CreateAccountAutoRenewPeriod = TimeSpan.FromDays(31);
-                _context.CreateAccountCreateRecordSendThreshold = int.MaxValue;
-                _context.CreateAcountRequireSignatureReceiveThreshold = int.MaxValue;
-                _context.CreateAccountAlwaysRequireReceiveSignature = false;
+                // Create a Context with System Defaults 
+                // that are unreachable and can't be "Reset".
+                parent = new ContextStack(null)
+                {
+                    FeeLimit = 100000,
+                    TransactionDuration = TimeSpan.FromSeconds(120),
+                    RetryCount = 5,
+                    RetryDelay = TimeSpan.FromMilliseconds(200),
+                    CreateAccountAutoRenewPeriod = TimeSpan.FromDays(31),
+                    CreateAccountCreateRecordSendThreshold = int.MaxValue,
+                    CreateAcountRequireSignatureReceiveThreshold = int.MaxValue,
+                    CreateAccountAlwaysRequireReceiveSignature = false
+                };
             }
+            _context = new ContextStack(parent);
             configure?.Invoke(_context);
             _channels = new ConcurrentDictionary<string, Channel>();
         }
