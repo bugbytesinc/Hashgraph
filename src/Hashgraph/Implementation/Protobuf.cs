@@ -116,8 +116,8 @@ namespace Hashgraph.Implementation
             {
                 Id = FromTransactionId(record.TransactionID ?? originatingID),
                 Status = (ResponseCode)record.Receipt.Status,
-                Hash = record.TransactionHash.ToByteArray(),
-                Concensus = FromTimestamp(record.ConsensusTimestamp),
+                Hash = record.TransactionHash?.ToByteArray(),
+                Concensus = record.ConsensusTimestamp == null ? null : (DateTime?) FromTimestamp(record.ConsensusTimestamp),
                 Memo = record.Memo,
                 Fee = record.TransactionFee
             };
