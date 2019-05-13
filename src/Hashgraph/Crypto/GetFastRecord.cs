@@ -31,6 +31,10 @@ namespace Hashgraph
                 }
                 throw new PrecheckException("Failed to receive response from server within the given retry interval.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.Header.NodeTransactionPrecheckCode);
             }
+            else if(response.TransactionRecord.Receipt.Status == ResponseCodeEnum.TransactionExpired)
+            {
+                throw new ConsensusException("Network failed to reach concensus before transaction request exired.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.Header.NodeTransactionPrecheckCode);
+            }
             return response.TransactionRecord;
 
             static Func<Query, Task<TransactionGetFastRecordResponse>> instantiateGetTransactionReceiptsAsyncMethod(Channel channel)
