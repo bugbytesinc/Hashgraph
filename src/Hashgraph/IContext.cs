@@ -43,33 +43,6 @@ namespace Hashgraph
         /// </summary>
         TimeSpan TransactionDuration { get; set; }
         /// <summary>
-        /// When creating a new account: the tinybar threshold for the 
-        /// newly created account where any crypto transfer from that 
-        /// account exceeding that amount automatically generate a 
-        /// network record/receipt.
-        /// </summary>
-        ulong CreateAccountCreateRecordSendThreshold { get; set; }
-        /// <summary>
-        /// When creating a new account: the tinybar threshold for the 
-        /// newly created account where any crypto transfer into that 
-        /// account exceeding that amount requires the newly created 
-        /// account to additionally sign the transaction.
-        /// </summary>
-        ulong CreateAcountRequireSignatureReceiveThreshold { get; set; }
-        /// <summary>
-        /// When creating a new account: the newly created account must 
-        /// sign any transaction transferring crypto into the newly 
-        /// created account, regardless of transaction amount.
-        /// </summary>
-        bool CreateAccountAlwaysRequireReceiveSignature { get; set; }
-        /// <summary>
-        /// When creating a new account: the auto-renew period for the 
-        /// newly created account, it will continue to be renewed at the 
-        /// given interval for as long as the account contains hbars 
-        /// sufficient to cover the renewal charge.
-        /// </summary>
-        TimeSpan CreateAccountAutoRenewPeriod { get; set; }
-        /// <summary>
         /// The default memo associated with transactions set to the network.
         /// </summary>
         string? Memo { get; set; }

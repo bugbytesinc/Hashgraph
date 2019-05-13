@@ -38,10 +38,8 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Test Network is Reachable on Configured Port")]
         public void NetworkIsReachable()
         {
-            using (var client = new TcpClient())
-            {
-                client.Connect(_networkCredentials.NetworkAddress, _networkCredentials.NetworkPort);
-            }
+            using var client = new TcpClient();
+            client.Connect(_networkCredentials.NetworkAddress, _networkCredentials.NetworkPort);
         }
         [Fact(DisplayName = "Server Realm is Non-Negative")]
         public void ServerRealmIsNonNegative()

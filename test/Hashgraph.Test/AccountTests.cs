@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using NSec.Cryptography;
 using System;
 using System.Linq;
 using Xunit;
@@ -16,12 +15,10 @@ namespace Hashgraph.Tests
             var accountNum = Generator.Integer(0, 200);
             var (_, privateKey) = Generator.KeyPair();
 
-            using (var account = new Account(realmNum, shardNum, accountNum, privateKey))
-            {
-                Assert.Equal(realmNum, account.RealmNum);
-                Assert.Equal(shardNum, account.ShardNum);
-                Assert.Equal(accountNum, account.AccountNum);
-            }
+            using var account = new Account(realmNum, shardNum, accountNum, privateKey);
+            Assert.Equal(realmNum, account.RealmNum);
+            Assert.Equal(shardNum, account.ShardNum);
+            Assert.Equal(accountNum, account.AccountNum);
         }
         [Fact(DisplayName = "Negative Realm Number throws Exception")]
         public void NegativeValueForRealmThrowsError()
@@ -124,19 +121,16 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Disimilar Accounts are not considered Equal")]
         public void DisimilarAccountsAreNotConsideredEqual()
         {
-            using (var key = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport }))
-            {
-                var (_, privateKey1) = Generator.KeyPair();
-                var (_, privateKey2) = Generator.KeyPair();
-                var realmNum = Generator.Integer(0, 200);
-                var shardNum = Generator.Integer(0, 200);
-                var accountNum = Generator.Integer(0, 200);
-                var account1 = new Account(realmNum, shardNum, accountNum, privateKey1);
-                var account2 = new Account(realmNum, shardNum, accountNum, privateKey2);
-                Assert.NotEqual(account1, account2);
-                Assert.False(account1 == account2);
-                Assert.True(account1 != account2);
-            }
+            var (_, privateKey1) = Generator.KeyPair();
+            var (_, privateKey2) = Generator.KeyPair();
+            var realmNum = Generator.Integer(0, 200);
+            var shardNum = Generator.Integer(0, 200);
+            var accountNum = Generator.Integer(0, 200);
+            var account1 = new Account(realmNum, shardNum, accountNum, privateKey1);
+            var account2 = new Account(realmNum, shardNum, accountNum, privateKey2);
+            Assert.NotEqual(account1, account2);
+            Assert.False(account1 == account2);
+            Assert.True(account1 != account2);
         }
     }
 }

@@ -57,9 +57,9 @@ namespace Hashgraph
         /// </param>
         public Account(long realmNum, long shardNum, long accountNum, ReadOnlyMemory<byte> privateKey)
         {
-            RealmNum = Validate.RealmNumberArgument(realmNum);
-            ShardNum = Validate.ShardNumberArgument(shardNum);
-            AccountNum = Validate.AcountNumberArgument(accountNum);
+            RealmNum = RequireInputParameter.RealmNumber(realmNum);
+            ShardNum = RequireInputParameter.ShardNumber(shardNum);
+            AccountNum = RequireInputParameter.AcountNumber(accountNum);
             try
             {
                 _key = Keys.ImportPrivateEd25519KeyFromBytes(privateKey);

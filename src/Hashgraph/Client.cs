@@ -81,11 +81,7 @@ namespace Hashgraph
                     FeeLimit = 100000,
                     TransactionDuration = TimeSpan.FromSeconds(120),
                     RetryCount = 5,
-                    RetryDelay = TimeSpan.FromMilliseconds(200),
-                    CreateAccountAutoRenewPeriod = TimeSpan.FromDays(31),
-                    CreateAccountCreateRecordSendThreshold = int.MaxValue,
-                    CreateAcountRequireSignatureReceiveThreshold = int.MaxValue,
-                    CreateAccountAlwaysRequireReceiveSignature = false
+                    RetryDelay = TimeSpan.FromMilliseconds(200)
                 };
             }
             _context = new ContextStack(parent);

@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Web.Models;
-using Hashgraph;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
@@ -38,7 +37,7 @@ namespace Hashgraph.Web.Pages
             }
             try
             {
-                await using (var client = new Client(ctx =>
+                await using var client = new Client(ctx =>
                  {
                      ctx.Gateway = new Gateway(
                          $"{GetBalanceRequest.GatewayName}:{GetBalanceRequest.GatewayPort}",
@@ -50,14 +49,12 @@ namespace Hashgraph.Web.Pages
                          GetBalanceRequest.PayerShardNum,
                          GetBalanceRequest.PayerAccountNum,
                          Hex.ToBytes(GetBalanceRequest.PayerPrivateKey));
-                 }))
-                {
-                    Balance = await client.GetAccountBalanceAsync(
-                        new Address(
-                            GetBalanceRequest.AccountRealmNum,
-                            GetBalanceRequest.AccountShardNum,
-                            GetBalanceRequest.AccountAccountNum));
-                }
+                 });
+                Balance = await client.GetAccountBalanceAsync(
+                    new Address(
+                        GetBalanceRequest.AccountRealmNum,
+                        GetBalanceRequest.AccountShardNum,
+                        GetBalanceRequest.AccountAccountNum));
             }
             catch (Exception ex)
             {

@@ -19,7 +19,7 @@ namespace Hashgraph
             var preExistingTransaction = context.Transaction;
             if (preExistingTransaction is null)
             {
-                var transactionId = CreateNewTransactionID(Require.PayerInContext(context), DateTime.UtcNow);
+                var transactionId = CreateNewTransactionID(RequireInContext.Payer(context), DateTime.UtcNow);
                 var transaction = Protobuf.FromTransactionId(transactionId);
                 foreach (var handler in context.GetAll<Action<TxId>>(nameof(context.OnTransactionCreated)))
                 {
@@ -59,7 +59,7 @@ namespace Hashgraph
             return new TransactionBody
             {
                 TransactionID = transactionId,
-                NodeAccountID = Protobuf.ToAccountID(Require.GatewayInContext(context)),
+                NodeAccountID = Protobuf.ToAccountID(RequireInContext.Gateway(context)),
                 TransactionFee = (ulong)context.FeeLimit,
                 TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
                 GenerateRecord = context.GenerateRecord,

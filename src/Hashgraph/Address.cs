@@ -34,9 +34,9 @@ namespace Hashgraph
         /// </param>
         public Address(long realmNum, long shardNum, long accountNum)
         {
-            RealmNum = Validate.RealmNumberArgument(realmNum);
-            ShardNum = Validate.ShardNumberArgument(shardNum);
-            AccountNum = Validate.AcountNumberArgument(accountNum);
+            RealmNum = RequireInputParameter.RealmNumber(realmNum);
+            ShardNum = RequireInputParameter.ShardNumber(shardNum);
+            AccountNum = RequireInputParameter.AcountNumber(accountNum);
         }
         /// <summary>
         /// Equality implementation.

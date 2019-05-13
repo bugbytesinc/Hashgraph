@@ -58,10 +58,10 @@ namespace Hashgraph
         /// </param>
         public Gateway(string url, long realmNum, long shardNum, long accountNum)
         {
-            Url = Validate.UrlArgument(url);
-            RealmNum = Validate.RealmNumberArgument(realmNum);
-            ShardNum = Validate.ShardNumberArgument(shardNum);
-            AccountNum = Validate.AcountNumberArgument(accountNum);
+            Url = RequireInputParameter.Url(url);
+            RealmNum = RequireInputParameter.RealmNumber(realmNum);
+            ShardNum = RequireInputParameter.ShardNumber(shardNum);
+            AccountNum = RequireInputParameter.AcountNumber(accountNum);
         }
         /// <summary>
         /// Equality implementation.
