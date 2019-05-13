@@ -12,19 +12,19 @@ namespace Hashgraph
         // seem to be implemented on testnet at this moment.
         // Marked as private for now until we can confirm
         // it works and incorporate into automated test.
-        private async Task<DeleteAccountRecord> DeleteAccountAsync(Address accountToDelete, Address transferAccount, Action<IContext>? configure = null)
+        private async Task<DeleteAccountRecord> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
-            Require.AccountToDeleteArgument(accountToDelete);
-            Require.TransferAccountArgument(transferAccount);
+            addressToDelete = RequireInputParameter.AddressToDelete(addressToDelete);
+            transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
             var context = CreateChildContext(configure);
-            Require.GatewayInContext(context);
-            var payer = Require.PayerInContext(context);
+            RequireInContext.Gateway(context);
+            var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Delete Account");
             transactionBody.CryptoDelete = new CryptoDeleteTransactionBody
             {
-                DeleteAccountID = Protobuf.ToAccountID(accountToDelete),
-                TransferAccountID = Protobuf.ToAccountID(transferAccount)
+                DeleteAccountID = Protobuf.ToAccountID(addressToDelete),
+                TransferAccountID = Protobuf.ToAccountID(transferToAddress)
             };
             var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
             var request = new Proto.Transaction
@@ -33,7 +33,7 @@ namespace Hashgraph
                 Sigs = signatures
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateCryptoDeleteAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(transactionId, response.NodeTransactionPrecheckCode);
+            ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {

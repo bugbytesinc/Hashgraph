@@ -22,10 +22,6 @@ namespace Hashgraph.Implementation
         public Account? Payer { get => get<Account>(nameof(Payer)); set => set(nameof(Payer), value); }
         public long FeeLimit { get => get<long>(nameof(FeeLimit)); set => set(nameof(FeeLimit), value); }
         public TimeSpan TransactionDuration { get => get<TimeSpan>(nameof(TransactionDuration)); set => set(nameof(TransactionDuration), value); }
-        public ulong CreateAccountCreateRecordSendThreshold { get => get<ulong>(nameof(CreateAccountCreateRecordSendThreshold)); set => set(nameof(CreateAccountCreateRecordSendThreshold), value); }
-        public ulong CreateAcountRequireSignatureReceiveThreshold { get => get<ulong>(nameof(CreateAcountRequireSignatureReceiveThreshold)); set => set(nameof(CreateAcountRequireSignatureReceiveThreshold), value); }
-        public bool CreateAccountAlwaysRequireReceiveSignature { get => get<bool>(nameof(CreateAccountAlwaysRequireReceiveSignature)); set => set(nameof(CreateAccountAlwaysRequireReceiveSignature), value); }
-        public TimeSpan CreateAccountAutoRenewPeriod { get => get<TimeSpan>(nameof(CreateAccountAutoRenewPeriod)); set => set(nameof(CreateAccountAutoRenewPeriod), value); }
         public int RetryCount { get => get<int>(nameof(RetryCount)); set => set(nameof(RetryCount), value); }
         public TimeSpan RetryDelay { get => get<TimeSpan>(nameof(RetryDelay)); set => set(nameof(RetryDelay), value); }
         public string? Memo { get => get<string>(nameof(Memo)); set => set(nameof(Memo), value); }
@@ -51,10 +47,6 @@ namespace Hashgraph.Implementation
                 case nameof(RetryCount):
                 case nameof(RetryDelay):
                 case nameof(TransactionDuration):
-                case nameof(CreateAccountCreateRecordSendThreshold):
-                case nameof(CreateAcountRequireSignatureReceiveThreshold):
-                case nameof(CreateAccountAlwaysRequireReceiveSignature):
-                case nameof(CreateAccountAutoRenewPeriod):
                 case nameof(Memo):
                 case nameof(GenerateRecord):
                 case nameof(Transaction):

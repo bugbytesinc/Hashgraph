@@ -24,7 +24,7 @@ namespace Hashgraph
         /// <summary>
         /// The consensus timestamp.
         /// </summary>
-        public DateTime Concensus { get; internal set; }
+        public DateTime? Concensus { get; internal set; }
         /// <summary>
         /// The memo that was submitted with the transaction request.
         /// </summary>

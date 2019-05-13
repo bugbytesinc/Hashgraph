@@ -27,10 +27,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<ulong> GetAccountBalanceAsync(Address address, Action<IContext>? configure = null)
         {
-            Require.AddressArgument(address);
+            address = RequireInputParameter.Address(address);
             var context = CreateChildContext(configure);
-            var gateway = Require.GatewayInContext(context);
-            var payer = Require.PayerInContext(context);
+            var gateway = RequireInContext.Gateway(context);
+            var payer = RequireInContext.Payer(context);
             var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Balance");
@@ -44,7 +44,7 @@ namespace Hashgraph
                 }
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateExecuteCryptoGetBalanceAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(transactionId, response.Header.NodeTransactionPrecheckCode);
+            ValidateResult.PreCheck(transactionId, response.Header.NodeTransactionPrecheckCode);
             return response.Balance;
 
             static Func<Query, Task<CryptoGetAccountBalanceResponse>> instantiateExecuteCryptoGetBalanceAsyncMethod(Channel channel)

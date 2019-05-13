@@ -22,7 +22,7 @@ namespace Hashgraph
                 }
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateGetTransactionReceiptsAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(transactionId, response.Header.NodeTransactionPrecheckCode);
+            ValidateResult.PreCheck(transactionId, response.Header.NodeTransactionPrecheckCode);
             return response.Receipt;
 
             static Func<Query, Task<TransactionGetReceiptResponse>> instantiateGetTransactionReceiptsAsyncMethod(Channel channel)

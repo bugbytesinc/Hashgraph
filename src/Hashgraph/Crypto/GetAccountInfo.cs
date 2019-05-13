@@ -27,10 +27,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<AccountInfo> GetAccountInfoAsync(Address address, Action<IContext>? configure = null)
         {
-            Require.AddressArgument(address);
+            address = RequireInputParameter.Address(address);
             var context = CreateChildContext(configure);
-            var gateway = Require.GatewayInContext(context);
-            var payer = Require.PayerInContext(context);
+            var gateway = RequireInContext.Gateway(context);
+            var payer = RequireInContext.Payer(context);
             var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Info");
@@ -44,7 +44,7 @@ namespace Hashgraph
                 }
             };
             var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateExecuteCryptoGetInfoAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(transactionId, data.Header.NodeTransactionPrecheckCode);
+            ValidateResult.PreCheck(transactionId, data.Header.NodeTransactionPrecheckCode);
             return Protobuf.FromAccountInfo(data.AccountInfo);
 
             static Func<Query, Task<CryptoGetInfoResponse>> instantiateExecuteCryptoGetInfoAsyncMethod(Channel channel)

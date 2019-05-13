@@ -30,14 +30,19 @@ namespace Hashgraph
         /// <returns>
         /// A transfer record describing the details of the concensus transaction.
         /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransferRecord> TransferAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            Require.FromAccountArgument(fromAccount);
-            Require.ToAddressArgument(toAddress);
-            Require.AmountArgument(amount);
+            fromAccount = RequireInputParameter.FromAccount(fromAccount);
+            toAddress = RequireInputParameter.ToAddress(toAddress);
+            amount = RequireInputParameter.Amount(amount);
             var context = CreateChildContext(configure);
-            Require.GatewayInContext(context);
-            var payer = Require.PayerInContext(context);
+            RequireInContext.Gateway(context);
+            var payer = RequireInContext.Payer(context);
             var transfers = Transactions.CreateCryptoTransferList((fromAccount, -amount), (toAddress, amount));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Transfer Crypto");
@@ -48,7 +53,7 @@ namespace Hashgraph
                 Sigs = signatures
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateExecuteCryptoGetBalanceAsyncMethod, checkForRetry);
-            Validate.ValidatePreCheckResult(transactionId, response.NodeTransactionPrecheckCode);
+            ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
