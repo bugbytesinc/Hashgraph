@@ -27,14 +27,16 @@ namespace Hashgraph
                 var expiration = Protobuf.FromTimestamp(transactionId.TransactionValidStart).Add(context.TransactionDuration);
                 if(expiration < DateTime.UtcNow)
                 {
-                    throw new ConsensusException("Network failed to reach concensus before transaction request exired.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.Header.NodeTransactionPrecheckCode);
+                    throw new ConsensusException("Network failed to reach concensus before transaction request expired.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.Header.NodeTransactionPrecheckCode);
                 }
                 throw new PrecheckException("Failed to receive response from server within the given retry interval.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.Header.NodeTransactionPrecheckCode);
             }
             switch(response.TransactionRecord.Receipt.Status)
             {
+                case ResponseCodeEnum.Unknown:
+                    throw new ConsensusException("Network failed to reach concensus within the configured retry time window, It is possible the network may still reach concensus for this transaction.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.TransactionRecord.Receipt.Status);
                 case ResponseCodeEnum.TransactionExpired:
-                    throw new ConsensusException("Network failed to reach concensus before transaction request exired.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.TransactionRecord.Receipt.Status);
+                    throw new ConsensusException("Network failed to reach concensus before transaction request expired.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.TransactionRecord.Receipt.Status);
                 case ResponseCodeEnum.RecordNotFound:
                     throw new ConsensusException("Network failed to find a record for given transaction.", Protobuf.FromTransactionId(transactionId), (ResponseCode)response.TransactionRecord.Receipt.Status);
                 default:
