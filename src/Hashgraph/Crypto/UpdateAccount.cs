@@ -32,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionRecord> UpdateAccountAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
+        public async Task<AccountTransactionRecord> UpdateAccountAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
         {
             updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
             var context = CreateChildContext(configure);
@@ -42,11 +42,13 @@ namespace Hashgraph
             {
                 AccountIDToUpdate = Protobuf.ToAccountID(updateParameters.Account)
             };
-            var privateKey = updateParameters.PrivateKey.HasValue ? Keys.ImportPrivateEd25519KeyFromBytes(updateParameters.PrivateKey.Value) : null;
-            if (privateKey != null)
+            if(!(updateParameters.Endorsements is null))
             {
-                var publicKeyWithoutPrefix = privateKey.Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray();
-                updateAccountBody.Key = new Key { Ed25519 = ByteString.CopyFrom(publicKeyWithoutPrefix) };
+                if(updateParameters.Endorsements.KeyCount != 1 || updateParameters.Endorsements.RequiredCount != 1 )
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsements), "Presently, an account is only allowed one signing key.  Endorsements must require 1 of 1 keys.");
+                }
+                updateAccountBody.Key = Protobuf.ToPublicKeys(updateParameters.Endorsements)[0];
             }
             if (updateParameters.SendThresholdCreateRecord.HasValue)
             {
@@ -67,31 +69,30 @@ namespace Hashgraph
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Update Account");
             transactionBody.CryptoUpdateAccount = updateAccountBody;
-            var signatures = privateKey is null ?
-                Transactions.SignProtoTransactionBody(transactionBody, payer, updateParameters.Account) :
-                Transactions.SignProtoTransactionBody(transactionBody, payer, updateParameters.Account, new Signer(privateKey));
+            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer, updateParameters.Account);
             var request = new Transaction
             {
                 Body = transactionBody,
                 Sigs = signatures
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateExecuteCryptoGetInfoAsyncMethod, checkForRetry);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
             var record = await GetFastRecordAsync(transactionId, context);
-            var result = Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to update account, status: {record.Receipt.Status}", result);
+                throw new TransactionException($"Unable to update account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
             }
+            var result = Protobuf.FromTransactionRecord<AccountTransactionRecord>(record, transactionId);
+            result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
             return result;
 
-            static Func<Transaction, Task<TransactionResponse>> instantiateExecuteCryptoGetInfoAsyncMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Transaction transaction) => await client.createAccountAsync(transaction);
+                return async (Transaction transaction) => await client.updateAccountAsync(transaction);
             }
 
-            static bool checkForRetry(TransactionResponse response)
+            static bool shouldRetry(TransactionResponse response)
             {
                 var code = response.NodeTransactionPrecheckCode;
                 return

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Proto;
+using System;
 
 namespace Hashgraph.Implementation
 {
@@ -7,7 +8,7 @@ namespace Hashgraph.Implementation
     /// can sign transactions.  Not intended for public use.
     /// </summary>
     internal interface ISigner
-    {
-        byte[] Sign(ReadOnlyMemory<byte> data);
+    {        
+        Signature[] Sign(ReadOnlyMemory<byte> data);
     }
 }

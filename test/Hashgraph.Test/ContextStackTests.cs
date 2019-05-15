@@ -7,7 +7,7 @@ namespace Hashgraph.Tests
 {
     public class ContextStackTests
     {
-        [Fact(DisplayName = "Context Tests: Can Set and Reset Gateway Property")]
+        [Fact(DisplayName = "Context: Can Set and Reset Gateway Property")]
         public async Task CanSetAndUnsetGateway()
         {
             var gateway1 = new Gateway("Gateway1", 0, 0, Generator.Integer(3, 100));
@@ -57,7 +57,7 @@ namespace Hashgraph.Tests
                 Assert.Equal(gateway2, context.Gateway);
             });
         }
-        [Fact(DisplayName = "Context Tests: Can Set and Reset Payer Property")]
+        [Fact(DisplayName = "Context: Can Set and Reset Payer Property")]
         public async Task CanSetAndUnsetPayer()
         {
             var account1 = new Account(0, 0, Generator.Integer(3, 100), Generator.KeyPair().privateKey);
@@ -107,7 +107,7 @@ namespace Hashgraph.Tests
                 Assert.Equal(account2, context.Payer);
             });
         }
-        [Fact(DisplayName = "Context Tests: Can Set and Reset FeeLimit Property")]
+        [Fact(DisplayName = "Context: Can Set and Reset FeeLimit Property")]
         public async Task CanSetAndUnsetFeeLimit()
         {
             var defaultValue = 0L;
@@ -133,7 +133,7 @@ namespace Hashgraph.Tests
                 Assert.Equal(defaultValue, context.FeeLimit);
             });
         }
-        [Fact(DisplayName = "Context Tests: Can Set and Reset Transaction Duration Property")]
+        [Fact(DisplayName = "Context: Can Set and Reset Transaction Duration Property")]
         public async Task CanSetAndUnsetTransactionDuration()
         {
             var defaultValue = TimeSpan.Zero;
@@ -159,7 +159,7 @@ namespace Hashgraph.Tests
                 Assert.Equal(defaultValue, context.TransactionDuration);
             });
         }
-        [Fact(DisplayName = "Context Tests: Can Set and Reset Default Memo Property")]
+        [Fact(DisplayName = "Context: Can Set and Reset Default Memo Property")]
         public async Task CanSetAndUnsetMemo()
         {
             var newValue = Generator.String(10, 50);
@@ -184,7 +184,7 @@ namespace Hashgraph.Tests
                 Assert.Null(context.Memo);
             });
         }
-        [Fact(DisplayName = "Context Tests: Can Set and Reset Generate Record Property")]
+        [Fact(DisplayName = "Context: Can Set and Reset Generate Record Property")]
         public async Task CanSetAndUnsetGenerateRecord()
         {
             var defaultValue = false;
@@ -211,7 +211,7 @@ namespace Hashgraph.Tests
                 Assert.Equal(defaultValue, context.GenerateRecord);
             });
         }
-        [Fact(DisplayName = "Context Tests: Can Set and Reset Retry Count Property")]
+        [Fact(DisplayName = "Context: Can Set and Reset Retry Count Property")]
         public async Task CanSetAndUnsetRetryCount()
         {
             var defaultValue = 0;
@@ -237,7 +237,7 @@ namespace Hashgraph.Tests
                 Assert.Equal(defaultValue, context.RetryCount);
             });
         }
-        [Fact(DisplayName = "Context Tests: Can Set and Reset Retry Delay Property")]
+        [Fact(DisplayName = "Context: Can Set and Reset Retry Delay Property")]
         public async Task CanSetAndUnsetRetryDelay()
         {
             var defaultValue = TimeSpan.Zero;

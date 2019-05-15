@@ -21,17 +21,17 @@ namespace Hashgraph
                     TransactionID = transactionId
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateGetTransactionReceiptsAsyncMethod, checkForRetry);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
             ValidateResult.PreCheck(transactionId, response.Header.NodeTransactionPrecheckCode);
             return response.Receipt;
 
-            static Func<Query, Task<TransactionGetReceiptResponse>> instantiateGetTransactionReceiptsAsyncMethod(Channel channel)
+            static Func<Query, Task<TransactionGetReceiptResponse>> getServerMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Query query) => (await client.getTransactionReceiptsAsync(query)).TransactionGetReceipt;
             }
 
-            static bool checkForRetry(TransactionGetReceiptResponse response)
+            static bool shouldRetry(TransactionGetReceiptResponse response)
             {
                 return
                     response.Header.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||

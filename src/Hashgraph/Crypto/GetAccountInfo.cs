@@ -43,17 +43,17 @@ namespace Hashgraph
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateExecuteCryptoGetInfoAsyncMethod, checkForRetry);
+            var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
             ValidateResult.PreCheck(transactionId, data.Header.NodeTransactionPrecheckCode);
             return Protobuf.FromAccountInfo(data.AccountInfo);
 
-            static Func<Query, Task<CryptoGetInfoResponse>> instantiateExecuteCryptoGetInfoAsyncMethod(Channel channel)
+            static Func<Query, Task<CryptoGetInfoResponse>> getServerMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Query query) => (await client.getAccountInfoAsync(query)).CryptoGetInfo;
             }
 
-            static bool checkForRetry(CryptoGetInfoResponse response)
+            static bool shouldRetry(CryptoGetInfoResponse response)
             {
                 var code = response.Header.NodeTransactionPrecheckCode;
                 return

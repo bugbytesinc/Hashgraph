@@ -32,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<CreateAccountRecord> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public async Task<AccountTransactionRecord> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
             createParameters = RequireInputParameter.CreateParameters(createParameters);
             var context = CreateChildContext(configure);
@@ -57,24 +57,24 @@ namespace Hashgraph
                 Body = transactionBody,
                 Sigs = signatures
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateCreateAccountAsyncMethod, checkForRetry);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to create account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
             }
-            var result = Protobuf.FromTransactionRecord<CreateAccountRecord>(record, transactionId);
+            var result = Protobuf.FromTransactionRecord<AccountTransactionRecord>(record, transactionId);
             result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
             return result;
 
-            static Func<Transaction, Task<TransactionResponse>> instantiateCreateAccountAsyncMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Transaction transaction) => await client.createAccountAsync(transaction);
             }
 
-            static bool checkForRetry(TransactionResponse response)
+            static bool shouldRetry(TransactionResponse response)
             {
                 var code = response.NodeTransactionPrecheckCode;
                 return

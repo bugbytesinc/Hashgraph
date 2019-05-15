@@ -8,7 +8,7 @@ namespace Hashgraph
     /// A transaction record containing information concerning 
     /// the crypto transfers associated with the request.
     /// </summary>
-    public class TransferRecord : TransactionRecord
+    public class TransferTransactionRecord : TransactionRecord
     {
         /// <summary>
         /// A map of tinybar transfers to and from accounts.  

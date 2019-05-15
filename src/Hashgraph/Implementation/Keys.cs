@@ -9,8 +9,8 @@ namespace Hashgraph.Implementation
     /// </summary>
     internal static class Keys
     {
-        private static readonly byte[] privateKeyPrefix = Hex.ToBytes("302e020100300506032b6570").ToArray();
-        private static readonly byte[] publicKeyPrefix = Hex.ToBytes("302a300506032b6570032100").ToArray();
+        internal static readonly byte[] privateKeyPrefix = Hex.ToBytes("302e020100300506032b6570").ToArray();
+        internal static readonly byte[] publicKeyPrefix = Hex.ToBytes("302a300506032b6570032100").ToArray();
         internal static Key ImportPrivateEd25519KeyFromBytes(ReadOnlyMemory<byte> privateKey)
         {
             try

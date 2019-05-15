@@ -21,7 +21,7 @@ namespace Hashgraph
                     TransactionID = transactionId
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, instantiateGetTransactionReceiptsAsyncMethod, checkForRetry);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
             if (response.TransactionRecord is null)
             {
                 var expiration = Protobuf.FromTimestamp(transactionId.TransactionValidStart).Add(context.TransactionDuration);
@@ -43,13 +43,13 @@ namespace Hashgraph
                     return response.TransactionRecord;
             }
 
-            static Func<Query, Task<TransactionGetFastRecordResponse>> instantiateGetTransactionReceiptsAsyncMethod(Channel channel)
+            static Func<Query, Task<TransactionGetFastRecordResponse>> getServerMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Query query) => (await client.getFastTransactionRecordAsync(query)).TransactionGetFastRecord;
             }
 
-            static bool checkForRetry(TransactionGetFastRecordResponse response)
+            static bool shouldRetry(TransactionGetFastRecordResponse response)
             {
                 return
                     response.Header.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||

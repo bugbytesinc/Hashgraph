@@ -72,14 +72,16 @@ namespace Hashgraph
             body.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             return body;
         }
-
         internal static SignatureList SignProtoTransactionBody(TransactionBody transactionBody, params ISigner[] signers)
         {
             var signatures = new SignatureList();
             var bytes = transactionBody.ToByteArray();
             foreach (var signer in signers)
             {
-                signatures.Sigs.Add(new Signature { Ed25519 = ByteString.CopyFrom(signer.Sign(bytes)) });
+                foreach(var signature in signer.Sign(bytes))
+                {
+                    signatures.Sigs.Add(signature);
+                }
             }
             return signatures;
         }

@@ -35,7 +35,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransferRecord> TransferAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
+        public async Task<TransferTransactionRecord> TransferAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
         {
             fromAccount = RequireInputParameter.FromAccount(fromAccount);
             toAddress = RequireInputParameter.ToAddress(toAddress);
@@ -52,24 +52,24 @@ namespace Hashgraph
                 Body = transactionBody,
                 Sigs = signatures
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateExecuteCryptoGetBalanceAsyncMethod, checkForRetry);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to execute crypto transfer, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
             }
-            var result = Protobuf.FromTransactionRecord<TransferRecord>(record, transactionId);
+            var result = Protobuf.FromTransactionRecord<TransferTransactionRecord>(record, transactionId);
             result.Transfers = Protobuf.FromTransferList(record.TransferList);
             return result;
 
-            static Func<Transaction, Task<TransactionResponse>> instantiateExecuteCryptoGetBalanceAsyncMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Transaction request) => await client.cryptoTransferAsync(request);
             }
 
-            static bool checkForRetry(TransactionResponse response)
+            static bool shouldRetry(TransactionResponse response)
             {
                 var code = response.NodeTransactionPrecheckCode;
                 return

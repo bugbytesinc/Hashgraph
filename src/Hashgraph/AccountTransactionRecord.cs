@@ -5,7 +5,7 @@ namespace Hashgraph
     /// <summary>
     /// A transaction record containing information concerning the newly created account.
     /// </summary>
-    public sealed class CreateAccountRecord : TransactionRecord
+    public sealed class AccountTransactionRecord : TransactionRecord
     {
         /// <summary>
         /// The address of the newly created account.

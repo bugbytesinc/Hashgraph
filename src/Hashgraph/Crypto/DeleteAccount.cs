@@ -12,7 +12,7 @@ namespace Hashgraph
         // seem to be implemented on testnet at this moment.
         // Marked as private for now until we can confirm
         // it works and incorporate into automated test.
-        private async Task<DeleteAccountRecord> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Action<IContext>? configure = null)
+        private async Task<AccountTransactionRecord> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
             addressToDelete = RequireInputParameter.AddressToDelete(addressToDelete);
             transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
@@ -32,24 +32,24 @@ namespace Hashgraph
                 Body = transactionBody,
                 Sigs = signatures
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, instantiateCryptoDeleteAsyncMethod, checkForRetry);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
             var record = await GetFastRecordAsync(transactionId, context);
             if (record.Receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to delete account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
             }
-            var result = Protobuf.FromTransactionRecord<DeleteAccountRecord>(record, transactionId);
+            var result = Protobuf.FromTransactionRecord<AccountTransactionRecord>(record, transactionId);
             result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
             return result;
 
-            static Func<Proto.Transaction, Task<TransactionResponse>> instantiateCryptoDeleteAsyncMethod(Channel channel)
+            static Func<Proto.Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Proto.Transaction transaction) => await client.cryptoDeleteAsync(transaction);
             }
 
-            static bool checkForRetry(TransactionResponse response)
+            static bool shouldRetry(TransactionResponse response)
             {
                 var code = response.NodeTransactionPrecheckCode;
                 return
@@ -57,11 +57,5 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
-#pragma warning disable CS8618 // Non-nullable field is uninitialized.
-        public class DeleteAccountRecord : TransactionRecord
-        {
-            public Address Address { get; internal set; }
-        }
-#pragma warning restore CS8618 // Non-nullable field is uninitialized.
     }
 }

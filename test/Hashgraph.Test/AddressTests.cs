@@ -5,7 +5,7 @@ namespace Hashgraph.Tests
 {
     public class AddressTests
     {
-        [Fact(DisplayName = "Equivalent Addresses are considered Equal")]
+        [Fact(DisplayName = "Address: Equivalent Addresses are considered Equal")]
         public void EquivalentAddressAreConsideredEqual()
         {
             var realmNum = Generator.Integer(0, 200);
@@ -17,7 +17,7 @@ namespace Hashgraph.Tests
             Assert.True(address1 == address2);
             Assert.False(address1 != address2);
         }
-        [Fact(DisplayName = "Disimilar Addresses are not considered Equal")]
+        [Fact(DisplayName = "Address: Disimilar Addresses are not considered Equal")]
         public void DisimilarAddressesAreNotConsideredEqual()
         {
             var realmNum = Generator.Integer(0, 200);

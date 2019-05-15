@@ -5,7 +5,7 @@ namespace Hashgraph.Tests
 {
     public class GatewayTests
     {
-        [Fact(DisplayName = "Equivalent Gateways are considered Equal")]
+        [Fact(DisplayName = "Gateway: Equivalent Gateways are considered Equal")]
         public void EquivalentGatewaysAreConsideredEqual()
         {
             var url = "testnet.hedera.com:123";
@@ -18,7 +18,7 @@ namespace Hashgraph.Tests
             Assert.True(gateway1 == gateway2);
             Assert.False(gateway1 != gateway2);
         }
-        [Fact(DisplayName = "Disimilar Gateways are not considered Equal")]
+        [Fact(DisplayName = "Gateway: Disimilar Gateways are not considered Equal")]
         public void DisimilarGatewaysAreNotConsideredEqual()
         {
             var url = "testnet.hedera.com:123";
