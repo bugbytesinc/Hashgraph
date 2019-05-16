@@ -9,7 +9,58 @@ namespace Hashgraph
 {
     public partial class Client
     {
-        public async Task<FileTransactionRecord> CreateFileAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
+        /// <summary>
+        /// Creates a new file with the given content.
+        /// </summary>
+        /// <param name="createParameters">
+        /// File creation parameters specifying contents and ownership of the file.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction receipt with a description of the newly created file.
+        /// and record information.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<FileReceipt> CreateFileAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
+        {
+            return CreateFileImplementationAsync<FileReceipt>(createParameters, configure);
+        }
+        /// <summary>
+        /// Creates a new file with the given content.
+        /// </summary>
+        /// <param name="createParameters">
+        /// File creation parameters specifying contents and ownership of the file.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction record with a description of the newly created file & fees.
+        /// and record information.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<FileRecord> CreateFileWithRecordAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
+        {
+            return CreateFileImplementationAsync<FileRecord>(createParameters, configure);
+        }
+        /// <summary>
+        /// Internal implementation of the Create File service.
+        /// </summary>
+        public async Task<TResult> CreateFileImplementationAsync<TResult>(CreateFileParams createParameters, Action<IContext>? configure) where TResult : new()
         {
             createParameters = RequireInputParameter.CreateParameters(createParameters);
             var context = CreateChildContext(configure);
@@ -25,35 +76,37 @@ namespace Hashgraph
                 ShardID = Protobuf.ToShardID(gateway.ShardNum),
                 RealmID = Protobuf.ToRealmID(gateway.RealmNum, gateway.ShardNum)
             };
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
-            var request = new Transaction
-            {
-                Body = transactionBody,
-                Sigs = signatures
-            };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
+            var request = Transactions.SignTransaction(transactionBody, payer);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
-            var record = await GetFastRecordAsync(transactionId, context);
-            if (record.Receipt.Status != ResponseCodeEnum.Success)
+            var receipt = await GetReceiptAsync(context, transactionId);
+            if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create file, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
+                throw new TransactionException($"Unable to create file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
-            var result = Protobuf.FromTransactionRecord<FileTransactionRecord>(record, transactionId);
-            result.File = Protobuf.FromFileID(record.Receipt.FileID);
+            var result = new TResult();
+            if (result is FileReceipt rcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                rcpt.File = Protobuf.FromFileID(receipt.FileID);
+            }
+            else if (result is FileRecord rec)
+            {
+                var record = await GetTransactionRecordAsync(context, transactionId);
+                Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+                rec.File = Protobuf.FromFileID(receipt.FileID);
+            }
             return result;
 
-            static Func<Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
                 var client = new FileService.FileServiceClient(channel);
                 return async (Transaction transaction) => await client.createFileAsync(transaction);
             }
 
-            static bool shouldRetry(TransactionResponse response)
+            static ResponseCodeEnum getResponseCode(TransactionResponse response)
             {
-                var code = response.NodeTransactionPrecheckCode;
-                return
-                    code == ResponseCodeEnum.Busy ||
-                    code == ResponseCodeEnum.InvalidTransactionStart;
+                return response.NodeTransactionPrecheckCode;
             }
         }
     }

@@ -8,13 +8,33 @@ namespace Hashgraph
 {
     public partial class Client
     {
-        // Premature Implementation of this feature, does not
-        // seem to be implemented on testnet at this moment.
-        // Marked as private for now until we can confirm
-        // it works and incorporate into automated test.
-        private async Task<AccountTransactionRecord> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Action<IContext>? configure = null)
+        /// <summary>
+        /// Deletes an account from the network returning the remaining 
+        /// crypto balance to the specified account.  Must be signed 
+        /// by the account being deleted.
+        /// </summary>
+        /// <param name="accountToDelete">
+        /// The account that will be deleted.
+        /// </param>
+        /// <param name="transferToAddress">
+        /// The account that will receive any remaining balance from the deleted account.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction receipt indicating a successful operation.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public async Task<TransactionReceipt> DeleteAccountAsync(Account accountToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
-            addressToDelete = RequireInputParameter.AddressToDelete(addressToDelete);
+            accountToDelete = RequireInputParameter.AccountToDelete(accountToDelete);
             transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
@@ -23,38 +43,30 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Delete Account");
             transactionBody.CryptoDelete = new CryptoDeleteTransactionBody
             {
-                DeleteAccountID = Protobuf.ToAccountID(addressToDelete),
+                DeleteAccountID = Protobuf.ToAccountID(accountToDelete),
                 TransferAccountID = Protobuf.ToAccountID(transferToAddress)
             };
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
-            var request = new Proto.Transaction
-            {
-                Body = transactionBody,
-                Sigs = signatures
-            };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
+            var request = Transactions.SignTransaction(transactionBody, accountToDelete, payer);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
-            var record = await GetFastRecordAsync(transactionId, context);
-            if (record.Receipt.Status != ResponseCodeEnum.Success)
+            var receipt = await GetReceiptAsync(context, transactionId);
+            if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to delete account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
+                throw new TransactionException($"Unable to delete account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
-            var result = Protobuf.FromTransactionRecord<AccountTransactionRecord>(record, transactionId);
-            result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
+            var result = new TransactionReceipt();
+            Protobuf.FillReceiptProperties(transactionId, receipt, result);
             return result;
 
-            static Func<Proto.Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Proto.Transaction transaction) => await client.cryptoDeleteAsync(transaction);
+                return async (Transaction transaction) => await client.cryptoDeleteAsync(transaction);
             }
 
-            static bool shouldRetry(TransactionResponse response)
+            static ResponseCodeEnum getResponseCode(TransactionResponse response)
             {
-                var code = response.NodeTransactionPrecheckCode;
-                return
-                    code == ResponseCodeEnum.Busy ||
-                    code == ResponseCodeEnum.InvalidTransactionStart;
+                return response.NodeTransactionPrecheckCode;
             }
         }
     }

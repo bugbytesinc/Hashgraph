@@ -9,6 +9,6 @@ namespace Hashgraph.Implementation
     /// </summary>
     internal interface ISigner
     {        
-        Signature[] Sign(ReadOnlyMemory<byte> data);
+        SignaturePair[] Sign(ReadOnlyMemory<byte> data);
     }
 }

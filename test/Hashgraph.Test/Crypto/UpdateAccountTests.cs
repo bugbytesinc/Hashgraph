@@ -125,30 +125,5 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(newValue, updatedInfo.AutoRenewPeriod);
         }
-        [Fact(DisplayName = "Update Account: Can Update Expiration")]
-        public async Task CanUpdateExpiration()
-        {
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = 1,
-                PublicKey = publicKey
-            });
-            Assert.Equal(ResponseCode.Success, createResult.Status);
-
-            var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
-
-            var newValue = originalInfo.Expiration.Add(TimeSpan.FromDays(Generator.Integer(30, 60)));
-            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
-            {
-                Account = new Account(createResult.Address, privateKey),
-                Expiration = newValue
-            });
-            Assert.Equal(ResponseCode.Success, updateResult.Status);
-
-            var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(newValue, updatedInfo.Expiration);
-        }
     }
 }

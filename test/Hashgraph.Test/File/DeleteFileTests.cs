@@ -24,13 +24,9 @@ namespace Hashgraph.Test.File
             Assert.NotNull(result);            
             Assert.Equal(ResponseCode.Success, result.Status);
 
-            var info = await test.Client.GetFileInfoAsync(test.CreateRecord.File);
-            Assert.NotNull(info);
-            Assert.Equal(test.CreateRecord.File, info.File);
-            Assert.Equal(0, info.Size);
-            Assert.Equal(test.Expiration, info.Expiration);
-            Assert.Equal(new Endorsements(test.PublicKey), info.Endorsements);
-            Assert.True(info.Deleted);
+            var exception = await Assert.ThrowsAnyAsync<PrecheckException>(async () => {
+                await test.Client.GetFileInfoAsync(test.CreateRecord.File);
+            });
         }
     }
 }

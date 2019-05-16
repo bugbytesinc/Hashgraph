@@ -25,14 +25,49 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction record with a description of the newly created account.
+        /// A transaction recipt with a description of the newly created account.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<AccountTransactionRecord> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public Task<AccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        {
+            return CreateAccountImplementationAsync<AccountReceipt>(createParameters, configure);
+        }
+        /// <summary>
+        /// Creates a new network account with a given initial balance
+        /// and other values as indicated in the create parameters.
+        /// </summary>
+        /// <param name="createParameters">
+        /// The account creation parameters, includes the initial balance,
+        /// public key and values associated with the new account.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction record with a description of the newly created account
+        /// and record information.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<AccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        {
+            return CreateAccountImplementationAsync<AccountRecord>(createParameters, configure);
+        }
+        /// <summary>
+        /// Internal implementation for Create Account
+        /// Returns either a receipt or record or throws
+        /// an exception.
+        /// </summary>
+        private async Task<TResult> CreateAccountImplementationAsync<TResult>(CreateAccountParams createParameters, Action<IContext>? configure) where TResult : new()
         {
             createParameters = RequireInputParameter.CreateParameters(createParameters);
             var context = CreateChildContext(configure);
@@ -51,35 +86,37 @@ namespace Hashgraph
                 ReceiverSigRequired = createParameters.RequireReceiveSignature,
                 AutoRenewPeriod = Protobuf.ToDuration(createParameters.AutoRenewPeriod),
             };
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
-            var request = new Transaction
-            {
-                Body = transactionBody,
-                Sigs = signatures
-            };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
+            var request = Transactions.SignTransaction(transactionBody, payer);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
-            var record = await GetFastRecordAsync(transactionId, context);
-            if (record.Receipt.Status != ResponseCodeEnum.Success)
+            var receipt = await GetReceiptAsync(context, transactionId);
+            if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create account, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
+                throw new TransactionException($"Unable to create account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
-            var result = Protobuf.FromTransactionRecord<AccountTransactionRecord>(record, transactionId);
-            result.Address = Protobuf.FromAccountID(record.Receipt.AccountID);
+            var result = new TResult();
+            if (result is AccountReceipt arcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
+                arcpt.Address = Protobuf.FromAccountID(receipt.AccountID);
+            }
+            else if (result is AccountRecord arec)
+            {
+                var record = await GetTransactionRecordAsync(context, transactionId);
+                Protobuf.FillRecordProperties(transactionId, receipt, record, arec);
+                arec.Address = Protobuf.FromAccountID(receipt.AccountID);
+            }
             return result;
 
-            static Func<Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Transaction transaction) => await client.createAccountAsync(transaction);
             }
 
-            static bool shouldRetry(TransactionResponse response)
+            static ResponseCodeEnum getResponseCode(TransactionResponse response)
             {
-                var code = response.NodeTransactionPrecheckCode;
-                return
-                    code == ResponseCodeEnum.Busy ||
-                    code == ResponseCodeEnum.InvalidTransactionStart;
+                return response.NodeTransactionPrecheckCode;
             }
         }
     }

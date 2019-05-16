@@ -14,7 +14,7 @@ namespace Hashgraph.Test.File
         public DateTime Expiration;
         public Account Payer;
         public Client Client;
-        public FileTransactionRecord CreateRecord;
+        public FileRecord CreateRecord;
         public NetworkCredentialsFixture NetworkCredentials;
 
         public static async Task<TestFileInstance> CreateAsync(NetworkCredentialsFixture networkCredentials)
@@ -24,7 +24,7 @@ namespace Hashgraph.Test.File
             test.NetworkCredentials.TestOutput?.WriteLine("TestFileInstance: STARTING SETUP");
             test.Contents = Encoding.Unicode.GetBytes("Hello Hashgraph " + Generator.Code(50));
             (test.PublicKey, test.PrivateKey) = Generator.KeyPair();
-            test.Expiration = DateTime.UtcNow.AddHours(2);
+            test.Expiration = Generator.TruncatedFutureDate(2, 4);
             test.Payer = new Account(
                     networkCredentials.AccountRealm,
                     networkCredentials.AccountShard,
@@ -33,7 +33,7 @@ namespace Hashgraph.Test.File
                     test.PrivateKey);
             test.Client = networkCredentials.CreateClientWithDefaultConfiguration();
             test.Client.Configure(ctx => { ctx.Payer = test.Payer; });
-            test.CreateRecord = await test.Client.CreateFileAsync(new CreateFileParams
+            test.CreateRecord = await test.Client.CreateFileWithRecordAsync(new CreateFileParams
             {
                 Expiration = test.Expiration,
                 Endorsements = new Endorsements(test.PublicKey),

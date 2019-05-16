@@ -9,7 +9,59 @@ namespace Hashgraph
 {
     public partial class Client
     {
-        public async Task<TransactionRecord> UpdateFileAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
+        /// <summary>
+        /// Updates the properties or contents of an existing file stored in the network.
+        /// </summary>
+        /// <param name="updateParameters">
+        /// Update parameters indicating the file to update and what properties such 
+        /// as the access key or content that should be updated.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction receipt indicating the operation was successful.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionReceipt> UpdateFileAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
+        {
+            return UpdateFileImplementationAsync<TransactionReceipt>(updateParameters, configure);
+        }
+        /// <summary>
+        /// Updates the properties or contents of an existing file stored in the network.
+        /// </summary>
+        /// <param name="updateParameters">
+        /// Update parameters indicating the file to update and what properties such 
+        /// as the access key or content that should be updated.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction record describing the details of the operation 
+        /// including fees and transaction hash.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionRecord> UpdateFileWithRecordAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
+        {
+            return UpdateFileImplementationAsync<TransactionRecord>(updateParameters, configure);
+        }
+        /// <summary>
+        /// Internal helper method implementing the file update service.
+        /// </summary>
+        public async Task<TResult> UpdateFileImplementationAsync<TResult>(UpdateFileParams updateParameters, Action<IContext>? configure) where TResult : new()
         {
             updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
             var context = CreateChildContext(configure);
@@ -23,10 +75,6 @@ namespace Hashgraph
             {
                 updateFileBody.Keys = Protobuf.ToPublicKeyList(updateParameters.Endorsements);
             }
-            if (updateParameters.Expiration.HasValue)
-            {
-                updateFileBody.ExpirationTime = Protobuf.ToTimestamp(updateParameters.Expiration.Value);
-            }
             if (updateParameters.Contents.HasValue)
             {
                 updateFileBody.Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
@@ -34,33 +82,35 @@ namespace Hashgraph
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Update File");
             transactionBody.FileUpdate = updateFileBody;
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
-            var request = new Transaction
-            {
-                Body = transactionBody,
-                Sigs = signatures
-            };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
+            var request = Transactions.SignTransaction(transactionBody, payer);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
-            var record = await GetFastRecordAsync(transactionId, context);
-            if (record.Receipt.Status != ResponseCodeEnum.Success)
+            var receipt = await GetReceiptAsync(context, transactionId);
+            if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to update file, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
+                throw new TransactionException($"Unable to update file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
-            return Protobuf.FromTransactionRecord<FileTransactionRecord>(record, transactionId);
+            var result = new TResult();
+            if (result is TransactionReceipt rcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+            }
+            else if (result is TransactionRecord rec)
+            {
+                var record = await GetTransactionRecordAsync(context, transactionId);
+                Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+            }
+            return result;
 
-            static Func<Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
                 var client = new FileService.FileServiceClient(channel);
                 return async (Transaction transaction) => await client.updateFileAsync(transaction);
             }
 
-            static bool shouldRetry(TransactionResponse response)
+            static ResponseCodeEnum getResponseCode(TransactionResponse response)
             {
-                var code = response.NodeTransactionPrecheckCode;
-                return
-                    code == ResponseCodeEnum.Busy ||
-                    code == ResponseCodeEnum.InvalidTransactionStart;
+                return response.NodeTransactionPrecheckCode;
             }
         }
     }

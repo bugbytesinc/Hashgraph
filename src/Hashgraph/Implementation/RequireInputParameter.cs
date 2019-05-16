@@ -19,13 +19,13 @@ namespace Hashgraph.Implementation
             }
             return address;
         }
-        internal static Address AddressToDelete(Address addressToDelete)
+        internal static Account AccountToDelete(Account accountToDelete)
         {
-            if (addressToDelete is null)
+            if (accountToDelete is null)
             {
-                throw new ArgumentNullException(nameof(addressToDelete), "Account to Delete is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(accountToDelete), "Account to Delete is missing. Please check that it is not null.");
             }
-            return addressToDelete;
+            return accountToDelete;
         }
         internal static Address File(Address file)
         {
@@ -43,8 +43,6 @@ namespace Hashgraph.Implementation
             }
             return fileToDelete;
         }
-
-
         internal static Address TransferToAddress(Address transferToAddress)
         {
             if (transferToAddress is null)
@@ -53,7 +51,6 @@ namespace Hashgraph.Implementation
             }
             return transferToAddress;
         }
-
         internal static Account FromAccount(Account fromAccount)
         {
             if (fromAccount is null)
@@ -62,7 +59,6 @@ namespace Hashgraph.Implementation
             }
             return fromAccount;
         }
-
         internal static Address ToAddress(Address toAddress)
         {
             if (toAddress is null)
@@ -71,7 +67,6 @@ namespace Hashgraph.Implementation
             }
             return toAddress;
         }
-
         internal static long Amount(long amount)
         {
             if (amount < 1)
@@ -108,7 +103,6 @@ namespace Hashgraph.Implementation
             }
             return accountNum;
         }
-
         internal static long ShardNumber(long shardNum)
         {
             if (shardNum < 0)
@@ -117,7 +111,6 @@ namespace Hashgraph.Implementation
             }
             return shardNum;
         }
-
         internal static long RealmNumber(long realmNum)
         {
             if (realmNum < 0)
@@ -134,15 +127,14 @@ namespace Hashgraph.Implementation
             }
             return url;
         }
-
         internal static PublicKey[] PublicKeys(ReadOnlyMemory<byte>[] publicKeys)
         {
-            if(publicKeys.Length == 0)
+            if (publicKeys.Length == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(publicKeys), "At least one public key is required.");
             }
             var result = new PublicKey[publicKeys.Length];
-            for(int i = 0; i < publicKeys.Length; i ++ )
+            for (int i = 0; i < publicKeys.Length; i++)
             {
                 try
                 {
@@ -175,20 +167,18 @@ namespace Hashgraph.Implementation
             }
             return result;
         }
-
         internal static int RequiredCount(int requiredCount, int maxCount)
         {
             if (requiredCount < 1)
             {
                 throw new ArgumentOutOfRangeException(nameof(requiredCount), "At least one key is required to sign a transaction.");
             }
-            else if(requiredCount > maxCount)
+            else if (requiredCount > maxCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(requiredCount), "The required number of keys for a valid signature cannot exceed the number of public keys provided.");
             }
             return requiredCount;
         }
-
         internal static CreateAccountParams CreateParameters(CreateAccountParams createParameters)
         {
             if (createParameters is null)
@@ -215,13 +205,12 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(createParameters), "The create parameters are is missing. Please check that the argument is not null.");
             }
-            if(createParameters.Endorsements is null)
+            if (createParameters.Endorsements is null)
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.Endorsements), "Endorsements are required.");
             }
             return createParameters;
         }
-
         internal static UpdateFileParams UpdateParameters(UpdateFileParams updateParameters)
         {
             if (updateParameters is null)
@@ -233,14 +222,12 @@ namespace Hashgraph.Implementation
                 throw new ArgumentNullException(nameof(updateParameters.File), "File identifier is is missing. Please check that it is not null.");
             }
             if (updateParameters.Endorsements is null &&
-                updateParameters.Expiration is null &&
                 updateParameters.Contents is null)
             {
                 throw new ArgumentException(nameof(updateParameters), "The File Update parameters contain no update properties, it is blank.");
             }
             return updateParameters;
         }
-
         internal static AppendFileParams AppendParameters(AppendFileParams appendParameters)
         {
             if (appendParameters is null)

@@ -33,7 +33,7 @@ namespace Hashgraph.Test.File
             var newContent = await test.Client.GetFileContentAsync(test.CreateRecord.File);
             Assert.Equal(concatinatedContent.ToArray(), newContent.ToArray());
         }
-        [Fact(DisplayName = "File Append: Append to Deleted File Actually Works?")]
+        [Fact(DisplayName = "File Append: Append to Deleted File Throws Exception")]
         public async Task AppendingToDeletedFileThrowsError()
         {
             await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
@@ -42,23 +42,14 @@ namespace Hashgraph.Test.File
             var deleteRecord = await test.Client.DeleteFileAsync(test.CreateRecord.File);
             Assert.Equal(ResponseCode.Success, deleteRecord.Status);
 
-            var appendRecord = await test.Client.AppendFileAsync(new AppendFileParams
-            {
-                File = test.CreateRecord.File,
-                Contents = appendedContent
+            var exception = await Assert.ThrowsAnyAsync<TransactionException>(async () => {
+                await test.Client.AppendFileAsync(new AppendFileParams
+                {
+                    File = test.CreateRecord.File,
+                    Contents = appendedContent
+                });
             });
-            Assert.Equal(ResponseCode.Success, appendRecord.Status);
-
-            var info = await test.Client.GetFileInfoAsync(test.CreateRecord.File);
-            Assert.NotNull(info);
-            Assert.Equal(test.CreateRecord.File, info.File);
-            Assert.Equal(appendedContent.Length, info.Size);
-            Assert.Equal(test.Expiration, info.Expiration);
-            Assert.Equal(new Endorsements(test.PublicKey), info.Endorsements);
-            Assert.True(info.Deleted);
-
-            var afterAppendContents = await test.Client.GetFileContentAsync(test.CreateRecord.File);
-            Assert.Equal(appendedContent, afterAppendContents.ToArray());
+            Assert.StartsWith("Unable to append to file, status: FileDeleted", exception.Message);
         }
     }
 }

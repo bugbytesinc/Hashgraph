@@ -72,17 +72,14 @@ namespace Hashgraph.Implementation
 
         internal static Duration ToDuration(TimeSpan timespan)
         {
-            long seconds = (long)timespan.TotalSeconds;
-            int nanos = (int)((timespan.Ticks - (seconds * TimeSpan.TicksPerSecond)) * NanosPerTick);
             return new Duration
             {
-                Seconds = seconds,
-                Nanos = nanos
+                Seconds = (long)timespan.TotalSeconds
             };
         }
         internal static TimeSpan FromDuration(Duration duration)
         {
-            return TimeSpan.FromTicks(duration.Seconds * TimeSpan.TicksPerSecond + duration.Nanos / NanosPerTick);
+            return TimeSpan.FromSeconds(duration.Seconds);
         }
 
         internal static Timestamp ToTimestamp(DateTime dateTime)
@@ -113,9 +110,9 @@ namespace Hashgraph.Implementation
         private static Endorsements FromPublicKeyList(KeyList keys)
         {
             var publicKeys = new List<ReadOnlyMemory<byte>>(keys.Keys.Count);
-            foreach(var key in keys.Keys)
+            foreach (var key in keys.Keys)
             {
-                if(key.KeyCase == Key.KeyOneofCase.Ed25519)
+                if (key.KeyCase == Key.KeyOneofCase.Ed25519)
                 {
                     publicKeys.Add(new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
                 }
@@ -124,7 +121,7 @@ namespace Hashgraph.Implementation
         }
         private static Endorsements FromPublicKey(Key key)
         {
-            switch(key.KeyCase)
+            switch (key.KeyCase)
             {
                 case Key.KeyOneofCase.Ed25519:
                     return new Endorsements(new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
@@ -140,15 +137,13 @@ namespace Hashgraph.Implementation
                 Address = FromAccountID(accountInfo.AccountID),
                 SmartContractId = accountInfo.ContractAccountID,
                 Deleted = accountInfo.Deleted,
-                Proxy = FromAccountID(accountInfo.ProxyAccountID), 
-                ProxyShareFraction = accountInfo.ProxyFraction,
+                Proxy = FromAccountID(accountInfo.ProxyAccountID),
                 ProxiedToAccount = accountInfo.ProxyReceived,
                 Endorsements = FromPublicKey(accountInfo.Key),
                 Balance = accountInfo.Balance,
                 SendThresholdCreateRecord = accountInfo.GenerateSendRecordThreshold,
                 ReceiveThresholdCreateRecord = accountInfo.GenerateReceiveRecordThreshold,
                 ReceiveSignatureRequired = accountInfo.ReceiverSigRequired,
-                Expiration = FromTimestamp(accountInfo.ExpirationTime),
                 AutoRenewPeriod = FromDuration(accountInfo.AutoRenewPeriod)
             };
         }
@@ -163,26 +158,6 @@ namespace Hashgraph.Implementation
                 Deleted = fileInfo.Deleted
             };
         }
-
-        // Note: sometimes when this is being used to create
-        // a context for throwing an exception (because
-        // the transaction failed, or the server is too busy
-        // for the given retry settings) the transaction ID
-        // is not returned in the <code>TransactionRecord</code>.
-        // However, the calling context should allways know the
-        // transaction so it is passed in as a backup.
-        internal static TRecord FromTransactionRecord<TRecord>(Proto.TransactionRecord record, TransactionID originatingID) where TRecord : TransactionRecord, new()
-        {
-            return new TRecord
-            {
-                Id = FromTransactionId(record.TransactionID ?? originatingID),
-                Status = (ResponseCode)record.Receipt.Status,
-                Hash = record.TransactionHash?.ToByteArray(),
-                Concensus = record.ConsensusTimestamp == null ? null : (DateTime?) FromTimestamp(record.ConsensusTimestamp),
-                Memo = record.Memo,
-                Fee = record.TransactionFee
-            };
-        }
         internal static ReadOnlyDictionary<Address, long> FromTransferList(TransferList transferList)
         {
             var results = new Dictionary<Address, long>();
@@ -193,6 +168,20 @@ namespace Hashgraph.Implementation
                 results[account] = amount + xfer.Amount;
             }
             return new ReadOnlyDictionary<Address, long>(results);
+        }
+        internal static void FillReceiptProperties(TransactionID transactionId, Proto.TransactionReceipt receipt, TransactionReceipt result)
+        {
+            result.Id = Protobuf.FromTransactionId(transactionId);
+            result.Status = (ResponseCode)receipt.Status;
+        }
+        internal static void FillRecordProperties(TransactionID transactionId, Proto.TransactionReceipt receipt, Proto.TransactionRecord record, TransactionRecord result)
+        {
+            result.Id = Protobuf.FromTransactionId(transactionId);
+            result.Status = (ResponseCode)receipt.Status;
+            result.Hash = record.TransactionHash?.ToByteArray();
+            result.Concensus = record.ConsensusTimestamp == null ? null : (DateTime?)Protobuf.FromTimestamp(record.ConsensusTimestamp);
+            result.Memo = record.Memo;
+            result.Fee = record.TransactionFee;
         }
     }
 }

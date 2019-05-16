@@ -15,7 +15,7 @@ namespace Hashgraph.Test.File
             _networkCredentials.TestOutput = output;
         }
         [Fact(DisplayName = "File Content: Can Get File Content")]
-        public async Task CanCreateAndDeleteAFileAsync()
+        public async Task CanGetFileContent()
         {
             await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
 

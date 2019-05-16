@@ -74,9 +74,13 @@ namespace Hashgraph
         /// the protobuf format.
         /// </param>
         /// <returns>A list of Ed25519 Signatures, one for each private key held by this object.</returns>
-        Proto.Signature[] ISigner.Sign(ReadOnlyMemory<byte> data)
+        Proto.SignaturePair[] ISigner.Sign(ReadOnlyMemory<byte> data)
         {
-            return _keys.Select(k => new Proto.Signature { Ed25519 = ByteString.CopyFrom(SignatureAlgorithm.Ed25519.Sign(k, data.Span)) }).ToArray();
+            return _keys.Select(k => new Proto.SignaturePair
+            {
+                PubKeyPrefix = ByteString.CopyFrom(k.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray()),
+                Ed25519 = ByteString.CopyFrom(SignatureAlgorithm.Ed25519.Sign(k, data.Span))
+            }).ToArray();
         }
         /// <summary>
         /// .NET Dispose implementation, releases internal resources holding 

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Hashgraph
 {
+    /// <summary>
+    /// Account creation parameters.
+    /// </summary>
     public class CreateAccountParams
     {
         /// <summary>

@@ -9,7 +9,56 @@ namespace Hashgraph
 {
     public partial class Client
     {
-        public async Task<TransactionRecord> AppendFileAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
+        /// <summary>
+        /// Appends content to an existing file.
+        /// </summary>
+        /// <param name="appendParameters">
+        /// Configuration object identifying the file and contents to append.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction receipt indicating the success of the operation.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionReceipt> AppendFileAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
+        {
+            return AppendFileImplementationAsync<TransactionReceipt>(appendParameters, configure);
+        }
+        /// <summary>
+        /// Appends content to an existing file.
+        /// </summary>
+        /// <param name="appendParameters">
+        /// Configuration object identifying the file and contents to append.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction receipt containing the details of the transaction & fees.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionRecord> AppendFileWithRecordAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
+        {
+            return AppendFileImplementationAsync<TransactionRecord>(appendParameters, configure);
+        }
+        /// <summary>
+        /// Internal helper function implementing file append services.
+        /// </summary>
+        public async Task<TResult> AppendFileImplementationAsync<TResult>(AppendFileParams appendParameters, Action<IContext>? configure = null) where TResult : new()
         {
             appendParameters = RequireInputParameter.AppendParameters(appendParameters);
             var context = CreateChildContext(configure);
@@ -23,33 +72,35 @@ namespace Hashgraph
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Append File Content");
             transactionBody.FileAppend = appendFileBody;
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
-            var request = new Transaction
-            {
-                Body = transactionBody,
-                Sigs = signatures
-            };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
+            var request = Transactions.SignTransaction(transactionBody, payer);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
-            var record = await GetFastRecordAsync(transactionId, context);
-            if (record.Receipt.Status != ResponseCodeEnum.Success)
+            var receipt = await GetReceiptAsync(context, transactionId);
+            if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to append to file, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
+                throw new TransactionException($"Unable to append to file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
-            return Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId);
+            var result = new TResult();
+            if (result is TransactionReceipt rcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+            }
+            else if (result is TransactionRecord rec)
+            {
+                var record = await GetTransactionRecordAsync(context, transactionId);
+                Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+            }
+            return result;
 
-            static Func<Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
                 var client = new FileService.FileServiceClient(channel);
                 return async (Transaction transaction) => await client.appendContentAsync(transaction);
             }
 
-            static bool shouldRetry(TransactionResponse response)
+            static ResponseCodeEnum getResponseCode(TransactionResponse response)
             {
-                var code = response.NodeTransactionPrecheckCode;
-                return
-                    code == ResponseCodeEnum.Busy ||
-                    code == ResponseCodeEnum.InvalidTransactionStart;
+                return response.NodeTransactionPrecheckCode;
             }
         }
     }

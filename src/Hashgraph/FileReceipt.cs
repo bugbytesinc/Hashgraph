@@ -3,9 +3,9 @@
 namespace Hashgraph
 {
     /// <summary>
-    /// A transaction record containing information concerning the newly created file.
+    /// A transaction receipt containing information concerning the newly created file.
     /// </summary>
-    public sealed class FileTransactionRecord : TransactionRecord
+    public sealed class FileReceipt : TransactionReceipt
     {
         /// <summary>
         /// The address of the newly created file.

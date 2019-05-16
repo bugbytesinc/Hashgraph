@@ -8,7 +8,57 @@ namespace Hashgraph
 {
     public partial class Client
     {
-        public async Task<TransactionRecord> DeleteFileAsync(Address fileToDelete, Action<IContext>? configure = null)
+        /// <summary>
+        /// Removes a file from the network.
+        /// </summary>
+        /// <param name="fileToDelete">
+        /// The address of the file to delete.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction receipt indicating success of the file deletion.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionReceipt> DeleteFileAsync(Address fileToDelete, Action<IContext>? configure = null)
+        {
+            return DeleteFileImplementationAsync<TransactionReceipt>(fileToDelete, configure);
+        }
+        /// <summary>
+        /// Removes a file from the network.
+        /// </summary>
+        /// <param name="fileToDelete">
+        /// The address of the file to delete.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction record indicating success of the file deletion,
+        /// fees & other transaction details.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionRecord> DeleteFileWithRecordAsync(Address fileToDelete, Action<IContext>? configure = null)
+        {
+            return DeleteFileImplementationAsync<TransactionRecord>(fileToDelete, configure);
+        }
+        /// <summary>
+        /// Internal helper function implementing the file delete functionality.
+        /// </summary>
+        public async Task<TResult> DeleteFileImplementationAsync<TResult>(Address fileToDelete, Action<IContext>? configure = null) where TResult : new()
         {
             fileToDelete = RequireInputParameter.FileToDelete(fileToDelete);
             var context = CreateChildContext(configure);
@@ -20,33 +70,35 @@ namespace Hashgraph
             {
                 FileID = Protobuf.ToFileId(fileToDelete)
             };
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
-            var request = new Transaction
-            {
-                Body = transactionBody,
-                Sigs = signatures
-            };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getServerMethod, shouldRetry);
+            var request = Transactions.SignTransaction(transactionBody, payer);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
-            var record = await GetFastRecordAsync(transactionId, context);
-            if (record.Receipt.Status != ResponseCodeEnum.Success)
+            var receipt = await GetReceiptAsync(context, transactionId);
+            if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to delete file, status: {record.Receipt.Status}", Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId));
+                throw new TransactionException($"Unable to delete file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
-            return Protobuf.FromTransactionRecord<TransactionRecord>(record, transactionId);
+            var result = new TResult();
+            if (result is TransactionReceipt rcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+            }
+            else if (result is TransactionRecord rec)
+            {
+                var record = await GetTransactionRecordAsync(context, transactionId);
+                Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+            }
+            return result;
 
-            static Func<Transaction, Task<TransactionResponse>> getServerMethod(Channel channel)
+            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
                 var client = new FileService.FileServiceClient(channel);
                 return async (Transaction transaction) => await client.deleteFileAsync(transaction);
             }
 
-            static bool shouldRetry(TransactionResponse response)
+            static ResponseCodeEnum getResponseCode(TransactionResponse response)
             {
-                var code = response.NodeTransactionPrecheckCode;
-                return
-                    code == ResponseCodeEnum.Busy ||
-                    code == ResponseCodeEnum.InvalidTransactionStart;
+                return response.NodeTransactionPrecheckCode;
             }
         }
     }

@@ -34,31 +34,27 @@ namespace Hashgraph
             var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Balance");
-            var signatures = Transactions.SignProtoTransactionBody(transactionBody, payer);
             var query = new Query
             {
                 CryptogetAccountBalance = new CryptoGetAccountBalanceQuery
                 {
-                    Header = Transactions.CreateProtoQueryHeader(transactionBody, signatures),
+                    Header = Transactions.SignQueryHeader(transactionBody, payer),
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
-            ValidateResult.PreCheck(transactionId, response.Header.NodeTransactionPrecheckCode);
-            return response.Balance;
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            return response.CryptogetAccountBalance.Balance;
 
-            static Func<Query, Task<CryptoGetAccountBalanceResponse>> getServerMethod(Channel channel)
+            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Query query) => (await client.cryptoGetBalanceAsync(query)).CryptogetAccountBalance;
+                return async (Query query) => (await client.cryptoGetBalanceAsync(query));
             }
 
-            static bool shouldRetry(CryptoGetAccountBalanceResponse response)
+            static ResponseCodeEnum getResponseCode(Response response)
             {
-                var code = response.Header.NodeTransactionPrecheckCode;
-                return
-                    code == ResponseCodeEnum.Busy ||
-                    code == ResponseCodeEnum.InvalidTransactionStart;
+                return response.CryptogetAccountBalance?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             }
         }
     }

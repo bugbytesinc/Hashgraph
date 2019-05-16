@@ -33,12 +33,6 @@ namespace Hashgraph
         /// </summary>
         public Address Proxy { get; internal set; }
         /// <summary>
-        /// Metric indicating the fraction of payments earned by
-        /// the proxy node that are shared with this account,
-        /// with <code>proxyFraction / 10000</code> going to this account.
-        /// </summary>
-        public int ProxyShareFraction { get; internal set; }
-        /// <summary>
         /// The total number of tinybars that are proxy staked to this account.
         /// </summary>
         public long ProxiedToAccount { get; internal set; }
@@ -69,10 +63,6 @@ namespace Hashgraph
         /// a signature from this account.
         /// </summary>
         public bool ReceiveSignatureRequired { get; internal set; }
-        /// <summary>
-        /// Date this account expires if not renewed.
-        /// </summary>
-        public DateTime Expiration { get; internal set; }
         /// <summary>
         /// Incremental period for auto-renewal of the account. If
         /// account does not have sufficient funds to renew at the
