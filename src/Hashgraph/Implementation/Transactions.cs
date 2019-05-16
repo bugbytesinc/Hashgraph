@@ -3,6 +3,7 @@ using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,7 +33,6 @@ namespace Hashgraph
                 return Protobuf.ToTransactionID(preExistingTransaction);
             }
         }
-
         internal static TransactionID CreateNewTransactionID(Account payer, DateTime dateTime)
         {
             return new TransactionID
@@ -55,7 +55,7 @@ namespace Hashgraph
             return transfers;
         }
         internal static TransactionBody CreateEmptyTransactionBody(ContextStack context, TransactionID transactionId, string defaultMemo)
-        {            
+        {
             return new TransactionBody
             {
                 TransactionID = transactionId,
@@ -72,30 +72,48 @@ namespace Hashgraph
             body.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             return body;
         }
-
-        internal static SignatureList SignProtoTransactionBody(TransactionBody transactionBody, params ISigner[] signers)
+        internal static Proto.Transaction SignTransaction(TransactionBody transactionBody, params ISigner[] signers)
         {
-            var signatures = new SignatureList();
+            var map = new Dictionary<ByteString, SignaturePair>();
             var bytes = transactionBody.ToByteArray();
             foreach (var signer in signers)
             {
-                signatures.Sigs.Add(new Signature { Ed25519 = ByteString.CopyFrom(signer.Sign(bytes)) });
+                foreach (var signature in signer.Sign(bytes))
+                {
+                    map[signature.PubKeyPrefix] = signature;
+                }
             }
-            return signatures;
+            var signatures = new SignatureMap();
+            foreach (var signature in map.Values)
+            {
+                signatures.SigPair.Add(signature);
+            }
+            return new Proto.Transaction
+            {
+                BodyBytes = ByteString.CopyFrom(bytes),
+                SigMap = signatures
+            };
         }
-        internal static QueryHeader CreateProtoQueryHeader(TransactionBody transactionBody, SignatureList signatures)
+        internal static QueryHeader SignQueryHeader(TransactionBody transactionBody, params ISigner[] signers)
         {
             return new QueryHeader
             {
-                Payment = new Proto.Transaction
-                {
-                    Body = transactionBody,
-                    Sigs = signatures
-                }
+                Payment = SignTransaction(transactionBody, signers)
             };
         }
+        internal static Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+        {
+            return ExecuteRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
 
-        internal static async Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> checkForRetry) where TRequest : IMessage where TResponse : IMessage
+            bool shouldRetryRequest(TResponse response)
+            {
+                var code = getResponseCode(response);
+                return
+                    code == ResponseCodeEnum.Busy ||
+                    code == ResponseCodeEnum.InvalidTransactionStart;
+            }
+        }
+        internal static async Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
         {
             var callOnSendingHandlers = InstantiateOnSendingRequestHandler(context);
             var callOnResponseReceivedHandlers = InstantiateOnResponseReceivedHandler(context);
@@ -103,17 +121,17 @@ namespace Hashgraph
             callOnSendingHandlers(request);
             var response = await sendRequest(request);
             callOnResponseReceivedHandlers(0, response);
-            var retryable = checkForRetry(response);
-            if (retryable)
+            var shouldRetry = shouldRetryRequest(response);
+            if (shouldRetry)
             {
                 var maxRetries = context.RetryCount;
                 var retryDelay = context.RetryDelay;
-                for (var retryCount = 0; retryCount < maxRetries && retryable; retryCount++)
+                for (var retryCount = 0; retryCount < maxRetries && shouldRetry; retryCount++)
                 {
                     await Task.Delay(retryDelay * (retryCount + 1));
                     response = await sendRequest(request);
                     callOnResponseReceivedHandlers(retryCount + 1, response);
-                    retryable = checkForRetry(response);
+                    shouldRetry = shouldRetryRequest(response);
                 }
             }
             return response;

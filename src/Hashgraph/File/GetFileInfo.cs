@@ -9,10 +9,10 @@ namespace Hashgraph
     public partial class Client
     {
         /// <summary>
-        /// Retrieves detailed information regarding a Hedera Network Account.
+        /// Retrieves the details regarding a file stored on the network.
         /// </summary>
-        /// <param name="address">
-        /// The Hedera Network Address to retrieve detailed information of.
+        /// <param name="file">
+        /// Address of the file to query.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -20,41 +20,41 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A detailed description of the account.
+        /// The details of the network file, excluding content.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        public async Task<AccountInfo> GetAccountInfoAsync(Address address, Action<IContext>? configure = null)
+        public async Task<FileInfo> GetFileInfoAsync(Address file, Action<IContext>? configure = null)
         {
-            address = RequireInputParameter.Address(address);
+            file = RequireInputParameter.File(file);
             var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Info");
+            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get File Info");
             var query = new Query
             {
-                CryptoGetInfo = new CryptoGetInfoQuery
+                FileGetInfo = new FileGetInfoQuery
                 {
                     Header = Transactions.SignQueryHeader(transactionBody, payer),
-                    AccountID = Protobuf.ToAccountID(address)
+                    FileID = Protobuf.ToFileId(file)
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
-            return Protobuf.FromAccountInfo(response.CryptoGetInfo.AccountInfo);
+            var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            ValidateResult.PreCheck(transactionId, data.FileGetInfo.Header.NodeTransactionPrecheckCode);
+            return Protobuf.FromFileInfo(data.FileGetInfo.FileInfo);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {
-                var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Query query) => (await client.getAccountInfoAsync(query));
+                var client = new FileService.FileServiceClient(channel);
+                return async (Query query) => (await client.getFileInfoAsync(query));
             }
 
             static ResponseCodeEnum getResponseCode(Response response)
             {
-                return response.CryptoGetInfo?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.FileGetInfo?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             }
         }
     }

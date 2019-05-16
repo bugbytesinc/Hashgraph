@@ -8,7 +8,7 @@ namespace Hashgraph
     public enum ResponseCode
     {
         /// <summary>
-        /// response codes for pre check validation
+        /// The transaction passed the precheck validations.
         /// </summary>
         [Description("OK")] Ok = 0,
         /// <summary>
@@ -24,7 +24,7 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_NODE_ACCOUNT")] InvalidNodeAccount = 3,
         /// <summary>
-        /// Pre-Check TransactionValidStart + transactionValidDuration is less than current consensus time.
+        /// Pre-Check error when TransactionValidStart + transactionValidDuration is less than current consensus time.
         /// </summary>
         [Description("TRANSACTION_EXPIRED")] TransactionExpired = 4,
         /// <summary>
@@ -36,7 +36,7 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_TRANSACTION_DURATION")] InvalidTransactionDuration = 6,
         /// <summary>
-        ///the transaction signature is not valid
+        /// The transaction signature is not valid
         /// </summary>
         [Description("INVALID_SIGNATURE")] InvalidSignature = 7,
         /// <summary>
@@ -44,15 +44,15 @@ namespace Hashgraph
         /// </summary>
         [Description("MEMO_TOO_LONG")] MemoTooLong = 8,
         /// <summary>
-        /// the transaction fee is insufficient for this type of transaction
+        /// The fee provided in the transaction is insufficient for this type of transaction
         /// </summary>
         [Description("INSUFFICIENT_TX_FEE")] InsufficientTxFee = 9,
         /// <summary>
-        /// the payer account has insufficient cryptocurrency to pay the transaction fee
+        /// The payer account has insufficient cryptocurrency to pay the transaction fee
         /// </summary>
         [Description("INSUFFICIENT_PAYER_BALANCE")] InsufficientPayerBalance = 10,
         /// <summary>
-        /// this transaction ID is a duplicate of one that was submitted to this node or reached consensus in the last 180 seconds (receipt period)
+        /// This transaction ID is a duplicate of one that was submitted to this node or reached consensus in the last 180 seconds (receipt period)
         /// </summary>
         [Description("DUPLICATE_TRANSACTION")] DuplicateTransaction = 11,
         /// <summary>
@@ -60,59 +60,59 @@ namespace Hashgraph
         /// </summary>
         [Description("BUSY")] Busy = 12,
         /// <summary>
-        ///not supported API
+        ///The API is not currently supported
         /// </summary>
         [Description("NOT_SUPPORTED")] NotSupported = 13,
         /// <summary>
-        ///response codes used in queries 
+        ///The file id is invalid or does not exist
         /// </summary>
         [Description("INVALID_FILE_ID")] InvalidFileId = 14,
         /// <summary>
-        ///the account id is invalid or does not exist
+        ///The account id is invalid or does not exist
         /// </summary>
         [Description("INVALID_ACCOUNT_ID")] InvalidAccountId = 15,
         /// <summary>
-        ///the contract id is invalid or does ont exist
+        ///The contract id is invalid or does not exist
         /// </summary>
         [Description("INVALID_CONTRACT_ID")] InvalidContractId = 16,
         /// <summary>
-        ///transaction id is not valid
+        ///Transaction id is not valid
         /// </summary>
         [Description("INVALID_TRANSACTION_ID")] InvalidTransactionId = 17,
         /// <summary>
-        ///receipt for given transaction id does not exist
+        ///Receipt for given transaction id does not exist
         /// </summary>
         [Description("RECEIPT_NOT_FOUND")] ReceiptNotFound = 18,
         /// <summary>
-        ///record for given transaction id does not exist
+        ///Record for given transaction id does not exist
         /// </summary>
         [Description("RECORD_NOT_FOUND")] RecordNotFound = 19,
         /// <summary>
-        ///the solidity id is invalid or entity with this solidity id does not exist
+        ///The solidity id is invalid or entity with this solidity id does not exist
         /// </summary>
         [Description("INVALID_SOLIDITY_ID")] InvalidSolidityId = 20,
         /// <summary>
-        /// response code for Transaction receipt
+        /// Transaction hasn't yet reached consensus, or has already expired
         /// </summary>
         [Description("UNKNOWN")] Unknown = 21,
         /// <summary>
-        /// the transaction succeeded
+        /// The transaction succeeded
         /// </summary>
         [Description("SUCCESS")] Success = 22,
         /// <summary>
-        /// the transaction failed because it is invalid
+        /// There was a system error and the transaction failed because of invalid request parameters.
         /// </summary>
         [Description("FAIL_INVALID")] FailInvalid = 23,
         /// <summary>
-        /// the transaction fee was insufficient
+        /// There was a system error while performing fee calculation, reserved for future.
         /// </summary>
         [Description("FAIL_FEE")] FailFee = 24,
         /// <summary>
-        /// the paying account had insufficient cryptocurrency
+        /// There was a system error while performing balance checks, reserved for future.
         /// </summary>
         [Description("FAIL_BALANCE")] FailBalance = 25,
         /// <summary>
-        ///Crypto Response codes
+        ///Key not provided in the transaction body
         /// </summary>
         [Description("KEY_REQUIRED")] KeyRequired = 26,
         /// <summary>
@@ -128,7 +128,7 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_SOLIDITY_ADDRESS")] InvalidSolidityAddress = 29,
         /// <summary>
-        ///Smart contract creation or execution
+        ///Not enough gas was supplied to execute transaction
         /// </summary>
         [Description("INSUFFICIENT_GAS")] InsufficientGas = 30,
         /// <summary>
@@ -148,7 +148,7 @@ namespace Hashgraph
         /// </summary>
         [Description("CONTRACT_EXECUTION_EXCEPTION")] ContractExecutionException = 34,
         /// <summary>
-        ///In Query validation, account with +ve(amount) value should be Receiving node account, the receiver account should be only one account in the list 
+        ///In Query validation, account with +ve(amount) value should be Receiving node account, the receiver account should be only one account in the list
         /// </summary>
         [Description("INVALID_RECEIVING_NODE_ACCOUNT")] InvalidReceivingNodeAccount = 35,
         /// <summary>
@@ -156,9 +156,12 @@ namespace Hashgraph
         /// </summary>
         [Description("MISSING_QUERY_HEADER")] MissingQueryHeader = 36,
         /// <summary>
-        /// the update of the account failed
+        /// The update of the account failed
         /// </summary>
         [Description("ACCOUNT_UPDATE_FAILED")] AccountUpdateFailed = 37,
+        /// <summary>
+        /// Provided key encoding was not supported by the system
+        /// </summary>
         [Description("INVALID_KEY_ENCODING")] InvalidKeyEncoding = 38,
         /// <summary>
         /// null solidity address
@@ -173,40 +176,160 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_QUERY_HEADER")] InvalidQueryHeader = 41,
         /// <summary>
-        /// Invalid fee submitted*/
+        /// Invalid fee submitted
         /// </summary>
         [Description("INVALID_FEE_SUBMITTED")] InvalidFeeSubmitted = 42,
         /// <summary>
-        ///  payer signature is invalid
+        /// Payer signature is invalid
         /// </summary>
         [Description("INVALID_PAYER_SIGNATURE")] InvalidPayerSignature = 43,
         /// <summary>
-        /// KEY_NOT_PROVIDED
+        /// The keys were not provided in the request.
         /// </summary>
         [Description("KEY_NOT_PROVIDED")] KeyNotProvided = 44,
         /// <summary>
-        /// INVALID_EXPIRATION_TIME
+        /// Expiration time provided in the transaction was invalid.
         /// </summary>
         [Description("INVALID_EXPIRATION_TIME")] InvalidExpirationTime = 45,
         /// <summary>
-        /// NO_WACL_KEY
+        ///WriteAccess Control Keys are not provided for the file
         /// </summary>
         [Description("NO_WACL_KEY")] NoWaclKey = 46,
         /// <summary>
-        /// FILE_CONTENT_EMPTY
+        ///The contents of file are provided as empty.
         /// </summary>
         [Description("FILE_CONTENT_EMPTY")] FileContentEmpty = 47,
         /// <summary>
-        /// The crypto transfer credit and debit don't equal to 0
+        /// The crypto transfer credit and debit do not sum equal to 0
         /// </summary>
         [Description("INVALID_ACCOUNT_AMOUNTS")] InvalidAccountAmounts = 48,
         /// <summary>
-        /// new response codes to be added
+        /// Transaction body provided is empty
         /// </summary>
         [Description("EMPTY_TRANSACTION_BODY")] EmptyTransactionBody = 49,
         /// <summary>
-        /// invalid transaction body
+        /// Invalid transaction body provided
         /// </summary>
         [Description("INVALID_TRANSACTION_BODY")] InvalidTransactionBody = 50,
+        /// <summary>
+        /// the type of key (base ed25519 key, KeyList, or ThresholdKey) does not match the type of signature (base ed25519 signature, SignatureList, or ThresholdKeySignature)
+        /// </summary>
+        [Description("INVALID_SIGNATURE_TYPE_MISMATCHING_KEY")] InvalidSignatureTypeMismatchingKey = 51,
+        /// <summary>
+        /// the number of key (KeyList, or ThresholdKey) does not match that of signature (SignatureList, or ThresholdKeySignature). e.g. if a keyList has 3 base keys, then the corresponding signatureList should also have 3 base signatures.
+        /// </summary>
+        [Description("INVALID_SIGNATURE_COUNT_MISMATCHING_KEY")] InvalidSignatureCountMismatchingKey = 52,
+        /// <summary>
+        /// the claim body is empty
+        /// </summary>
+        [Description("EMPTY_CLAIM_BODY")] EmptyClaimBody = 53,
+        /// <summary>
+        ///the hash for the claim is empty
+        /// </summary>
+        [Description("EMPTY_CLAIM_HASH")] EmptyClaimHash = 54,
+        /// <summary>
+        /// the key list is empty
+        /// </summary>
+        [Description("EMPTY_CLAIM_KEYS")] EmptyClaimKeys = 55,
+        /// <summary>
+        /// the size of the claim hash is not 48 bytes
+        /// </summary>
+        [Description("INVALID_CLAIM_HASH_SIZE")] InvalidClaimHashSize = 56,
+        /// <summary>
+        /// the query body is empty
+        /// </summary>
+        [Description("EMPTY_QUERY_BODY")] EmptyQueryBody = 57,
+        /// <summary>
+        /// the crypto claim query is empty
+        /// </summary>
+        [Description("EMPTY_CLAIM_QUERY")] EmptyClaimQuery = 58,
+        /// <summary>
+        /// the crypto claim doesn't exists in the file system. It expired or was never persisted.
+        /// </summary>
+        [Description("CLAIM_NOT_FOUND")] ClaimNotFound = 59,
+        /// <summary>
+        /// the account id passed has not yet been created.
+        /// </summary>
+        [Description("ACCOUNT_ID_DOES_NOT_EXIST")] AccountIdDoesNotExist = 60,
+        /// <summary>
+        /// the claim hash already exists
+        /// </summary>
+        [Description("CLAIM_ALREADY_EXISTS")] ClaimAlreadyExists = 61,
+        /// <summary>
+        /// File WACL keys are invalid
+        /// </summary>
+        [Description("INVALID_FILE_WACL")] InvalidFileWacl = 62,
+        /// <summary>
+        /// Serialization failure
+        /// </summary>
+        [Description("SERIALIZATION_FAILED")] SerializationFailed = 63,
+        /// <summary>
+        /// The size of the Transaction is greater than transactionMaxBytes
+        /// </summary>
+        [Description("TRANSACTION_OVERSIZE")] TransactionOversize = 64,
+        /// <summary>
+        /// The Transaction has more than 50 levels
+        /// </summary>
+        [Description("TRANSACTION_TOO_MANY_LAYERS")] TransactionTooManyLayers = 65,
+        /// <summary>
+        ///Contract is marked as deleted
+        /// </summary>
+        [Description("CONTRACT_DELETED")] ContractDeleted = 66,
+        /// <summary>
+        /// the platform node is either disconnected or lagging behind.
+        /// </summary>
+        [Description("PLATFORM_NOT_ACTIVE")] PlatformNotActive = 67,
+        /// <summary>
+        /// one public key matches more than one prefixes on the signature map
+        /// </summary>
+        [Description("KEY_PREFIX_MISMATCH")] KeyPrefixMismatch = 68,
+        /// <summary>
+        /// transaction not created by platform due to either large backlog or message size exceeded transactionMaxBytes
+        /// </summary>
+        [Description("PLATFORM_TRANSACTION_NOT_CREATED")] PlatformTransactionNotCreated = 69,
+        /// <summary>
+        /// auto renewal period is not a positive number of seconds
+        /// </summary>
+        [Description("INVALID_RENEWAL_PERIOD")] InvalidRenewalPeriod = 70,
+        /// <summary>
+        /// the response code when a smart contract id is passed for a crypto API request
+        /// </summary>
+        [Description("INVALID_PAYER_ACCOUNT_ID")] InvalidPayerAccountId = 71,
+        /// <summary>
+        /// the account has been marked as deleted
+        /// </summary>
+        [Description("ACCOUNT_DELETED")] AccountDeleted = 72,
+        /// <summary>
+        /// the file has been marked as deleted
+        /// </summary>
+        [Description("FILE_DELETED")] FileDeleted = 73,
+        /// <summary>
+        /// same accounts repeated in the transfer account list
+        /// </summary>
+        [Description("ACCOUNT_REPEATED_IN_ACCOUNT_AMOUNTS")] AccountRepeatedInAccountAmounts = 74,
+        /// <summary>
+        /// attempting to set negative balance value for crypto account
+        /// </summary>
+        [Description("SETTING_NEGATIVE_ACCOUNT_BALANCE")] SettingNegativeAccountBalance = 75,
+        /// <summary>
+        /// when deleting smart contract that has crypto balance either transfer account or transfer smart contract is required
+        /// </summary>
+        [Description("OBTAINER_REQUIRED")] ObtainerRequired = 76,
+        /// <summary>
+        ///when deleting smart contract that has crypto balance you can not use the same contract id as transferContractId as the one being deleted
+        /// </summary>
+        [Description("OBTAINER_SAME_CONTRACT_ID")] ObtainerSameContractId = 77,
+        /// <summary>
+        ///transferAccountId or transferContractId specified for contract delete does not exist
+        /// </summary>
+        [Description("OBTAINER_DOES_NOT_EXIST")] ObtainerDoesNotExist = 78,
+        /// <summary>
+        ///attempting to modify (update or delete a immutable smart contract, i.e. one created without a admin key)
+        /// </summary>
+        [Description("MODIFYING_IMMUTABLE_CONTRACT")] ModifyingImmutableContract = 79,
+        /// <summary>
+        /// the duration is not a subset of [MINIMUM_AUTORENEW_DURATION,MAXIMUM_AUTORENEW_DURATION]
+        /// </summary>
+        [Description("AUTORENEW_DURATION_NOT_IN_RANGE")] AutorenewDurationNotInRange = 80,
     }
 }

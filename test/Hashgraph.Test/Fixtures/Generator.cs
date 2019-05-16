@@ -43,6 +43,12 @@ namespace Hashgraph.Test.Fixtures
             return result;
         }
 
+        public static DateTime TruncatedFutureDate(Int32 minHoursAhead, Int32 maxHoursAhead)
+        {
+            var date = DateTime.UtcNow.AddHours(Double(minHoursAhead, maxHoursAhead));
+            return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, DateTimeKind.Utc);
+        }
+
         public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) KeyPair()
         {
             // public prefix:  302a300506032b6570032100 

@@ -1,10 +1,8 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
 using Hashgraph.Implementation;
-using NSec.Cryptography;
 using Proto;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -12,12 +10,10 @@ namespace Hashgraph
     public partial class Client
     {
         /// <summary>
-        /// Creates a new network account with a given initial balance
-        /// and other values as indicated in the create parameters.
+        /// Creates a new file with the given content.
         /// </summary>
         /// <param name="createParameters">
-        /// The account creation parameters, includes the initial balance,
-        /// public key and values associated with the new account.
+        /// File creation parameters specifying contents and ownership of the file.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -25,32 +21,7 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction recipt with a description of the newly created account.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
-        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
-        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
-        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<AccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
-        {
-            return CreateAccountImplementationAsync<AccountReceipt>(createParameters, configure);
-        }
-        /// <summary>
-        /// Creates a new network account with a given initial balance
-        /// and other values as indicated in the create parameters.
-        /// </summary>
-        /// <param name="createParameters">
-        /// The account creation parameters, includes the initial balance,
-        /// public key and values associated with the new account.
-        /// </param>
-        /// <param name="configure">
-        /// Optional callback method providing an opportunity to modify 
-        /// the execution configuration for just this method call. 
-        /// It is executed prior to submitting the request to the network.
-        /// </param>
-        /// <returns>
-        /// A transaction record with a description of the newly created account
+        /// A transaction receipt with a description of the newly created file.
         /// and record information.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
@@ -58,33 +29,52 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<AccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public Task<FileReceipt> CreateFileAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateAccountImplementationAsync<AccountRecord>(createParameters, configure);
+            return CreateFileImplementationAsync<FileReceipt>(createParameters, configure);
         }
         /// <summary>
-        /// Internal implementation for Create Account
-        /// Returns either a receipt or record or throws
-        /// an exception.
+        /// Creates a new file with the given content.
         /// </summary>
-        private async Task<TResult> CreateAccountImplementationAsync<TResult>(CreateAccountParams createParameters, Action<IContext>? configure) where TResult : new()
+        /// <param name="createParameters">
+        /// File creation parameters specifying contents and ownership of the file.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction record with a description of the newly created file & fees.
+        /// and record information.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<FileRecord> CreateFileWithRecordAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
+        {
+            return CreateFileImplementationAsync<FileRecord>(createParameters, configure);
+        }
+        /// <summary>
+        /// Internal implementation of the Create File service.
+        /// </summary>
+        public async Task<TResult> CreateFileImplementationAsync<TResult>(CreateFileParams createParameters, Action<IContext>? configure) where TResult : new()
         {
             createParameters = RequireInputParameter.CreateParameters(createParameters);
             var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
+            var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create Account");
-            // Create Account requires just the 32 bits of the public key, without the prefix.
-            var publicKeyWithoutPrefix = Keys.ImportPublicEd25519KeyFromBytes(createParameters.PublicKey).Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray();
-            transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
+            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create File");
+            transactionBody.FileCreate = new FileCreateTransactionBody
             {
-                Key = new Proto.Key { Ed25519 = ByteString.CopyFrom(publicKeyWithoutPrefix) },
-                InitialBalance = createParameters.InitialBalance,
-                SendRecordThreshold = createParameters.SendThresholdCreateRecord,
-                ReceiveRecordThreshold = createParameters.ReceiveThresholdCreateRecord,
-                ReceiverSigRequired = createParameters.RequireReceiveSignature,
-                AutoRenewPeriod = Protobuf.ToDuration(createParameters.AutoRenewPeriod),
+                ExpirationTime = Protobuf.ToTimestamp(createParameters.Expiration),
+                Keys = Protobuf.ToPublicKeyList(createParameters.Endorsements),
+                Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
+                ShardID = Protobuf.ToShardID(gateway.ShardNum),
+                RealmID = Protobuf.ToRealmID(gateway.RealmNum, gateway.ShardNum)
             };
             var request = Transactions.SignTransaction(transactionBody, payer);
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
@@ -92,26 +82,26 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to create file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is AccountReceipt arcpt)
+            if (result is FileReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
-                arcpt.Address = Protobuf.FromAccountID(receipt.AccountID);
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                rcpt.File = Protobuf.FromFileID(receipt.FileID);
             }
-            else if (result is AccountRecord arec)
+            else if (result is FileRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(transactionId, receipt, record, arec);
-                arec.Address = Protobuf.FromAccountID(receipt.AccountID);
+                Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+                rec.File = Protobuf.FromFileID(receipt.FileID);
             }
             return result;
 
             static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
-                var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Transaction transaction) => await client.createAccountAsync(transaction);
+                var client = new FileService.FileServiceClient(channel);
+                return async (Transaction transaction) => await client.createFileAsync(transaction);
             }
 
             static ResponseCodeEnum getResponseCode(TransactionResponse response)

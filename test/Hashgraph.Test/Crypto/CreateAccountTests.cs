@@ -31,7 +31,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(_networkCredentials.ServerRealm, createResult.Address.RealmNum);
             Assert.Equal(_networkCredentials.ServerShard, createResult.Address.ShardNum);
             Assert.True(createResult.Address.AccountNum > 0);
-
+            
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(initialBalance, info.Balance);
             Assert.Equal(createResult.Address.RealmNum, info.Address.RealmNum);
@@ -40,23 +40,17 @@ namespace Hashgraph.Test.Crypto
             Assert.False(info.Deleted);
 
             // Move remaining funds back to primary account.
-            var from = new Account(createResult.Address.RealmNum, createResult.Address.ShardNum, createResult.Address.AccountNum, privateKey);
+            var from = new Account(createResult.Address, privateKey);
             await client.TransferAsync(from, _networkCredentials.CreateDefaultAccount(), (long)initialBalance);
 
-            // We should do the following when deleting an account is testable on the network.
-            //await client.DeleteAccountAsync(newAccount, _networkCredentials.CreateDefaultAccount());
-            //var deletedAccount = await client.DeleteAccountAsync(createdAccount, _networkCredentials.CreateDefaultAccount());
-            //Assert.NotNull(deletedAccount);
-            //Assert.Equal(_networkCredentials.ServerRealm, deletedAccount.RealmNum);
-            //Assert.Equal(_networkCredentials.ServerShard, deletedAccount.ShardNum);
-            //Assert.True(deletedAccount.AccountNum > 0);
+            var receipt = await client.DeleteAccountAsync(new Account(createResult.Address, privateKey),_networkCredentials.CreateDefaultAccount());
+            Assert.NotNull(receipt);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
 
-            info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(0UL, info.Balance);
-            Assert.Equal(createResult.Address.RealmNum, info.Address.RealmNum);
-            Assert.Equal(createResult.Address.ShardNum, info.Address.ShardNum);
-            Assert.Equal(createResult.Address.AccountNum, info.Address.AccountNum);
-            //Assert.True(info.Deleted);
+            var exception = await Assert.ThrowsAsync<PrecheckException>(async () => {
+                await client.GetAccountInfoAsync(createResult.Address);
+            });
+            Assert.StartsWith("Transaction Failed Pre-Check: AccountDeleted", exception.Message);
         }
         [Fact(DisplayName = "Create Account: Set Send Threshold")]
         public async Task CanSetSendTreshold()
@@ -102,6 +96,8 @@ namespace Hashgraph.Test.Crypto
                 InitialBalance = 1,
                 PublicKey = publicKey,
                 RequireReceiveSignature = true
+            },ctx=> {
+                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey);
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 

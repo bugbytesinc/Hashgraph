@@ -15,7 +15,7 @@ namespace Hashgraph.Test.Crypto
             _networkCredentials = networkCredentials;
             _networkCredentials.TestOutput = output;
         }
-        [Fact(DisplayName = "Transfer Tests: Can Send to Gateway Node")]
+        [Fact(DisplayName = "Transfer: Can Send to Gateway Node")]
         public async Task CanTransferCryptoToGatewayNode()
         {
             long fee = 0;
@@ -27,9 +27,10 @@ namespace Hashgraph.Test.Crypto
             var balanceBefore = await client.GetAccountBalanceAsync(fromAccount);
             var receipt = await client.TransferAsync(fromAccount, toAddress, transferAmount);
             var balanceAfter = await client.GetAccountBalanceAsync(fromAccount);
-            Assert.Equal((ulong)transferAmount + (ulong)fee + (ulong)fee, balanceBefore - balanceAfter);
+            // Upper bound on fees (for receipt version)
+            Assert.True((ulong)transferAmount + (ulong)fee + (ulong)fee > balanceBefore - balanceAfter);
         }
-        [Fact(DisplayName = "Transfer Tests: Can Send to New Account")]
+        [Fact(DisplayName = "Transfer: Can Send to New Account")]
         public async Task CanTransferCryptoToNewAccount()
         {
             var transferAmount = (long)Generator.Integer(10, 100);
@@ -48,7 +49,7 @@ namespace Hashgraph.Test.Crypto
             var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(initialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
         }
-        [Fact(DisplayName = "Transfer Tests: Can Send from New Account")]
+        [Fact(DisplayName = "Transfer: Can Send from New Account")]
         public async Task CanTransferCryptoFromNewAccount()
         {
             var initialBalance = (ulong)Generator.Integer(10000, 100000);
@@ -63,13 +64,13 @@ namespace Hashgraph.Test.Crypto
             var newAccount = new Account(createResult.Address.RealmNum, createResult.Address.ShardNum, createResult.Address.AccountNum, privateKey);
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(initialBalance, info.Balance);
-            Assert.Equal(publicKey.ToArray().TakeLast(32).ToArray(), info.PublicKey.ToArray());
+            Assert.Equal(new Endorsements(publicKey), info.Endorsements);
 
             var receipt = await client.TransferAsync(newAccount, _networkCredentials.CreateDefaultAccount(), (long)transferAmount);
             var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(initialBalance - (ulong)transferAmount, newBalanceAfterTransfer);
         }
-        [Fact(DisplayName = "Transfer Tests: Can Drain All Crypto from New Account")]
+        [Fact(DisplayName = "Transfer: Can Drain All Crypto from New Account")]
         public async Task CanTransferAllCryptoFromNewAccount()
         {
             var initialBalance = (ulong)Generator.Integer(10000, 100000);
@@ -83,13 +84,13 @@ namespace Hashgraph.Test.Crypto
             var newAccount = new Account(createResult.Address.RealmNum, createResult.Address.ShardNum, createResult.Address.AccountNum, privateKey);
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(initialBalance, info.Balance);
-            Assert.Equal(publicKey.ToArray().TakeLast(32).ToArray(), info.PublicKey.ToArray());
+            Assert.Equal(new Endorsements(publicKey), info.Endorsements);
 
             var receipt = await client.TransferAsync(newAccount, _networkCredentials.CreateDefaultAccount(), (long)initialBalance);
             var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(0UL, newBalanceAfterTransfer);
         }
-        [Fact(DisplayName = "Transfer Tests: Insufficient Funds Throws Error")]
+        [Fact(DisplayName = "Transfer: Insufficient Funds Throws Error")]
         public async Task InsufficientFundsThrowsError()
         {
             var initialBalance = (ulong)Generator.Integer(10, 100);
@@ -107,10 +108,10 @@ namespace Hashgraph.Test.Crypto
                 await client.TransferAsync(account, _networkCredentials.CreateDefaultAccount(), transferAmount);
             });
             Assert.StartsWith("Unable to execute crypto transfer, status: InsufficientAccountBalance", exception.Message);
-            Assert.NotNull(exception.TransactionRecord);
-            Assert.Equal(ResponseCode.InsufficientAccountBalance, exception.TransactionRecord.Status);
+            Assert.NotNull(exception.TxId);
+            Assert.Equal(ResponseCode.InsufficientAccountBalance, exception.Status);
         }
-        [Fact(DisplayName = "Transfer Tests: Insufficient Fee Throws Error")]
+        [Fact(DisplayName = "Transfer: Insufficient Fee Throws Error")]
         public async Task InsufficientFeeThrowsError()
         {
             var initialBalance = (ulong)Generator.Integer(10, 100);

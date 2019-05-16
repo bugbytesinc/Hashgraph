@@ -29,7 +29,7 @@ class Program
 ```
 ## Installation
 ```
-dotnet add package Hashgraph --version 0.1.0
+dotnet add package Hashgraph
 ```
 Hashgraph requires .NET Core Version 3.x
 
@@ -37,8 +37,8 @@ Hashgraph requires .NET Core Version 3.x
 While we are in the process of building the preliminary infrastructure for this project, please direct any feedback, requests or questions to  [Hedera’s Discord](https://discordapp.com/invite/FFb9YFX) channel.
 
 ## Cloning
-This project references the [Hedera Protobuf](https://github.com/hashgraph/hedera-protobuf) 
-project as a git submodule.  It is recommended to include ```--recurse-submodules``` options 
+This project references the [Hedera Protobuf](https://github.com/hashgraph/hedera-protobuf)
+project as a git submodule (currently the vNext Branch).  It is recommended to include ```--recurse-submodules``` options 
 when cloning the repository so that the ```*.proto``` files from the submodule are present
 when building the project:
 ```
@@ -51,7 +51,7 @@ $ git clone --recurse-submodules https://github.com/bugbytesinc/Hashgraph.git
 ## Build Requirements
 This project relies protobuf support found in .net core 3, 
 previous versions of the .net core framework will not work.
-(At the time of this writing we are in [preview4](https://dotnet.microsoft.com/download/dotnet-core/3.0))
+(At the time of this writing we are in [preview5](https://dotnet.microsoft.com/download/dotnet-core/3.0))
 
 Visual Studio is not required to build the library, however the project
 references the [NSec.Cryptography](https://nsec.rocks/) library, which 
@@ -60,4 +60,4 @@ order to execute tests, the [Microsoft Visual C++ Redistributable](https://suppo
 must be installed on the build agent if Visual Studio is not.
 
 ## License
-HashgraphNet is licensed under the [Apache 2.0 license](https://licenses.nuget.org/Apache-2.0).
+Hashgraph is licensed under the [Apache 2.0 license](https://licenses.nuget.org/Apache-2.0).

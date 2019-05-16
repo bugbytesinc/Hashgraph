@@ -1,10 +1,7 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Hashgraph.Implementation;
-using NSec.Cryptography;
 using Proto;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -12,12 +9,12 @@ namespace Hashgraph
     public partial class Client
     {
         /// <summary>
-        /// Creates a new network account with a given initial balance
-        /// and other values as indicated in the create parameters.
+        /// Updates the changeable properties of a hedera network account.
         /// </summary>
-        /// <param name="createParameters">
-        /// The account creation parameters, includes the initial balance,
-        /// public key and values associated with the new account.
+        /// <param name="updateParameters">
+        /// The account update parameters, includes a required 
+        /// <see cref="Address"/> reference to the account to update plus
+        /// a number of changeable properties of the account.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -25,24 +22,25 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction recipt with a description of the newly created account.
+        /// A transaction receipt indicating success of the operation.
+        /// of the request.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<AccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public Task<AccountReceipt> UpdateAccountAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
         {
-            return CreateAccountImplementationAsync<AccountReceipt>(createParameters, configure);
+            return UpdateAccountImplementationAsync<AccountReceipt>(updateParameters, configure);
         }
         /// <summary>
-        /// Creates a new network account with a given initial balance
-        /// and other values as indicated in the create parameters.
+        /// Updates the changeable properties of a hedera network account.
         /// </summary>
-        /// <param name="createParameters">
-        /// The account creation parameters, includes the initial balance,
-        /// public key and values associated with the new account.
+        /// <param name="updateParameters">
+        /// The account update parameters, includes a required 
+        /// <see cref="Address"/> reference to the account to update plus
+        /// a number of changeable properties of the account.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -50,49 +48,65 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction record with a description of the newly created account
-        /// and record information.
+        /// A transaction record containing the details of the results.
+        /// of the request.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<AccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public Task<AccountRecord> UpdateAccountWithRecordAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
         {
-            return CreateAccountImplementationAsync<AccountRecord>(createParameters, configure);
+            return UpdateAccountImplementationAsync<AccountRecord>(updateParameters, configure);
         }
         /// <summary>
-        /// Internal implementation for Create Account
-        /// Returns either a receipt or record or throws
-        /// an exception.
+        /// Internal implementation of the update account functionality.
         /// </summary>
-        private async Task<TResult> CreateAccountImplementationAsync<TResult>(CreateAccountParams createParameters, Action<IContext>? configure) where TResult : new()
-        {
-            createParameters = RequireInputParameter.CreateParameters(createParameters);
+        private async Task<TResult> UpdateAccountImplementationAsync<TResult>(UpdateAccountParams updateParameters, Action<IContext>? configure) where TResult : new()
+        { 
+            updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create Account");
-            // Create Account requires just the 32 bits of the public key, without the prefix.
-            var publicKeyWithoutPrefix = Keys.ImportPublicEd25519KeyFromBytes(createParameters.PublicKey).Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray();
-            transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
+            var updateAccountBody = new CryptoUpdateTransactionBody
             {
-                Key = new Proto.Key { Ed25519 = ByteString.CopyFrom(publicKeyWithoutPrefix) },
-                InitialBalance = createParameters.InitialBalance,
-                SendRecordThreshold = createParameters.SendThresholdCreateRecord,
-                ReceiveRecordThreshold = createParameters.ReceiveThresholdCreateRecord,
-                ReceiverSigRequired = createParameters.RequireReceiveSignature,
-                AutoRenewPeriod = Protobuf.ToDuration(createParameters.AutoRenewPeriod),
+                AccountIDToUpdate = Protobuf.ToAccountID(updateParameters.Account)
             };
-            var request = Transactions.SignTransaction(transactionBody, payer);
+            if (!(updateParameters.Endorsements is null))
+            {
+                if (updateParameters.Endorsements.KeyCount != 1 || updateParameters.Endorsements.RequiredCount != 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsements), "Presently, an account is only allowed one signing key.  Endorsements must require 1 of 1 keys.");
+                }
+                updateAccountBody.Key = Protobuf.ToPublicKeys(updateParameters.Endorsements)[0];
+            }
+            if (updateParameters.SendThresholdCreateRecord.HasValue)
+            {
+                updateAccountBody.SendRecordThresholdWrapper = updateParameters.SendThresholdCreateRecord.Value;
+            }
+            if (updateParameters.ReceiveThresholdCreateRecord.HasValue)
+            {
+                updateAccountBody.ReceiveRecordThresholdWrapper = updateParameters.ReceiveThresholdCreateRecord.Value;
+            }
+            if (updateParameters.AutoRenewPeriod.HasValue)
+            {
+                updateAccountBody.AutoRenewPeriod = Protobuf.ToDuration(updateParameters.AutoRenewPeriod.Value);
+            }
+            if (updateParameters.Expiration.HasValue)
+            {
+                updateAccountBody.ExpirationTime = Protobuf.ToTimestamp(updateParameters.Expiration.Value);
+            }
+            var transactionId = Transactions.GetOrCreateTransactionID(context);
+            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Update Account");
+            transactionBody.CryptoUpdateAccount = updateAccountBody;
+            var request = Transactions.SignTransaction(transactionBody, updateParameters.Account, payer);
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to update account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
             if (result is AccountReceipt arcpt)
@@ -111,7 +125,7 @@ namespace Hashgraph
             static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Transaction transaction) => await client.createAccountAsync(transaction);
+                return async (Transaction transaction) => await client.updateAccountAsync(transaction);
             }
 
             static ResponseCodeEnum getResponseCode(TransactionResponse response)

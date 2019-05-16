@@ -1,6 +1,5 @@
 ﻿using Hashgraph.Test.Fixtures;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,22 +29,23 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(originalKeyPair.publicKey.ToArray().TakeLast(32).ToArray(), originalInfo.PublicKey.ToArray());
+            Assert.Equal(new Endorsements(originalKeyPair.publicKey), originalInfo.Endorsements);
 
-            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams {
-                Account = new Account(createResult.Address, originalKeyPair.privateKey),
-                PrivateKey = updatedKeyPair.privateKey
+            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Account = new Account(createResult.Address, originalKeyPair.privateKey, updatedKeyPair.privateKey),
+                Endorsements = new Endorsements(updatedKeyPair.publicKey)
             });
             Assert.Equal(ResponseCode.Success, updateResult.Status);
 
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(updatedKeyPair.publicKey.ToArray().TakeLast(32).ToArray(), updatedInfo.PublicKey.ToArray());
+            Assert.Equal(new Endorsements(updatedKeyPair.publicKey), updatedInfo.Endorsements);
         }
         [Fact(DisplayName = "Update Account: Can Update Send Threshold")]
         public async Task CanUpdateSendTreshold()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            var originalValue = (ulong) Generator.Integer(500, 1000);
+            var originalValue = (ulong)Generator.Integer(500, 1000);
             await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
@@ -124,31 +124,6 @@ namespace Hashgraph.Test.Crypto
 
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(newValue, updatedInfo.AutoRenewPeriod);
-        }
-        [Fact(DisplayName = "Update Account: Can Update Expiration")]
-        public async Task CanUpdateExpiration()
-        {
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = 1,
-                PublicKey = publicKey                
-            });
-            Assert.Equal(ResponseCode.Success, createResult.Status);
-
-            var originalInfo = await client.GetAccountInfoAsync(createResult.Address);            
-
-            var newValue = originalInfo.Expiration.Add(TimeSpan.FromDays(Generator.Integer(30, 60)));
-            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
-            {
-                Account = new Account(createResult.Address, privateKey),
-                Expiration = newValue
-            });
-            Assert.Equal(ResponseCode.Success, updateResult.Status);
-
-            var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(newValue, updatedInfo.Expiration);
         }
     }
 }

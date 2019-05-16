@@ -1,12 +1,14 @@
-﻿using Hashgraph.Implementation;
+﻿using Google.Protobuf;
+using Hashgraph.Implementation;
 using NSec.Cryptography;
 using System;
+using System.Linq;
 
 namespace Hashgraph
 {
     /// <summary>
     /// Represents a Hedera Network Address with an associated 
-    /// private key capable of signing transactions.
+    /// private keys capable of signing transactions.
     /// </summary>
     public sealed class Account : ISigner, IDisposable, IEquatable<Account>
     {
@@ -25,7 +27,7 @@ namespace Hashgraph
         /// <summary>
         /// Private Key Implementation
         /// </summary>
-        private readonly Key _key;
+        private readonly Key[] _keys;
         /// <summary>
         /// Public Constructor, an <code>Account</code> is immutable after creation.
         /// </summary>
@@ -37,7 +39,7 @@ namespace Hashgraph
         /// signing transactions.  It is expected to be 48 bytes in length, prefixed 
         /// with <code>0x302e020100300506032b6570</code>.
         /// </param>
-        public Account(Address address, ReadOnlyMemory<byte> privateKey) : this(address.RealmNum, address.ShardNum, address.AccountNum, privateKey) { }
+        public Account(Address address, params ReadOnlyMemory<byte>[] privateKeys) : this(address.RealmNum, address.ShardNum, address.AccountNum, privateKeys) { }
         /// <summary>
         /// Public Constructor, an <code>Account</code> is immutable after creation.
         /// </summary>
@@ -55,19 +57,12 @@ namespace Hashgraph
         /// signing transactions.  It is expected to be 48 bytes in length, prefixed 
         /// with <code>0x302e020100300506032b6570</code>.
         /// </param>
-        public Account(long realmNum, long shardNum, long accountNum, ReadOnlyMemory<byte> privateKey)
+        public Account(long realmNum, long shardNum, long accountNum, params ReadOnlyMemory<byte>[] privateKeys)
         {
             RealmNum = RequireInputParameter.RealmNumber(realmNum);
             ShardNum = RequireInputParameter.ShardNumber(shardNum);
             AccountNum = RequireInputParameter.AcountNumber(accountNum);
-            try
-            {
-                _key = Keys.ImportPrivateEd25519KeyFromBytes(privateKey);
-            }
-            catch (Exception ex)
-            {
-                throw new ArgumentOutOfRangeException(nameof(privateKey), ex.Message);
-            }
+            _keys = RequireInputParameter.PrivateKeys(privateKeys);
         }
         /// <summary>
         /// Signs the given bytes with the private key.  Typically, this is a transaction.  
@@ -78,10 +73,14 @@ namespace Hashgraph
         /// The bytes to sign, typically this is a transaction message body serialized in 
         /// the protobuf format.
         /// </param>
-        /// <returns>The Ed25519 Signature</returns>
-        byte[] ISigner.Sign(ReadOnlyMemory<byte> data)
+        /// <returns>A list of Ed25519 Signatures, one for each private key held by this object.</returns>
+        Proto.SignaturePair[] ISigner.Sign(ReadOnlyMemory<byte> data)
         {
-            return SignatureAlgorithm.Ed25519.Sign(_key, data.Span);
+            return _keys.Select(k => new Proto.SignaturePair
+            {
+                PubKeyPrefix = ByteString.CopyFrom(k.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray()),
+                Ed25519 = ByteString.CopyFrom(SignatureAlgorithm.Ed25519.Sign(k, data.Span))
+            }).ToArray();
         }
         /// <summary>
         /// .NET Dispose implementation, releases internal resources holding 
@@ -89,9 +88,9 @@ namespace Hashgraph
         /// </summary>
         public void Dispose()
         {
-            if (_key != null)
+            for (int i = 0; i < _keys.Length; i++)
             {
-                _key.Dispose();
+                _keys[i].Dispose();
             }
             GC.SuppressFinalize(this);
         }
@@ -111,11 +110,21 @@ namespace Hashgraph
             {
                 return false;
             }
-            return
-                RealmNum == other.RealmNum &&
-                ShardNum == other.ShardNum &&
-                AccountNum == other.AccountNum &&
-                _key.PublicKey.Equals(other._key.PublicKey);
+            if (RealmNum != other.RealmNum ||
+                ShardNum != other.ShardNum ||
+                AccountNum != other.AccountNum ||
+                _keys.Length != other._keys.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < _keys.Length; i++)
+            {
+                if (!_keys[i].PublicKey.Equals(other._keys[i].PublicKey))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         /// <summary>
         /// Equality implementation.
@@ -156,7 +165,7 @@ namespace Hashgraph
         /// </returns>
         public override int GetHashCode()
         {
-            return $"Account:{RealmNum}:{ShardNum}:{AccountNum}:{_key.PublicKey.GetHashCode()}".GetHashCode();
+            return $"Account:{RealmNum}:{ShardNum}:{AccountNum}:{string.Join(':', _keys.Select(k => k.PublicKey.GetHashCode().ToString()))}".GetHashCode();
         }
         /// <summary>
         /// Equals implementation.
