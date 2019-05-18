@@ -35,7 +35,7 @@ namespace Hashgraph.Test.File
             var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
             {
                 File = test.CreateRecord.File,
-                Endorsements = new Endorsements(newPublicKey)
+                Endorsements = new Endorsement[] { newPublicKey }
             });
             Assert.Equal(ResponseCode.Success, updateRecord.Status);
 
@@ -44,7 +44,7 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateRecord.File, info.File);
             Assert.Equal(test.Contents.Length + 30, info.Size);
             Assert.Equal(test.Expiration, info.Expiration);
-            Assert.Equal(new Endorsements(newPublicKey), info.Endorsements);
+            Assert.Equal(new Endorsement[] { newPublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
         }
         [Fact(DisplayName = "File Update: Can Replace Contents")]

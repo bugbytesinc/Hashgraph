@@ -17,7 +17,7 @@ namespace Hashgraph
         /// otherwise manipulating the contents of this file. Set to
         /// <code>null</code> to leave unchanged.
         /// </summary>
-        public Endorsements? Endorsements { get; set; }
+        public Endorsement[]? Endorsements { get; set; }
         /// <summary>
         /// Replace the contents of the file with these new contents.  Set to
         /// <code>null</code> to leave the existing content unchanged.

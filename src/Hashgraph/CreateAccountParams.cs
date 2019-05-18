@@ -7,7 +7,7 @@ namespace Hashgraph
     /// <summary>
     /// Account creation parameters.
     /// </summary>
-    public class CreateAccountParams
+    public sealed class CreateAccountParams
     {
         /// <summary>
         /// The public Ed25519 key corresponding to the private key authorized 

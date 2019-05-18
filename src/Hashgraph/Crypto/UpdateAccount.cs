@@ -64,7 +64,7 @@ namespace Hashgraph
         /// Internal implementation of the update account functionality.
         /// </summary>
         private async Task<TResult> UpdateAccountImplementationAsync<TResult>(UpdateAccountParams updateParameters, Action<IContext>? configure) where TResult : new()
-        { 
+        {
             updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
@@ -73,13 +73,9 @@ namespace Hashgraph
             {
                 AccountIDToUpdate = Protobuf.ToAccountID(updateParameters.Account)
             };
-            if (!(updateParameters.Endorsements is null))
+            if (!(updateParameters.Endorsement is null))
             {
-                if (updateParameters.Endorsements.KeyCount != 1 || updateParameters.Endorsements.RequiredCount != 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsements), "Presently, an account is only allowed one signing key.  Endorsements must require 1 of 1 keys.");
-                }
-                updateAccountBody.Key = Protobuf.ToPublicKeys(updateParameters.Endorsements)[0];
+                updateAccountBody.Key = Protobuf.ToPublicKey(updateParameters.Endorsement);
             }
             if (updateParameters.SendThresholdCreateRecord.HasValue)
             {
