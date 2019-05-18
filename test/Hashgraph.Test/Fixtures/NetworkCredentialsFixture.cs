@@ -73,12 +73,24 @@ namespace Hashgraph.Test.Fixtures
         }
         private void OutputSendingRequest(IMessage message)
         {
-            TestOutput?.WriteLine($"{DateTime.UtcNow} TX:     {JsonFormatter.Default.Format(message)}");
+            if (TestOutput != null)
+            {
+                if (message is Proto.Transaction transaction && transaction.BodyBytes != null)
+                {
+                    var transactionBody = Proto.TransactionBody.Parser.ParseFrom(transaction.BodyBytes);
+                    TestOutput.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
+                    TestOutput.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(message)}");
+                }
+                else
+                {
+                    TestOutput.WriteLine($"{DateTime.UtcNow}  TX     → {JsonFormatter.Default.Format(message)}");
+                }
+            }
         }
 
         private void OutputReceivResponse(int tryNo, IMessage message)
         {
-            TestOutput?.WriteLine($"{DateTime.UtcNow} RX:({tryNo:00}) {JsonFormatter.Default.Format(message)}");
+            TestOutput?.WriteLine($"{DateTime.UtcNow}  RX:({tryNo:00})  {JsonFormatter.Default.Format(message)}");
         }
 
         [CollectionDefinition(nameof(NetworkCredentialsFixture))]

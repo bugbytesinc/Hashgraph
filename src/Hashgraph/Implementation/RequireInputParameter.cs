@@ -27,6 +27,8 @@ namespace Hashgraph.Implementation
             }
             return accountToDelete;
         }
+
+
         internal static Address File(Address file)
         {
             if (file is null)
@@ -75,6 +77,18 @@ namespace Hashgraph.Implementation
             }
             return amount;
         }
+        internal static ReadOnlyMemory<byte> Hash(ReadOnlyMemory<byte> hash)
+        {
+            if (hash.IsEmpty)
+            {
+                throw new ArgumentNullException(nameof(hash), "The claim hash is missing. Please check that it is not null.");
+            }
+            if (hash.Length != 48)
+            {
+                throw new ArgumentOutOfRangeException(nameof(hash), "The claim hash is expected to be 48 bytes in length.");
+            }
+            return hash;
+        }
         internal static UpdateAccountParams UpdateParameters(UpdateAccountParams updateParameters)
         {
             if (updateParameters is null)
@@ -85,7 +99,7 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(updateParameters.Account), "Account is is missing. Please check that it is not null.");
             }
-            if (updateParameters.Endorsements is null &&
+            if (updateParameters.Endorsement is null &&
                 updateParameters.SendThresholdCreateRecord is null &&
                 updateParameters.ReceiveThresholdCreateRecord is null &&
                 updateParameters.Expiration is null &&
@@ -167,13 +181,28 @@ namespace Hashgraph.Implementation
             }
             return result;
         }
-        internal static int RequiredCount(int requiredCount, int maxCount)
+        internal static Endorsement[] Endorsements(Endorsement[] endorsements)
         {
-            if (requiredCount < 1)
+            if (endorsements is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(requiredCount), "At least one key is required to sign a transaction.");
+                throw new ArgumentNullException(nameof(endorsements), "The list of endorsements may not be null.");
             }
-            else if (requiredCount > maxCount)
+            else if (endorsements.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(endorsements), "At least one endorsement in a list is required.");
+            }
+            for (int i = 0; i < endorsements.Length; i++)
+            {
+                if (endorsements[i] is null)
+                {
+                    throw new ArgumentNullException(nameof(endorsements), "No endorsement within the list may be null.");
+                }
+            }
+            return endorsements;
+        }
+        internal static uint RequiredCount(uint requiredCount, int maxCount)
+        {
+            if (requiredCount > maxCount)
             {
                 throw new ArgumentOutOfRangeException(nameof(requiredCount), "The required number of keys for a valid signature cannot exceed the number of public keys provided.");
             }

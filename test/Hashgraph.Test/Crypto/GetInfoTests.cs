@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -32,7 +31,7 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.Proxy.ShardNum > -1);
             Assert.True(info.Proxy.AccountNum > -1);
             Assert.Equal(0, info.ProxiedToAccount);
-            Assert.Equal(new Endorsements(_networkCredentials.AccountPublicKey), info.Endorsements);
+            Assert.Equal(new Endorsement(_networkCredentials.AccountPublicKey), info.Endorsement);
             Assert.True(info.Balance > 0);
             Assert.True(info.SendThresholdCreateRecord > 0);
             Assert.True(info.ReceiveThresholdCreateRecord > 0);

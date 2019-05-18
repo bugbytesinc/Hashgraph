@@ -97,38 +97,48 @@ namespace Hashgraph.Implementation
         {
             return EPOCH.AddTicks(timestamp.Seconds * TimeSpan.TicksPerSecond + timestamp.Nanos / NanosPerTick);
         }
-        internal static Key[] ToPublicKeys(Endorsements endorsements)
+
+        internal static Key ToPublicKey(Endorsement endorsement)
         {
-            return endorsements._keys.Select(k => new Key { Ed25519 = ByteString.CopyFrom(k.Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray()) }).ToArray();
-        }
-        internal static KeyList ToPublicKeyList(Endorsements endorsements)
-        {
-            var result = new KeyList();
-            result.Keys.AddRange(ToPublicKeys(endorsements));
-            return result;
-        }
-        private static Endorsements FromPublicKeyList(KeyList keys)
-        {
-            var publicKeys = new List<ReadOnlyMemory<byte>>(keys.Keys.Count);
-            foreach (var key in keys.Keys)
+            switch(endorsement._type)
             {
-                if (key.KeyCase == Key.KeyOneofCase.Ed25519)
+                case Endorsement.Type.Ed25519: return new Key { Ed25519 = ByteString.CopyFrom(((NSec.Cryptography.PublicKey)endorsement._data).Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray()) };
+                case Endorsement.Type.RSA3072: return new Key { RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
+                case Endorsement.Type.ECDSA384: return new Key { ECDSA384 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
+                case Endorsement.Type.ContractID: return new Key { ContractID = ContractID.Parser.ParseFrom((byte[])endorsement._data) };
+                case Endorsement.Type.List: return new Key
                 {
-                    publicKeys.Add(new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
-                }
+                    ThresholdKey = new ThresholdKey
+                    {
+                        Threshold = endorsement._requiredCount,
+                        Keys = ToPublicKeyList((Endorsement[])endorsement._data)
+                    }
+                };
             }
-            return new Endorsements(publicKeys.ToArray());
+            throw new InvalidOperationException("Endorsement is Empty.");
         }
-        private static Endorsements FromPublicKey(Key key)
-        {
+        internal static Endorsement FromPublicKey(Key key)
+        {            
             switch (key.KeyCase)
             {
-                case Key.KeyOneofCase.Ed25519:
-                    return new Endorsements(new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
-                case Key.KeyOneofCase.KeyList:
-                    return FromPublicKeyList(key.KeyList);
+                case Key.KeyOneofCase.ContractID: return new Endorsement(Endorsement.Type.ContractID, key.ContractID.ToByteArray());
+                case Key.KeyOneofCase.Ed25519: return new Endorsement(Endorsement.Type.Ed25519, new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
+                case Key.KeyOneofCase.RSA3072: return new Endorsement(Endorsement.Type.RSA3072, key.RSA3072.ToByteArray());
+                case Key.KeyOneofCase.ECDSA384: return new Endorsement(Endorsement.Type.ECDSA384, key.ECDSA384.ToByteArray());
+                case Key.KeyOneofCase.ThresholdKey: return new Endorsement(key.ThresholdKey.Threshold, FromPublicKeyList(key.ThresholdKey.Keys));
+                case Key.KeyOneofCase.KeyList: return new Endorsement(FromPublicKeyList(key.KeyList));
             }
-            throw new NotSupportedException($"Unrecognized Public Key type: {key.KeyCase}.");
+            throw new InvalidOperationException($"Unknown Key Type {key.KeyCase}.  Do we have a network/library version mismatch?");
+        }
+        internal static KeyList ToPublicKeyList(Endorsement[] endorsements)
+        {
+            var keyList = new KeyList();
+            keyList.Keys.AddRange(endorsements.Select(endorsement => ToPublicKey(endorsement)));
+            return keyList;
+        }
+        internal static Endorsement[] FromPublicKeyList(KeyList keyList)
+        {
+            return keyList.Keys.Select(key => FromPublicKey(key)).ToArray();
         }
         internal static AccountInfo FromAccountInfo(CryptoGetInfoResponse.Types.AccountInfo accountInfo)
         {
@@ -139,7 +149,7 @@ namespace Hashgraph.Implementation
                 Deleted = accountInfo.Deleted,
                 Proxy = FromAccountID(accountInfo.ProxyAccountID),
                 ProxiedToAccount = accountInfo.ProxyReceived,
-                Endorsements = FromPublicKey(accountInfo.Key),
+                Endorsement = FromPublicKey(accountInfo.Key),
                 Balance = accountInfo.Balance,
                 SendThresholdCreateRecord = accountInfo.GenerateSendRecordThreshold,
                 ReceiveThresholdCreateRecord = accountInfo.GenerateReceiveRecordThreshold,

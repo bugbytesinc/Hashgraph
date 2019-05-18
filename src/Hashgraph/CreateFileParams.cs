@@ -6,7 +6,7 @@ namespace Hashgraph
     /// <summary>
     /// File creation parameters.
     /// </summary>
-    public class CreateFileParams
+    public sealed class CreateFileParams
     {
         /// <summary>
         /// Original expiration date for the file, fees will be charged as appropriate.
@@ -14,9 +14,10 @@ namespace Hashgraph
         public DateTime Expiration { get; set; }
         /// <summary>
         /// A descriptor of the keys required to sign transactions editing and 
-        /// otherwise manipulating the contents of this file.
+        /// otherwise manipulating the contents of this file.  Only one key
+        /// is required to sign the transaction to delete the file.
         /// </summary>
-        public Endorsements Endorsements { get; set; }
+        public Endorsement[] Endorsements { get; set; }
         /// <summary>
         /// The initial contents of the file.
         /// </summary>

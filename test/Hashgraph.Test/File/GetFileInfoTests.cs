@@ -22,9 +22,9 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.CreateRecord.File);
             Assert.NotNull(info);
             Assert.Equal(test.CreateRecord.File, info.File);
-            Assert.Equal(test.Contents.Length+30, info.Size);
+            Assert.Equal(test.Contents.Length + 30, info.Size);
             Assert.Equal(test.Expiration, info.Expiration);
-            Assert.Equal(new Endorsements(test.PublicKey), info.Endorsements);
+            Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
         }
     }

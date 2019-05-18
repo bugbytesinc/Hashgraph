@@ -28,7 +28,7 @@ namespace Hashgraph
         /// <see cref="UpdateAccountParams.Account"/> may carry the new private key 
         /// for signing to meet this requirement.
         /// </remarks>
-        public Endorsements? Endorsements { get; set; }
+        public Endorsement? Endorsement { get; set; }
         /// <summary>
         /// Threshold in tinybars at which withdraws larger than
         /// this value will automatically trigger the creation of a record 

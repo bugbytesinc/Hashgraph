@@ -1,10 +1,9 @@
-﻿using Hashgraph.Test.Fixtures;
-using System;
+﻿using System;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Hashgraph.Test.File
+namespace Hashgraph.Test.Fixtures
 {
     public class TestFileInstance : IAsyncDisposable
     {
@@ -21,7 +20,7 @@ namespace Hashgraph.Test.File
         {
             var test = new TestFileInstance();
             test.NetworkCredentials = networkCredentials;
-            test.NetworkCredentials.TestOutput?.WriteLine("TestFileInstance: STARTING SETUP");
+            test.NetworkCredentials.TestOutput?.WriteLine("STARTING SETUP: Test File Instance");
             test.Contents = Encoding.Unicode.GetBytes("Hello Hashgraph " + Generator.Code(50));
             (test.PublicKey, test.PrivateKey) = Generator.KeyPair();
             test.Expiration = Generator.TruncatedFutureDate(2, 4);
@@ -36,20 +35,20 @@ namespace Hashgraph.Test.File
             test.CreateRecord = await test.Client.CreateFileWithRecordAsync(new CreateFileParams
             {
                 Expiration = test.Expiration,
-                Endorsements = new Endorsements(test.PublicKey),
+                Endorsements = new Endorsement[] { test.PublicKey },
                 Contents = test.Contents
             }, ctx =>
             {
                 ctx.Memo = "TestFileInstance Setup: Creating Test File on Network";
             });
             Assert.Equal(ResponseCode.Success, test.CreateRecord.Status);
-            networkCredentials.TestOutput?.WriteLine("TestFileInstance: SETUP COMPLETED");
+            networkCredentials.TestOutput?.WriteLine("SETUP COMPLETED: Test File Instance");
             return test;
         }
 
         public async ValueTask DisposeAsync()
         {
-            NetworkCredentials.TestOutput?.WriteLine("TestFileInstance: STARTING TEARDOWN");
+            NetworkCredentials.TestOutput?.WriteLine("STARTING TEARDOWN: Test File Instance");
             try
             {
                 await Client.DeleteFileAsync(CreateRecord.File, ctx =>
@@ -62,7 +61,7 @@ namespace Hashgraph.Test.File
                 //noop
             }
             await Client.DisposeAsync();
-            NetworkCredentials.TestOutput?.WriteLine("TestFileInstance: TEARDOWN COMPLETED");
+            NetworkCredentials.TestOutput?.WriteLine("TEARDOWN COMPLETED Test File Instance");
         }
     }
 }

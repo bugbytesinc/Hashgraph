@@ -37,9 +37,9 @@ namespace Hashgraph
         /// </summary>
         public long ProxiedToAccount { get; internal set; }
         /// <summary>
-        /// Account's Ed25519 Public Key.
+        /// Account's Public Key (typically a single Ed25519 key).
         /// </summary>
-        public Endorsements Endorsements { get; internal set; }
+        public Endorsement Endorsement { get; internal set; }
         /// <summary>
         /// Account Balance in Tinybars
         /// </summary>

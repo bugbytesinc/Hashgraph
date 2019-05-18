@@ -29,17 +29,17 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(new Endorsements(originalKeyPair.publicKey), originalInfo.Endorsements);
+            Assert.Equal(new Endorsement(originalKeyPair.publicKey), originalInfo.Endorsement);
 
             var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
             {
                 Account = new Account(createResult.Address, originalKeyPair.privateKey, updatedKeyPair.privateKey),
-                Endorsements = new Endorsements(updatedKeyPair.publicKey)
+                Endorsement = new Endorsement(updatedKeyPair.publicKey)
             });
             Assert.Equal(ResponseCode.Success, updateResult.Status);
 
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(new Endorsements(updatedKeyPair.publicKey), updatedInfo.Endorsements);
+            Assert.Equal(new Endorsement(updatedKeyPair.publicKey), updatedInfo.Endorsement);
         }
         [Fact(DisplayName = "Update Account: Can Update Send Threshold")]
         public async Task CanUpdateSendTreshold()

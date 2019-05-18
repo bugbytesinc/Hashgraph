@@ -22,10 +22,10 @@ namespace Hashgraph
         /// </summary>
         public DateTime Expiration { get; internal set; }
         /// <summary>
-        /// A descriptor of the keys required to sign transactions editing and 
-        /// otherwise manipulating the contents of this file.
+        /// A descriptor of the all the keys required to sign transactions 
+        /// editing and otherwise manipulating the contents of this file.
         /// </summary>
-        public Endorsements Endorsements { get; internal set; }
+        public Endorsement[] Endorsements { get; internal set; }
         /// <summary>
         /// Flag indicating the file has been deleted.
         /// </summary>

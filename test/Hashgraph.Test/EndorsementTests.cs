@@ -13,29 +13,10 @@ namespace Hashgraph.Tests
             var (publicKey1, _) = Generator.KeyPair();
             var (publicKey2, _) = Generator.KeyPair();
 
-            new Endorsements(publicKey1);
-            new Endorsements(1, publicKey1);
-            new Endorsements(publicKey1, publicKey2);
-            new Endorsements(1, publicKey1, publicKey2);
-            new Endorsements(2, publicKey1, publicKey2);
-        }
-        [Fact(DisplayName = "Endorsements: Non Positive required count throws Exception")]
-        public void NegativeValueForCountThrowsError()
-        {
-
-            var (publicKey, _) = Generator.KeyPair();
-            var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            {
-                new Endorsements(0, publicKey);
-            });
-            Assert.Equal("requiredCount", exception.ParamName);
-            Assert.StartsWith("At least one key is required", exception.Message);
-            exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            {
-                new Endorsements(Generator.Integer(-10, -1), publicKey);
-            });
-            Assert.Equal("requiredCount", exception.ParamName);
-            Assert.StartsWith("At least one key is required", exception.Message);
+            new Endorsement(publicKey1);
+            new Endorsement(1, publicKey1);
+            new Endorsement(publicKey1, publicKey2);
+            new Endorsement(1, new Endorsement(1, publicKey1, publicKey2), new Endorsement(2, publicKey1, publicKey2));
         }
         [Fact(DisplayName = "Endorsements: Too large of a requried count throws error.")]
         public void TooLargeRequiredCountThrowsError()
@@ -44,7 +25,7 @@ namespace Hashgraph.Tests
             var (publicKey, _) = Generator.KeyPair();
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                new Endorsements(Generator.Integer(2, 4), publicKey);
+                new Endorsement((uint)Generator.Integer(2, 4), publicKey);
             });
             Assert.Equal("requiredCount", exception.ParamName);
             Assert.StartsWith("The required number of keys for a valid signature cannot exceed the number of public keys provided.", exception.Message);
@@ -54,10 +35,10 @@ namespace Hashgraph.Tests
         {
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                new Endorsements();
+                new Endorsement();
             });
-            Assert.Equal("publicKeys", exception.ParamName);
-            Assert.StartsWith("At least one public key is required.", exception.Message);
+            Assert.Equal("endorsements", exception.ParamName);
+            Assert.StartsWith("At least one endorsement in a list is required.", exception.Message);
         }
         [Fact(DisplayName = "Endorsements: Invalid Bytes in Private key throws Exception")]
         public void InvalidBytesForValueForKeyThrowsError()
@@ -67,7 +48,7 @@ namespace Hashgraph.Tests
             invalidKey[0] = 0;
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                new Endorsements(invalidKey);
+                new Endorsement(Endorsement.Type.Ed25519, invalidKey);
             });
             Assert.StartsWith("The public key was not provided in a recognizable Ed25519 format.", exception.Message);
         }
@@ -78,7 +59,7 @@ namespace Hashgraph.Tests
             var invalidKey = originalKey.ToArray().Take(32).ToArray();
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                new Endorsements(invalidKey);
+                new Endorsement(Endorsement.Type.Ed25519, invalidKey);
             });
             Assert.StartsWith("The public key was not provided in a recognizable Ed25519 format.", exception.Message);
         }
@@ -87,37 +68,37 @@ namespace Hashgraph.Tests
         {
             var (publicKey1, _) = Generator.KeyPair();
             var (publicKey2, _) = Generator.KeyPair();
-            var endorsements1 = new Endorsements(publicKey1);
-            var endorsements2 = new Endorsements(publicKey1);
-            Assert.Equal(endorsements1, endorsements2);
-            Assert.True(endorsements1 == endorsements2);
-            Assert.False(endorsements1 != endorsements2);
+            var endorsement1 = new Endorsement(publicKey1);
+            var endorsement2 = new Endorsement(publicKey1);
+            Assert.Equal(endorsement1, endorsement2);
+            Assert.True(endorsement1 == endorsement2);
+            Assert.False(endorsement1 != endorsement2);
 
-            endorsements1 = new Endorsements(publicKey1, publicKey2);
-            endorsements2 = new Endorsements(publicKey1, publicKey2);
-            Assert.Equal(endorsements1, endorsements2);
-            Assert.True(endorsements1 == endorsements2);
-            Assert.False(endorsements1 != endorsements2);
+            endorsement1 = new Endorsement(publicKey1, publicKey2);
+            endorsement2 = new Endorsement(publicKey1, publicKey2);
+            Assert.Equal(endorsement1, endorsement2);
+            Assert.True(endorsement1 == endorsement2);
+            Assert.False(endorsement1 != endorsement2);
         }
         [Fact(DisplayName = "Endorsements: Disimilar Endorsements are not considered Equal")]
         public void DisimilarEndorsementsAreNotConsideredEqual()
         {
             var (publicKey1, _) = Generator.KeyPair();
             var (publicKey2, _) = Generator.KeyPair();
-            var endorsements1 = new Endorsements(publicKey1);
-            var endorsements2 = new Endorsements(publicKey2);
+            var endorsements1 = new Endorsement(publicKey1);
+            var endorsements2 = new Endorsement(publicKey2);
             Assert.NotEqual(endorsements1, endorsements2);
             Assert.False(endorsements1 == endorsements2);
             Assert.True(endorsements1 != endorsements2);
 
-            endorsements1 = new Endorsements(publicKey1);
-            endorsements2 = new Endorsements(publicKey1, publicKey2);
+            endorsements1 = new Endorsement(publicKey1);
+            endorsements2 = new Endorsement(publicKey1, publicKey2);
             Assert.NotEqual(endorsements1, endorsements2);
             Assert.False(endorsements1 == endorsements2);
             Assert.True(endorsements1 != endorsements2);
 
-            endorsements1 = new Endorsements(publicKey1, publicKey2);
-            endorsements2 = new Endorsements(1, publicKey1, publicKey2);
+            endorsements1 = new Endorsement(publicKey1, publicKey2);
+            endorsements2 = new Endorsement(1, publicKey1, publicKey2);
             Assert.NotEqual(endorsements1, endorsements2);
             Assert.False(endorsements1 == endorsements2);
             Assert.True(endorsements1 != endorsements2);
