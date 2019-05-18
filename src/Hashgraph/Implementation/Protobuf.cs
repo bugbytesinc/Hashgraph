@@ -193,5 +193,15 @@ namespace Hashgraph.Implementation
             result.Memo = record.Memo;
             result.Fee = record.TransactionFee;
         }
+        internal static Claim FromClaim(Proto.Claim claim)
+        {
+            return new Claim
+            {
+                Address = FromAccountID(claim.AccountID),
+                Hash = claim.Hash.ToByteArray(),
+                Endorsements = FromPublicKeyList(claim.Keys),
+                ClaimDuration = FromDuration(claim.ClaimDuration)
+            };
+        }
     }
 }

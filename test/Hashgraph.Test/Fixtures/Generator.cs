@@ -1,5 +1,6 @@
 ﻿using NSec.Cryptography;
 using System;
+using System.Security.Cryptography;
 
 namespace Hashgraph.Test.Fixtures
 {
@@ -67,6 +68,10 @@ namespace Hashgraph.Test.Fixtures
             var publicKey = key.Export(KeyBlobFormat.PkixPublicKey);
             var privateKey = key.Export(KeyBlobFormat.PkixPrivateKey);
             return (publicKey, privateKey);
+        }
+        public static ReadOnlyMemory<byte> SHA384Hash()
+        {
+            return new SHA384Managed().ComputeHash(KeyPair().publicKey.ToArray());
         }
     }
 }
