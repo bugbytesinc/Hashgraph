@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Microsoft.Extensions.Configuration;
+using Proto;
 using System;
 using Xunit;
 using Xunit.Abstractions;
@@ -81,16 +82,78 @@ namespace Hashgraph.Test.Fixtures
                     TestOutput.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
                     TestOutput.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(message)}");
                 }
+                else if(message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.BodyBytes != null)
+                {
+                    var transactionBody = Proto.TransactionBody.Parser.ParseFrom(payment.BodyBytes);
+                    TestOutput.WriteLine($"{DateTime.UtcNow}  QX PYMT  {JsonFormatter.Default.Format(transactionBody)}");
+                    TestOutput.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(message)}");
+                }
                 else
                 {
                     TestOutput.WriteLine($"{DateTime.UtcNow}  TX     → {JsonFormatter.Default.Format(message)}");
                 }
             }
         }
-
         private void OutputReceivResponse(int tryNo, IMessage message)
         {
             TestOutput?.WriteLine($"{DateTime.UtcNow}  RX:({tryNo:00})  {JsonFormatter.Default.Format(message)}");
+        }
+
+        private bool TryGetQueryTransaction(Query query, out Transaction payment)
+        {
+            payment = null;
+            switch (query.QueryCase)
+            {
+                case Query.QueryOneofCase.GetByKey:
+                    payment = query.GetByKey?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.GetBySolidityID:
+                    payment = query.GetBySolidityID?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.ContractCallLocal:
+                    payment = query.ContractCallLocal?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.ContractGetInfo:
+                    payment = query.ContractGetInfo?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.ContractGetBytecode:
+                    payment = query.ContractGetBytecode?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.ContractGetRecords:
+                    payment = query.ContractGetRecords?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.CryptogetAccountBalance:
+                    payment = query.CryptogetAccountBalance?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.CryptoGetAccountRecords:
+                    payment = query.CryptoGetAccountRecords?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.CryptoGetInfo:
+                    payment = query.CryptoGetInfo?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.CryptoGetClaim:
+                    payment = query.CryptoGetClaim?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.CryptoGetProxyStakers:
+                    payment = query.CryptoGetProxyStakers?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.FileGetContents:
+                    payment = query.FileGetContents?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.FileGetInfo:
+                    payment = query.FileGetInfo?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.TransactionGetReceipt:
+                    payment = query.TransactionGetReceipt?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.TransactionGetRecord:
+                    payment = query.TransactionGetRecord?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.TransactionGetFastRecord:
+                    payment = query.TransactionGetFastRecord?.Header?.Payment;
+                    break;
+            }
+            return payment != null;
         }
 
         [CollectionDefinition(nameof(NetworkCredentialsFixture))]

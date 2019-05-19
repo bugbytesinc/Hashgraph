@@ -26,8 +26,8 @@ namespace Hashgraph.Test.Crypto
             var balanceBefore = await client.GetAccountBalanceAsync(fromAccount);
             var receipt = await client.TransferAsync(fromAccount, toAddress, transferAmount);
             var balanceAfter = await client.GetAccountBalanceAsync(fromAccount);
-            // Upper bound on fees (for receipt version)
-            Assert.True((ulong)transferAmount + (ulong)fee + (ulong)fee > balanceBefore - balanceAfter);
+            var maxFee = (ulong)(3 * fee);
+            Assert.InRange(balanceAfter, balanceBefore - (ulong)transferAmount - maxFee, balanceBefore - (ulong)transferAmount);
         }
         [Fact(DisplayName = "Transfer: Can Send to New Account")]
         public async Task CanTransferCryptoToNewAccount()
