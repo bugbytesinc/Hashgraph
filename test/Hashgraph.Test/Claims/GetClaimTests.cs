@@ -16,7 +16,7 @@ namespace Hashgraph.Test.Claims
             _networkCredentials = networkCredentials;
             _networkCredentials.TestOutput = output;
         }
-        [Fact(DisplayName = "Get Claim: Can Reterieve a Claim")]
+        [SkippableFact(DisplayName = "Get Claim: Can Reterieve a Claim")]
         public async Task CanRetriveAClaimAsync()
         {
             await using var accountFx = await TestAccountInstance.CreateAsync(_networkCredentials);

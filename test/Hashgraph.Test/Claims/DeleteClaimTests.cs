@@ -87,7 +87,7 @@ namespace Hashgraph.Test.Claims
             Assert.Equal("hash", exception.ParamName);
             Assert.StartsWith("The claim hash is missing. Please check that it is not null.", exception.Message);
         }
-        [SkippableFact(DisplayName = "Delete Claim: Can Delete a Claim")]
+        [Fact(DisplayName = "Delete Claim: Can Delete a Claim")]
         public async Task DeletingMissingAccountThrowsError()
         {
             await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
