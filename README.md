@@ -1,6 +1,8 @@
 # Hashgraph
 .NET Core Client Library for Hedera Hashgraph
 
+__Please Note__:  This library is very new and as we gain experience interacting with the Hedera Network any commit to this project may cause breaking changes.  Please be patient as we gain the necessary experience to provide a best in class library to access the Hedera Network.  
+
 ## Example
 The ```Client``` object orchestrates the request construction and communication with the hedera network.   It requires a small amount of configuration when created.  At a minimum to retrieve an account balance, the client must be configured with a Gateway and Payer Account.  The ```Gateway``` object represents the internet network address and account for the node processing requests and the Payer ```Account``` represents the account that will sign and pay for the query.  The following code example illustrates retrieving an account balance for an ```Address```:
 ```csharp
