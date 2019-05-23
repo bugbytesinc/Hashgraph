@@ -73,8 +73,6 @@ namespace Hashgraph
                 ExpirationTime = Protobuf.ToTimestamp(createParameters.Expiration),
                 Keys = Protobuf.ToPublicKeyList(createParameters.Endorsements),
                 Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
-                ShardID = Protobuf.ToShardID(gateway.ShardNum),
-                RealmID = Protobuf.ToRealmID(gateway.RealmNum, gateway.ShardNum)
             };
             var request = Transactions.SignTransaction(transactionBody, payer);
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
