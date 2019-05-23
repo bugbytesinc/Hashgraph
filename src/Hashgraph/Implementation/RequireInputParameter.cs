@@ -28,7 +28,6 @@ namespace Hashgraph.Implementation
             return accountToDelete;
         }
 
-
         internal static Address File(Address file)
         {
             if (file is null)
@@ -237,6 +236,18 @@ namespace Hashgraph.Implementation
             if (createParameters.Endorsements is null)
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.Endorsements), "Endorsements are required.");
+            }
+            return createParameters;
+        }
+        internal static CreateContractParams CreateParameters(CreateContractParams createParameters)
+        {
+            if (createParameters is null)
+            {
+                throw new ArgumentNullException(nameof(createParameters), "The create parameters are is missing. Please check that the argument is not null.");
+            }
+            if(createParameters.File is null)
+            {
+                throw new ArgumentNullException(nameof(createParameters.File), "The File Address containing the contract is missing, it cannot be null.");
             }
             return createParameters;
         }

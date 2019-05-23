@@ -328,8 +328,24 @@ namespace Hashgraph
         /// </summary>
         [Description("MODIFYING_IMMUTABLE_CONTRACT")] ModifyingImmutableContract = 79,
         /// <summary>
+        ///Unexpected exception thrown by file system functions
+        /// </summary>
+        [Description("FILE_SYSTEM_EXCEPTION")] FileSystemException = 80,
+        /// <summary>
         /// the duration is not a subset of [MINIMUM_AUTORENEW_DURATION,MAXIMUM_AUTORENEW_DURATION]
         /// </summary>
-        [Description("AUTORENEW_DURATION_NOT_IN_RANGE")] AutorenewDurationNotInRange = 80,
+        [Description("AUTORENEW_DURATION_NOT_IN_RANGE")] AutorenewDurationNotInRange = 81,
+        /// <summary>
+        /// Decoding the smart contract binary to a byte array failed. Check that the input is a valid hex string.
+        /// </summary>
+        [Description("ERROR_DECODING_BYTESTRING")] ErrorDecodingBytestring = 82,
+        /// <summary>
+        /// File to create a smart contract was of length zero
+        /// </summary>
+        [Description("CONTRACT_FILE_EMPTY")] ContractFileEmpty = 83,
+        /// <summary>
+        /// Bytecode for smart contract is of length zero
+        /// </summary>
+        [Description("CONTRACT_BYTECODE_EMPTY")] ContractBytecodeEmpty = 84,
     }
 }

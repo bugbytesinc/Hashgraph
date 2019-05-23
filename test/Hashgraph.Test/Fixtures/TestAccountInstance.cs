@@ -27,7 +27,7 @@ namespace Hashgraph.Test.Fixtures
             fx.Client = networkCredentials.CreateClientWithDefaultConfiguration();
             fx.AccountRecord = await fx.Client.CreateAccountWithRecordAsync(fx.CreateAccountParams, ctx =>
              {
-                 ctx.Memo = "Test Account Instance: Creating Test File on Network";
+                 ctx.Memo = "Test Account Instance: Creating Test Account on Network";
              });
             Assert.Equal(ResponseCode.Success, fx.AccountRecord.Status);
             networkCredentials.TestOutput?.WriteLine("SETUP COMPLETED: Test Account Instance");
