@@ -28,20 +28,6 @@ namespace Hashgraph.Implementation
             return TransactionID.Parser.ParseFrom((transaction as IData).Data.ToArray());
         }
 
-        internal static ShardID ToShardID(long shardNum)
-        {
-            return new ShardID { ShardNum = shardNum };
-        }
-
-        internal static RealmID ToRealmID(long realmNum, long shardNum)
-        {
-            return new RealmID
-            {
-                RealmNum = realmNum,
-                ShardNum = shardNum
-            };
-        }
-
         internal static AccountID ToAccountID(Address address)
         {
             return new AccountID
