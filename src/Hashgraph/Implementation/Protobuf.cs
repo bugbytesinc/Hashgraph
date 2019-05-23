@@ -70,6 +70,21 @@ namespace Hashgraph.Implementation
             return new Address(fileID.RealmNum, fileID.ShardNum, fileID.FileNum);
         }
 
+        internal static ContractID ToContractId(Address address)
+        {
+            return new ContractID
+            {
+                RealmNum = address.RealmNum,
+                ShardNum = address.ShardNum,
+                ContractNum = address.AccountNum
+            };
+        }
+
+        internal static Address FromContractID(ContractID contract)
+        {
+            return new Address(contract.RealmNum, contract.ShardNum, contract.ContractNum);
+        }
+
         internal static Duration ToDuration(TimeSpan timespan)
         {
             return new Duration

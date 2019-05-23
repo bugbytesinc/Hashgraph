@@ -20,46 +20,35 @@ namespace Hashgraph.Test.Claims
         {
             await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
 
-            var (publicKey1, privateKey1) = Generator.KeyPair();
-            var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
                 Address = test.AccountRecord.Address,
                 Hash = Generator.SHA384Hash(),
-                Endorsements = new Endorsement[] { publicKey1, publicKey2 },
-                ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
+                Endorsements = new Endorsement[] { _networkCredentials.AccountPublicKey },
+                ClaimDuration = TimeSpan.FromTicks(Generator.TruncatedFutureDate(24, 48).Ticks)
             };
 
             var addReceipt = await test.Client.AddClaimAsync(claim, ctx =>
             {
-                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1, privateKey2);
+                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey);
             });
             Assert.Equal(ResponseCode.Success, addReceipt.Status);
 
             try
             {
-                var copy = await test.Client.GetClaimAsync(claim.Address, claim.Hash, ctx =>
-                {
-                    ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, test.PrivateKey, privateKey1, privateKey2);
-                });
-                Assert.NotNull(copy);
+                var deleteReceipt = await test.Client.DeleteClaimAsync(claim.Address, claim.Hash);
+                Assert.NotNull(deleteReceipt);
+                Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
             }
-            catch (PrecheckException pex) when (pex.Status == ResponseCode.ClaimNotFound)
+            catch (TransactionException tex) when (tex.Status == ResponseCode.InvalidSignature)
             {
-                Skip.If(true, "Attempt to retrieve claim failed, not necessarily a problem with the C# library.");
+                Skip.If(true, "Attempt to retrieve delete failed, not necessarily a problem with the C# library.");
             }
-
-            var deleteReceipt = await test.Client.DeleteClaimAsync(claim.Address, claim.Hash, ctx =>
-            {
-                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, test.PrivateKey, privateKey1, privateKey2);
-            });
-            Assert.NotNull(deleteReceipt);
-            Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
 
             var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await test.Client.GetClaimAsync(claim.Address, claim.Hash);
-            });
+                {
+                    await test.Client.GetClaimAsync(claim.Address, claim.Hash);
+                });
             Assert.Equal(ResponseCode.ClaimNotFound, exception.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", exception.Message);
         }
@@ -87,7 +76,7 @@ namespace Hashgraph.Test.Claims
             Assert.Equal("hash", exception.ParamName);
             Assert.StartsWith("The claim hash is missing. Please check that it is not null.", exception.Message);
         }
-        [Fact(DisplayName = "Delete Claim: Can Delete a Claim")]
+        [Fact(DisplayName = "Delete Claim: Missing Address throws error.")]
         public async Task DeletingMissingAccountThrowsError()
         {
             await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);

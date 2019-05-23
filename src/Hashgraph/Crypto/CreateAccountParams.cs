@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Hashgraph
 {
@@ -47,7 +45,7 @@ namespace Hashgraph
         /// to be renewed at the given interval for as long as the account contains 
         /// hbars sufficient to cover the renewal charge.
         /// </summary>
-        public TimeSpan AutoRenewPeriod { get; set; }        
+        public TimeSpan AutoRenewPeriod { get; set; }
         /// <summary>
         /// Public Constructor, sets system defaults for various properties.
         /// </summary>

@@ -9,14 +9,61 @@ namespace Hashgraph
 {
     public partial class Client
     {
+        /// <summary>
+        /// Removes the specified claim from the associated account.
+        /// </summary>
+        /// <param name="address">
+        /// Address of the account having the claim to remove.
+        /// </param>
+        /// <param name="hash">
+        /// The hash/id of the claim to remove.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction receipt indicating success.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public Task<TransactionReceipt> DeleteClaimAsync(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null)
         {
             return DeleteClaimImplementationAsync<TransactionReceipt>(address, hash, configure);
         }
+        /// <summary>
+        /// Removes the specified claim from the associated account.
+        /// </summary>
+        /// <param name="address">
+        /// Address of the account having the claim to remove.
+        /// </param>
+        /// <param name="hash">
+        /// The hash/id of the claim to remove.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction record indicating success and transaction details.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public Task<TransactionRecord> DeleteClaimWithRecordAsync(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null)
         {
             return DeleteClaimImplementationAsync<TransactionRecord>(address, hash);
         }
+        /// <summary>
+        /// Internal implementation of the Delete Claim Methods
+        /// </summary>
         public async Task<TResult> DeleteClaimImplementationAsync<TResult>(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null) where TResult : new()
         {
             address = RequireInputParameter.Address(address);

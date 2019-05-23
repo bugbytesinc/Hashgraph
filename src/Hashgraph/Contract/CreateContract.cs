@@ -1,5 +1,4 @@
-﻿
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
@@ -11,10 +10,10 @@ namespace Hashgraph
     public partial class Client
     {
         /// <summary>
-        /// Adds a claim to the given account.
+        /// Creates a new contract instance with the given create parameters.
         /// </summary>
-        /// <param name="claim">
-        /// The details of the claim attachment request.
+        /// <param name="createParameters">
+        /// Details regarding the contract to instantiate.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -22,22 +21,24 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction receipt indicating success.
+        /// A transaction receipt with a description of the newly created contract.
+        /// and receipt information.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> AddClaimAsync(Claim claim, Action<IContext>? configure = null)
+        public Task<ContractReceipt> CreateContractAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
         {
-            return AddClaimImplementationAsync<TransactionReceipt>(claim, configure);
+            return CreateContractImplementationAsync<ContractReceipt>(createParameters, configure);
         }
         /// <summary>
-        /// Adds a claim to the given account, returning a transaction record.
+        /// Creates a new contract instance with the given create parameters 
+        /// returning a detailed record.
         /// </summary>
-        /// <param name="claim">
-        /// The details of the claim attachment request.
+        /// <param name="createParameters">
+        /// Details regarding the contract to instantiate.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -45,37 +46,38 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction record indicating success and information on fees.
+        /// A transaction record with a description of the newly created contract.
+        /// and receipt information.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> AddClaimWithRecordAsync(Claim claim, Action<IContext>? configure = null)
+        public Task<ContractRecord> CreateContractWithRecordAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
         {
-            return AddClaimImplementationAsync<TransactionRecord>(claim, configure);
+            return CreateContractImplementationAsync<ContractRecord>(createParameters, configure);
         }
         /// <summary>
-        /// Internal implementation of the Add Claim service.
+        /// Internal Create Contract Implementation
         /// </summary>
-        public async Task<TResult> AddClaimImplementationAsync<TResult>(Claim claim, Action<IContext>? configure) where TResult : new()
+        public async Task<TResult> CreateContractImplementationAsync<TResult>(CreateContractParams createParameters, Action<IContext>? configure) where TResult : new()
         {
-            claim = RequireInputParameter.AddParameters(claim);
+            createParameters = RequireInputParameter.CreateParameters(createParameters);
             var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Add Claim");
-            transactionBody.CryptoAddClaim = new CryptoAddClaimTransactionBody
+            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create Contract");
+            transactionBody.ContractCreateInstance = new ContractCreateTransactionBody
             {
-                Claim = new Proto.Claim
-                {
-                    AccountID = Protobuf.ToAccountID(claim.Address),
-                    Hash = ByteString.CopyFrom(claim.Hash.ToArray()),
-                    Keys = Protobuf.ToPublicKeyList(claim.Endorsements),
-                    ClaimDuration = Protobuf.ToDuration(claim.ClaimDuration)
-                }
+                FileID = Protobuf.ToFileId(createParameters.File),
+                AdminKey = createParameters.Administrator is null ? null : Protobuf.ToPublicKey(createParameters.Administrator),
+                Gas = createParameters.Gas,
+                InitialBalance = createParameters.InitialBalance,
+                AutoRenewPeriod = Protobuf.ToDuration(createParameters.RenewPeriod),
+                ConstructorParameters = ByteString.CopyFrom(Abi.EncodeArguments(createParameters.Arguments).ToArray()),
+                Memo = context.Memo ?? "Create Contract"
             };
             var request = Transactions.SignTransaction(transactionBody, payer);
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
@@ -83,24 +85,26 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to attach claim, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to create contract, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is TransactionReceipt rcpt)
+            if (result is ContractReceipt rcpt)
             {
                 Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                rcpt.Contract = Protobuf.FromContractID(receipt.ContractID);
             }
-            if (result is TransactionRecord rec)
+            else if (result is ContractRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+                rec.Contract = Protobuf.FromContractID(receipt.ContractID);
             }
             return result;
 
             static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
-                var client = new FileService.FileServiceClient(channel);
-                return async (Transaction transaction) => await client.createFileAsync(transaction);
+                var client = new SmartContractService.SmartContractServiceClient(channel);
+                return async (Transaction transaction) => await client.createContractAsync(transaction);
             }
 
             static ResponseCodeEnum getResponseCode(TransactionResponse response)
