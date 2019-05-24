@@ -27,7 +27,6 @@ namespace Hashgraph.Implementation
             }
             return accountToDelete;
         }
-
         internal static Address File(Address file)
         {
             if (file is null)
@@ -245,11 +244,19 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(createParameters), "The create parameters are is missing. Please check that the argument is not null.");
             }
-            if(createParameters.File is null)
+            if (createParameters.File is null)
             {
                 throw new ArgumentNullException(nameof(createParameters.File), "The File Address containing the contract is missing, it cannot be null.");
             }
             return createParameters;
+        }
+        internal static CallContractParams CallContractParameters(CallContractParams callParameters)
+        {
+            if (callParameters is null)
+            {
+                throw new ArgumentNullException(nameof(callParameters), "The call parameters are is missing. Please check that the argument is not null.");
+            }
+            return callParameters;
         }
         internal static UpdateFileParams UpdateParameters(UpdateFileParams updateParameters)
         {
@@ -306,7 +313,7 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentOutOfRangeException(nameof(addParameters.Endorsements), "The endorsements array is empty. Please must include at least one endorsement.");
             }
-            if(addParameters.ClaimDuration.Ticks == 0)
+            if (addParameters.ClaimDuration.Ticks == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(addParameters.ClaimDuration), "Claim Duration must have some length.");
             }

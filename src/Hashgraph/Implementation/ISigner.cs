@@ -8,7 +8,7 @@ namespace Hashgraph.Implementation
     /// can sign transactions.  Not intended for public use.
     /// </summary>
     internal interface ISigner
-    {        
+    {
         SignaturePair[] Sign(ReadOnlyMemory<byte> data);
     }
 }

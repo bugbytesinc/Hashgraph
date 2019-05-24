@@ -62,7 +62,7 @@ namespace Hashgraph.Implementation
         public Channel GetChannel()
         {
             var url = Gateway?.Url;
-            if(string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(url))
             {
                 throw new InvalidOperationException("A proper Gateway has not been configured.");
             }
@@ -79,14 +79,14 @@ namespace Hashgraph.Implementation
             {
                 if (ctx._map.TryGetValue(name, out object asObject))
                 {
-                    if(asObject is T)
+                    if (asObject is T)
                     {
                         value = (T)asObject;
                     }
                     else
                     {
                         value = default;
-                    }                    
+                    }
                     return true;
                 }
             }

@@ -105,16 +105,16 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to update account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is AccountReceipt arcpt)
-            {
-                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
-                arcpt.Address = Protobuf.FromAccountID(receipt.AccountID);
-            }
-            else if (result is AccountRecord arec)
+            if (result is AccountRecord arec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(transactionId, receipt, record, arec);
                 arec.Address = Protobuf.FromAccountID(receipt.AccountID);
+            }
+            else if (result is AccountReceipt arcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
+                arcpt.Address = Protobuf.FromAccountID(receipt.AccountID);
             }
             return result;
 

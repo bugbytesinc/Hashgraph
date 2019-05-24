@@ -61,7 +61,7 @@ namespace Hashgraph.Test.Fixtures
                 Administrator = networkCredentials.AccountPublicKey,
                 Gas = 500_000,
                 RenewPeriod = TimeSpan.FromDays(Generator.Integer(2, 4)),
-                Arguments = new object[] { "Hello from .NET." }
+                Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
             };
             return fx;
         }

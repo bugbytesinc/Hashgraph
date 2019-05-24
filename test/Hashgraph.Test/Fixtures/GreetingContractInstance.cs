@@ -36,6 +36,7 @@ namespace Hashgraph.Test.Fixtures
             });
             Assert.Equal(ResponseCode.Success, fx.FileCreateRecord.Status);
             networkCredentials.TestOutput?.WriteLine("SETUP COMPLETED: Greeting Contract Instance");
+            Assert.Equal(ResponseCode.Success, fx.ContractCreateRecord.Status);
             return fx;
         }
         private static async Task<GreetingContractInstance> InternalSetupAsync(NetworkCredentialsFixture networkCredentials)
