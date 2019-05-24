@@ -10,11 +10,14 @@ namespace Hashgraph
     public partial class Client
     {
         /// <summary>
-        /// Updates the properties or contents of an existing file stored in the network.
+        /// Calls a smart contract returning a receipt indicating success.  
+        /// This can be used for contract calls that do not return data. 
+        /// If the contract returns data, call the <see cref="CallContractWithRecordAsync"/> 
+        /// call instead to retrieve the information returned from the function call.
         /// </summary>
-        /// <param name="updateParameters">
-        /// Update parameters indicating the file to update and what properties such 
-        /// as the access key or content that should be updated.
+        /// <param name="callParameters">
+        /// An object identifying the function to call, any input parameters and the 
+        /// amount of gas that may be used to execute the request.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -22,23 +25,26 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction receipt indicating the operation was successful.
+        /// A contract transaction receipt indicating success, it does not
+        /// include any output parameters sent from the contract.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> UpdateFileAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
+        public Task<ContractReceipt> CallContractAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return UpdateFileImplementationAsync<TransactionReceipt>(updateParameters, configure);
+            return CallContractImplementationAsync<ContractReceipt>(callParameters, configure);
         }
         /// <summary>
-        /// Updates the properties or contents of an existing file stored in the network.
+        /// Calls a smart contract returning if successful.  The CallContractReceipt 
+        /// will include the details of the results from the call, including the 
+        /// output parameters returned by the function call.
         /// </summary>
-        /// <param name="updateParameters">
-        /// Update parameters indicating the file to update and what properties such 
-        /// as the access key or content that should be updated.
+        /// <param name="callParameters">
+        /// An object identifying the function to call, any input parameters and the 
+        /// amount of gas that may be used to execute the request.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -46,66 +52,62 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction record describing the details of the operation 
-        /// including fees and transaction hash.
+        /// A contract transaction record indicating success, it also
+        /// any output parameters sent from the contract function.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> UpdateFileWithRecordAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
+        public Task<CallContractRecord> CallContractWithRecordAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return UpdateFileImplementationAsync<TransactionRecord>(updateParameters, configure);
+            return CallContractImplementationAsync<CallContractRecord>(callParameters, configure);
         }
         /// <summary>
-        /// Internal helper method implementing the file update service.
+        /// Internal implementation of the contract call method.
         /// </summary>
-        public async Task<TResult> UpdateFileImplementationAsync<TResult>(UpdateFileParams updateParameters, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> CallContractImplementationAsync<TResult>(CallContractParams callParmeters, Action<IContext>? configure) where TResult : new()
         {
-            updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
+            callParmeters = RequireInputParameter.CallContractParameters(callParmeters);
             var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
+            var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
-            var updateFileBody = new FileUpdateTransactionBody
-            {
-                FileID = Protobuf.ToFileId(updateParameters.File)
-            };
-            if (!(updateParameters.Endorsements is null))
-            {
-                updateFileBody.Keys = Protobuf.ToPublicKeyList(updateParameters.Endorsements);
-            }
-            if (updateParameters.Contents.HasValue)
-            {
-                updateFileBody.Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
-            }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Update File");
-            transactionBody.FileUpdate = updateFileBody;
+            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Call Contract");
+            transactionBody.ContractCall = new ContractCallTransactionBody
+            {
+                ContractID = Protobuf.ToContractId(callParmeters.Contract),
+                Gas = callParmeters.Gas,
+                Amount = callParmeters.PayableAmount,
+                FunctionParameters = Abi.EncodeFunctionWithArguments(callParmeters.FunctionName, callParmeters.FunctionArgs).ToByteString()
+            };
             var request = Transactions.SignTransaction(transactionBody, payer);
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to update file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Contract call failed, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is TransactionRecord rec)
+            if (result is CallContractRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+                Protobuf.FillCallContractResults(record, rec);
             }
-            else if (result is TransactionReceipt rcpt)
+            else if (result is ContractReceipt rcpt)
             {
                 Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                rcpt.Contract = Protobuf.FromContractID(receipt.ContractID);
             }
             return result;
 
             static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
-                var client = new FileService.FileServiceClient(channel);
-                return async (Transaction transaction) => await client.updateFileAsync(transaction);
+                var client = new SmartContractService.SmartContractServiceClient(channel);
+                return async (Transaction transaction) => await client.contractCallMethodAsync(transaction);
             }
 
             static ResponseCodeEnum getResponseCode(TransactionResponse response)

@@ -98,7 +98,7 @@ namespace Hashgraph
         /// between the server and the client system.  This information 
         /// can be useful for logging and troubleshooting efforts. 
         /// </summary>
-        Action<int,IMessage>? OnResponseReceived { get; set; }
+        Action<int, IMessage>? OnResponseReceived { get; set; }
         /// <summary>
         /// Clears a property on the context.  This is the only way to clear 
         /// a property value on the context so that a parent value can be 

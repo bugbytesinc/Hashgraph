@@ -8,7 +8,7 @@ namespace Hashgraph
     public sealed class ContractReceipt : TransactionReceipt
     {
         /// <summary>
-        /// The newly created contract instance address.
+        /// The newly created or associated contract instance address.
         /// </summary>
         public Address Contract { get; internal set; }
     }

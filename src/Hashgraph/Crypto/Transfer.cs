@@ -76,7 +76,7 @@ namespace Hashgraph
         /// an exception.
         /// </summary>
         private async Task<TResult> TransferImplementationAsync<TResult>(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null) where TResult : new()
-        { 
+        {
             fromAccount = RequireInputParameter.FromAccount(fromAccount);
             toAddress = RequireInputParameter.ToAddress(toAddress);
             amount = RequireInputParameter.Amount(amount);
@@ -95,15 +95,15 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to execute crypto transfer, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if(result is TransactionReceipt rcpt)
-            {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-            }
-            else if(result is TransferRecord rec)
+            if (result is TransferRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
                 rec.Transfers = Protobuf.FromTransferList(record.TransferList);
+            }
+            else if (result is TransactionReceipt rcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
             }
             return result;
 

@@ -81,14 +81,14 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to append to file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is TransactionReceipt rcpt)
-            {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-            }
-            else if (result is TransactionRecord rec)
+            if (result is TransactionRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+            }
+            else if (result is TransactionReceipt rcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
             }
             return result;
 

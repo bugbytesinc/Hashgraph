@@ -88,16 +88,16 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to create contract, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is ContractReceipt rcpt)
-            {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-                rcpt.Contract = Protobuf.FromContractID(receipt.ContractID);
-            }
-            else if (result is ContractRecord rec)
+            if (result is ContractRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
                 rec.Contract = Protobuf.FromContractID(receipt.ContractID);
+            }
+            else if (result is ContractReceipt rcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                rcpt.Contract = Protobuf.FromContractID(receipt.ContractID);
             }
             return result;
 

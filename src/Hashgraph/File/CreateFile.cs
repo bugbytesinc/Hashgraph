@@ -83,16 +83,16 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to create file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is FileReceipt rcpt)
-            {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-                rcpt.File = Protobuf.FromFileID(receipt.FileID);
-            }
-            else if (result is FileRecord rec)
+            if (result is FileRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
                 rec.File = Protobuf.FromFileID(receipt.FileID);
+            }
+            else if (result is FileReceipt rcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                rcpt.File = Protobuf.FromFileID(receipt.FileID);
             }
             return result;
 

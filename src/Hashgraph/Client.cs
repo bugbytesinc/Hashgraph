@@ -71,7 +71,7 @@ namespace Hashgraph
         /// <see cref="Client.Clone(Action{IContext})"/> method call.
         /// </param>
         private Client(Action<IContext>? configure, ContextStack? parent)
-        {            
+        {
             if (parent is null)
             {
                 // Create a Context with System Defaults 

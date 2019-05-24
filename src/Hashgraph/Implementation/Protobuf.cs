@@ -82,7 +82,6 @@ namespace Hashgraph.Implementation
         {
             return TimeSpan.FromSeconds(duration.Seconds);
         }
-
         internal static Timestamp ToTimestamp(DateTime dateTime)
         {
             TimeSpan timespan = dateTime - EPOCH;
@@ -101,25 +100,26 @@ namespace Hashgraph.Implementation
 
         internal static Key ToPublicKey(Endorsement endorsement)
         {
-            switch(endorsement._type)
+            switch (endorsement._type)
             {
                 case Endorsement.Type.Ed25519: return new Key { Ed25519 = ByteString.CopyFrom(((NSec.Cryptography.PublicKey)endorsement._data).Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray()) };
                 case Endorsement.Type.RSA3072: return new Key { RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
                 case Endorsement.Type.ECDSA384: return new Key { ECDSA384 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
                 case Endorsement.Type.ContractID: return new Key { ContractID = ContractID.Parser.ParseFrom((byte[])endorsement._data) };
-                case Endorsement.Type.List: return new Key
-                {
-                    ThresholdKey = new ThresholdKey
+                case Endorsement.Type.List:
+                    return new Key
                     {
-                        Threshold = endorsement._requiredCount,
-                        Keys = ToPublicKeyList((Endorsement[])endorsement._data)
-                    }
-                };
+                        ThresholdKey = new ThresholdKey
+                        {
+                            Threshold = endorsement._requiredCount,
+                            Keys = ToPublicKeyList((Endorsement[])endorsement._data)
+                        }
+                    };
             }
             throw new InvalidOperationException("Endorsement is Empty.");
         }
         internal static Endorsement FromPublicKey(Key key)
-        {            
+        {
             switch (key.KeyCase)
             {
                 case Key.KeyOneofCase.ContractID: return new Endorsement(Endorsement.Type.ContractID, key.ContractID.ToByteArray());
@@ -194,6 +194,26 @@ namespace Hashgraph.Implementation
             result.Memo = record.Memo;
             result.Fee = record.TransactionFee;
         }
+        internal static void FillCallContractResults(Proto.TransactionRecord record, CallContractRecord result)
+        {
+            result.Contract = Protobuf.FromContractID(record.Receipt.ContractID);
+            var callResult = record.ContractCallResult;
+            if (callResult != null)
+            {
+                result.Result = new FunctionResult(callResult.ContractCallResult.ToArray());
+                result.Error = callResult.ErrorMessage;
+                result.Bloom = callResult.Bloom.ToArray();
+                result.Gas = callResult.GasUsed;
+                result.Events = callResult.LogInfo?.Select(log => new ContractEvent
+                {
+                    Contract = FromContractID(log.ContractID),
+                    Bloom = log.Bloom.ToArray(),
+                    Topic = log.Topic.Select(bs => new ReadOnlyMemory<byte>(bs.ToArray())).ToArray(),
+                    Data = new FunctionResult(log.Data.ToArray())
+                }).ToArray();
+            }
+        }
+
         internal static Claim FromClaim(Proto.Claim claim)
         {
             return new Claim
