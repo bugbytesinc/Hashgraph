@@ -158,6 +158,21 @@ namespace Hashgraph.Implementation
                 AutoRenewPeriod = FromDuration(accountInfo.AutoRenewPeriod)
             };
         }
+        internal static ContractInfo FromContractInfo(ContractGetInfoResponse.Types.ContractInfo contractInfo)
+        {
+            return new ContractInfo
+            {
+                Contract = FromContractID(contractInfo.ContractID),
+                Address = FromAccountID(contractInfo.AccountID),
+                SmartContractId = contractInfo.ContractAccountID,
+                Administrator = contractInfo.AdminKey is null ? null : FromPublicKey(contractInfo.AdminKey),
+                Expiration = FromTimestamp(contractInfo.ExpirationTime),
+                RenewPeriod = FromDuration(contractInfo.AutoRenewPeriod),
+                Size = contractInfo.Storage,
+                Memo = contractInfo.Memo
+            };
+        }
+
         internal static FileInfo FromFileInfo(FileGetInfoResponse.Types.FileInfo fileInfo)
         {
             return new FileInfo

@@ -19,6 +19,14 @@ namespace Hashgraph.Implementation
             }
             return address;
         }
+        internal static Address Contract(Address contract)
+        {
+            if (contract is null)
+            {
+                throw new ArgumentNullException(nameof(contract), "Contract Address is is missing. Please check that it is not null.");
+            }
+            return contract;
+        }
         internal static Account AccountToDelete(Account accountToDelete)
         {
             if (accountToDelete is null)
