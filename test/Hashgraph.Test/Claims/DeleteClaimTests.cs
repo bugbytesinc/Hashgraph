@@ -28,10 +28,7 @@ namespace Hashgraph.Test.Claims
                 ClaimDuration = TimeSpan.FromTicks(Generator.TruncatedFutureDate(24, 48).Ticks)
             };
 
-            var addReceipt = await test.Client.AddClaimAsync(claim, ctx =>
-            {
-                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey);
-            });
+            var addReceipt = await test.Client.AddClaimAsync(claim);
             Assert.Equal(ResponseCode.Success, addReceipt.Status);
 
             try

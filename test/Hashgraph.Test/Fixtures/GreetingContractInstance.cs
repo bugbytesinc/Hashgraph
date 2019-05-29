@@ -8,6 +8,7 @@ namespace Hashgraph.Test.Fixtures
     public class GreetingContractInstance : IAsyncDisposable
     {
         public Account Payer;
+        public string Memo;
         public Client Client;
         public CreateFileParams CreateFileParams;
         public FileRecord FileCreateRecord;
@@ -38,7 +39,7 @@ namespace Hashgraph.Test.Fixtures
         {
             ContractCreateRecord = await Client.CreateContractWithRecordAsync(CreateContractParams, ctx =>
             {
-                ctx.Memo = "Greeting Contract Create: Instantiating Contract Instance";
+                ctx.Memo = Memo;
             });
             Assert.Equal(ResponseCode.Success, ContractCreateRecord.Status);
         }
@@ -47,6 +48,7 @@ namespace Hashgraph.Test.Fixtures
             var fx = new GreetingContractInstance();
             fx.NetworkCredentials = networkCredentials;
             fx.Payer = networkCredentials.CreateDefaultAccount();
+            fx.Memo = "Greeting Contract Create: Instantiating Contract Instance " + Generator.Code(10);
             fx.CreateFileParams = new CreateFileParams
             {
                 Expiration = Generator.TruncatedFutureDate(12, 24),

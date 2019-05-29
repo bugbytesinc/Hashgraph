@@ -29,7 +29,7 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
             Assert.Equal(fx.CreateContractParams.RenewPeriod, info.RenewPeriod);
             Assert.InRange(info.Size, 0, fx.CreateFileParams.Contents.Length);
-            Assert.Equal("Greeting Contract Create: Instantiating Contract Instance", info.Memo);
+            Assert.Equal(fx.Memo, info.Memo);
         }
         [Fact(DisplayName = "Contract Info: Can Get Stateful Contract Info")]
         public async Task CanGetStatefulContractInfo()

@@ -105,6 +105,7 @@ namespace Hashgraph.Implementation
             }
             return hash;
         }
+
         internal static UpdateAccountParams UpdateParameters(UpdateAccountParams updateParameters)
         {
             if (updateParameters is null)
@@ -124,6 +125,28 @@ namespace Hashgraph.Implementation
                 throw new ArgumentException(nameof(updateParameters), "The Account Updates contains no update properties, it is blank.");
             }
             return updateParameters;
+        }
+        internal static UpdateContractParams UpdateParameters(UpdateContractParams updateParameters)
+        {
+            {
+                if (updateParameters is null)
+                {
+                    throw new ArgumentNullException(nameof(updateParameters), "Contract Update Parameters argument is missing. Please check that it is not null.");
+                }
+                if (updateParameters.Contract is null)
+                {
+                    throw new ArgumentNullException(nameof(updateParameters.Contract), "Contract address is missing. Please check that it is not null.");
+                }
+                if (updateParameters.Expiration is null &&
+                    updateParameters.Administrator is null &&
+                    updateParameters.RenewPeriod is null &&
+                    updateParameters.File is null &&
+                    updateParameters.Memo is null)
+                {
+                    throw new ArgumentException("The Contract Updates contains no update properties, it is blank.", nameof(updateParameters));
+                }
+                return updateParameters;
+            }
         }
         internal static long AcountNumber(long accountNum)
         {

@@ -14,31 +14,21 @@ namespace Hashgraph.Test.Contract
             _networkCredentials = networkCredentials;
             _networkCredentials.TestOutput = output;
         }
-        [SkippableFact(DisplayName = "Contract Delete: Can Delete a Contract")]
-        public async Task CanDeleteAContract()
+        [Fact(DisplayName = "Contract Delete: Not yet supported by network.")]
+        public async Task DeleteContractNotYetSupported()
         {
             await using var fx = await GreetingContractInstance.CreateAsync(_networkCredentials);
 
-            try
-            {
-                var receipt = await fx.Client.DeleteContractAsync(fx.ContractCreateRecord.Contract, fx.Payer);
-                Assert.NotNull(receipt);
-                Assert.Equal(ResponseCode.Success, receipt.Status);
-            }
-            catch (PrecheckException tex) when (tex.Status == ResponseCode.NotSupported)
-            {
-                Skip.If(true, "Support for deleting contracts is not implemented by the network yet.");
-            }
-
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-                {
-                    await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
-                });
-            Assert.Equal(ResponseCode.InvalidContractId, pex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () => {
+                await fx.Client.DeleteContractAsync(fx.ContractCreateRecord.Contract, fx.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: NotSupported", pex.Message);
         }
         /*
-         * Additional Tests once implemented by hedera network:
+         * Tests once implemented by hedera network:
+         *   Can Delete a Contract
+         *   Cannot get info on a deleted contract
          *   Cannot delete immutable contract
          *   Cannot delete contract without admin key in signature
          *   Cannot delete contract when contract id is missing.
