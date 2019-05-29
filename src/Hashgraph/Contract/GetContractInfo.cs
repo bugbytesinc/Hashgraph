@@ -39,7 +39,7 @@ namespace Hashgraph
                 ContractGetInfo = new ContractGetInfoQuery
                 {
                     Header = Transactions.SignQueryHeader(transactionBody, payer),
-                    ContractID = Protobuf.ToContractId(contract)
+                    ContractID = Protobuf.ToContractID(contract)
                 }
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);

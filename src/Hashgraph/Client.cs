@@ -3,8 +3,10 @@ using Hashgraph.Implementation;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
+[assembly: InternalsVisibleTo("Hashgraph.Test")]
 namespace Hashgraph
 {
     /// <summary>

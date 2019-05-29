@@ -51,6 +51,16 @@ namespace Hashgraph.Implementation
             }
             return fileToDelete;
         }
+
+        internal static Address ContractToDelete(Address contractToDelete)
+        {
+            if (contractToDelete is null)
+            {
+                throw new ArgumentNullException(nameof(contractToDelete), "Contract to Delete is missing. Please check that it is not null.");
+            }
+            return contractToDelete;
+        }
+
         internal static Address TransferToAddress(Address transferToAddress)
         {
             if (transferToAddress is null)

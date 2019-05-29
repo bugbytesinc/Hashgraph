@@ -77,7 +77,7 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Call Contract");
             transactionBody.ContractCall = new ContractCallTransactionBody
             {
-                ContractID = Protobuf.ToContractId(callParmeters.Contract),
+                ContractID = Protobuf.ToContractID(callParmeters.Contract),
                 Gas = callParmeters.Gas,
                 Amount = callParmeters.PayableAmount,
                 FunctionParameters = Abi.EncodeFunctionWithArguments(callParmeters.FunctionName, callParmeters.FunctionArgs).ToByteString()

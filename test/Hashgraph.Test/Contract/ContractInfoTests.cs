@@ -7,10 +7,10 @@ using Xunit.Abstractions;
 namespace Hashgraph.Test.Contract
 {
     [Collection(nameof(NetworkCredentialsFixture))]
-    public class ContractInfoTestsTests
+    public class ContractInfoTests
     {
         private readonly NetworkCredentialsFixture _networkCredentials;
-        public ContractInfoTestsTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        public ContractInfoTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
         {
             _networkCredentials = networkCredentials;
             _networkCredentials.TestOutput = output;

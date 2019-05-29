@@ -56,7 +56,7 @@ namespace Hashgraph.Implementation
             return new Address(fileID.RealmNum, fileID.ShardNum, fileID.FileNum);
         }
 
-        internal static ContractID ToContractId(Address address)
+        internal static ContractID ToContractID(Address address)
         {
             return new ContractID
             {
