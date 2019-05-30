@@ -200,10 +200,10 @@ namespace Hashgraph.Implementation
             result.Id = Protobuf.FromTransactionId(transactionId);
             result.Status = (ResponseCode)receipt.Status;
         }
-        internal static void FillRecordProperties(TransactionID transactionId, Proto.TransactionReceipt receipt, Proto.TransactionRecord record, TransactionRecord result)
+        internal static void FillRecordProperties(TransactionID transactionId, Proto.TransactionRecord record, TransactionRecord result)
         {
             result.Id = Protobuf.FromTransactionId(transactionId);
-            result.Status = (ResponseCode)receipt.Status;
+            result.Status = (ResponseCode)record.Receipt.Status;
             result.Hash = record.TransactionHash?.ToByteArray();
             result.Concensus = record.ConsensusTimestamp == null ? null : (DateTime?)Protobuf.FromTimestamp(record.ConsensusTimestamp);
             result.Memo = record.Memo;
@@ -213,7 +213,7 @@ namespace Hashgraph.Implementation
         {
             result.Contract = Protobuf.FromContractID(record.Receipt.ContractID);
             var callResult = record.ContractCallResult;
-            if (callResult != null)
+            if (!(callResult is null))
             {
                 result.Result = new FunctionResult(callResult.ContractCallResult.ToArray());
                 result.Error = callResult.ErrorMessage;
@@ -225,7 +225,7 @@ namespace Hashgraph.Implementation
                     Bloom = log.Bloom.ToArray(),
                     Topic = log.Topic.Select(bs => new ReadOnlyMemory<byte>(bs.ToArray())).ToArray(),
                     Data = new FunctionResult(log.Data.ToArray())
-                }).ToArray();
+                }).ToArray() ?? new ContractEvent[0];
             }
         }
 

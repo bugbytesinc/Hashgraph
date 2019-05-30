@@ -52,7 +52,8 @@ namespace Hashgraph
             {
                 return false;
             }
-            return _data.Equals(other._data);
+            // since readonly span can't do equal of contents, find a better way.
+            return string.Equals(Hex.FromBytes(_data), Hex.FromBytes(other._data));
         }
         /// <summary>
         /// Equality implementation.

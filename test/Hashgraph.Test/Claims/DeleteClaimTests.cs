@@ -93,7 +93,7 @@ namespace Hashgraph.Test.Claims
                 await test.Client.GetClaimAsync(null, claim.Hash);
             });
             Assert.Equal("address", exception.ParamName);
-            Assert.StartsWith("Account Address is is missing. Please check that it is not null.", exception.Message);
+            Assert.StartsWith("Account Address is missing. Please check that it is not null.", exception.Message);
         }
     }
 }

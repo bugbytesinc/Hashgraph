@@ -72,13 +72,6 @@ namespace Hashgraph
         /// </summary>
         TxId? Transaction { get; set; }
         /// <summary>
-        /// A method that is called when a transaction ID is created.  
-        /// Can be useful for capturing transaction IDs when sending 
-        /// duplicate transactions to multiple client/gateways or for 
-        /// other tracking purposes.
-        /// </summary>
-        Action<TxId>? OnTransactionCreated { get; set; }
-        /// <summary>
         /// Called by the library just before the serialized protobuf 
         /// is sent to the Hedera Network.  This is the only exposure 
         /// the library provides to the underlying protobuf implementation 

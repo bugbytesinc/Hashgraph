@@ -27,7 +27,6 @@ namespace Hashgraph.Implementation
         public string? Memo { get => get<string>(nameof(Memo)); set => set(nameof(Memo), value); }
         public bool GenerateRecord { get => get<bool>(nameof(GenerateRecord)); set => set(nameof(GenerateRecord), value); }
         public TxId? Transaction { get => get<TxId>(nameof(Transaction)); set => set(nameof(Transaction), value); }
-        public Action<TxId>? OnTransactionCreated { get => get<Action<TxId>>(nameof(OnTransactionCreated)); set => set(nameof(OnTransactionCreated), value); }
         public Action<IMessage>? OnSendingRequest { get => get<Action<IMessage>>(nameof(OnSendingRequest)); set => set(nameof(OnSendingRequest), value); }
         public Action<int, IMessage>? OnResponseReceived { get => get<Action<int, IMessage>>(nameof(OnResponseReceived)); set => set(nameof(OnResponseReceived), value); }
 
@@ -50,7 +49,6 @@ namespace Hashgraph.Implementation
                 case nameof(Memo):
                 case nameof(GenerateRecord):
                 case nameof(Transaction):
-                case nameof(OnTransactionCreated):
                 case nameof(OnSendingRequest):
                 case nameof(OnResponseReceived):
                     _map.Remove(name);

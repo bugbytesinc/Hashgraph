@@ -58,7 +58,7 @@ namespace Hashgraph.Test.Claims
                 });
             });
             Assert.Equal("Address", exception.ParamName);
-            Assert.StartsWith("The address to attach the claim to is is missing", exception.Message);
+            Assert.StartsWith("The address to attach the claim to is missing", exception.Message);
         }
         [Fact(DisplayName = "Add Claim: Adding claim without hash throws error")]
         public async Task AddingClaimWithoutHashThrowsError()

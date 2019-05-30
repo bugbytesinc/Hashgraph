@@ -42,9 +42,9 @@ namespace Hashgraph
                     FileID = Protobuf.ToFileId(file)
                 }
             };
-            var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, data.FileGetInfo.Header.NodeTransactionPrecheckCode);
-            return Protobuf.FromFileInfo(data.FileGetInfo.FileInfo);
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            ValidateResult.PreCheck(transactionId,getResponseCode(response));
+            return Protobuf.FromFileInfo(response.FileGetInfo.FileInfo);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

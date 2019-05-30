@@ -15,7 +15,7 @@ namespace Hashgraph.Implementation
         {
             if (address is null)
             {
-                throw new ArgumentNullException(nameof(address), "Account Address is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(address), "Account Address is missing. Please check that it is not null.");
             }
             return address;
         }
@@ -23,7 +23,7 @@ namespace Hashgraph.Implementation
         {
             if (contract is null)
             {
-                throw new ArgumentNullException(nameof(contract), "Contract Address is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(contract), "Contract Address is missing. Please check that it is not null.");
             }
             return contract;
         }
@@ -65,7 +65,7 @@ namespace Hashgraph.Implementation
         {
             if (transferToAddress is null)
             {
-                throw new ArgumentNullException(nameof(transferToAddress), "Transfer address is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(transferToAddress), "Transfer address is missing. Please check that it is not null.");
             }
             return transferToAddress;
         }
@@ -73,7 +73,7 @@ namespace Hashgraph.Implementation
         {
             if (fromAccount is null)
             {
-                throw new ArgumentNullException(nameof(fromAccount), "Account to transfer from is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(fromAccount), "Account to transfer from is missing. Please check that it is not null.");
             }
             return fromAccount;
         }
@@ -81,7 +81,7 @@ namespace Hashgraph.Implementation
         {
             if (toAddress is null)
             {
-                throw new ArgumentNullException(nameof(toAddress), "Account to transfer to is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(toAddress), "Account to transfer to is missing. Please check that it is not null.");
             }
             return toAddress;
         }
@@ -92,6 +92,14 @@ namespace Hashgraph.Implementation
                 throw new ArgumentOutOfRangeException(nameof(amount), "The amount to transfer must be non-negative.");
             }
             return amount;
+        }
+        internal static TxId Transaction(TxId transaction)
+        {
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction), "Transaction is missing. Please check that it is not null.");
+            }
+            return transaction;
         }
         internal static ReadOnlyMemory<byte> Hash(ReadOnlyMemory<byte> hash)
         {
@@ -114,7 +122,7 @@ namespace Hashgraph.Implementation
             }
             if (updateParameters.Account is null)
             {
-                throw new ArgumentNullException(nameof(updateParameters.Account), "Account is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(updateParameters.Account), "Account is missing. Please check that it is not null.");
             }
             if (updateParameters.Endorsement is null &&
                 updateParameters.SendThresholdCreateRecord is null &&
@@ -307,7 +315,7 @@ namespace Hashgraph.Implementation
             }
             if (updateParameters.File is null)
             {
-                throw new ArgumentNullException(nameof(updateParameters.File), "File identifier is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(updateParameters.File), "File identifier is missing. Please check that it is not null.");
             }
             if (updateParameters.Endorsements is null &&
                 updateParameters.Contents is null)
@@ -324,7 +332,7 @@ namespace Hashgraph.Implementation
             }
             if (appendParameters.File is null)
             {
-                throw new ArgumentNullException(nameof(appendParameters.File), "File identifier is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(appendParameters.File), "File identifier is missing. Please check that it is not null.");
             }
             return appendParameters;
         }
@@ -336,7 +344,7 @@ namespace Hashgraph.Implementation
             }
             if (addParameters.Address is null)
             {
-                throw new ArgumentNullException(nameof(addParameters.Address), "The address to attach the claim to is is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(addParameters.Address), "The address to attach the claim to is missing. Please check that it is not null.");
             }
             if (addParameters.Hash.IsEmpty)
             {

@@ -20,13 +20,7 @@ namespace Hashgraph
             var preExistingTransaction = context.Transaction;
             if (preExistingTransaction is null)
             {
-                var transactionId = CreateNewTransactionID(RequireInContext.Payer(context), DateTime.UtcNow);
-                var transaction = Protobuf.FromTransactionId(transactionId);
-                foreach (var handler in context.GetAll<Action<TxId>>(nameof(context.OnTransactionCreated)))
-                {
-                    handler(transaction);
-                }
-                return transactionId;
+                return CreateNewTransactionID(RequireInContext.Payer(context), DateTime.UtcNow);
             }
             else
             {

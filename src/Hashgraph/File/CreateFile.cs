@@ -75,8 +75,8 @@ namespace Hashgraph
                 Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
             };
             var request = Transactions.SignTransaction(transactionBody, payer);
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
+            var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
@@ -86,7 +86,7 @@ namespace Hashgraph
             if (result is FileRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(transactionId, receipt, record, rec);
+                Protobuf.FillRecordProperties(transactionId, record, rec);
                 rec.File = Protobuf.FromFileID(receipt.FileID);
             }
             else if (result is FileReceipt rcpt)

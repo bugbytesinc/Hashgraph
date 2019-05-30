@@ -44,9 +44,9 @@ namespace Hashgraph
                     FileID = Protobuf.ToFileId(file)
                 }
             };
-            var data = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, data.FileGetContents.Header.NodeTransactionPrecheckCode);
-            return new ReadOnlyMemory<byte>(data.FileGetContents.FileContents.Contents.ToByteArray());
+            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            return new ReadOnlyMemory<byte>(response.FileGetContents.FileContents.Contents.ToByteArray());
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

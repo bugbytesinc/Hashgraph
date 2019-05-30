@@ -48,8 +48,8 @@ namespace Hashgraph
                 TransferAccountID = Protobuf.ToAccountID(transferToAddress)
             };
             var request = Transactions.SignTransaction(transactionBody, payer);
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, response.NodeTransactionPrecheckCode);
+            var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {

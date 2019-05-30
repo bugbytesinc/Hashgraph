@@ -61,7 +61,7 @@ namespace Hashgraph.Test.Crypto
             {
                 var balance = await client.GetAccountBalanceAsync(null);
             });
-            Assert.StartsWith("Account Address is is missing.", ex.Message);
+            Assert.StartsWith("Account Address is missing.", ex.Message);
         }
         [Fact(DisplayName = "Get Account Balance: Invalid Account Address Throws Exception")]
         public async Task InvalidAccountAddressThrowsException()

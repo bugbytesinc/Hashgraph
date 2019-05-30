@@ -51,7 +51,7 @@ namespace Hashgraph
                 }
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, response.CryptoGetClaim.Header.NodeTransactionPrecheckCode);
+            ValidateResult.PreCheck(transactionId, getResponseCode(response));
             return Protobuf.FromClaim(response.CryptoGetClaim.Claim);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
