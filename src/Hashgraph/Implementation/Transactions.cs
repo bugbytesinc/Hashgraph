@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
@@ -109,27 +110,41 @@ namespace Hashgraph
         }
         internal static async Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
         {
-            var callOnSendingHandlers = InstantiateOnSendingRequestHandler(context);
-            var callOnResponseReceivedHandlers = InstantiateOnResponseReceivedHandler(context);
-            var sendRequest = instantiateRequestMethod(context.GetChannel());
-            callOnSendingHandlers(request);
-            var response = await sendRequest(request);
-            callOnResponseReceivedHandlers(0, response);
-            var shouldRetry = shouldRetryRequest(response);
-            if (shouldRetry)
+            try
             {
                 var maxRetries = context.RetryCount;
                 var retryDelay = context.RetryDelay;
-                for (var retryCount = 0; retryCount < maxRetries && shouldRetry; retryCount++)
+                var callOnSendingHandlers = InstantiateOnSendingRequestHandler(context);
+                var callOnResponseReceivedHandlers = InstantiateOnResponseReceivedHandler(context);
+                var sendRequest = instantiateRequestMethod(context.GetChannel());
+                callOnSendingHandlers(request);
+                for (var retryCount = 0; retryCount < maxRetries; retryCount++)
                 {
+                    try
+                    {
+                        var tenativeResponse = await sendRequest(request);
+                        callOnResponseReceivedHandlers(retryCount, tenativeResponse);
+                        if (!shouldRetryRequest(tenativeResponse))
+                        {
+                            return tenativeResponse;
+                        }
+                    }
+                    catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable)
+                    {
+                        callOnResponseReceivedHandlers(retryCount, new StringValue { Value = $"Unable to communicate with network: {rpcex.Status}" });
+                    }
                     await Task.Delay(retryDelay * (retryCount + 1));
-                    response = await sendRequest(request);
-                    callOnResponseReceivedHandlers(retryCount + 1, response);
-                    shouldRetry = shouldRetryRequest(response);
                 }
+                var finalResponse = await sendRequest(request);
+                callOnResponseReceivedHandlers(maxRetries, finalResponse);
+                return finalResponse;
             }
-            return response;
+            catch (RpcException rpcex)
+            {
+                throw new PrecheckException($"Unable to communicate with network: {rpcex.Status}", new TxId(ReadOnlyMemory<byte>.Empty), ResponseCode.Unknown, rpcex);
+            }
         }
+
         private static Action<IMessage> InstantiateOnSendingRequestHandler(ContextStack context)
         {
             var handlers = context.GetAll<Action<IMessage>>(nameof(context.OnSendingRequest)).Where(h => h != null).ToArray();
