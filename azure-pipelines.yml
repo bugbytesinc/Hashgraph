@@ -35,8 +35,7 @@ steps:
     command: test
     projects: 'test/**/*.csproj'
     nobuild: true
-    arguments: '--configuration $(buildConfiguration)'
-    verbosity: 'diagnostic'
+    arguments: '--configuration $(buildConfiguration) --verbosity normal'
     publishTestResults: true
   env:
     'network:address': $(test:network:address)
