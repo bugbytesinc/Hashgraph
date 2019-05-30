@@ -108,7 +108,7 @@ namespace Hashgraph
             if (result is TransactionRecord arec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(transactionId, record, arec);
+                Protobuf.FillRecordProperties(record, arec);
             }
             else if (result is TransactionReceipt arcpt)
             {

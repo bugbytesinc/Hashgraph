@@ -197,12 +197,12 @@ namespace Hashgraph.Implementation
         }
         internal static void FillReceiptProperties(TransactionID transactionId, Proto.TransactionReceipt receipt, TransactionReceipt result)
         {
-            result.Id = Protobuf.FromTransactionId(transactionId);
+            result.Id = FromTransactionId(transactionId);
             result.Status = (ResponseCode)receipt.Status;
         }
-        internal static void FillRecordProperties(TransactionID transactionId, Proto.TransactionRecord record, TransactionRecord result)
+        internal static void FillRecordProperties(Proto.TransactionRecord record, TransactionRecord result)
         {
-            result.Id = Protobuf.FromTransactionId(transactionId);
+            result.Id = FromTransactionId(record.TransactionID);
             result.Status = (ResponseCode)record.Receipt.Status;
             result.Hash = record.TransactionHash?.ToByteArray();
             result.Concensus = record.ConsensusTimestamp == null ? null : (DateTime?)Protobuf.FromTimestamp(record.ConsensusTimestamp);

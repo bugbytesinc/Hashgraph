@@ -98,7 +98,7 @@ namespace Hashgraph
             if (result is TransferRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(transactionId, record, rec);
+                Protobuf.FillRecordProperties(record, rec);
                 rec.Transfers = Protobuf.FromTransferList(record.TransferList);
             }
             else if (result is TransactionReceipt rcpt)

@@ -86,7 +86,7 @@ namespace Hashgraph
             if (result is FileRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(transactionId, record, rec);
+                Protobuf.FillRecordProperties(record, rec);
                 rec.File = Protobuf.FromFileID(receipt.FileID);
             }
             else if (result is FileReceipt rcpt)

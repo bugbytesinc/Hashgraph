@@ -33,7 +33,7 @@ namespace Hashgraph
             var transactionId = Protobuf.ToTransactionID(transaction);
             var record = await GetTransactionRecordAsync(context, transactionId);
             var result = new TransactionRecord();
-            Protobuf.FillRecordProperties(transactionId, record, result);
+            Protobuf.FillRecordProperties(record, result);
             return result;
         }
         /// <summary>

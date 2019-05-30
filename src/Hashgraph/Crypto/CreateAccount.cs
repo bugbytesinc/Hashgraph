@@ -103,7 +103,7 @@ namespace Hashgraph
             else if (result is AccountRecord arec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(transactionId, record, arec);
+                Protobuf.FillRecordProperties(record, arec);
                 arec.Address = Protobuf.FromAccountID(receipt.AccountID);
             }
             return result;

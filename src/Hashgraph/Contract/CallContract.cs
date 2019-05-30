@@ -94,7 +94,7 @@ namespace Hashgraph
             if (result is CallContractRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(transactionId, record, rec);
+                Protobuf.FillRecordProperties(record, rec);
                 Protobuf.FillCallContractResults(record, rec);
             }
             else if (result is ContractReceipt rcpt)
