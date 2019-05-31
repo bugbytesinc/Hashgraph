@@ -5,21 +5,22 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Contract
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class DeleteContractTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public DeleteContractTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public DeleteContractTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Contract Delete: Not yet supported by network.")]
         public async Task DeleteContractNotYetSupported()
         {
-            await using var fx = await GreetingContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () => {
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
                 await fx.Client.DeleteContractAsync(fx.ContractCreateRecord.Contract, fx.Payer);
             });
             Assert.Equal(ResponseCode.NotSupported, pex.Status);

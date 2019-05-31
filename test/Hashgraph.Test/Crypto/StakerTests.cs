@@ -5,23 +5,23 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class StakerTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public StakerTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public StakerTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Get Stakers: Is Not Implemented")]
         public async Task GetStakersIsNotImplemented()
         {
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await client.GetStakers(_networkCredentials.CreateDefaultAccount());
+                await client.GetStakers(_network.Payer);
             });
             Assert.Equal(ResponseCode.NotSupported, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: NotSupported", pex.Message);

@@ -5,19 +5,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.File
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class GetFileInfoTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetFileInfoTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public GetFileInfoTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "File Info: Can Get File Info")]
         public async Task CanCreateAndDeleteAFileAsync()
         {
-            await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestFile.CreateAsync(_network);
 
             var info = await test.Client.GetFileInfoAsync(test.CreateRecord.File);
             Assert.NotNull(info);

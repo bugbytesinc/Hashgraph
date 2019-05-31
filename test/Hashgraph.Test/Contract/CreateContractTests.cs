@@ -7,19 +7,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Contract
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class CreateContractTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public CreateContractTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public CreateContractTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Create Contract: Can Create")]
         public async Task CanCreateAContractAsync()
         {
-            await using var fx = await GreetingContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await GreetingContract.CreateAsync(_network);
             Assert.NotNull(fx.ContractCreateRecord);
             Assert.NotNull(fx.ContractCreateRecord.Contract);
             Assert.Equal(ResponseCode.Success, fx.ContractCreateRecord.Status);
@@ -31,7 +31,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Missing File Address Raises Error")]
         public async Task MissingFileAddressRaisesError()
         {
-            await using var fx = await GreetingContractInstance.SetupAsync(_networkCredentials);
+            await using var fx = await GreetingContract.SetupAsync(_network);
             fx.CreateContractParams.File = null;
             var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => {
                 await fx.Client.CreateContractAsync(fx.CreateContractParams);
@@ -42,7 +42,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Missing Gas Raises Error")]
         public async Task MissingGasRaisesError()
         {
-            await using var fx = await GreetingContractInstance.SetupAsync(_networkCredentials);
+            await using var fx = await GreetingContract.SetupAsync(_network);
             fx.CreateContractParams.Gas = 0;
             var ex = await Assert.ThrowsAsync<TransactionException>(async () => {
                 await fx.Client.CreateContractAsync(fx.CreateContractParams);
@@ -53,7 +53,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Sending crypto to non-payable contract raises error.")]
         public async Task SendingCryptoToNonPayableContractRaisesError()
         {
-            await using var fx = await GreetingContractInstance.SetupAsync(_networkCredentials);
+            await using var fx = await GreetingContract.SetupAsync(_network);
             fx.CreateContractParams.InitialBalance = 10;
             var ex = await Assert.ThrowsAsync<TransactionException>(async () => {
                 await fx.Client.CreateContractAsync(fx.CreateContractParams);
@@ -64,7 +64,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Invalid Renew Period Raises Error")]
         public async Task InvalidRenewPeriodRaisesError()
         {
-            await using var fx = await GreetingContractInstance.SetupAsync(_networkCredentials);
+            await using var fx = await GreetingContract.SetupAsync(_network);
             fx.CreateContractParams.RenewPeriod = TimeSpan.FromTicks(1);
             var ex = await Assert.ThrowsAsync<PrecheckException>(async () => {
                 await fx.Client.CreateContractAsync(fx.CreateContractParams);
@@ -75,7 +75,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Can Create Without Admin Key")]
         public async Task CanCreateContractWithoutAdminKey()
         {
-            await using var fx = await GreetingContractInstance.SetupAsync(_networkCredentials);
+            await using var fx = await GreetingContract.SetupAsync(_network);
             fx.CreateContractParams.Administrator = null;
             fx.ContractCreateRecord = await fx.Client.CreateContractWithRecordAsync(fx.CreateContractParams);
             Assert.NotNull(fx.ContractCreateRecord);
@@ -89,7 +89,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Random Constructor Data when not needed is ignored.")]
         public async Task CanCreateContractWithUnneededConstructorData()
         {
-            await using var fx = await GreetingContractInstance.SetupAsync(_networkCredentials);
+            await using var fx = await GreetingContract.SetupAsync(_network);
             fx.CreateContractParams.Arguments = new object[] { "Random Data that Should Be Ignored." };
             fx.ContractCreateRecord = await fx.Client.CreateContractWithRecordAsync(fx.CreateContractParams);
             Assert.NotNull(fx.ContractCreateRecord);
@@ -103,7 +103,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Can Create Contract with Parameters")]
         public async Task CanCreateAContractWithParameters()
         {
-            await using var fx = await StatefulContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await StatefulContract.CreateAsync(_network);
             Assert.NotNull(fx.ContractCreateRecord);
             Assert.NotNull(fx.ContractCreateRecord.Contract);
             Assert.Equal(ResponseCode.Success, fx.ContractCreateRecord.Status);
@@ -116,7 +116,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]
         public async Task CreateWithoutRequiredContractParamsThrowsError()
         {
-            await using var fx = await StatefulContractInstance.SetupAsync(_networkCredentials);
+            await using var fx = await StatefulContract.SetupAsync(_network);
             fx.CreateContractParams.Arguments = null;
             var ex = await Assert.ThrowsAsync<TransactionException>(async () => {
                 await fx.Client.CreateContractAsync(fx.CreateContractParams);

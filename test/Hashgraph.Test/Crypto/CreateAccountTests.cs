@@ -6,21 +6,21 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class CreateAccountTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public CreateAccountTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public CreateAccountTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Create Account: Can Create Account")]
         public async Task CanCreateAccountAsync()
         {
             var initialBalance = (ulong)Generator.Integer(10, 200);
             var (publicKey, privateKey) = Generator.KeyPair();
-            var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = initialBalance,
@@ -28,10 +28,10 @@ namespace Hashgraph.Test.Crypto
             });
             Assert.NotNull(createResult);
             Assert.NotNull(createResult.Address);
-            Assert.Equal(_networkCredentials.ServerRealm, createResult.Address.RealmNum);
-            Assert.Equal(_networkCredentials.ServerShard, createResult.Address.ShardNum);
+            Assert.Equal(_network.ServerRealm, createResult.Address.RealmNum);
+            Assert.Equal(_network.ServerShard, createResult.Address.ShardNum);
             Assert.True(createResult.Address.AccountNum > 0);
-            
+
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(initialBalance, info.Balance);
             Assert.Equal(createResult.Address.RealmNum, info.Address.RealmNum);
@@ -41,13 +41,14 @@ namespace Hashgraph.Test.Crypto
 
             // Move remaining funds back to primary account.
             var from = new Account(createResult.Address, privateKey);
-            await client.TransferAsync(from, _networkCredentials.CreateDefaultAccount(), (long)initialBalance);
+            await client.TransferAsync(from, _network.Payer, (long)initialBalance);
 
-            var receipt = await client.DeleteAccountAsync(new Account(createResult.Address, privateKey),_networkCredentials.CreateDefaultAccount());
+            var receipt = await client.DeleteAccountAsync(new Account(createResult.Address, privateKey), _network.Payer);
             Assert.NotNull(receipt);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
-            var exception = await Assert.ThrowsAsync<PrecheckException>(async () => {
+            var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
                 await client.GetAccountInfoAsync(createResult.Address);
             });
             Assert.StartsWith("Transaction Failed Pre-Check: AccountDeleted", exception.Message);
@@ -57,7 +58,7 @@ namespace Hashgraph.Test.Crypto
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var expectedValue = (ulong)Generator.Integer(500, 1000);
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
@@ -74,7 +75,7 @@ namespace Hashgraph.Test.Crypto
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var expectedValue = (ulong)Generator.Integer(500, 1000);
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
@@ -90,14 +91,15 @@ namespace Hashgraph.Test.Crypto
         public async Task CanSetSignatureRequiredTrue()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
                 PublicKey = publicKey,
                 RequireReceiveSignature = true
-            },ctx=> {
-                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey);
+            }, ctx =>
+            {
+                ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey);
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
@@ -108,7 +110,7 @@ namespace Hashgraph.Test.Crypto
         public async Task CanSetSignatureRequiredFalse()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
@@ -125,7 +127,7 @@ namespace Hashgraph.Test.Crypto
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var expectedValue = TimeSpan.FromDays(Generator.Integer(20, 60));
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,

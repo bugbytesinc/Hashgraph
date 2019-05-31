@@ -5,19 +5,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.File
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class GetFileContentTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetFileContentTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public GetFileContentTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "File Content: Can Get File Content")]
         public async Task CanGetFileContent()
         {
-            await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestFile.CreateAsync(_network);
 
             var retrievedContents = await test.Client.GetFileContentAsync(test.CreateRecord.File);
             Assert.Equal(test.Contents, retrievedContents.ToArray());

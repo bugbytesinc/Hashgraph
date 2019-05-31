@@ -7,24 +7,25 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.File
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class AppendFileContentTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public AppendFileContentTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public AppendFileContentTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "File Append: Can Append File Content")]
         public async Task CanAppendToFile()
         {
-            await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestFile.CreateAsync(_network);
 
             var appendedContent = Encoding.Unicode.GetBytes(Generator.Code(50));
-            var concatinatedContent = test.Contents.Concat(appendedContent).ToArray();            
+            var concatinatedContent = test.Contents.Concat(appendedContent).ToArray();
 
-            var appendRecord = await test.Client.AppendFileAsync(new AppendFileParams {
+            var appendRecord = await test.Client.AppendFileAsync(new AppendFileParams
+            {
                 File = test.CreateRecord.File,
                 Contents = appendedContent
             });
@@ -36,13 +37,14 @@ namespace Hashgraph.Test.File
         [Fact(DisplayName = "File Append: Append to Deleted File Throws Exception")]
         public async Task AppendingToDeletedFileThrowsError()
         {
-            await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestFile.CreateAsync(_network);
             var appendedContent = Encoding.Unicode.GetBytes(Generator.Code(50));
 
             var deleteRecord = await test.Client.DeleteFileAsync(test.CreateRecord.File);
             Assert.Equal(ResponseCode.Success, deleteRecord.Status);
 
-            var exception = await Assert.ThrowsAnyAsync<TransactionException>(async () => {
+            var exception = await Assert.ThrowsAnyAsync<TransactionException>(async () =>
+            {
                 await test.Client.AppendFileAsync(new AppendFileParams
                 {
                     File = test.CreateRecord.File,

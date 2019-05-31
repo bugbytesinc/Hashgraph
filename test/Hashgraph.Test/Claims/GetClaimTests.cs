@@ -7,19 +7,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Claims
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class GetClaimTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetClaimTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public GetClaimTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
-        [SkippableFact(DisplayName = "Get Claim: Can Reterieve a Claim")]
+        [Fact(DisplayName = "Get Claim: Can Reterieve a Claim")]
         public async Task CanRetriveAClaimAsync()
         {
-            await using var accountFx = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var accountFx = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -33,7 +33,7 @@ namespace Hashgraph.Test.Claims
 
             accountFx.Client.Configure(ctx =>
             {
-                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1, privateKey2);
+                ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1, privateKey2);
             });
 
             var receipt = await accountFx.Client.AddClaimAsync(claim);
@@ -54,13 +54,13 @@ namespace Hashgraph.Test.Claims
             }
             catch (PrecheckException pex) when (pex.Status == ResponseCode.ClaimNotFound)
             {
-                Skip.If(true, "Attempt to retrieve claim failed, not necessarily a problem with the C# library.");
+                _network.Output.WriteLine("Attempt to retrieve claim failed, not necessarily a problem with the C# library.  Skipping unit test.");
             }
         }
         [Fact(DisplayName = "Get Claim: Retrieving Non-Existent Claim throws")]
         public async Task RetriveAClaimThatDoesNotExistThrowsExcepiton()
         {
-            await using var accountFx = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var accountFx = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -74,10 +74,11 @@ namespace Hashgraph.Test.Claims
 
             accountFx.Client.Configure(ctx =>
             {
-                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1, privateKey2);
+                ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1, privateKey2);
             });
 
-            var exception = await Assert.ThrowsAsync<PrecheckException>(async () => {
+            var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
                 await accountFx.Client.GetClaimAsync(claim.Address, claim.Hash);
             });
             Assert.Equal(ResponseCode.ClaimNotFound, exception.Status);

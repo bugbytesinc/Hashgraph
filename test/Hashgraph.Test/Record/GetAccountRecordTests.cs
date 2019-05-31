@@ -6,23 +6,23 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Record
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class GetAccountRecordTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetAccountRecordTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public GetAccountRecordTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Account Records: Can get Transaction Record for Account")]
         public async Task CanGetTransactionRecords()
         {
-            await using var fx = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var fx = await TestAccount.CreateAsync(_network);
 
             var transactionCount = Generator.Integer(2, 5);
             var childAccount = new Account(fx.AccountRecord.Address, fx.PrivateKey);
-            var parentAccount = _networkCredentials.CreateDefaultAccount();
+            var parentAccount = _network.Payer;
             await fx.Client.TransferAsync(parentAccount, childAccount, transactionCount * 100001);
             await using (var client = fx.Client.Clone(ctx => ctx.Payer = childAccount))
             {
@@ -46,7 +46,7 @@ namespace Hashgraph.Test.Record
         [Fact(DisplayName = "Account Records: Get with Empty Account raises Error.")]
         public async Task EmptyAccountRaisesError()
         {
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
                 await client.GetAccountRecordsAsync(null);
@@ -57,8 +57,8 @@ namespace Hashgraph.Test.Record
         [Fact(DisplayName = "Account Records: Get with Deleted Account raises Error.")]
         public async Task DeletedAccountRaisesError()
         {
-            await using var fx = await TestAccountInstance.CreateAsync(_networkCredentials);
-            await fx.Client.DeleteAccountAsync(new Account(fx.AccountRecord.Address, fx.PrivateKey), _networkCredentials.CreateDefaultAccount());
+            await using var fx = await TestAccount.CreateAsync(_network);
+            await fx.Client.DeleteAccountAsync(new Account(fx.AccountRecord.Address, fx.PrivateKey), _network.Payer);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await fx.Client.GetAccountRecordsAsync(fx.AccountRecord.Address);

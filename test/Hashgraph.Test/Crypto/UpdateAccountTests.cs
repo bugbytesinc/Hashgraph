@@ -6,21 +6,21 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Crypto
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class UpdateAccountTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public UpdateAccountTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public UpdateAccountTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Update Account: Can Update Key")]
         public async Task CanUpdateKey()
         {
             var originalKeyPair = Generator.KeyPair();
             var updatedKeyPair = Generator.KeyPair();
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
@@ -46,7 +46,7 @@ namespace Hashgraph.Test.Crypto
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var originalValue = (ulong)Generator.Integer(500, 1000);
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
@@ -74,7 +74,7 @@ namespace Hashgraph.Test.Crypto
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var originalValue = (ulong)Generator.Integer(500, 1000);
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
@@ -102,7 +102,7 @@ namespace Hashgraph.Test.Crypto
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var originalValue = TimeSpan.FromDays(Generator.Integer(10, 20));
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,

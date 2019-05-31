@@ -5,19 +5,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Contract
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class QueryContractTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public QueryContractTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public QueryContractTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Query Contract: Can Call Contract with No Arguments")]
         public async Task CanCreateAContractAsync()
         {
-            await using var fx = await GreetingContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await GreetingContract.CreateAsync(_network);
 
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
@@ -35,7 +35,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Query Contract: Can call Contract that Keeps State")]
         public async Task CanCreateAContractWithStateAsync()
         {
-            await using var fx = await StatefulContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await StatefulContract.CreateAsync(_network);
 
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
@@ -53,7 +53,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Query Contract: Call Contract that sets State fails.")]
         public async Task CanCreateAContractAndSetStateAsync()
         {
-            await using var fx = await StatefulContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await StatefulContract.CreateAsync(_network);
 
             var newMessage = Generator.Code(50);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -72,7 +72,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Query Contract: MaxAllowedReturnSize Is not presently implemented.")]
         public async Task MaxAllowedReturnSizeDoesNothing()
         {
-            await using var fx = await GreetingContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await GreetingContract.CreateAsync(_network);
 
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {

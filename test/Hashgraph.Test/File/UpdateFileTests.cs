@@ -6,28 +6,28 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.File
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class UpdateFileTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public UpdateFileTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public UpdateFileTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "File Update: Can Update File Key")]
         public async Task CanUpdateFileKey()
         {
-            await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestFile.CreateAsync(_network);
 
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             test.Client.Configure(ctx =>
             {
                 ctx.Payer = new Account(
-                    _networkCredentials.AccountRealm,
-                    _networkCredentials.AccountShard,
-                    _networkCredentials.AccountNumber,
-                    _networkCredentials.AccountPrivateKey,
+                    _network.AccountRealm,
+                    _network.AccountShard,
+                    _network.AccountNumber,
+                    _network.PrivateKey,
                     test.PrivateKey,
                     newPrivateKey);
             });
@@ -50,7 +50,7 @@ namespace Hashgraph.Test.File
         [Fact(DisplayName = "File Update: Can Replace Contents")]
         public async Task CanUpdateFileContents()
         {
-            await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestFile.CreateAsync(_network);
 
             var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
 
@@ -67,7 +67,7 @@ namespace Hashgraph.Test.File
         [Fact(DisplayName = "File Update: Can Replace Contents of deleted file?")]
         public async Task CanUpdateFileContentsOfDeletedFile()
         {
-            await using var test = await TestFileInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestFile.CreateAsync(_network);
 
             var deleteResult = await test.Client.DeleteFileAsync(test.CreateRecord.File);
             Assert.Equal(ResponseCode.Success, deleteResult.Status);

@@ -6,19 +6,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Contract
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class ContractInfoTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public ContractInfoTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public ContractInfoTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Contract Info: Can Get Stateless Contract Info")]
         public async Task CanGetStatelessContractInfo()
         {
-            await using var fx = await GreetingContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await GreetingContract.CreateAsync(_network);
 
             var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
             Assert.NotNull(info);
@@ -34,7 +34,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Contract Info: Can Get Stateful Contract Info")]
         public async Task CanGetStatefulContractInfo()
         {
-            await using var fx = await StatefulContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await StatefulContract.CreateAsync(_network);
 
             var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
             Assert.NotNull(info);
@@ -50,7 +50,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Contract Info: Retrieving Non Existent Contract Raises Error")]
         public async Task GetNonExistantContractRaisesError()
         {
-            await using var fx = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var fx = await TestAccount.CreateAsync(_network);
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {

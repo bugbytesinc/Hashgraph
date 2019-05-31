@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Hashgraph.Test.Fixtures
 {
-    public class TestFileInstance : IAsyncDisposable
+    public class TestFile : IAsyncDisposable
     {
         public byte[] Contents;
         public ReadOnlyMemory<byte> PublicKey;
@@ -14,13 +14,13 @@ namespace Hashgraph.Test.Fixtures
         public Account Payer;
         public Client Client;
         public FileRecord CreateRecord;
-        public NetworkCredentialsFixture NetworkCredentials;
+        public NetworkCredentials NetworkCredentials;
 
-        public static async Task<TestFileInstance> CreateAsync(NetworkCredentialsFixture networkCredentials)
+        public static async Task<TestFile> CreateAsync(NetworkCredentials networkCredentials)
         {
-            var test = new TestFileInstance();
+            var test = new TestFile();
             test.NetworkCredentials = networkCredentials;
-            test.NetworkCredentials.TestOutput?.WriteLine("STARTING SETUP: Test File Instance");
+            test.NetworkCredentials.Output?.WriteLine("STARTING SETUP: Test File Instance");
             test.Contents = Encoding.Unicode.GetBytes("Hello Hashgraph " + Generator.Code(50));
             (test.PublicKey, test.PrivateKey) = Generator.KeyPair();
             test.Expiration = Generator.TruncatedFutureDate(2, 4);
@@ -28,9 +28,9 @@ namespace Hashgraph.Test.Fixtures
                     networkCredentials.AccountRealm,
                     networkCredentials.AccountShard,
                     networkCredentials.AccountNumber,
-                    networkCredentials.AccountPrivateKey,
+                    networkCredentials.PrivateKey,
                     test.PrivateKey);
-            test.Client = networkCredentials.CreateClientWithDefaultConfiguration();
+            test.Client = networkCredentials.NewClient();
             test.Client.Configure(ctx => { ctx.Payer = test.Payer; });
             test.CreateRecord = await test.Client.CreateFileWithRecordAsync(new CreateFileParams
             {
@@ -42,13 +42,13 @@ namespace Hashgraph.Test.Fixtures
                 ctx.Memo = "TestFileInstance Setup: Creating Test File on Network";
             });
             Assert.Equal(ResponseCode.Success, test.CreateRecord.Status);
-            networkCredentials.TestOutput?.WriteLine("SETUP COMPLETED: Test File Instance");
+            networkCredentials.Output?.WriteLine("SETUP COMPLETED: Test File Instance");
             return test;
         }
 
         public async ValueTask DisposeAsync()
         {
-            NetworkCredentials.TestOutput?.WriteLine("STARTING TEARDOWN: Test File Instance");
+            NetworkCredentials.Output?.WriteLine("STARTING TEARDOWN: Test File Instance");
             try
             {
                 await Client.DeleteFileAsync(CreateRecord.File, ctx =>
@@ -61,7 +61,7 @@ namespace Hashgraph.Test.Fixtures
                 //noop
             }
             await Client.DisposeAsync();
-            NetworkCredentials.TestOutput?.WriteLine("TEARDOWN COMPLETED Test File Instance");
+            NetworkCredentials.Output?.WriteLine("TEARDOWN COMPLETED Test File Instance");
         }
     }
 }

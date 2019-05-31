@@ -6,19 +6,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Record
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class GetContractRecordTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public GetContractRecordTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public GetContractRecordTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Contract Records: Contract with no records returns no records.")]
         public async Task ContractWithNoRecords()
         {
-            await using var fx = await StatefulContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await StatefulContract.CreateAsync(_network);
 
             var transactionCount = Generator.Integer(2, 5);
             for (int i = 0; i < transactionCount; i++)
@@ -37,11 +37,11 @@ namespace Hashgraph.Test.Record
         [Fact(DisplayName = "Contract Records: Casting Account Address as Contract returns no records (BUT DOES NOT FAIL)")]
         public async Task CanGetTransactionRecordsForAccount()
         {
-            await using var fx = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var fx = await TestAccount.CreateAsync(_network);
 
             var transactionCount = Generator.Integer(2, 5);
             var childAccount = new Account(fx.AccountRecord.Address, fx.PrivateKey);
-            var parentAccount = _networkCredentials.CreateDefaultAccount();
+            var parentAccount = _network.Payer;
             await fx.Client.TransferAsync(parentAccount, childAccount, transactionCount * 100001);
             await using (var client = fx.Client.Clone(ctx => ctx.Payer = childAccount))
             {
@@ -57,7 +57,7 @@ namespace Hashgraph.Test.Record
         [Fact(DisplayName = "Contract Records: Get with Empty Contract address raises Error.")]
         public async Task EmptyAccountRaisesError()
         {
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
             var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
                 await client.GetContractRecordsAsync(null);

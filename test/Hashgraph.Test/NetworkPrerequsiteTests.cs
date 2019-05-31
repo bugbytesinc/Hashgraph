@@ -5,12 +5,12 @@ using Xunit;
 
 namespace Hashgraph.Tests
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
-    public class NetworkEnvironmentPrerequisiteTests
+    [Collection(nameof(NetworkCredentials))]
+    public class NetworkPrerequsiteTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
+        private readonly NetworkCredentials _networkCredentials;
 
-        public NetworkEnvironmentPrerequisiteTests(NetworkCredentialsFixture networkCredentials)
+        public NetworkPrerequsiteTests(NetworkCredentials networkCredentials)
         {
             _networkCredentials = networkCredentials;
         }
@@ -74,12 +74,12 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Test Prerequisites: Test Account Private Key is not Empty")]
         public void AccountAccountPrivateKeyIsNotEmpty()
         {
-            Assert.False(_networkCredentials.AccountPrivateKey.IsEmpty);
+            Assert.False(_networkCredentials.PrivateKey.IsEmpty);
         }
         [Fact(DisplayName = "Test Prerequisites: Test Account Public Key is not Empty")]
         public void AccountAccountPublicKeyIsNotEmpty()
         {
-            Assert.False(_networkCredentials.AccountPublicKey.IsEmpty);
+            Assert.False(_networkCredentials.PublicKey.IsEmpty);
         }
     }
 }

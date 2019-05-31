@@ -6,25 +6,25 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Claims
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class DeleteClaimTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public DeleteClaimTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public DeleteClaimTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
-        [SkippableFact(DisplayName = "Delete Claim: Can Delete a Claim")]
+        [Fact(DisplayName = "Delete Claim: Can Delete a Claim")]
         public async Task CanDeleteAClaimAsync()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var claim = new Claim
             {
                 Address = test.AccountRecord.Address,
                 Hash = Generator.SHA384Hash(),
-                Endorsements = new Endorsement[] { _networkCredentials.AccountPublicKey },
+                Endorsements = new Endorsement[] { _network.PublicKey },
                 ClaimDuration = TimeSpan.FromTicks(Generator.TruncatedFutureDate(24, 48).Ticks)
             };
 
@@ -39,7 +39,8 @@ namespace Hashgraph.Test.Claims
             }
             catch (TransactionException tex) when (tex.Status == ResponseCode.InvalidSignature)
             {
-                Skip.If(true, "Attempt to retrieve delete failed, not necessarily a problem with the C# library.");
+                _network.Output.WriteLine("Attempt to retrieve delete failed, not necessarily a problem with the C# library.  Skipping the remainder of the test.");
+                return;
             }
 
             var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -52,11 +53,11 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "Delete Claim: Deleting non existant claim throws error.")]
         public async Task DeletingNonExistantClaimThrowsError()
         {
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
 
             var excepiton = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await client.GetClaimAsync(_networkCredentials.CreateDefaultAccount(), Generator.SHA384Hash());
+                await client.GetClaimAsync(_network.Payer, Generator.SHA384Hash());
             });
             Assert.Equal(ResponseCode.ClaimNotFound, excepiton.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", excepiton.Message);
@@ -64,11 +65,11 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "Delete Claim: Deleting missing hash throws error.")]
         public async Task DeletingMissingHashThrowsError()
         {
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
 
             var exception = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await client.GetClaimAsync(_networkCredentials.CreateDefaultAccount(), null);
+                await client.GetClaimAsync(_network.Payer, null);
             });
             Assert.Equal("hash", exception.ParamName);
             Assert.StartsWith("The claim hash is missing. Please check that it is not null.", exception.Message);
@@ -76,7 +77,7 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "Delete Claim: Missing Address throws error.")]
         public async Task DeletingMissingAccountThrowsError()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();

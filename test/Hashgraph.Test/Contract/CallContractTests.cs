@@ -5,19 +5,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Contract
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class CallContractTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public CallContractTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public CallContractTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Call Contract: Can Call Contract with No Arguments")]
         public async Task CanCreateAContractAsync()
         {
-            await using var fx = await GreetingContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await GreetingContract.CreateAsync(_network);
 
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
@@ -41,7 +41,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Call Contract: Can Call Contract that keeps State")]
         public async Task CanCreateAContractWithStateAsync()
         {
-            await using var fx = await StatefulContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await StatefulContract.CreateAsync(_network);
 
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
@@ -65,7 +65,7 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Call Contract: Can Call Contract that sets State")]
         public async Task CanCreateAContractAndSetStateAsync()
         {
-            await using var fx = await StatefulContractInstance.CreateAsync(_networkCredentials);
+            await using var fx = await StatefulContract.CreateAsync(_network);
 
             var newMessage = Generator.Code(50);
             var setRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams

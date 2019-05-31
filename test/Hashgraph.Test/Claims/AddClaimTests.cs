@@ -6,19 +6,19 @@ using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Claims
 {
-    [Collection(nameof(NetworkCredentialsFixture))]
+    [Collection(nameof(NetworkCredentials))]
     public class AddClaimTests
     {
-        private readonly NetworkCredentialsFixture _networkCredentials;
-        public AddClaimTests(NetworkCredentialsFixture networkCredentials, ITestOutputHelper output)
+        private readonly NetworkCredentials _network;
+        public AddClaimTests(NetworkCredentials network, ITestOutputHelper output)
         {
-            _networkCredentials = networkCredentials;
-            _networkCredentials.TestOutput = output;
+            _network = network;
+            _network.Output = output;
         }
         [Fact(DisplayName = "Add Claim: Can Add a Claim")]
         public async Task CanCreateAClaimAsync()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -32,14 +32,14 @@ namespace Hashgraph.Test.Claims
 
             var receipt = await test.Client.AddClaimAsync(claim, ctx =>
             {
-                ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1, privateKey2);
+                ctx.Payer = _network.PayerWithKeys(privateKey1, privateKey2);
             });
             Assert.Equal(ResponseCode.Success, receipt.Status);
         }
         [Fact(DisplayName = "Add Claim: Adding claim without address raises error")]
         public async Task AddingClaimWithoutAddressThrowsError()
         {
-            await using var client = _networkCredentials.CreateClientWithDefaultConfiguration();
+            await using var client = _network.NewClient();
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -54,7 +54,7 @@ namespace Hashgraph.Test.Claims
             {
                 await client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1, privateKey2);
+                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1, privateKey2);
                 });
             });
             Assert.Equal("Address", exception.ParamName);
@@ -63,7 +63,7 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "Add Claim: Adding claim without hash throws error")]
         public async Task AddingClaimWithoutHashThrowsError()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -78,7 +78,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1);
+                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
                 });
             });
             Assert.Equal("Hash", exception.ParamName);
@@ -87,7 +87,7 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "Add Claim: Adding claim with invalid hash throws error")]
         public async Task AddingClaimWitInvalidHashThrowsError()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -103,7 +103,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1);
+                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
                 });
             });
             Assert.Equal("Hash", exception.ParamName);
@@ -112,7 +112,7 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "Add Claim: Adding claim without endorsements throws error")]
         public async Task AddingClaimWithoutEndorsementsThrowsError()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -127,7 +127,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1);
+                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
                 });
             });
             Assert.Equal("Endorsements", exception.ParamName);
@@ -136,7 +136,7 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "Add Claim: Adding claim with empty endorsements throws error")]
         public async Task AddingClaimWithEmptyEndorsementsThrowsError()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -152,16 +152,16 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1);
+                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
                 });
             });
-            Assert.Equal("Endorsements",exception.ParamName);
+            Assert.Equal("Endorsements", exception.ParamName);
             Assert.StartsWith("The endorsements array is empty. Please must include at least one endorsement.", exception.Message);
         }
         [Fact(DisplayName = "Add Claim: Adding claim without duration throws error")]
         public async Task AddingClaimWithoutDurationThrowsError()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -176,7 +176,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1, privateKey2);
+                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1, privateKey2);
                 });
             });
             Assert.Equal("ClaimDuration", exception.ParamName);
@@ -185,7 +185,7 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "Add Claim: Adding claim without all signatures throws error")]
         public async Task AddingClaimWithoutAllSignaturesThrowsError()
         {
-            await using var test = await TestAccountInstance.CreateAsync(_networkCredentials);
+            await using var test = await TestAccount.CreateAsync(_network);
 
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
@@ -201,7 +201,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _networkCredentials.AccountPrivateKey, privateKey1);
+                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
                 });
             });
             Assert.Equal(ResponseCode.InvalidSignature, exception.Status);
