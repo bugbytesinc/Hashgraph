@@ -1,5 +1,6 @@
 ﻿using NSec.Cryptography;
 using System;
+using System.Collections.Generic;
 
 namespace Hashgraph.Implementation
 {
@@ -143,6 +144,60 @@ namespace Hashgraph.Implementation
             }
             return updateParameters;
         }
+
+        internal static (Address address, long amount)[] MultiTransfers(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses)
+        {
+            if(sendAccounts is null)
+            {
+                throw new ArgumentNullException(nameof(sendAccounts), "The send accounts parameter cannot be null.");
+            }
+            if(sendAccounts.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sendAccounts), "There must be at least one send account to transfer money from.");
+            }
+            if (receiveAddresses is null)
+            {
+                throw new ArgumentNullException(nameof(receiveAddresses), "The receive address parameter cannot be null.");
+            }
+            if (receiveAddresses.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(receiveAddresses), "There must be at least one receive address to transfer money to.");
+            }
+            long total = 0;
+            var list = new List<(Address address, long amount)>();
+            foreach(var pair in sendAccounts)
+            {
+                if(pair.Key is null)
+                {
+                    throw new ArgumentNullException(nameof(sendAccounts), "Found a null entry in the send accounts list.");
+                }
+                if(pair.Value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(sendAccounts), "All amount entries must be positive values");
+                }
+                total -= pair.Value;
+                list.Add((pair.Key, -pair.Value));
+            }
+            foreach (var pair in receiveAddresses)
+            {
+                if (pair.Key is null)
+                {
+                    throw new ArgumentNullException(nameof(receiveAddresses), "Found a null entry in the receive addresses list.");
+                }
+                if (pair.Value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(receiveAddresses), "All amount entries must be positive values");
+                }
+                total += pair.Value;
+                list.Add((pair.Key, pair.Value));
+            }
+            if(total != 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sendAccounts), "The sum of sends and receives does not balance.");
+            }
+            return list.ToArray();
+        }
+
         internal static UpdateContractParams UpdateParameters(UpdateContractParams updateParameters)
         {
             {

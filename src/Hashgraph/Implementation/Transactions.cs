@@ -38,14 +38,29 @@ namespace Hashgraph
         }
         internal static TransferList CreateCryptoTransferList(params (Address address, long amount)[] list)
         {
-            var transfers = new TransferList();
+            var netRequests = new Dictionary<Address, long>();
             foreach (var transfer in list)
             {
-                transfers.AccountAmounts.Add(new AccountAmount
+                if (netRequests.TryGetValue(transfer.address, out long value))
                 {
-                    AccountID = Protobuf.ToAccountID(transfer.address),
-                    Amount = transfer.amount
-                });
+                    netRequests[transfer.address] = value + transfer.amount;
+                }
+                else
+                {
+                    netRequests[transfer.address] = transfer.amount;
+                }
+            }
+            var transfers = new TransferList();
+            foreach (var transfer in netRequests)
+            {
+                if (transfer.Value != 0)
+                {
+                    transfers.AccountAmounts.Add(new AccountAmount
+                    {
+                        AccountID = Protobuf.ToAccountID(transfer.Key),
+                        Amount = transfer.Value
+                    });
+                }
             }
             return transfers;
         }
