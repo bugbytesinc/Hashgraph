@@ -107,5 +107,9 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
             Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         }
+        /* Future Tests
+         * 
+         * Exercise Payable Contract
+         */
     }
 }
