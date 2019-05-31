@@ -27,6 +27,15 @@ namespace Hashgraph.Implementation
             }
             return contract;
         }
+        internal static string SmartContractId(string smartContractId)
+        {
+            if(string.IsNullOrWhiteSpace(smartContractId))
+            {
+                throw new ArgumentNullException(nameof(smartContractId), "Smart Contract ID is missing. Please check that it is not null.");
+            }
+            return smartContractId;
+        }
+
         internal static Account AccountToDelete(Account accountToDelete)
         {
             if (accountToDelete is null)
