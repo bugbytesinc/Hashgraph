@@ -138,8 +138,8 @@ namespace Hashgraph.Test.Contract
             });
             Assert.NotNull(callRecord);
             Assert.Equal(ResponseCode.Success, record.Status);
-            Assert.Empty(callRecord.Error);
-            Assert.Equal("Hello, world!", callRecord.Result.As<string>());
+            Assert.Empty(callRecord.CallResult.Error);
+            Assert.Equal("Hello, world!", callRecord.CallResult.Result.As<string>());
         }
         [Fact(DisplayName = "Contract Update: Can Update Memo.")]
         public async Task CanUpdateMemo()

@@ -32,11 +32,11 @@ namespace Hashgraph.Test.Contract
             Assert.Equal("Call Contract", record.Memo);
             Assert.InRange(record.Fee, 0UL, 100_000UL);
             Assert.Equal(fx.ContractCreateRecord.Contract, record.Contract);
-            Assert.Empty(record.Error);
-            Assert.True(record.Bloom.IsEmpty);
-            Assert.InRange(record.Gas, 0UL, 30_000UL);
-            Assert.Empty(record.Events);
-            Assert.Equal("Hello, world!", record.Result.As<string>()); ;
+            Assert.Empty(record.CallResult.Error);
+            Assert.True(record.CallResult.Bloom.IsEmpty);
+            Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
+            Assert.Empty(record.CallResult.Events);
+            Assert.Equal("Hello, world!", record.CallResult.Result.As<string>()); ;
         }
         [Fact(DisplayName = "Call Contract: Can Call Contract that keeps State")]
         public async Task CanCreateAContractWithStateAsync()
@@ -56,11 +56,11 @@ namespace Hashgraph.Test.Contract
             Assert.Equal("Call Contract", record.Memo);
             Assert.InRange(record.Fee, 0UL, 100_000UL);
             Assert.Equal(fx.ContractCreateRecord.Contract, record.Contract);
-            Assert.Empty(record.Error);
-            Assert.True(record.Bloom.IsEmpty);
-            Assert.InRange(record.Gas, 0UL, 30_000UL);
-            Assert.Empty(record.Events);
-            Assert.Equal(fx.CreateContractParams.Arguments[0] as string, record.Result.As<string>());
+            Assert.Empty(record.CallResult.Error);
+            Assert.True(record.CallResult.Bloom.IsEmpty);
+            Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
+            Assert.Empty(record.CallResult.Events);
+            Assert.Equal(fx.CreateContractParams.Arguments[0] as string, record.CallResult.Result.As<string>());
         }
         [Fact(DisplayName = "Call Contract: Can Call Contract that sets State")]
         public async Task CanCreateAContractAndSetStateAsync()
@@ -82,10 +82,10 @@ namespace Hashgraph.Test.Contract
             Assert.Equal("Call Contract", setRecord.Memo);
             Assert.InRange(setRecord.Fee, 0UL, 100_000UL);
             Assert.Equal(fx.ContractCreateRecord.Contract, setRecord.Contract);
-            Assert.Empty(setRecord.Error);
-            Assert.True(setRecord.Bloom.IsEmpty);
-            Assert.InRange(setRecord.Gas, 0UL, 50_000UL);
-            Assert.Empty(setRecord.Events);
+            Assert.Empty(setRecord.CallResult.Error);
+            Assert.True(setRecord.CallResult.Bloom.IsEmpty);
+            Assert.InRange(setRecord.CallResult.Gas, 0UL, 50_000UL);
+            Assert.Empty(setRecord.CallResult.Events);
 
             var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
@@ -100,12 +100,12 @@ namespace Hashgraph.Test.Contract
             Assert.Equal("Call Contract", getRecord.Memo);
             Assert.InRange(getRecord.Fee, 0UL, 100_000UL);
             Assert.Equal(fx.ContractCreateRecord.Contract, getRecord.Contract);
-            Assert.Empty(getRecord.Error);
-            Assert.True(getRecord.Bloom.IsEmpty);
-            Assert.InRange(getRecord.Gas, 0UL, 30_000UL);
-            Assert.Empty(getRecord.Events);
-            Assert.Equal(newMessage, getRecord.Result.As<string>());
-            Assert.InRange(getRecord.Gas, 0UL, 30_000UL);
+            Assert.Empty(getRecord.CallResult.Error);
+            Assert.True(getRecord.CallResult.Bloom.IsEmpty);
+            Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
+            Assert.Empty(getRecord.CallResult.Events);
+            Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
+            Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         }
     }
 }

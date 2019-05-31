@@ -259,7 +259,7 @@ namespace Hashgraph.Implementation
         {
             if (createParameters is null)
             {
-                throw new ArgumentNullException(nameof(createParameters), "The create parameters are is missing. Please check that the argument is not null.");
+                throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
             }
             if (createParameters.PublicKey.IsEmpty)
             {
@@ -279,7 +279,7 @@ namespace Hashgraph.Implementation
         {
             if (createParameters is null)
             {
-                throw new ArgumentNullException(nameof(createParameters), "The create parameters are is missing. Please check that the argument is not null.");
+                throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
             }
             if (createParameters.Endorsements is null)
             {
@@ -291,7 +291,7 @@ namespace Hashgraph.Implementation
         {
             if (createParameters is null)
             {
-                throw new ArgumentNullException(nameof(createParameters), "The create parameters are is missing. Please check that the argument is not null.");
+                throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
             }
             if (createParameters.File is null)
             {
@@ -303,9 +303,17 @@ namespace Hashgraph.Implementation
         {
             if (callParameters is null)
             {
-                throw new ArgumentNullException(nameof(callParameters), "The call parameters are is missing. Please check that the argument is not null.");
+                throw new ArgumentNullException(nameof(callParameters), "The call parameters are missing. Please check that the argument is not null.");
             }
             return callParameters;
+        }
+        internal static QueryContractParams QueryParameters(QueryContractParams queryParameters)
+        {
+            if (queryParameters is null)
+            {
+                throw new ArgumentNullException(nameof(queryParameters), "The query parameters are missing. Please check that the argument is not null.");
+            }
+            return queryParameters;
         }
         internal static UpdateFileParams UpdateParameters(UpdateFileParams updateParameters)
         {

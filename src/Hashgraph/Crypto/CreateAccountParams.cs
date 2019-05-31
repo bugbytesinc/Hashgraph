@@ -26,35 +26,25 @@ namespace Hashgraph
         /// for the transaction. This new account will be charged for the 
         /// record creation.
         /// </summary>
-        public ulong SendThresholdCreateRecord { get; set; }
+        public ulong SendThresholdCreateRecord { get; set; } = ulong.MaxValue;
         /// <summary>
         /// Threshold in tinybars at which deposits larger than
         /// this value will automatically trigger the creation of a 
         /// record for the transaction.  This new account will be charged
         /// for the record creation.
         /// </summary>
-        public ulong ReceiveThresholdCreateRecord { get; set; }
+        public ulong ReceiveThresholdCreateRecord { get; set; } = ulong.MaxValue;
         /// <summary>
         /// When creating a new account: the newly created account must 
         /// sign any transaction transferring crypto into the newly 
         /// created account.
         /// </summary>
-        public bool RequireReceiveSignature { get; set; }
+        public bool RequireReceiveSignature { get; set; } = false;
         /// <summary>
         /// The auto-renew period for the newly created account, it will continue 
         /// to be renewed at the given interval for as long as the account contains 
         /// hbars sufficient to cover the renewal charge.
         /// </summary>
-        public TimeSpan AutoRenewPeriod { get; set; }
-        /// <summary>
-        /// Public Constructor, sets system defaults for various properties.
-        /// </summary>
-        public CreateAccountParams()
-        {
-            AutoRenewPeriod = TimeSpan.FromDays(31);
-            SendThresholdCreateRecord = ulong.MaxValue;
-            ReceiveThresholdCreateRecord = ulong.MaxValue;
-            RequireReceiveSignature = false;
-        }
+        public TimeSpan AutoRenewPeriod { get; set; } = TimeSpan.FromDays(31);
     }
 }

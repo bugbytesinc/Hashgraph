@@ -209,24 +209,22 @@ namespace Hashgraph.Implementation
             result.Memo = record.Memo;
             result.Fee = record.TransactionFee;
         }
-        internal static void FillCallContractResults(Proto.TransactionRecord record, CallContractRecord result)
+        internal static ContractCallResult FromContractCallResult(ContractFunctionResult contractFunctionResult)
         {
-            result.Contract = Protobuf.FromContractID(record.Receipt.ContractID);
-            var callResult = record.ContractCallResult;
-            if (!(callResult is null))
+            return new ContractCallResult
             {
-                result.Result = new FunctionResult(callResult.ContractCallResult.ToArray());
-                result.Error = callResult.ErrorMessage;
-                result.Bloom = callResult.Bloom.ToArray();
-                result.Gas = callResult.GasUsed;
-                result.Events = callResult.LogInfo?.Select(log => new ContractEvent
+                Result = new ContractCallResultData(contractFunctionResult.ContractCallResult.ToArray()),
+                Error = contractFunctionResult.ErrorMessage,
+                Bloom = contractFunctionResult.Bloom.ToArray(),
+                Gas = contractFunctionResult.GasUsed,
+                Events = contractFunctionResult.LogInfo?.Select(log => new ContractEvent
                 {
                     Contract = FromContractID(log.ContractID),
                     Bloom = log.Bloom.ToArray(),
                     Topic = log.Topic.Select(bs => new ReadOnlyMemory<byte>(bs.ToArray())).ToArray(),
-                    Data = new FunctionResult(log.Data.ToArray())
-                }).ToArray() ?? new ContractEvent[0];
-            }
+                    Data = new ContractCallResultData(log.Data.ToArray())
+                }).ToArray() ?? new ContractEvent[0]
+            };
         }
 
         internal static Claim FromClaim(Proto.Claim claim)
