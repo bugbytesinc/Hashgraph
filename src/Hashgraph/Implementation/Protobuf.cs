@@ -15,9 +15,6 @@ namespace Hashgraph.Implementation
     /// </summary>
     internal static class Protobuf
     {
-        private static readonly DateTime EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private static readonly long NanosPerTick = 1_000_000_000L / TimeSpan.TicksPerSecond;
-
         internal static TxId FromTransactionId(TransactionID transactionId)
         {
             return new TxId(transactionId.ToByteArray());
@@ -84,9 +81,7 @@ namespace Hashgraph.Implementation
         }
         internal static Timestamp ToTimestamp(DateTime dateTime)
         {
-            TimeSpan timespan = dateTime - EPOCH;
-            long seconds = (long)timespan.TotalSeconds;
-            int nanos = (int)((timespan.Ticks - (seconds * TimeSpan.TicksPerSecond)) * NanosPerTick);
+            var (seconds, nanos) = Epoch.FromDate(dateTime);
             return new Timestamp
             {
                 Seconds = seconds,
@@ -95,9 +90,8 @@ namespace Hashgraph.Implementation
         }
         internal static DateTime FromTimestamp(Timestamp timestamp)
         {
-            return EPOCH.AddTicks(timestamp.Seconds * TimeSpan.TicksPerSecond + timestamp.Nanos / NanosPerTick);
+            return Epoch.ToDate(timestamp.Seconds, timestamp.Nanos);
         }
-
         internal static Key ToPublicKey(Endorsement endorsement)
         {
             switch (endorsement._type)

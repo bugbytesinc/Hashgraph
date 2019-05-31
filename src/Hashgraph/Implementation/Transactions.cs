@@ -21,20 +21,21 @@ namespace Hashgraph
             var preExistingTransaction = context.Transaction;
             if (preExistingTransaction is null)
             {
-                return CreateNewTransactionID(RequireInContext.Payer(context), DateTime.UtcNow);
+                var (seconds, nanos) = Epoch.CurrentUniqueSecondsAndNanos();                
+                return new TransactionID
+                {
+                    AccountID = Protobuf.ToAccountID(RequireInContext.Payer(context)),
+                    TransactionValidStart = new Proto.Timestamp
+                    {
+                        Seconds = seconds,
+                        Nanos = nanos
+                    }
+                };
             }
             else
             {
                 return Protobuf.ToTransactionID(preExistingTransaction);
             }
-        }
-        internal static TransactionID CreateNewTransactionID(Account payer, DateTime dateTime)
-        {
-            return new TransactionID
-            {
-                TransactionValidStart = Protobuf.ToTimestamp(dateTime),
-                AccountID = Protobuf.ToAccountID(payer)
-            };
         }
         internal static TransferList CreateCryptoTransferList(params (Address address, long amount)[] list)
         {

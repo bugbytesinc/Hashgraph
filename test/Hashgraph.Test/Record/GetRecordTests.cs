@@ -48,7 +48,7 @@ namespace Hashgraph.Test.Record
         public async Task InvalidTransactionIdThrowsError()
         {
             await using var client = _network.NewClient();
-            var txId = Protobuf.FromTransactionId(Transactions.CreateNewTransactionID(_network.Payer, DateTime.UtcNow));
+            var txId = Protobuf.FromTransactionId(new Proto.TransactionID { AccountID = Protobuf.ToAccountID(_network.Payer), TransactionValidStart = new Proto.Timestamp { Seconds = 500, Nanos = 100 } });
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
                 await client.GetTransactionRecordAsync(txId);
