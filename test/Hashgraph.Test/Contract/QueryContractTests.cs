@@ -69,5 +69,24 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.LocalCallModificationException, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: LocalCallModificationException", pex.Message);
         }
+        [Fact(DisplayName = "Query Contract: MaxAllowedReturnSize Is not presently implemented.")]
+        public async Task MaxAllowedReturnSizeDoesNothing()
+        {
+            await using var fx = await GreetingContractInstance.CreateAsync(_networkCredentials);
+
+            var result = await fx.Client.QueryContractAsync(new QueryContractParams
+            {
+                Contract = fx.ContractCreateRecord.Contract,
+                Gas = 30_000,
+                FunctionName = "greet",
+                MaxAllowedReturnSize = 0
+            });
+            Assert.NotNull(result);
+            Assert.Empty(result.Error);
+            Assert.True(result.Bloom.IsEmpty);
+            Assert.InRange(result.Gas, 0UL, 30_000UL);
+            Assert.Empty(result.Events);
+            Assert.Equal("Hello, world!", result.Result.As<string>()); ;
+        }
     }
 }
