@@ -19,13 +19,13 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var result = await test.Client.DeleteFileAsync(test.CreateRecord.File);
+            var result = await test.Client.DeleteFileAsync(test.Record.File);
             Assert.NotNull(result);
             Assert.Equal(ResponseCode.Success, result.Status);
 
             var exception = await Assert.ThrowsAnyAsync<PrecheckException>(async () =>
             {
-                await test.Client.GetFileInfoAsync(test.CreateRecord.File);
+                await test.Client.GetFileInfoAsync(test.Record.File);
             });
         }
     }

@@ -20,15 +20,15 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Address);  // Assume for now they are equal
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);  // Assume for now they are equal
             Assert.NotNull(info.SmartContractId);
-            Assert.Equal(fx.CreateContractParams.Administrator, info.Administrator);
+            Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
-            Assert.Equal(fx.CreateContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.InRange(info.Size, 0, fx.CreateFileParams.Contents.Length);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
             Assert.Equal(fx.Memo, info.Memo);
         }
         [Fact(DisplayName = "Contract Info: Can Get Stateful Contract Info")]
@@ -36,16 +36,16 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await StatefulContract.CreateAsync(_network);
 
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Address);  // Assume for now they are equal
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);  // Assume for now they are equal
             Assert.NotNull(info.SmartContractId);
-            Assert.Equal(fx.CreateContractParams.Administrator, info.Administrator);
+            Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
-            Assert.Equal(fx.CreateContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.InRange(info.Size, 0, fx.CreateFileParams.Contents.Length);
-            Assert.Equal("Stateful Contract Create: Instantiating Stateful Instance", info.Memo);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
+            Assert.StartsWith("Stateful Contract Create: Instantiating Stateful Instance", info.Memo);
         }
         [Fact(DisplayName = "Contract Info: Retrieving Non Existent Contract Raises Error")]
         public async Task GetNonExistantContractRaisesError()
@@ -54,7 +54,7 @@ namespace Hashgraph.Test.Contract
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await fx.Client.GetContractInfoAsync(fx.AccountRecord.Address);
+                await fx.Client.GetContractInfoAsync(fx.Record.Address);
             });
             Assert.Equal(ResponseCode.InvalidContractId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);

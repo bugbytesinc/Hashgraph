@@ -23,49 +23,49 @@ namespace Hashgraph.Test.Contract
             var newExpiration = Generator.TruncatedFutureDate(2400, 4800);
             var newEndorsement = new Endorsement(newPublicKey);
             var newRenewal = TimeSpan.FromDays(Generator.Integer(60, 90));
-            var updatedPayer = new Account(fx.Payer, _network.PrivateKey, newPrivateKey);
+            var updatedPayer = _network.PayerWithKeys(newPrivateKey);
             var newMemo = Generator.Code(50);
             fx.Client.Configure(ctx => ctx.Payer = updatedPayer);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
-                Contract = fx.ContractCreateRecord.Contract,
+                Contract = fx.ContractRecord.Contract,
                 Expiration = newExpiration,
                 Administrator = newEndorsement,
                 RenewPeriod = newRenewal,
                 Memo = newMemo
             });
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Address);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
             //Assert.Equal(newExpiration, info.Expiration);
             Assert.Equal(newEndorsement, info.Administrator);
             Assert.Equal(newRenewal, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
         }
 
-        [Fact(DisplayName = "Contract Update: Update Expiration Fails, but returns Success (network bug)")]
+        [Fact(DisplayName = "Contract Update: Update Expiration Fails, but returns Success (IS THIS A NETWORK BUG?)")]
         public async Task UpdateContractExpirationDate()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var oldExpiration = (await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract)).Expiration;
+            var oldExpiration = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Expiration;
             var newExpiration = oldExpiration.AddMonths(12);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
-                Contract = fx.ContractCreateRecord.Contract,
+                Contract = fx.ContractRecord.Contract,
                 Expiration = newExpiration
             });
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Address);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
             // This is what it should be.
             //Assert.Equal(newExpiration, info.Expiration);
             // This is what it is
             Assert.Equal(oldExpiration, info.Expiration);
             Assert.Equal(_network.PublicKey, info.Administrator);
-            Assert.Equal(fx.CreateContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
         }
 
@@ -75,19 +75,19 @@ namespace Hashgraph.Test.Contract
             await using var fx = await GreetingContract.CreateAsync(_network);
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             var newEndorsement = new Endorsement(newPublicKey);
-            var updatedPayer = new Account(fx.Payer, _network.PrivateKey, newPrivateKey);
+            var updatedPayer = _network.PayerWithKeys(newPrivateKey);
             fx.Client.Configure(ctx => ctx.Payer = updatedPayer);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
-                Contract = fx.ContractCreateRecord.Contract,
+                Contract = fx.ContractRecord.Contract,
                 Administrator = newEndorsement,
             });
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Address);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(newEndorsement, info.Administrator);
-            Assert.Equal(fx.CreateContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
         }
 
@@ -98,33 +98,33 @@ namespace Hashgraph.Test.Contract
             var newRenewal = TimeSpan.FromDays(Generator.Integer(60, 90));
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
-                Contract = fx.ContractCreateRecord.Contract,
+                Contract = fx.ContractRecord.Contract,
                 RenewPeriod = newRenewal,
             });
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Address);
-            Assert.Equal(fx.CreateContractParams.Administrator, info.Administrator);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
+            Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.Equal(newRenewal, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
         }
-        [Fact(DisplayName = "Contract Update: Updating Contract Bytecode Silently Fails (network bug)")]
+        [Fact(DisplayName = "Contract Update: Updating Contract Bytecode Silently Fails (IS THIS A NETWORK BUG?)")]
         public async Task CanUpdateContractBytecode()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
             await using var fx2 = await StatefulContract.SetupAsync(_network);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
-                Contract = fx.ContractCreateRecord.Contract,
-                File = fx2.FileCreateRecord.File
+                Contract = fx.ContractRecord.Contract,
+                File = fx2.FileRecord.File
             });
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Address);
-            Assert.Equal(fx.CreateContractParams.Administrator, info.Administrator);
-            Assert.Equal(fx.CreateContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
+            Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
 
             // Call a method that was not part of the original contract to check update.
@@ -132,7 +132,7 @@ namespace Hashgraph.Test.Contract
             // able to call the old contract method which should no longer exist.
             var callRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
-                Contract = fx.ContractCreateRecord.Contract,
+                Contract = fx.ContractRecord.Contract,
                 Gas = 30_000,
                 FunctionName = "greet",
             });
@@ -148,28 +148,28 @@ namespace Hashgraph.Test.Contract
             var newMemo = Generator.Code(50);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
-                Contract = fx.ContractCreateRecord.Contract,
+                Contract = fx.ContractRecord.Contract,
                 Memo = newMemo
             });
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractCreateRecord.Contract);
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractCreateRecord.Contract, info.Address);
-            Assert.Equal(fx.CreateContractParams.Administrator, info.Administrator);
-            Assert.Equal(fx.CreateContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
+            Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
         }
         [Fact(DisplayName = "Contract Update: Updating an immutable contract raises error.")]
         public async Task UpdatingImmutableContractRaisesError()
         {
             await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.CreateContractParams.Administrator = null;
+            fx.ContractParams.Administrator = null;
             await fx.CompleteCreateAsync();
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
                 await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
-                    Contract = fx.ContractCreateRecord.Contract,
+                    Contract = fx.ContractRecord.Contract,
                     Memo = Generator.Code(50)
                 });
             });
@@ -181,7 +181,7 @@ namespace Hashgraph.Test.Contract
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.CreateContractParams.Administrator = publicKey;
+            fx.ContractParams.Administrator = publicKey;
             fx.Client.Configure(ctx => ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey));
             await fx.CompleteCreateAsync();
             // First, Remove admin key from Payer's Account
@@ -190,7 +190,7 @@ namespace Hashgraph.Test.Contract
                 fx.Client.Configure(ctx => ctx.Payer = new Account(ctx.Payer, _network.PrivateKey));
                 await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
-                    Contract = fx.ContractCreateRecord.Contract,
+                    Contract = fx.ContractRecord.Contract,
                     Memo = Generator.Code(50)
                 });
             });
@@ -201,7 +201,7 @@ namespace Hashgraph.Test.Contract
             fx.Client.Configure(ctx => ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey));
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
-                Contract = fx.ContractCreateRecord.Contract,
+                Contract = fx.ContractRecord.Contract,
                 Memo = Generator.Code(50)
             });
             Assert.Equal(ResponseCode.Success, record.Status);
@@ -229,7 +229,7 @@ namespace Hashgraph.Test.Contract
             {
                 await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
-                    Contract = fx.ContractCreateRecord.Contract
+                    Contract = fx.ContractRecord.Contract
                 });
             });
             Assert.Equal("updateParameters", ae.ParamName);
@@ -260,7 +260,7 @@ namespace Hashgraph.Test.Contract
             {
                 await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
-                    Contract = fx.ContractCreateRecord.Contract,
+                    Contract = fx.ContractRecord.Contract,
                     RenewPeriod = TimeSpan.FromDays(Generator.Integer(-90, -60))
                 }); ;
             });

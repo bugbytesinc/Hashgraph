@@ -8,38 +8,38 @@ namespace Hashgraph.Test.Fixtures
     {
         public ReadOnlyMemory<byte> PublicKey;
         public ReadOnlyMemory<byte> PrivateKey;
-        public CreateAccountParams CreateAccountParams;
-        public AccountRecord AccountRecord;
-        public NetworkCredentials NetworkCredentials;
+        public CreateAccountParams CreateParams;
+        public AccountRecord Record;
+        public NetworkCredentials Network;
         public Client Client;
 
         public static async Task<TestAccount> CreateAsync(NetworkCredentials networkCredentials)
         {
             var fx = new TestAccount();
-            fx.NetworkCredentials = networkCredentials;
-            fx.NetworkCredentials.Output?.WriteLine("STARTING SETUP: Test Account Instance");
+            fx.Network = networkCredentials;
+            fx.Network.Output?.WriteLine("STARTING SETUP: Test Account Instance");
             (fx.PublicKey, fx.PrivateKey) = Generator.KeyPair();
-            fx.CreateAccountParams = new CreateAccountParams
+            fx.CreateParams = new CreateAccountParams
             {
                 PublicKey = fx.PublicKey,
                 InitialBalance = (ulong)Generator.Integer(10, 20)
             };
             fx.Client = networkCredentials.NewClient();
-            fx.AccountRecord = await fx.Client.CreateAccountWithRecordAsync(fx.CreateAccountParams, ctx =>
+            fx.Record = await fx.Client.CreateAccountWithRecordAsync(fx.CreateParams, ctx =>
              {
                  ctx.Memo = "Test Account Instance: Creating Test Account on Network";
              });
-            Assert.Equal(ResponseCode.Success, fx.AccountRecord.Status);
+            Assert.Equal(ResponseCode.Success, fx.Record.Status);
             networkCredentials.Output?.WriteLine("SETUP COMPLETED: Test Account Instance");
             return fx;
         }
 
         public async ValueTask DisposeAsync()
         {
-            NetworkCredentials.Output?.WriteLine("STARTING TEARDOWN: Test Account Instance");
+            Network.Output?.WriteLine("STARTING TEARDOWN: Test Account Instance");
             try
             {
-                await Client.DeleteAccountAsync(new Account(AccountRecord.Address, PrivateKey), NetworkCredentials.Payer, ctx =>
+                await Client.DeleteAccountAsync(new Account(Record.Address, PrivateKey), Network.Payer, ctx =>
                   {
                       ctx.Memo = "Test Account Instance Teardown: Attempting to delete Account from Network (if exists)";
                   });
@@ -49,7 +49,7 @@ namespace Hashgraph.Test.Fixtures
                 //noop
             }
             await Client.DisposeAsync();
-            NetworkCredentials.Output?.WriteLine("TEARDOWN COMPLETED: Test Account Instance");
+            Network.Output?.WriteLine("TEARDOWN COMPLETED: Test Account Instance");
         }
     }
 }

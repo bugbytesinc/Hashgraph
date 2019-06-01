@@ -24,7 +24,7 @@ namespace Hashgraph.Test.Claims
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Hash = Generator.SHA384Hash(),
                 Endorsements = new Endorsement[] { publicKey1, publicKey2 },
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
@@ -69,7 +69,7 @@ namespace Hashgraph.Test.Claims
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Endorsements = new Endorsement[] { publicKey1, publicKey2 },
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
             };
@@ -93,7 +93,7 @@ namespace Hashgraph.Test.Claims
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Hash = System.Text.Encoding.ASCII.GetBytes("Bad Hash"),
                 Endorsements = new Endorsement[] { publicKey1, publicKey2 },
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
@@ -118,7 +118,7 @@ namespace Hashgraph.Test.Claims
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Hash = Generator.SHA384Hash(),
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
             };
@@ -142,7 +142,7 @@ namespace Hashgraph.Test.Claims
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Hash = Generator.SHA384Hash(),
                 Endorsements = new Endorsement[0],
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
@@ -167,7 +167,7 @@ namespace Hashgraph.Test.Claims
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Hash = Generator.SHA384Hash(),
                 Endorsements = new Endorsement[] { publicKey1, publicKey2 }
             };
@@ -191,7 +191,7 @@ namespace Hashgraph.Test.Claims
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Hash = Generator.SHA384Hash(),
                 Endorsements = new Endorsement[] { publicKey1, publicKey2 },
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))

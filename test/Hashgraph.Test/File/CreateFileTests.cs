@@ -18,9 +18,9 @@ namespace Hashgraph.Test.File
         public async Task CanCreateAFileAsync()
         {
             await using var test = await TestFile.CreateAsync(_network);
-            Assert.NotNull(test.CreateRecord);
-            Assert.NotNull(test.CreateRecord.File);
-            Assert.Equal(ResponseCode.Success, test.CreateRecord.Status);
+            Assert.NotNull(test.Record);
+            Assert.NotNull(test.Record.File);
+            Assert.Equal(ResponseCode.Success, test.Record.Status);
         }
     }
 }

@@ -15,14 +15,14 @@ namespace Hashgraph.Test.Claims
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Delete Claim: Can Delete a Claim")]
+        [Fact(DisplayName = "Delete Claim: Can Delete a Claim, but sometimes network if flaky (IS THIS A NETWORK BUG?)")]
         public async Task CanDeleteAClaimAsync()
         {
             await using var test = await TestAccount.CreateAsync(_network);
 
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Hash = Generator.SHA384Hash(),
                 Endorsements = new Endorsement[] { _network.PublicKey },
                 ClaimDuration = TimeSpan.FromTicks(Generator.TruncatedFutureDate(24, 48).Ticks)
@@ -31,24 +31,33 @@ namespace Hashgraph.Test.Claims
             var addReceipt = await test.Client.AddClaimAsync(claim);
             Assert.Equal(ResponseCode.Success, addReceipt.Status);
 
-            try
+            for(int tryNo =0; tryNo < 50; tryNo ++ )
             {
-                var deleteReceipt = await test.Client.DeleteClaimAsync(claim.Address, claim.Hash);
-                Assert.NotNull(deleteReceipt);
-                Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
-            }
-            catch (TransactionException tex) when (tex.Status == ResponseCode.InvalidSignature)
-            {
-                _network.Output.WriteLine("Attempt to retrieve delete failed, not necessarily a problem with the C# library.  Skipping the remainder of the test.");
-                return;
-            }
-
-            var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
+                try
                 {
-                    await test.Client.GetClaimAsync(claim.Address, claim.Hash);
-                });
-            Assert.Equal(ResponseCode.ClaimNotFound, exception.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", exception.Message);
+                    var deleteReceipt = await test.Client.DeleteClaimAsync(claim.Address, claim.Hash);
+                    Assert.NotNull(deleteReceipt);
+                    Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
+                    if (tryNo > 0)
+                    {
+                        _network.Output?.WriteLine($"NETWORK SUCCESS: Finally Worked, was able to get find/delete claim after {tryNo} retries.");
+                    }
+                    var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+                    {
+                        await test.Client.GetClaimAsync(claim.Address, claim.Hash);
+                    });
+                    Assert.Equal(ResponseCode.ClaimNotFound, pex.Status);
+                    Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", pex.Message);
+                    return;
+                }
+                catch (TransactionException tex) when (tex.Status == ResponseCode.InvalidSignature)
+                {
+                    _network.Output?.WriteLine($"NETWORK ERROR: Ran across intermitent Get Claim (for delete) Race Condition in Network, Retry:{tryNo}");
+                    _network.Output?.WriteLine(tex.StackTrace);
+                    await Task.Delay(100);
+                }
+            }
+            _network.Output?.WriteLine("NETWORK ERROR: Gave Up, network won't let us finish this test.");
         }
         [Fact(DisplayName = "Delete Claim: Deleting non existant claim throws error.")]
         public async Task DeletingNonExistantClaimThrowsError()
@@ -83,7 +92,7 @@ namespace Hashgraph.Test.Claims
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var claim = new Claim
             {
-                Address = test.AccountRecord.Address,
+                Address = test.Record.Address,
                 Hash = Generator.SHA384Hash(),
                 Endorsements = new Endorsement[] { publicKey1, publicKey2 },
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))

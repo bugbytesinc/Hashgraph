@@ -21,7 +21,7 @@ namespace Hashgraph.Test.Record
             await using var fx = await TestAccount.CreateAsync(_network);
 
             var transactionCount = Generator.Integer(2, 5);
-            var childAccount = new Account(fx.AccountRecord.Address, fx.PrivateKey);
+            var childAccount = new Account(fx.Record.Address, fx.PrivateKey);
             var parentAccount = _network.Payer;
             await fx.Client.TransferAsync(parentAccount, childAccount, transactionCount * 100001);
             await using (var client = fx.Client.Clone(ctx => ctx.Payer = childAccount))
@@ -58,10 +58,10 @@ namespace Hashgraph.Test.Record
         public async Task DeletedAccountRaisesError()
         {
             await using var fx = await TestAccount.CreateAsync(_network);
-            await fx.Client.DeleteAccountAsync(new Account(fx.AccountRecord.Address, fx.PrivateKey), _network.Payer);
+            await fx.Client.DeleteAccountAsync(new Account(fx.Record.Address, fx.PrivateKey), _network.Payer);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await fx.Client.GetAccountRecordsAsync(fx.AccountRecord.Address);
+                await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
             });
             Assert.Equal(ResponseCode.AccountDeleted, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: AccountDeleted", pex.Message);

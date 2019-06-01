@@ -20,21 +20,21 @@ namespace Hashgraph.Test.Contract
         public async Task CanCreateAContractAsync()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
-            Assert.NotNull(fx.ContractCreateRecord);
-            Assert.NotNull(fx.ContractCreateRecord.Contract);
-            Assert.Equal(ResponseCode.Success, fx.ContractCreateRecord.Status);
-            Assert.NotEmpty(fx.ContractCreateRecord.Hash.ToArray());
-            Assert.NotNull(fx.ContractCreateRecord.Concensus);
-            Assert.NotNull(fx.ContractCreateRecord.Memo);
-            Assert.InRange(fx.ContractCreateRecord.Fee, 0UL, 100000UL);
+            Assert.NotNull(fx.ContractRecord);
+            Assert.NotNull(fx.ContractRecord.Contract);
+            Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+            Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+            Assert.NotNull(fx.ContractRecord.Concensus);
+            Assert.NotNull(fx.ContractRecord.Memo);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
         }
         [Fact(DisplayName = "Create Contract: Missing File Address Raises Error")]
         public async Task MissingFileAddressRaisesError()
         {
             await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.CreateContractParams.File = null;
+            fx.ContractParams.File = null;
             var ex = await Assert.ThrowsAsync<ArgumentNullException>(async () => {
-                await fx.Client.CreateContractAsync(fx.CreateContractParams);
+                await fx.Client.CreateContractAsync(fx.ContractParams);
             });
             Assert.StartsWith("The File Address containing the contract is missing, it cannot be null.", ex.Message);
             Assert.Equal("File", ex.ParamName);            
@@ -43,9 +43,9 @@ namespace Hashgraph.Test.Contract
         public async Task MissingGasRaisesError()
         {
             await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.CreateContractParams.Gas = 0;
+            fx.ContractParams.Gas = 0;
             var ex = await Assert.ThrowsAsync<TransactionException>(async () => {
-                await fx.Client.CreateContractAsync(fx.CreateContractParams);
+                await fx.Client.CreateContractAsync(fx.ContractParams);
             });
             Assert.StartsWith("Unable to create contract, status: InsufficientGas", ex.Message);
             Assert.Equal(ResponseCode.InsufficientGas, ex.Status);
@@ -54,9 +54,9 @@ namespace Hashgraph.Test.Contract
         public async Task SendingCryptoToNonPayableContractRaisesError()
         {
             await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.CreateContractParams.InitialBalance = 10;
+            fx.ContractParams.InitialBalance = 10;
             var ex = await Assert.ThrowsAsync<TransactionException>(async () => {
-                await fx.Client.CreateContractAsync(fx.CreateContractParams);
+                await fx.Client.CreateContractAsync(fx.ContractParams);
             });
             Assert.StartsWith("Unable to create contract, status: ContractRevertExecuted", ex.Message);
             Assert.Equal(ResponseCode.ContractRevertExecuted, ex.Status);
@@ -65,9 +65,9 @@ namespace Hashgraph.Test.Contract
         public async Task InvalidRenewPeriodRaisesError()
         {
             await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.CreateContractParams.RenewPeriod = TimeSpan.FromTicks(1);
+            fx.ContractParams.RenewPeriod = TimeSpan.FromTicks(1);
             var ex = await Assert.ThrowsAsync<PrecheckException>(async () => {
-                await fx.Client.CreateContractAsync(fx.CreateContractParams);
+                await fx.Client.CreateContractAsync(fx.ContractParams);
             });
             Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", ex.Message);
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, ex.Status);
@@ -76,50 +76,50 @@ namespace Hashgraph.Test.Contract
         public async Task CanCreateContractWithoutAdminKey()
         {
             await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.CreateContractParams.Administrator = null;
-            fx.ContractCreateRecord = await fx.Client.CreateContractWithRecordAsync(fx.CreateContractParams);
-            Assert.NotNull(fx.ContractCreateRecord);
-            Assert.NotNull(fx.ContractCreateRecord.Contract);
-            Assert.Equal(ResponseCode.Success, fx.ContractCreateRecord.Status);
-            Assert.NotEmpty(fx.ContractCreateRecord.Hash.ToArray());
-            Assert.NotNull(fx.ContractCreateRecord.Concensus);
-            Assert.NotNull(fx.ContractCreateRecord.Memo);
-            Assert.InRange(fx.ContractCreateRecord.Fee, 0UL, 100000UL);
+            fx.ContractParams.Administrator = null;
+            fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams);
+            Assert.NotNull(fx.ContractRecord);
+            Assert.NotNull(fx.ContractRecord.Contract);
+            Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+            Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+            Assert.NotNull(fx.ContractRecord.Concensus);
+            Assert.NotNull(fx.ContractRecord.Memo);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
         }
         [Fact(DisplayName = "Create Contract: Random Constructor Data when not needed is ignored.")]
         public async Task CanCreateContractWithUnneededConstructorData()
         {
             await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.CreateContractParams.Arguments = new object[] { "Random Data that Should Be Ignored." };
-            fx.ContractCreateRecord = await fx.Client.CreateContractWithRecordAsync(fx.CreateContractParams);
-            Assert.NotNull(fx.ContractCreateRecord);
-            Assert.NotNull(fx.ContractCreateRecord.Contract);
-            Assert.Equal(ResponseCode.Success, fx.ContractCreateRecord.Status);
-            Assert.NotEmpty(fx.ContractCreateRecord.Hash.ToArray());
-            Assert.NotNull(fx.ContractCreateRecord.Concensus);
-            Assert.NotNull(fx.ContractCreateRecord.Memo);
-            Assert.InRange(fx.ContractCreateRecord.Fee, 0UL, 100000UL);
+            fx.ContractParams.Arguments = new object[] { "Random Data that Should Be Ignored." };
+            fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams);
+            Assert.NotNull(fx.ContractRecord);
+            Assert.NotNull(fx.ContractRecord.Contract);
+            Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+            Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+            Assert.NotNull(fx.ContractRecord.Concensus);
+            Assert.NotNull(fx.ContractRecord.Memo);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
         }
         [Fact(DisplayName = "Create Contract: Can Create Contract with Parameters")]
         public async Task CanCreateAContractWithParameters()
         {
             await using var fx = await StatefulContract.CreateAsync(_network);
-            Assert.NotNull(fx.ContractCreateRecord);
-            Assert.NotNull(fx.ContractCreateRecord.Contract);
-            Assert.Equal(ResponseCode.Success, fx.ContractCreateRecord.Status);
-            Assert.NotEmpty(fx.ContractCreateRecord.Hash.ToArray());
-            Assert.NotNull(fx.ContractCreateRecord.Concensus);
-            Assert.NotNull(fx.ContractCreateRecord.Memo);
-            Assert.InRange(fx.ContractCreateRecord.Fee, 0UL, 100000UL);
+            Assert.NotNull(fx.ContractRecord);
+            Assert.NotNull(fx.ContractRecord.Contract);
+            Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+            Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+            Assert.NotNull(fx.ContractRecord.Concensus);
+            Assert.NotNull(fx.ContractRecord.Memo);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
         }
 
         [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]
         public async Task CreateWithoutRequiredContractParamsThrowsError()
         {
             await using var fx = await StatefulContract.SetupAsync(_network);
-            fx.CreateContractParams.Arguments = null;
+            fx.ContractParams.Arguments = null;
             var ex = await Assert.ThrowsAsync<TransactionException>(async () => {
-                await fx.Client.CreateContractAsync(fx.CreateContractParams);
+                await fx.Client.CreateContractAsync(fx.ContractParams);
             });
             Assert.StartsWith("Unable to create contract, status: ContractRevertExecuted", ex.Message);
             Assert.Equal(ResponseCode.ContractRevertExecuted, ex.Status);

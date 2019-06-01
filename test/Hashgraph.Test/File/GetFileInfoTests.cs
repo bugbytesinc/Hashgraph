@@ -19,9 +19,9 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var info = await test.Client.GetFileInfoAsync(test.CreateRecord.File);
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
-            Assert.Equal(test.CreateRecord.File, info.File);
+            Assert.Equal(test.Record.File, info.File);
             Assert.Equal(test.Contents.Length + 30, info.Size);
             Assert.Equal(test.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);

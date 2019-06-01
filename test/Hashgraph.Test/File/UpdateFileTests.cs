@@ -34,14 +34,14 @@ namespace Hashgraph.Test.File
 
             var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
             {
-                File = test.CreateRecord.File,
+                File = test.Record.File,
                 Endorsements = new Endorsement[] { newPublicKey }
             });
             Assert.Equal(ResponseCode.Success, updateRecord.Status);
 
-            var info = await test.Client.GetFileInfoAsync(test.CreateRecord.File);
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
-            Assert.Equal(test.CreateRecord.File, info.File);
+            Assert.Equal(test.Record.File, info.File);
             Assert.Equal(test.Contents.Length + 30, info.Size);
             Assert.Equal(test.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { newPublicKey }, info.Endorsements);
@@ -56,12 +56,12 @@ namespace Hashgraph.Test.File
 
             var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
             {
-                File = test.CreateRecord.File,
+                File = test.Record.File,
                 Contents = newContents
             });
             Assert.Equal(ResponseCode.Success, updateRecord.Status);
 
-            var retrievedContents = await test.Client.GetFileContentAsync(test.CreateRecord.File);
+            var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
             Assert.Equal(newContents, retrievedContents.ToArray());
         }
         [Fact(DisplayName = "File Update: Can Replace Contents of deleted file?")]
@@ -69,14 +69,14 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var deleteResult = await test.Client.DeleteFileAsync(test.CreateRecord.File);
+            var deleteResult = await test.Client.DeleteFileAsync(test.Record.File);
             Assert.Equal(ResponseCode.Success, deleteResult.Status);
 
             var exception = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
                 await test.Client.UpdateFileAsync(new UpdateFileParams
                 {
-                    File = test.CreateRecord.File,
+                    File = test.Record.File,
                     Contents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50))
                 });
             });

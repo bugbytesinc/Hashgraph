@@ -26,12 +26,12 @@ namespace Hashgraph.Test.File
 
             var appendRecord = await test.Client.AppendFileAsync(new AppendFileParams
             {
-                File = test.CreateRecord.File,
+                File = test.Record.File,
                 Contents = appendedContent
             });
             Assert.Equal(ResponseCode.Success, appendRecord.Status);
 
-            var newContent = await test.Client.GetFileContentAsync(test.CreateRecord.File);
+            var newContent = await test.Client.GetFileContentAsync(test.Record.File);
             Assert.Equal(concatinatedContent.ToArray(), newContent.ToArray());
         }
         [Fact(DisplayName = "File Append: Append to Deleted File Throws Exception")]
@@ -40,14 +40,14 @@ namespace Hashgraph.Test.File
             await using var test = await TestFile.CreateAsync(_network);
             var appendedContent = Encoding.Unicode.GetBytes(Generator.Code(50));
 
-            var deleteRecord = await test.Client.DeleteFileAsync(test.CreateRecord.File);
+            var deleteRecord = await test.Client.DeleteFileAsync(test.Record.File);
             Assert.Equal(ResponseCode.Success, deleteRecord.Status);
 
             var exception = await Assert.ThrowsAnyAsync<TransactionException>(async () =>
             {
                 await test.Client.AppendFileAsync(new AppendFileParams
                 {
-                    File = test.CreateRecord.File,
+                    File = test.Record.File,
                     Contents = appendedContent
                 });
             });

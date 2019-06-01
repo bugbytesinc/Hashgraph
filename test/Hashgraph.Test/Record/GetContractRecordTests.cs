@@ -25,22 +25,22 @@ namespace Hashgraph.Test.Record
             {
                 await fx.Client.CallContractWithRecordAsync(new CallContractParams
                 {
-                    Contract = fx.ContractCreateRecord.Contract,
+                    Contract = fx.ContractRecord.Contract,
                     Gas = 30_000,
                     FunctionName = "get_message"
                 });
             }
-            var records = await fx.Client.GetContractRecordsAsync(fx.ContractCreateRecord.Contract);
+            var records = await fx.Client.GetContractRecordsAsync(fx.ContractRecord.Contract);
             Assert.NotNull(records);
             Assert.Empty(records);
         }
-        [Fact(DisplayName = "Contract Records: Casting Account Address as Contract returns no records (BUT DOES NOT FAIL)")]
+        [Fact(DisplayName = "Contract Records: Casting Account Address as Contract returns no records (IS THIS A NETWORK BUG?)")]
         public async Task CanGetTransactionRecordsForAccount()
         {
             await using var fx = await TestAccount.CreateAsync(_network);
 
             var transactionCount = Generator.Integer(2, 5);
-            var childAccount = new Account(fx.AccountRecord.Address, fx.PrivateKey);
+            var childAccount = new Account(fx.Record.Address, fx.PrivateKey);
             var parentAccount = _network.Payer;
             await fx.Client.TransferAsync(parentAccount, childAccount, transactionCount * 100001);
             await using (var client = fx.Client.Clone(ctx => ctx.Payer = childAccount))

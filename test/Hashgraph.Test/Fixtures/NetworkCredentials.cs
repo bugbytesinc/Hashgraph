@@ -56,15 +56,6 @@ namespace Hashgraph.Test.Fixtures
             }
             throw new InvalidProgramException($"Unable to convert configuration '{key}' of '{valueAsString}' into an integer value.");
         }
-        private bool getAsBool(string key)
-        {
-            var valueAsString = _configuration[key];
-            if (bool.TryParse(valueAsString, out bool value))
-            {
-                return value;
-            }
-            return false;
-        }
         private void OutputSendingRequest(IMessage message)
         {
             if (Output != null)

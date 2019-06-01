@@ -141,8 +141,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAccounts = new Dictionary<Account, long> { { payer, 2 * transferAmount } };
@@ -151,16 +151,16 @@ namespace Hashgraph.Test.Crypto
             var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
             Assert.Equal(ResponseCode.Success, sendRecord.Status);
 
-            Assert.Equal((ulong)transferAmount + fx1.CreateAccountParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
-            Assert.Equal((ulong)transferAmount + fx2.CreateAccountParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
+            Assert.Equal((ulong)transferAmount + fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
+            Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
 
             sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
             receiveAddresses = new Dictionary<Address, long> { { payer, 2 * transferAmount } };
             var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
             Assert.Equal(ResponseCode.Success, returnRecord.Status);
 
-            Assert.Equal(fx1.CreateAccountParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
-            Assert.Equal(fx2.CreateAccountParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
+            Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
+            Assert.Equal(fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
         }
         [Fact(DisplayName = "Transfer: Multi-Account Transfer Transactions must add up to net zero.")]
         public async Task UnblancedMultiTransferRequestsRaiseError()
@@ -168,8 +168,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAccounts = new Dictionary<Account, long> { { payer, transferAmount } };
@@ -188,8 +188,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAccounts = new Dictionary<Account, long> { { payer, 3 * transferAmount } };
@@ -198,16 +198,16 @@ namespace Hashgraph.Test.Crypto
             var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
             Assert.Equal(ResponseCode.Success, sendRecord.Status);
 
-            Assert.Equal((ulong)transferAmount + fx1.CreateAccountParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
-            Assert.Equal((ulong)transferAmount + fx2.CreateAccountParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
+            Assert.Equal((ulong)transferAmount + fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
+            Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
 
             sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount }, { payer, transferAmount } };
             receiveAddresses = new Dictionary<Address, long> { { payer, 3 * transferAmount } };
             var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
             Assert.Equal(ResponseCode.Success, returnRecord.Status);
 
-            Assert.Equal(fx1.CreateAccountParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
-            Assert.Equal(fx2.CreateAccountParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
+            Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
+            Assert.Equal(fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
         }
         [Fact(DisplayName = "Transfer: Net Zero Transacton Is Allowed")]
         public async Task NetZeroTransactionIsAllowed()
@@ -215,8 +215,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
@@ -225,8 +225,8 @@ namespace Hashgraph.Test.Crypto
             var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
             Assert.Equal(ResponseCode.Success, sendRecord.Status);
 
-            Assert.Equal(fx1.CreateAccountParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
-            Assert.Equal(fx2.CreateAccountParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
+            Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
+            Assert.Equal(fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
         }
         [Fact(DisplayName = "Transfer: Null Send Dictionary Raises Error.")]
         public async Task NullSendDictionaryRaisesError()
@@ -234,8 +234,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
@@ -253,8 +253,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAccounts = new Dictionary<Account, long> { };
@@ -275,8 +275,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAaccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
@@ -294,8 +294,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
@@ -314,8 +314,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAccounts = new Dictionary<Account, long> { { account1, -transferAmount }, { account2, 2 * transferAmount } };
@@ -334,8 +334,8 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.AccountRecord.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.AccountRecord.Address, fx2.PrivateKey);
+            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
+            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
             var sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, 2 * transferAmount } };

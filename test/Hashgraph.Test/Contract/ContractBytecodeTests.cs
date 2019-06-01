@@ -19,7 +19,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var bytecode = await fx.Client.GetContractBytecodeAsync(fx.ContractCreateRecord.Contract);
+            var bytecode = await fx.Client.GetContractBytecodeAsync(fx.ContractRecord.Contract);
             Assert.False(bytecode.IsEmpty);
         }
         [Fact(DisplayName = "Contract Bytecode: Can Get Stateful Contract Bytecode")]
@@ -27,7 +27,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await StatefulContract.CreateAsync(_network);
 
-            var bytecode = await fx.Client.GetContractBytecodeAsync(fx.ContractCreateRecord.Contract);
+            var bytecode = await fx.Client.GetContractBytecodeAsync(fx.ContractRecord.Contract);
             Assert.False(bytecode.IsEmpty);
         }
         [Fact(DisplayName = "Contract Bytecode: Retrieving Non Existent Contract Bytecode Raises Error")]
@@ -37,7 +37,7 @@ namespace Hashgraph.Test.Contract
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await fx.Client.GetContractBytecodeAsync(fx.AccountRecord.Address);
+                await fx.Client.GetContractBytecodeAsync(fx.Record.Address);
             });
             Assert.Equal(ResponseCode.InvalidContractId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);

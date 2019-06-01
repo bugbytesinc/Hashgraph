@@ -19,7 +19,7 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var retrievedContents = await test.Client.GetFileContentAsync(test.CreateRecord.File);
+            var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
             Assert.Equal(test.Contents, retrievedContents.ToArray());
         }
     }

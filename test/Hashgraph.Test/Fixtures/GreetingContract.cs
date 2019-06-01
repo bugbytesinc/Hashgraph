@@ -7,14 +7,13 @@ namespace Hashgraph.Test.Fixtures
 {
     public class GreetingContract : IAsyncDisposable
     {
-        public Account Payer;
         public string Memo;
         public Client Client;
-        public CreateFileParams CreateFileParams;
-        public FileRecord FileCreateRecord;
-        public CreateContractParams CreateContractParams;
-        public ContractRecord ContractCreateRecord;
-        public NetworkCredentials NetworkCredentials;
+        public CreateFileParams FileParams;
+        public FileRecord FileRecord;
+        public CreateContractParams ContractParams;
+        public ContractRecord ContractRecord;
+        public NetworkCredentials Network;
 
         /// <summary>
         /// The contract 'bytecode' encoded in Hex, Same as hello_world from java sdk, compiled in Remix for with Solidity 0.5.4
@@ -24,64 +23,69 @@ namespace Hashgraph.Test.Fixtures
         {
             networkCredentials.Output?.WriteLine("STARTING SETUP: Greeting Contract Create Configuration");
             var fx = await InternalSetupAsync(networkCredentials);
-            networkCredentials.Output?.WriteLine("SETUP COMPLETED: Greeting Contract Create Configuration");
+            networkCredentials.Output?.WriteLine("SETUP PAUSED: Greeting Contract Configuration Initialized");
             return fx;
         }
         public static async Task<GreetingContract> CreateAsync(NetworkCredentials networkCredentials)
         {
-            networkCredentials.Output?.WriteLine("STARTING SETUP: Greeting Contract Instance");
+            networkCredentials.Output?.WriteLine("STARTING SETUP: Creating Greeting Contract Instance");
             var fx = await InternalSetupAsync(networkCredentials);
-            await fx.CompleteCreateAsync();
-            networkCredentials.Output?.WriteLine("SETUP COMPLETED: Greeting Contract Instance");
+            await fx.InternalCompleteCreateAsync();
+            networkCredentials.Output?.WriteLine("SETUP COMPLETED: Greeting Contract Instance Created");
             return fx;
         }
         public async Task CompleteCreateAsync()
         {
-            ContractCreateRecord = await Client.CreateContractWithRecordAsync(CreateContractParams, ctx =>
-            {
-                ctx.Memo = Memo;
-            });
-            Assert.Equal(ResponseCode.Success, ContractCreateRecord.Status);
+            Network.Output?.WriteLine("SETUP CONTINUE: Greeting Contract Create Resumed");
+            await InternalCompleteCreateAsync();
+            Network.Output?.WriteLine("SETUP COMPLETED: Greeting Contract Instance Created");
         }
         private static async Task<GreetingContract> InternalSetupAsync(NetworkCredentials networkCredentials)
         {
             var fx = new GreetingContract();
-            fx.NetworkCredentials = networkCredentials;
-            fx.Payer = networkCredentials.Payer;
+            fx.Network = networkCredentials;
             fx.Memo = "Greeting Contract Create: Instantiating Contract Instance " + Generator.Code(10);
-            fx.CreateFileParams = new CreateFileParams
+            fx.FileParams = new CreateFileParams
             {
                 Expiration = Generator.TruncatedFutureDate(12, 24),
                 Endorsements = new Endorsement[] { networkCredentials.PublicKey },
                 Contents = Encoding.UTF8.GetBytes(GREETING_CONTRACT_BYTECODE)
             };
             fx.Client = networkCredentials.NewClient();
-            fx.FileCreateRecord = await fx.Client.CreateFileWithRecordAsync(fx.CreateFileParams, ctx =>
+            fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
-                ctx.Memo = "Greeting Contract Create: Uploading Contract File";
+                ctx.Memo = "Greeting Contract Create: Uploading Contract File" + Generator.Code(10);
             });
-            Assert.Equal(ResponseCode.Success, fx.FileCreateRecord.Status);
-            fx.CreateContractParams = new CreateContractParams
+            Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
+            fx.ContractParams = new CreateContractParams
             {
-                File = fx.FileCreateRecord.File,
+                File = fx.FileRecord.File,
                 Administrator = networkCredentials.PublicKey,
                 Gas = 217_000,
                 RenewPeriod = TimeSpan.FromDays(Generator.Integer(2, 4))
             };
             return fx;
         }
+        private async Task InternalCompleteCreateAsync()
+        {
+            ContractRecord = await Client.CreateContractWithRecordAsync(ContractParams, ctx =>
+            {
+                ctx.Memo = Memo;
+            });
+            Assert.Equal(ResponseCode.Success, ContractRecord.Status);
+        }
         public async ValueTask DisposeAsync()
         {
-            NetworkCredentials.Output?.WriteLine("STARTING TEARDOWN: Greeting Contract Instance");
+            Network.Output?.WriteLine("STARTING TEARDOWN: Greeting Contract Instance");
             try
             {
-                await Client.DeleteFileAsync(FileCreateRecord.File, ctx =>
+                await Client.DeleteFileAsync(FileRecord.File, ctx =>
                 {
-                    ctx.Memo = "Greeting Contract Teardown: Attempting to delete Contract File from Network (may already be deleted)";
+                    ctx.Memo = "Greeting Contract Teardown: Delete Contract File (may already be deleted)";
                 });
-                await Client.DeleteContractAsync(ContractCreateRecord.Contract, Payer, ctx =>
+                await Client.DeleteContractAsync(ContractRecord.Contract, Network.Payer, ctx =>
                 {
-                    ctx.Memo = "Greeting Contract Teardown: Attempting to delete Contract instance from Network (may already be deleted)";
+                    ctx.Memo = "Greeting Contract Teardown: Delete Contract (may already be deleted)";
                 });
             }
             catch
@@ -89,7 +93,7 @@ namespace Hashgraph.Test.Fixtures
                 //noop
             }
             await Client.DisposeAsync();
-            NetworkCredentials.Output?.WriteLine("TEARDOWN COMPLETED Greeting Contract Instance");
+            Network.Output?.WriteLine("TEARDOWN COMPLETED Greeting Contract Instance");
         }
     }
 }

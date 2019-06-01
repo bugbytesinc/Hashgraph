@@ -22,7 +22,7 @@ namespace Hashgraph.Test.Record
             await using var fx = await TestAccount.CreateAsync(_network);
 
             var amount = Generator.Integer(20, 30);
-            var receipt = await fx.Client.TransferAsync(_network.Payer, fx.AccountRecord.Address, amount);
+            var receipt = await fx.Client.TransferAsync(_network.Payer, fx.Record.Address, amount);
             Assert.Equal(ResponseCode.Success, receipt.Status);
             var record = await fx.Client.GetTransactionRecordAsync(receipt.Id);
             Assert.NotNull(record);
@@ -64,7 +64,7 @@ namespace Hashgraph.Test.Record
             {
                 await fx.Client.CallContractWithRecordAsync(new CallContractParams
                 {
-                    Contract = fx.ContractCreateRecord.Contract,
+                    Contract = fx.ContractRecord.Contract,
                     Gas = 50_000,
                     FunctionName = "not_a_real_method",
                 });
