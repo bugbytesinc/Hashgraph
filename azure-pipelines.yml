@@ -35,7 +35,7 @@ steps:
     command: test
     projects: 'test/**/*.csproj'
     nobuild: true
-    arguments: '--configuration $(buildConfiguration) --verbosity detailed'
+    arguments: '--configuration $(buildConfiguration) --no-build --verbosity detailed'
     publishTestResults: true
   env:
     'network:address': $(test:network:address)
@@ -51,7 +51,7 @@ steps:
     command: pack
     projects: src/**/*.csproj
     nobuild: true
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1  
   displayName: Save Package Artifacts  
