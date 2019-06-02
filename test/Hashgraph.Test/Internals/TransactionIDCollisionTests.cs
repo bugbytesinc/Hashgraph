@@ -12,8 +12,8 @@ namespace Hashgraph.Test.Internals
         {
             for (int i = 0; i < 100; i++)
             {
-                var tic1 = Epoch.CurrentUniqueNanos();
-                var tic2 = Epoch.CurrentUniqueNanos();
+                var tic1 = Epoch.UniqueClockNanos();
+                var tic2 = Epoch.UniqueClockNanos();
                 Assert.NotEqual(tic1, tic2);
             }
         }
@@ -27,8 +27,8 @@ namespace Hashgraph.Test.Internals
                 {
                     for (int i = 0; i < 1000; i++)
                     {
-                        var tic1 = Epoch.CurrentUniqueNanos();
-                        var tic2 = Epoch.CurrentUniqueNanos();
+                        var tic1 = Epoch.UniqueClockNanos();
+                        var tic2 = Epoch.UniqueClockNanos();
                         Assert.NotEqual(tic1, tic2);
                     }
                 });

@@ -52,6 +52,19 @@ namespace Hashgraph
         /// </summary>
         bool GenerateRecord { get; set; }
         /// <summary>
+        /// If set to <code>true</code> the library client will automatically
+        /// scan for <see cref="ResponseCode.InvalidTransactionStart"/> responses
+        /// from the server and adjust the automatic generation of transaction
+        /// IDs as appropriate to compensate for local clock drift from the
+        /// network server's clock.  This can help reduce the wait time for
+        /// acceptance of transactions if the local clock deviates from the
+        /// network time by too wide a margin.  It is only recommended to 
+        /// enable this setting if you are having performance problems related
+        /// to clock drift an are unable to resolve at the environment level.
+        /// The default for this value is <code>false</code>.
+        /// </summary>
+        bool AdjustForLocalClockDrift { get; set; }
+        /// <summary>
         /// The number of times the client software should retry sending a 
         /// transaction to the network after the initial request failed 
         /// with the server returning BUSY or invalid due to client/server 

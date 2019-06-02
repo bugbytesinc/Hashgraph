@@ -41,6 +41,7 @@ namespace Hashgraph.Test.Fixtures
                 ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
                 ctx.OnSendingRequest = OutputSendingRequest;
                 ctx.OnResponseReceived = OutputReceivResponse;
+                ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
             });
         }
         public Account PayerWithKeys(params ReadOnlyMemory<byte>[] privateKeys)

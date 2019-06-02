@@ -21,7 +21,7 @@ namespace Hashgraph
             var preExistingTransaction = context.Transaction;
             if (preExistingTransaction is null)
             {
-                var (seconds, nanos) = Epoch.CurrentUniqueSecondsAndNanos();                
+                var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(context.AdjustForLocalClockDrift);
                 return new TransactionID
                 {
                     AccountID = Protobuf.ToAccountID(RequireInContext.Payer(context)),
@@ -114,11 +114,18 @@ namespace Hashgraph
         }
         internal static Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {
+            var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
+            var startingInstant = trackTimeDrift ? Epoch.UniqueClockNanos() : 0;
+
             return ExecuteRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
 
             bool shouldRetryRequest(TResponse response)
             {
                 var code = getResponseCode(response);
+                if (trackTimeDrift && code == ResponseCodeEnum.InvalidTransactionStart)
+                {
+                    Epoch.AddToClockDrift(Epoch.UniqueClockNanos() - startingInstant);
+                }
                 return
                     code == ResponseCodeEnum.Busy ||
                     code == ResponseCodeEnum.InvalidTransactionStart;

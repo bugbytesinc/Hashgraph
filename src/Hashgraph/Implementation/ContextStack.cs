@@ -26,9 +26,11 @@ namespace Hashgraph.Implementation
         public TimeSpan RetryDelay { get => get<TimeSpan>(nameof(RetryDelay)); set => set(nameof(RetryDelay), value); }
         public string? Memo { get => get<string>(nameof(Memo)); set => set(nameof(Memo), value); }
         public bool GenerateRecord { get => get<bool>(nameof(GenerateRecord)); set => set(nameof(GenerateRecord), value); }
+        public bool AdjustForLocalClockDrift { get => get<bool>(nameof(AdjustForLocalClockDrift)); set => set(nameof(AdjustForLocalClockDrift), value); }
         public TxId? Transaction { get => get<TxId>(nameof(Transaction)); set => set(nameof(Transaction), value); }
         public Action<IMessage>? OnSendingRequest { get => get<Action<IMessage>>(nameof(OnSendingRequest)); set => set(nameof(OnSendingRequest), value); }
         public Action<int, IMessage>? OnResponseReceived { get => get<Action<int, IMessage>>(nameof(OnResponseReceived)); set => set(nameof(OnResponseReceived), value); }
+        
 
         public ContextStack(ContextStack? parent)
         {
@@ -48,6 +50,7 @@ namespace Hashgraph.Implementation
                 case nameof(TransactionDuration):
                 case nameof(Memo):
                 case nameof(GenerateRecord):
+                case nameof(AdjustForLocalClockDrift):
                 case nameof(Transaction):
                 case nameof(OnSendingRequest):
                 case nameof(OnResponseReceived):
