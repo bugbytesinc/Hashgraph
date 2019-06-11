@@ -127,36 +127,62 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds to Deleted Account does not Raise Error (IS THIS A NETWORK BUG?)")]
         public async Task SendFundsToDeletedAccountDoesNotRaiseError()
         {
-            await using var fx = await PayableContract.CreateAsync(_network);
-            await using var fx2 = await TestAccount.CreateAsync(_network);
+            // Setup the Simple Payable Contract and An account for "send to".
+            await using var fxContract = await PayableContract.CreateAsync(_network);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
 
-            var infoBefore = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
-            var receipt = await fx2.Client.DeleteAccountAsync(new Account(fx2.Record.Address, fx2.PrivateKey), fx2.Network.Payer);
-            Assert.Equal(ResponseCode.Success, receipt.Status);
+            // Get the Info for the account state and then delete the account.
+            var infoBefore = await fxAccount.Client.GetAccountInfoAsync(fxAccount.Record.Address);
+            var deleteReceipt = await fxAccount.Client.DeleteAccountAsync(new Account(fxAccount.Record.Address, fxAccount.PrivateKey), fxAccount.Network.Payer);
+            Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
 
-            var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            // Double check the balance on the contract, confirm it has hbars
+            var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
-                Contract = fx.ContractRecord.Contract,
+                Contract = fxContract.ContractRecord.Contract,
+                Gas = 300_000,
+                FunctionName = "get_balance"
+            });
+            Assert.NotNull(contractBalanceBefore);
+            Assert.InRange(fxContract.ContractParams.InitialBalance, 1, int.MaxValue);
+            Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
+
+            // Call the contract, sending to the address of the now deleted account
+            var sendRecord = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
                 Gas = 300_000,
                 FunctionName = "send_to",
-                FunctionArgs = new[] { fx2.Record.Address }
+                FunctionArgs = new[] { fxAccount.Record.Address }
             });
-            Assert.NotNull(record);
-            Assert.Equal(ResponseCode.Success, record.Status);
-            Assert.False(record.Hash.IsEmpty);
-            Assert.NotNull(record.Concensus);
-            Assert.Equal("Call Contract", record.Memo);
-            Assert.InRange(record.Fee, 0UL, 100_000UL);
-            Assert.Equal(fx.ContractRecord.Contract, record.Contract);
-            Assert.Empty(record.CallResult.Error);
-            Assert.True(record.CallResult.Bloom.IsEmpty);
-            Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
-            Assert.Empty(record.CallResult.Events);
+            Assert.NotNull(sendRecord);
+            Assert.Equal(ResponseCode.Success, sendRecord.Status);
+            Assert.False(sendRecord.Hash.IsEmpty);
+            Assert.NotNull(sendRecord.Concensus);
+            Assert.Equal("Call Contract", sendRecord.Memo);
+            Assert.InRange(sendRecord.Fee, 0UL, 100_000UL);
+            Assert.Equal(fxContract.ContractRecord.Contract, sendRecord.Contract);
+            Assert.Empty(sendRecord.CallResult.Error);
+            Assert.True(sendRecord.CallResult.Bloom.IsEmpty);
+            Assert.InRange(sendRecord.CallResult.Gas, 0UL, 30_000UL);
+            Assert.Empty(sendRecord.CallResult.Events);
 
+            // Confirm that the balance on the contract is now zero.
+            var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
+                Gas = 300_000,
+                FunctionName = "get_balance"
+            });
+            Assert.NotNull(contractBalanceAfter);
+            Assert.Equal(0, contractBalanceAfter.CallResult.Result.As<long>());
+
+            // Try to get info on the deleted account, but this will fail because the
+            // account is already deleted.
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 // So if this throws an error, why did the above call not fail?
-                await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
+                await fxAccount.Client.GetAccountInfoAsync(fxAccount.Record.Address);
             });
         }
         [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds to Non Existent Account Raises Error")]
