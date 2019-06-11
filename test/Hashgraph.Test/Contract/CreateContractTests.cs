@@ -124,5 +124,17 @@ namespace Hashgraph.Test.Contract
             Assert.StartsWith("Unable to create contract, status: ContractRevertExecuted", ex.Message);
             Assert.Equal(ResponseCode.ContractRevertExecuted, ex.Status);
         }
+        [Fact(DisplayName = "Create Contract: Can Create Payable Contract")]
+        public async Task CanCreateAPayableContract()
+        {
+            await using var fx = await PayableContract.CreateAsync(_network);
+            Assert.NotNull(fx.ContractRecord);
+            Assert.NotNull(fx.ContractRecord.Contract);
+            Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+            Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+            Assert.NotNull(fx.ContractRecord.Concensus);
+            Assert.NotNull(fx.ContractRecord.Memo);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
+        }
     }
 }

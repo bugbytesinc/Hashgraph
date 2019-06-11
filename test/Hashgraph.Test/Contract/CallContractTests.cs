@@ -114,7 +114,8 @@ namespace Hashgraph.Test.Contract
             var deleteReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
             Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
 
-            var tex = await Assert.ThrowsAsync<TransactionException>(async()=>{
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
                 await fx.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
@@ -122,12 +123,8 @@ namespace Hashgraph.Test.Contract
                     FunctionName = "greet"
                 });
             });
-            Assert.Equal(ResponseCode.ContractDeleted,tex.Status);
+            Assert.Equal(ResponseCode.ContractDeleted, tex.Status);
             Assert.StartsWith("Contract call failed, status: ContractDeleted", tex.Message);
         }
-        /* Future Tests
-         * 
-         * Exercise Payable Contract
-         */
     }
 }

@@ -42,6 +42,7 @@ namespace Hashgraph.Implementation
                 else
                 {
                     headerSize += bytes.Length;
+                    totalSize += bytes.Length;
                 }
             }
             var result = new byte[totalSize];
@@ -203,6 +204,64 @@ namespace Hashgraph.Implementation
         {
             return ReadInt256(arg.Slice(0, 32)) > 0;
         }
+        private static ReadOnlyMemory<byte> EncodeAddressPart(object value)
+        {
+            // For 20 bytes total (aka uint160)
+            // byte 0 to 3 are shard
+            // byte 4 to 11 are realm
+            // byte 12 to 19 are account number
+            // Note: packed in 32 bytes, right aligned
+            if (value is Address address)
+            {
+                var bytes = new byte[32];
+                var shard = BitConverter.GetBytes(address.ShardNum);
+                if (BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(shard);
+                }
+                shard[^4..^0].CopyTo(bytes, 12);
+                var realm = BitConverter.GetBytes(address.RealmNum);
+                if (BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(realm);
+                }
+                realm.CopyTo(bytes, 16);
+                var num = BitConverter.GetBytes(address.AccountNum);
+                if (BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(num);
+                }
+                num.CopyTo(bytes, 24);
+                return bytes;
+            }
+            throw new ArgumentException("Argument was not an address.", nameof(value));
+        }
+        private static object DecodeAddressPart(ReadOnlyMemory<byte> arg)
+        {
+            // See EncodeAddressPart for packing notes
+            var shardAsBytes = arg.Slice(12, 4).ToArray();
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(shardAsBytes);
+            }
+            var shard = BitConverter.ToInt32(shardAsBytes);
+
+            var realmAsBytes = arg.Slice(16, 8).ToArray();
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(realmAsBytes);
+            }
+            var realm = BitConverter.ToInt64(realmAsBytes);
+
+            var numAsBytes = arg.Slice(24, 8).ToArray();
+            if (BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(numAsBytes);
+            }
+            var num = BitConverter.ToInt64(numAsBytes);
+
+            return new Address(realm, shard, num);
+        }
         private static void WriteInt256(Span<byte> buffer, long value)
         {
             var valueAsBytes = BitConverter.GetBytes(value);
@@ -267,6 +326,7 @@ namespace Hashgraph.Implementation
             _typeMap.Add(typeof(string), new TypeMapping("string", true, 32, EncodeStringPart, DecodeStringPart));
             _typeMap.Add(typeof(byte[]), new TypeMapping("bytes", true, 32, EncodeByteArrayPart, DecodeByteArrayPart));
             _typeMap.Add(typeof(ReadOnlyMemory<byte>), new TypeMapping("bytes", true, 32, EncodeReadOnlyMemoryPart, DecodeReadOnlyMemoryPart));
+            _typeMap.Add(typeof(Address), new TypeMapping("address", false, 32, EncodeAddressPart, DecodeAddressPart));
         }
         internal class TypeMapping
         {
