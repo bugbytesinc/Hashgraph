@@ -118,5 +118,35 @@ namespace Hashgraph.Test.Contract
             var deleteContractReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, fx2.Record.Address);
             Assert.Equal(ResponseCode.Success, deleteContractReceipt.Status);
         }
+        [Fact(DisplayName = "Contract Delete: Remaining Contract Balance is Returned to Account")]
+        public async Task ReturnRemainingContractBalanceUponDelete()
+        {
+            // Setup the Simple Event Emitting Contract and An account for "send to".
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxContract = await EventEmittingContract.CreateAsync(_network);
+
+            // Get the Info for the Account to receive funds before any changes happen.
+            var infoBefore = await fxAccount.Client.GetAccountInfoAsync(fxAccount.Record.Address);
+            Assert.Equal(fxAccount.CreateParams.InitialBalance, infoBefore.Balance);
+
+            // Double check the balance on the contract, confirm it has hbars
+            var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
+                Gas = 300_000,
+                FunctionName = "get_balance"
+            });
+            Assert.NotNull(contractBalanceBefore);
+            Assert.InRange(fxContract.ContractParams.InitialBalance, 1, int.MaxValue);
+            Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
+
+            // Delete the Contract, returning contract balance to Account
+            var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount.Record.Address);
+            Assert.Equal(ResponseCode.Success, deleteContractRecord.Status);
+
+            // Check the balance of account to see if it went up by contract's balance.
+            var infoAfter = await fxAccount.Client.GetAccountInfoAsync(fxAccount.Record.Address);
+            Assert.Equal(infoBefore.Balance + (ulong) fxContract.ContractParams.InitialBalance, infoAfter.Balance);
+        }
     }
 }

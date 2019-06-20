@@ -50,6 +50,30 @@ namespace Hashgraph.Test.Crypto
             var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(initialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
         }
+        [Fact(DisplayName = "Transfer: Can Get Transfer Record Showing Transfers")]
+        public async Task CanGetTransferRecordShowingTransfers()
+        {
+            var transferAmount = (long)Generator.Integer(10, 100);
+            var initialBalance = (ulong)Generator.Integer(10, 100);
+            var (publicKey, privateKey) = Generator.KeyPair();
+            await using var client = _network.NewClient();
+            var createResult = await client.CreateAccountAsync(new CreateAccountParams
+            {
+                InitialBalance = initialBalance,
+                PublicKey = publicKey
+            });
+            var newBalance = await client.GetAccountBalanceAsync(createResult.Address);
+            Assert.Equal(initialBalance, newBalance);
+
+            var record = await client.TransferWithRecordAsync(_network.Payer, createResult.Address, transferAmount);
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.Equal(2, record.Transfers.Count);
+            Assert.Equal(-transferAmount, record.Transfers[_network.Payer]);
+            Assert.Equal(transferAmount, record.Transfers[createResult.Address]);
+
+            var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
+            Assert.Equal(initialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
+        }
         [Fact(DisplayName = "Transfer: Can Send from New Account")]
         public async Task CanTransferCryptoFromNewAccount()
         {

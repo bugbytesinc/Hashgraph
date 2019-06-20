@@ -25,7 +25,7 @@ namespace Hashgraph.Test.Internals
             var info = await client.GetAccountBalanceAsync(account, ctx => {
                 ctx.Transaction = Protobuf.FromTransactionId(new Proto.TransactionID {
                     AccountID = Protobuf.ToAccountID(_network.Payer),
-                    TransactionValidStart = Protobuf.ToTimestamp(DateTime.UtcNow.AddSeconds(5))
+                    TransactionValidStart = Protobuf.ToTimestamp(DateTime.UtcNow.AddSeconds(6))
                 });
             });
             var duration = Epoch.UniqueClockNanos() - startInstant;

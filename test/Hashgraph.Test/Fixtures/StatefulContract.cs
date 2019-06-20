@@ -52,7 +52,7 @@ namespace Hashgraph.Test.Fixtures
             fx.Client = networkCredentials.NewClient();
             fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
-                ctx.Memo = "Stateful Contract Create: Uploading Contract File" + Generator.Code(10);
+                ctx.Memo = "Stateful Contract Create: Uploading Contract File " + Generator.Code(10);
             });
             Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
             fx.ContractParams = new CreateContractParams
@@ -69,7 +69,7 @@ namespace Hashgraph.Test.Fixtures
         {
             ContractRecord = await Client.CreateContractWithRecordAsync(ContractParams, ctx =>
             {
-                ctx.Memo = "Stateful Contract Create: Instantiating Stateful Instance" + Generator.Code(10);
+                ctx.Memo = "Stateful Contract Create: Instantiating Stateful Instance " + Generator.Code(10);
             });
             Assert.Equal(ResponseCode.Success, FileRecord.Status);
         }

@@ -203,5 +203,76 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.InvalidSolidityAddress, tex.Status);
             Assert.StartsWith("Contract call failed, status: InvalidSolidityAddress", tex.Message);
         }
+        [Fact(DisplayName = "Payable Contract: It appears to be possible to burn hbars (IS THIS A NETWORK BUG?)")]
+        public async Task ItAppearsToBePossibleToBurnHbars()
+        {
+            // Setup the Simple Payable Contract and An account for "send to".
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+            await using var fxContract = await PayableContract.CreateAsync(_network);
+
+            // Get the Info for the account state and then delete the account.
+            var info1Before = await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
+            var info2Before = await fxAccount2.Client.GetAccountInfoAsync(fxAccount2.Record.Address);
+            var delete1Receipt = await fxAccount1.Client.DeleteAccountAsync(new Account(fxAccount1.Record.Address, fxAccount1.PrivateKey), fxAccount1.Network.Payer);
+            Assert.Equal(ResponseCode.Success, delete1Receipt.Status);
+
+            // Double check the balance on the contract, confirm it has hbars
+            var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
+                Gas = 300_000,
+                FunctionName = "get_balance"
+            });
+            Assert.NotNull(contractBalanceBefore);
+            Assert.InRange(fxContract.ContractParams.InitialBalance, 1, int.MaxValue);
+            Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
+
+            // Call the contract, sending to the address of the now deleted account
+            var sendRecord = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
+                Gas = 300_000,
+                FunctionName = "send_to",
+                FunctionArgs = new[] { fxAccount1.Record.Address }
+            });
+            Assert.NotNull(sendRecord);
+            Assert.Equal(ResponseCode.Success, sendRecord.Status);
+            Assert.False(sendRecord.Hash.IsEmpty);
+            Assert.NotNull(sendRecord.Concensus);
+            Assert.Equal("Call Contract", sendRecord.Memo);
+            Assert.InRange(sendRecord.Fee, 0UL, 100_000UL);
+            Assert.Equal(fxContract.ContractRecord.Contract, sendRecord.Contract);
+            Assert.Empty(sendRecord.CallResult.Error);
+            Assert.True(sendRecord.CallResult.Bloom.IsEmpty);
+            Assert.InRange(sendRecord.CallResult.Gas, 0UL, 30_000UL);
+            Assert.Empty(sendRecord.CallResult.Events);
+
+            // Confirm that the balance on the contract is now zero.
+            var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
+                Gas = 300_000,
+                FunctionName = "get_balance"
+            });
+            Assert.NotNull(contractBalanceAfter);
+            Assert.Equal(0, contractBalanceAfter.CallResult.Result.As<long>());
+
+            // Try to get info on the deleted account, but this will fail because the
+            // account is already deleted.
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                // So if this throws an error, why did the above call not fail?
+                await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
+            });
+
+            // Delete the Contract, returning any hidden hbars to account number 2
+            var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount2.Record.Address);
+            Assert.Equal(ResponseCode.Success, deleteContractRecord.Status);
+
+            // Check the balance of account number 2, did the  hbars go there?
+            var info2After = await fxAccount2.Client.GetAccountInfoAsync(fxAccount2.Record.Address);
+            Assert.Equal(info2Before.Balance, info2After.Balance); // NOPE!
+        }
     }
 }

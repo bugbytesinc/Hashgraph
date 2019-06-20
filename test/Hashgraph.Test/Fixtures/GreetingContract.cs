@@ -54,7 +54,7 @@ namespace Hashgraph.Test.Fixtures
             fx.Client = networkCredentials.NewClient();
             fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
-                ctx.Memo = "Greeting Contract Create: Uploading Contract File" + Generator.Code(10);
+                ctx.Memo = "Greeting Contract Create: Uploading Contract File " + Generator.Code(10);
             });
             Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
             fx.ContractParams = new CreateContractParams
