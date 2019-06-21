@@ -347,5 +347,21 @@ namespace Hashgraph
         /// Bytecode for smart contract is of length zero
         /// </summary>
         [Description("CONTRACT_BYTECODE_EMPTY")] ContractBytecodeEmpty = 84,
+        /// <summary>
+        /// Attempt to set negative initial balance
+        /// </summary>
+        [Description("INVALID_INITIAL_BALANCE")] InvalidInitialBalance = 85,
+        /// <summary>
+        /// attempt to set negative receive record threshold
+        /// </summary>
+        [Description("INVALID_RECEIVE_RECORD_THRESHOLD")] InvalidReceiveRecordThreshold = 86,
+        /// <summary>
+        /// attempt to set negative send record threshold
+        /// </summary>
+        [Description("INVALID_SEND_RECORD_THRESHOLD")] InvalidSendRecordThreshold = 87,
+        /// <summary>
+        /// Special Account Operations should be performed by only Genesis account, return this code if it is not Genesis Account
+        /// </summary>
+        [Description("ACCOUNT_IS_NOT_GENESIS_ACCOUNT")] AccountIsNotGenesisAccount = 88,
     }
 }
