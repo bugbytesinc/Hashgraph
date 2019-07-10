@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ "/css/site.css" | relative_url }}">
+    <link rel="stylesheet" href="{{ "assets/css/style.css" | absolute_url }}">
   </head>
   <body>
     <div id="main_body">
@@ -17,13 +17,14 @@
 
           <p>{{ site.description | default: site.github.project_tagline }}</p>
 
-          <p><a href="/">Home</a></p>
+          <p><h3><a href="{{ "/" | relative_url }}">Home</a></h3></p>
           <p>
               <h3>Recipies</h3>
-              <a href="{{ "recipie/balance" | relative_url }}">Get Account Balance</a>
+              <a href="{{ "/recipie/balance" | relative_url }}">Get Account Balance</a>
           </p>
 
           {% if site.github.is_project_page %}
+          <h3>Links</h3>
           <p class="view"><a href="{{ site.github.repository_url }}">View the Project on GitHub <small>{{ site.github.repository_nwo }}</small></a></p>
           {% endif %}
 
