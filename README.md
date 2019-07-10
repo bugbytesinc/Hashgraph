@@ -1,6 +1,9 @@
 # Hashgraph
 .NET Core Client Library for Hedera Hashgraph
 
+## Documentation
+We've started working on our documentation, you can see our progress [here](https://bugbytesinc.github.io/Hashgraph/).
+
 __Please Note__:  This library is very new and as we gain experience interacting with the Hedera Network any commit to this project may cause breaking changes.  Please be patient as we gain the necessary experience to provide a best in class library to access the Hedera Network.  
 
 ## Example

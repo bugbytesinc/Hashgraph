@@ -1,1 +1,26 @@
+title: Hashgraph
+email: hashgraph@bugbytes.com
+description: .NET Client Library for Hedera Hashgraph
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://bugbytesinc.github.io/Hashgraph/"
+twitter_username: bugbytesinc
+github_username:  bugbytesinc
+repository: bugbytesinc/hashgraph
+
+# Build settings
+markdown: kramdown
 theme: jekyll-theme-minimal
+plugins:
+  - jekyll-feed
+logo: "https://raw.githubusercontent.com/bugbytesinc/Hashgraph/master/logo.png"
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
