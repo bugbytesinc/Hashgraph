@@ -9,7 +9,7 @@ repository: bugbytesinc/hashgraph
 
 # Build settings
 markdown: kramdown
-theme: jekyll-theme-minimal
+#theme: jekyll-theme-minimal
 plugins:
   - jekyll-feed
 logo: "https://raw.githubusercontent.com/bugbytesinc/Hashgraph/master/logo.png"
