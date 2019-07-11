@@ -12,13 +12,19 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        var gatewayUrl = args[0];
+        var gatewayAccountNo = long.Parse(args[1]);
+        var payerAccountNo = long.Parse(args[2]);
+        var payerPrivateKey = Hex.ToBytes(args[3]);
+        var queryAccountNo = long.Parse(args[4]);
         try
         {
-            var client = new Client(ctx => {
-                ctx.Gateway = new Gateway("0.testnet.hedera.com:50211", 0, 0, 3);
-                ctx.Payer = new Account(0, 0, <PAYER ACCOUNT NUMBER>, <PRIVATE KEY IN HEX>);
+            await using var client = new Client(ctx =>
+            {
+                ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
+                ctx.Payer = new Account(0, 0, payerAccountNo, payerPrivateKey);
             });
-            var account = new Address(0, 0, 1020);
+            var account = new Address(0, 0, queryAccountNo);
             var balance = await client.GetAccountBalanceAsync(account);
             Console.WriteLine($"Account Balance for {account.AccountNum} is {balance} tinybars.");
         }
