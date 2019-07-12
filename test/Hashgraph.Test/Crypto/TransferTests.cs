@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Implementation;
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -372,7 +373,33 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal("receiveAddresses", aor.ParamName);
             Assert.StartsWith("All amount entries must be positive values", aor.Message);
         }
-
-
+        [Fact(DisplayName = "Transfer: Transaction ID Information Makes Sense for Receipt")]
+        public async Task TransactionIdMakesSenseForReceipt()
+        {
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var lowerBound = Epoch.UniqueClockNanosAfterDrift();
+            var transferAmount = (long)Generator.Integer(10, 100);
+            var receipt = await fx.Client.TransferAsync(_network.Payer, fx.Record.Address, transferAmount);
+            var upperBound = Epoch.UniqueClockNanosAfterDrift();
+            var txId = receipt.Id;
+            Assert.NotNull(txId);
+            Assert.Equal(_network.Payer, txId.Address);
+            Assert.InRange(txId.ValidStartSeconds, lowerBound/1_000_000_000, upperBound/ 1_000_000_000);
+            Assert.InRange(txId.ValidStartNanos, 0, 1_000_000_000);
+        }
+        [Fact(DisplayName = "Transfer: Transaction ID Information Makes Sense for Record")]
+        public async Task TransactionIdMakesSenseForRecord()
+        {
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var lowerBound = Epoch.UniqueClockNanosAfterDrift();
+            var transferAmount = (long)Generator.Integer(10, 100);
+            var record = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, transferAmount);
+            var upperBound = Epoch.UniqueClockNanosAfterDrift();
+            var txId = record.Id;
+            Assert.NotNull(txId);
+            Assert.Equal(_network.Payer, txId.Address);
+            Assert.InRange(txId.ValidStartSeconds, lowerBound / 1_000_000_000, upperBound / 1_000_000_000);
+            Assert.InRange(txId.ValidStartNanos, 0, 1_000_000_000);
+        }
     }
 }

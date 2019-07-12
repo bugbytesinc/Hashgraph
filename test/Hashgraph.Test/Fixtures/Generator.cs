@@ -1,4 +1,5 @@
-﻿using NSec.Cryptography;
+﻿using Hashgraph.Implementation;
+using NSec.Cryptography;
 using System;
 using System.Security.Cryptography;
 
@@ -72,6 +73,28 @@ namespace Hashgraph.Test.Fixtures
         public static ReadOnlyMemory<byte> SHA384Hash()
         {
             return new SHA384Managed().ComputeHash(KeyPair().publicKey.ToArray());
+        }
+        public static Proto.TransactionID TransactionID()
+        {
+            var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(false);
+            var realmNum = Generator.Integer(0, 200);
+            var shardNum = Generator.Integer(0, 200);
+            var accountNum = Generator.Integer(0, 200);
+            return new Proto.TransactionID
+            {
+                AccountID = new Proto.AccountID
+                {
+                    RealmNum = realmNum,
+                    ShardNum = shardNum,
+                    AccountNum = accountNum
+                },
+                TransactionValidStart = new Proto.Timestamp
+                {
+                    Seconds = seconds,
+                    Nanos = nanos,
+                }
+            };
+
         }
     }
 }

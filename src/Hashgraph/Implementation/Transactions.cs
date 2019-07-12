@@ -164,7 +164,7 @@ namespace Hashgraph
             }
             catch (RpcException rpcex)
             {
-                throw new PrecheckException($"Unable to communicate with network: {rpcex.Status}", new TxId(ReadOnlyMemory<byte>.Empty), ResponseCode.Unknown, rpcex);
+                throw new PrecheckException($"Unable to communicate with network: {rpcex.Status}", new TxId(), ResponseCode.Unknown, rpcex);
             }
         }
 

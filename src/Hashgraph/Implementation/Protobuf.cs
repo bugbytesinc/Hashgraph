@@ -14,17 +14,28 @@ namespace Hashgraph.Implementation
     /// protobuf messages.
     /// </summary>
     internal static class Protobuf
-    {
+    {        
         internal static TxId FromTransactionId(TransactionID transactionId)
         {
-            return new TxId(transactionId.ToByteArray());
+            return new TxId
+            {
+                Address = FromAccountID(transactionId.AccountID),
+                ValidStartSeconds = transactionId.TransactionValidStart.Seconds,
+                ValidStartNanos = transactionId.TransactionValidStart.Nanos
+            };
         }
-
         internal static TransactionID ToTransactionID(TxId transaction)
         {
-            return TransactionID.Parser.ParseFrom((transaction as IData).Data.ToArray());
+            return new TransactionID
+            {
+                AccountID = ToAccountID(transaction.Address),
+                TransactionValidStart = new Timestamp
+                {
+                    Seconds = transaction.ValidStartSeconds,
+                    Nanos = transaction.ValidStartNanos
+                }
+            };
         }
-
         internal static AccountID ToAccountID(Address address)
         {
             return new AccountID

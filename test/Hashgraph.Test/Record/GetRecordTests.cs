@@ -32,6 +32,7 @@ namespace Hashgraph.Test.Record
             Assert.NotNull(record.Concensus);
             Assert.Equal("Transfer Crypto", record.Memo);
             Assert.InRange(record.Fee, 0UL, 100_000UL);
+            Assert.Equal(_network.Payer, record.Id.Address);
         }
         [Fact(DisplayName = "Get Record: Empty Transaction ID throws error.")]
         public async Task EmptyTransactionIdThrowsError()
