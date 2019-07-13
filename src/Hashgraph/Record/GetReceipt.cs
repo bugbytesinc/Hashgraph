@@ -30,7 +30,8 @@ namespace Hashgraph
                 case ResponseCodeEnum.Busy:
                     throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", Protobuf.FromTransactionId(transactionId), (ResponseCode)responseCode);
                 case ResponseCodeEnum.Unknown:
-                    throw new TransactionException($"Network failed return a transaction receipt, Status Code Returned: {response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode}", Protobuf.FromTransactionId(transactionId), (ResponseCode)responseCode);
+                case ResponseCodeEnum.ReceiptNotFound:
+                    throw new TransactionException($"Network failed return a transaction receipt, Status Code Returned: {responseCode}", Protobuf.FromTransactionId(transactionId), (ResponseCode)responseCode);
             }
             var status = response.TransactionGetReceipt.Receipt.Status;
             switch (status)

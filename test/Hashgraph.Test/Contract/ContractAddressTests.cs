@@ -58,7 +58,7 @@ namespace Hashgraph.Test.Contract
 
             Assert.Equal(fx.Record.Address, address);
         }
-        [Fact(DisplayName = "Contract Address: Invalid Smart Contract ID raises Error, but not the expected type (IS THIS A NETWORK BUG?)")]
+        [Fact(DisplayName = "Contract Address: Invalid Smart Contract ID raises Error")]
         public async Task InvalidSmartContractIDRaisesError()
         {
             await using var client = _network.NewClient();
