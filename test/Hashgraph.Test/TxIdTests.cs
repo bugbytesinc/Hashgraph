@@ -1,6 +1,7 @@
 ﻿using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
 using Proto;
+using System;
 using Xunit;
 
 namespace Hashgraph.Tests
@@ -56,6 +57,33 @@ namespace Hashgraph.Tests
             Assert.Equal(new Address(0, 0, 0), empty.Address);
             Assert.Equal(0, empty.ValidStartSeconds);
             Assert.Equal(0, empty.ValidStartNanos);
+        }
+        [Fact(DisplayName = "TxId: Can Create a Transaction Id Mannually with Seconds and Nanos")]
+        public void CreateManuallyWithSecondsAndNanos()
+        {
+            var address = new Address(Generator.Integer(0, 10), Generator.Integer(0, 10), Generator.Integer(10, 20));
+            var totalNanos = Epoch.UniqueClockNanosAfterDrift();
+            var seconds = totalNanos / 1_000_000_000;
+            var nanos = (int)(totalNanos % 1_000_000_000);
+
+            var txId = new TxId(address, seconds, nanos);
+
+            Assert.Equal(address, txId.Address);
+            Assert.Equal(seconds, txId.ValidStartSeconds);
+            Assert.Equal(nanos, txId.ValidStartNanos);
+        }
+        [Fact(DisplayName = "TxId: Can Create a Transaction Id Mannually with DateTime")]
+        public void CreateManuallyWithDateTime()
+        {
+            var address = new Address(Generator.Integer(0, 10), Generator.Integer(0, 10), Generator.Integer(10, 20));
+            var dateTime = DateTime.UtcNow;
+            var (seconds, nanos) = Epoch.FromDate(dateTime);
+
+            var txId = new TxId(address, dateTime);
+
+            Assert.Equal(address, txId.Address);
+            Assert.Equal(seconds, txId.ValidStartSeconds);
+            Assert.Equal(nanos, txId.ValidStartNanos);
         }
     }
 }
