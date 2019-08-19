@@ -36,7 +36,7 @@
         public static long GetTransactionRecord_AddClaim = 1;
         public static long GetTransactionRecord_CallContract = 9;
         public static long GetTransactionRecord_DeleteFile = 7;
-        public static long GetTransactionRecord_UpdateFile = 1;
+        public static long GetTransactionRecord_UpdateFile = 8;
         public static long GetTransactionRecord_DeleteClaim = 1;
     }
 }
