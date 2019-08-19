@@ -67,7 +67,7 @@ namespace Hashgraph
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create File");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create File");
             transactionBody.FileCreate = new FileCreateTransactionBody
             {
                 ExpirationTime = Protobuf.ToTimestamp(createParameters.Expiration),
@@ -85,7 +85,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is FileRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_CreateFile);
                 Protobuf.FillRecordProperties(record, rec);
                 rec.File = Protobuf.FromFileID(receipt.FileID);
             }

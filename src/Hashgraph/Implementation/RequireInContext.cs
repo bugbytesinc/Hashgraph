@@ -28,5 +28,15 @@ namespace Hashgraph.Implementation
             }
             return gateway;
         }
+
+        internal static long QueryFee(ContextStack context, long requiredFee)
+        {
+            var feeLimit = context.FeeLimit;
+            if(feeLimit < requiredFee)
+            {
+                throw new InvalidOperationException($"The user specified fee limit is not enough for the anticipated query required fee of {requiredFee:n0} tinybars.");
+            }
+            return requiredFee;
+        }
     }
 }

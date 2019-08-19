@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,15 +22,10 @@ namespace Hashgraph.Test.Fixtures
             var test = new TestFile();
             test.Network = networkCredentials;
             test.Network.Output?.WriteLine("STARTING SETUP: Test File Instance");
-            test.Contents = Encoding.Unicode.GetBytes("Hello Hashgraph " + Generator.Code(50));
+            test.Contents = Encoding.Unicode.GetBytes("Hello From .NET" + Generator.Code(50)).Take(48).ToArray();
             (test.PublicKey, test.PrivateKey) = Generator.KeyPair();
-            test.Expiration = Generator.TruncatedFutureDate(2, 4);
-            test.Payer = new Account(
-                    networkCredentials.AccountRealm,
-                    networkCredentials.AccountShard,
-                    networkCredentials.AccountNumber,
-                    networkCredentials.PrivateKey,
-                    test.PrivateKey);
+            test.Expiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddDays(30));
+            test.Payer = networkCredentials.PayerWithKeys(networkCredentials.PrivateKey, test.PrivateKey);
             test.Client = networkCredentials.NewClient();
             test.Client.Configure(ctx => { ctx.Payer = test.Payer; });
             test.Record = await test.Client.CreateFileWithRecordAsync(new CreateFileParams

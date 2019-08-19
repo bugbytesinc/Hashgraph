@@ -15,7 +15,7 @@ namespace Hashgraph.Test.Claims
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Add Claim: Can Add a Claim")]
+        [Fact(DisplayName = "Add Claim: Can Add a Claim: NOT SUPPORTED")]
         public async Task CanCreateAClaimAsync()
         {
             await using var test = await TestAccount.CreateAsync(_network);
@@ -30,11 +30,20 @@ namespace Hashgraph.Test.Claims
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
             };
 
-            var receipt = await test.Client.AddClaimAsync(claim, ctx =>
+            // Temporary until Functionality is Restored
+            Assert.Equal(ResponseCode.NotSupported, (await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                ctx.Payer = _network.PayerWithKeys(privateKey1, privateKey2);
-            });
-            Assert.Equal(ResponseCode.Success, receipt.Status);
+                var receipt = await test.Client.AddClaimAsync(claim, ctx =>
+                {
+                    ctx.Payer = _network.PayerWithKeys(privateKey1, privateKey2);
+                });
+            })).Status);
+
+            //var receipt = await test.Client.AddClaimAsync(claim, ctx =>
+            //{
+            //    ctx.Payer = _network.PayerWithKeys(privateKey1, privateKey2);
+            //});
+            //Assert.Equal(ResponseCode.Success, receipt.Status);
         }
         [Fact(DisplayName = "Add Claim: Adding claim without address raises error")]
         public async Task AddingClaimWithoutAddressThrowsError()
@@ -182,7 +191,7 @@ namespace Hashgraph.Test.Claims
             Assert.Equal("ClaimDuration", exception.ParamName);
             Assert.StartsWith("Claim Duration must have some length.", exception.Message);
         }
-        [Fact(DisplayName = "Add Claim: Adding claim without all signatures throws error")]
+        [Fact(DisplayName = "Add Claim: Adding claim without all signatures throws error: NOT SUPPORTED")]
         public async Task AddingClaimWithoutAllSignaturesThrowsError()
         {
             await using var test = await TestAccount.CreateAsync(_network);
@@ -197,15 +206,24 @@ namespace Hashgraph.Test.Claims
                 ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
             };
 
-            var exception = await Assert.ThrowsAsync<TransactionException>(async () =>
+            // Temporary until Functionality is Restored
+            Assert.Equal(ResponseCode.NotSupported, (await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
                     ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
                 });
-            });
-            Assert.Equal(ResponseCode.InvalidSignature, exception.Status);
-            Assert.StartsWith("Unable to attach claim, status: InvalidSignature", exception.Message);
+            })).Status);
+
+            //var exception = await Assert.ThrowsAsync<TransactionException>(async () =>
+            //{
+            //    await test.Client.AddClaimAsync(claim, ctx =>
+            //    {
+            //        ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
+            //    });
+            //});
+            //Assert.Equal(ResponseCode.InvalidSignature, exception.Status);
+            //Assert.StartsWith("Unable to attach claim, status: InvalidSignature", exception.Message);
         }
     }
 }

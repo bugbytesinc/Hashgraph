@@ -28,6 +28,6 @@ namespace Hashgraph
         /// contract attemps to return more information than the max allowed size
         /// it will fail.
         /// </summary>
-        public long MaxAllowedReturnSize { get; set; } = 100;
+        public long MaxAllowedReturnSize { get; set; } = 256;
     }
 }

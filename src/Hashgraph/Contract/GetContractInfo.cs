@@ -29,16 +29,11 @@ namespace Hashgraph
         {
             contract = RequireInputParameter.Contract(contract);
             var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Contract Info");
             var query = new Query
             {
                 ContractGetInfo = new ContractGetInfoQuery
                 {
-                    Header = Transactions.SignQueryHeader(transactionBody, payer),
+                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetContractInfo, "Get Contract Info", out var transactionId),
                     ContractID = Protobuf.ToContractID(contract)
                 }
             };

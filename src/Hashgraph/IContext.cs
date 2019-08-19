@@ -50,6 +50,7 @@ namespace Hashgraph
         /// Flag indicating that network requests should generate a signed 
         /// network record for the transaction.
         /// </summary>
+        [Obsolete("Generate Record Flag has been deprecated and will soon be removed.")]
         bool GenerateRecord { get; set; }
         /// <summary>
         /// If set to <code>true</code> the library client will automatically

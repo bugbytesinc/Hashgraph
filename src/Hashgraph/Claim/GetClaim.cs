@@ -31,21 +31,18 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<Claim> GetClaimAsync(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null)
+        /// 
+        /// <remarks>Marked Internal Because functionality removed from testnet</remarks>
+        internal async Task<Claim> GetClaimAsync(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null)
         {
             address = RequireInputParameter.Address(address);
             hash = RequireInputParameter.Hash(hash);
             var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Claim Info");
             var query = new Query
             {
                 CryptoGetClaim = new CryptoGetClaimQuery
                 {
-                    Header = Transactions.SignQueryHeader(transactionBody, payer),
+                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetClaim, "Get Claim Info", out var transactionId),
                     AccountID = Protobuf.ToAccountID(address),
                     Hash = ByteString.CopyFrom(hash.ToArray())
                 }

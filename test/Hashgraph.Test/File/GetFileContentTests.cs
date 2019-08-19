@@ -22,5 +22,15 @@ namespace Hashgraph.Test.File
             var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
             Assert.Equal(test.Contents, retrievedContents.ToArray());
         }
+        [Fact(DisplayName = "File Content: Get File Content Requires a Fee")]
+        public async Task RequiresAFee()
+        {
+            await using var test = await TestFile.CreateAsync(_network);
+
+            var txId = Generator.GenerateTxId(_network.Payer);
+            var contents = await test.Client.GetFileContentAsync(test.Record.File, ctx => ctx.Transaction = txId);
+            var record = await test.Client.GetTransactionRecordAsync(txId);
+            Assert.True(record.Transfers[_network.Payer] < 0);
+        }
     }
 }

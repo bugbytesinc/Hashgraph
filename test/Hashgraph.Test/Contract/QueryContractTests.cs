@@ -69,24 +69,23 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.LocalCallModificationException, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: LocalCallModificationException", pex.Message);
         }
-        [Fact(DisplayName = "Query Contract: MaxAllowedReturnSize Is not presently implemented. (IS THIS A NETWORK BUG?)")]
-        public async Task MaxAllowedReturnSizeDoesNothing()
+        [Fact(DisplayName = "Query Contract: MaxAllowedReturnSize Is Enforced.")]
+        public async Task MaxAllowedReturnSizeIsEnforced()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var result = await fx.Client.QueryContractAsync(new QueryContractParams
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                Contract = fx.ContractRecord.Contract,
-                Gas = 30_000,
-                FunctionName = "greet",
-                MaxAllowedReturnSize = 1
+                await fx.Client.QueryContractAsync(new QueryContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    Gas = 30_000,
+                    FunctionName = "greet",
+                    MaxAllowedReturnSize = 1
+                });
             });
-            Assert.NotNull(result);
-            Assert.Empty(result.Error);
-            Assert.True(result.Bloom.IsEmpty);
-            Assert.InRange(result.Gas, 0UL, 30_000UL);
-            Assert.Empty(result.Events);
-            Assert.Equal("Hello, world!", result.Result.As<string>());
+            Assert.Equal(ResponseCode.ResultSizeLimitExceeded, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: ResultSizeLimitExceeded", pex.Message);
         }
     }
 }

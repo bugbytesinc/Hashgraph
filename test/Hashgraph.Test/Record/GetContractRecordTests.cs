@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Test.Fixtures;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,44 +16,72 @@ namespace Hashgraph.Test.Record
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Contract Records: Contract with no records returns no records.")]
-        public async Task ContractWithNoRecords()
+        [Fact(DisplayName = "Contract Records: Creating a Contract leaves a record that can be retrieved.")]
+        public async Task CanRetrieveRecordFromContractCreate()
         {
-            await using var fx = await StatefulContract.CreateAsync(_network);
+            await using var fxContract = await StatefulContract.CreateAsync(_network);
+            var records = await fxContract.Client.GetContractRecordsAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(records);
+            Assert.Single(records);
+            var record = records[0];
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.Equal(fxContract.ContractRecord.Id, record.Id);
+            Assert.InRange(record.Fee, 0UL, 833_333_334UL);
+            Assert.StartsWith("Stateful Contract Create: Instantiating Stateful Instance", record.Memo);
+            Assert.NotNull(record.Concensus);
+            Assert.False(record.Hash.IsEmpty);
+        }
+        [Fact(DisplayName = "Contract Records: Calling Contract Method creates record that can be retrieved.")]
+        public async Task CanRetrieveRecordsFromContractMethodCalls()
+        {
+            await using var fxContract = await StatefulContract.CreateAsync(_network);
 
             var transactionCount = Generator.Integer(2, 5);
             for (int i = 0; i < transactionCount; i++)
             {
-                await fx.Client.CallContractWithRecordAsync(new CallContractParams
+                await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
                 {
-                    Contract = fx.ContractRecord.Contract,
+                    Contract = fxContract.ContractRecord.Contract,
                     Gas = 30_000,
                     FunctionName = "get_message"
                 });
             }
-            var records = await fx.Client.GetContractRecordsAsync(fx.ContractRecord.Contract);
+            var records = await fxContract.Client.GetContractRecordsAsync(fxContract.ContractRecord.Contract);
             Assert.NotNull(records);
-            Assert.Empty(records);
+            Assert.Equal(transactionCount+1, records.Length);            
+            foreach( var record in records.Skip(1))
+            {
+                Assert.Equal(ResponseCode.Success, record.Status);
+                Assert.InRange(record.Fee, 0UL, 41_666_667UL);
+                Assert.Equal("Call Contract", record.Memo);
+                Assert.NotNull(record.Concensus);
+                Assert.False(record.Hash.IsEmpty);
+            }
         }
-        [Fact(DisplayName = "Contract Records: Casting Account Address as Contract returns no records (IS THIS A NETWORK BUG?)")]
-        public async Task CanGetTransactionRecordsForAccount()
+        [Fact(DisplayName = "Contract Records: Casting Account Address as Contract Raises an Error")]
+        public async Task GetTransactionRecordsForAccountViaGetContractRecordsRaisesError()
         {
-            await using var fx = await TestAccount.CreateAsync(_network);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
 
+            var cryptoTransferFee = 83_333_334;
+            var transferAmount = Generator.Integer(200, 500);
             var transactionCount = Generator.Integer(2, 5);
-            var childAccount = new Account(fx.Record.Address, fx.PrivateKey);
+            var childAccount = new Account(fxAccount.Record.Address, fxAccount.PrivateKey);
             var parentAccount = _network.Payer;
-            await fx.Client.TransferAsync(parentAccount, childAccount, transactionCount * 100001);
-            await using (var client = fx.Client.Clone(ctx => ctx.Payer = childAccount))
+            await fxAccount.Client.TransferAsync(parentAccount, childAccount, transactionCount * (cryptoTransferFee + transferAmount));
+            await using (var client = fxAccount.Client.Clone(ctx => ctx.Payer = childAccount))
             {
                 for (int i = 0; i < transactionCount; i++)
                 {
-                    await client.TransferAsync(childAccount, parentAccount, 1);
+                    await client.TransferAsync(childAccount, parentAccount, transferAmount, ctx => { ctx.FeeLimit = cryptoTransferFee; });
                 }
             }
-            var records = await fx.Client.GetContractRecordsAsync(childAccount);
-            Assert.NotNull(records);
-            Assert.Empty(records);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await fxAccount.Client.GetContractRecordsAsync(childAccount);
+            });
+            Assert.Equal(ResponseCode.InvalidContractId, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);
         }
         [Fact(DisplayName = "Contract Records: Get with Empty Contract address raises Error.")]
         public async Task EmptyAccountRaisesError()

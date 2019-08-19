@@ -76,7 +76,7 @@ namespace Hashgraph.Test.Record
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
             Assert.Equal("Call Contract", record.Memo);
-            Assert.InRange(record.Fee, 0UL, 100_000UL);
+            Assert.InRange(record.Fee, 0UL, 30_000_000UL);
         }
     }
 }

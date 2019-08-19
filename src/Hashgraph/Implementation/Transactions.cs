@@ -65,7 +65,7 @@ namespace Hashgraph
             }
             return transfers;
         }
-        internal static TransactionBody CreateEmptyTransactionBody(ContextStack context, TransactionID transactionId, string defaultMemo)
+        internal static TransactionBody CreateTransactionBody(ContextStack context, TransactionID transactionId, string defaultMemo)
         {
             return new TransactionBody
             {
@@ -77,11 +77,26 @@ namespace Hashgraph
                 Memo = context.Memo ?? defaultMemo ?? "",
             };
         }
-        internal static TransactionBody CreateCryptoTransferTransactionBody(ContextStack context, TransferList transfers, TransactionID transactionId, string defaultMemo)
+        internal static QueryHeader CreateAndSignQueryHeader(ContextStack context, long queryFee, string defaultMemo, out TransactionID transactionId)
         {
-            var body = CreateEmptyTransactionBody(context, transactionId, defaultMemo);
-            body.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
-            return body;
+            var gateway = RequireInContext.Gateway(context);
+            var payer = RequireInContext.Payer(context);
+            var fee = RequireInContext.QueryFee(context, queryFee);
+            transactionId = GetOrCreateTransactionID(context);
+            TransactionBody transactionBody = new TransactionBody
+            {
+                TransactionID = transactionId,
+                NodeAccountID = Protobuf.ToAccountID(gateway),
+                TransactionFee = (ulong)context.FeeLimit,
+                TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
+                Memo = context.Memo ?? defaultMemo ?? "",
+            };
+            if (fee > 0)
+            {
+                var transfers = CreateCryptoTransferList((payer, -fee), (gateway, fee));
+                transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
+            }
+            return SignQueryHeader(transactionBody, payer);
         }
         internal static Proto.Transaction SignTransaction(TransactionBody transactionBody, params ISigner[] signers)
         {

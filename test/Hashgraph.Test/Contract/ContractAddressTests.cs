@@ -21,7 +21,7 @@ namespace Hashgraph.Test.Contract
 
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
 
-            var address = await fx.Client.GetAddressFromSmartContractId(info.SmartContractId);
+            var address = await fx.Client.GetAddressFromSmartContractIdAsync(info.SmartContractId);
 
             Assert.Equal(fx.ContractRecord.Contract, address);
         }
@@ -32,7 +32,7 @@ namespace Hashgraph.Test.Contract
 
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
 
-            var address = await fx.Client.GetAddressFromSmartContractId(info.SmartContractId);
+            var address = await fx.Client.GetAddressFromSmartContractIdAsync(info.SmartContractId);
 
             Assert.Equal(fx.ContractRecord.Contract, address);
         }
@@ -43,7 +43,7 @@ namespace Hashgraph.Test.Contract
 
             var info = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
 
-            var address = await fx.Client.GetAddressFromSmartContractId(info.SmartContractId);
+            var address = await fx.Client.GetAddressFromSmartContractIdAsync(info.SmartContractId);
 
             Assert.Equal(fx.Record.Address, address);
         }
@@ -54,7 +54,7 @@ namespace Hashgraph.Test.Contract
             var info = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             await fx.Client.DeleteAccountAsync(new Account(fx.Record.Address, fx.PrivateKey), _network.Payer);
 
-            var address = await fx.Client.GetAddressFromSmartContractId(info.SmartContractId);
+            var address = await fx.Client.GetAddressFromSmartContractIdAsync(info.SmartContractId);
 
             Assert.Equal(fx.Record.Address, address);
         }
@@ -65,7 +65,7 @@ namespace Hashgraph.Test.Contract
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await client.GetAddressFromSmartContractId("00000000000BOGUS000000000000000000000018c7");
+                await client.GetAddressFromSmartContractIdAsync("00000000000BOGUS000000000000000000000018c7");
             });
             Assert.StartsWith("Unable to communicate with network: Status(StatusCode=Unknown", pex.Message);
             Assert.NotNull(pex.InnerException);

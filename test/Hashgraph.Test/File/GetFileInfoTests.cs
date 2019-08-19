@@ -22,7 +22,7 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
-            Assert.Equal(test.Contents.Length + 30, info.Size);
+            Assert.Equal(test.Contents.Length, info.Size);
             Assert.Equal(test.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);

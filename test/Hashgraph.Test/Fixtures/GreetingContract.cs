@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Fixtures
             fx.Memo = "Greeting Contract Create: Instantiating Contract Instance " + Generator.Code(10);
             fx.FileParams = new CreateFileParams
             {
-                Expiration = Generator.TruncatedFutureDate(12, 24),
+                Expiration = Generator.TruncatedFutureDate(1, 2),
                 Endorsements = new Endorsement[] { networkCredentials.PublicKey },
                 Contents = Encoding.UTF8.GetBytes(GREETING_CONTRACT_BYTECODE)
             };

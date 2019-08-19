@@ -35,103 +35,69 @@ namespace Hashgraph.Test.Crypto
         [Fact(DisplayName = "Transfer: Can Send to New Account")]
         public async Task CanTransferCryptoToNewAccount()
         {
+            await using var fx = await TestAccount.CreateAsync(_network);
             var transferAmount = (long)Generator.Integer(10, 100);
-            var initialBalance = (ulong)Generator.Integer(10, 100);
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = initialBalance,
-                PublicKey = publicKey
-            });
-            var newBalance = await client.GetAccountBalanceAsync(createResult.Address);
-            Assert.Equal(initialBalance, newBalance);
+            var newBalance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance, newBalance);
 
-            var receipt = await client.TransferAsync(_network.Payer, createResult.Address, transferAmount);
-            var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
-            Assert.Equal(initialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
+            var receipt = await fx.Client.TransferAsync(_network.Payer, fx.Record.Address, transferAmount);
+            var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
         }
         [Fact(DisplayName = "Transfer: Can Get Transfer Record Showing Transfers")]
         public async Task CanGetTransferRecordShowingTransfers()
         {
+            await using var fx = await TestAccount.CreateAsync(_network);
             var transferAmount = (long)Generator.Integer(10, 100);
-            var initialBalance = (ulong)Generator.Integer(10, 100);
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = initialBalance,
-                PublicKey = publicKey
-            });
-            var newBalance = await client.GetAccountBalanceAsync(createResult.Address);
-            Assert.Equal(initialBalance, newBalance);
+            var newBalance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance, newBalance);
 
-            var record = await client.TransferWithRecordAsync(_network.Payer, createResult.Address, transferAmount);
+            var record = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, transferAmount);
             Assert.Equal(ResponseCode.Success, record.Status);
-            Assert.Equal(2, record.Transfers.Count);
-            Assert.Equal(-transferAmount, record.Transfers[_network.Payer]);
-            Assert.Equal(transferAmount, record.Transfers[createResult.Address]);
+            Assert.Equal(4, record.Transfers.Count);
+            Assert.Equal(-transferAmount - (long)record.Fee, record.Transfers[_network.Payer]);
+            Assert.Equal(transferAmount, record.Transfers[fx.Record.Address]);
 
-            var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
-            Assert.Equal(initialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
+            var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
         }
         [Fact(DisplayName = "Transfer: Can Send from New Account")]
         public async Task CanTransferCryptoFromNewAccount()
         {
-            var initialBalance = (ulong)Generator.Integer(10000, 100000);
-            var transferAmount = initialBalance / 2;
-            var (publicKey, privateKey) = Generator.KeyPair();
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = fx.CreateParams.InitialBalance / 2;
             await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = initialBalance,
-                PublicKey = publicKey
-            });
-            var newAccount = new Account(createResult.Address.RealmNum, createResult.Address.ShardNum, createResult.Address.AccountNum, privateKey);
-            var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(initialBalance, info.Balance);
-            Assert.Equal(new Endorsement(publicKey), info.Endorsement);
+            var newAccount = new Account(fx.Record.Address, fx.PrivateKey);
+            var info = await client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance, info.Balance);
+            Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
 
             var receipt = await client.TransferAsync(newAccount, _network.Payer, (long)transferAmount);
-            var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
-            Assert.Equal(initialBalance - (ulong)transferAmount, newBalanceAfterTransfer);
+            var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, newBalanceAfterTransfer);
         }
         [Fact(DisplayName = "Transfer: Can Drain All Crypto from New Account")]
         public async Task CanTransferAllCryptoFromNewAccount()
         {
-            var initialBalance = (ulong)Generator.Integer(10000, 100000);
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = initialBalance,
-                PublicKey = publicKey
-            });
-            var newAccount = new Account(createResult.Address.RealmNum, createResult.Address.ShardNum, createResult.Address.AccountNum, privateKey);
-            var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(initialBalance, info.Balance);
-            Assert.Equal(new Endorsement(publicKey), info.Endorsement);
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var newAccount = new Account(fx.Record.Address, fx.PrivateKey);
+            var info = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance, info.Balance);
+            Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
 
-            var receipt = await client.TransferAsync(newAccount, _network.Payer, (long)initialBalance);
-            var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(createResult.Address);
+            var receipt = await fx.Client.TransferAsync(newAccount, _network.Payer, (long)fx.CreateParams.InitialBalance, ctx=>ctx.FeeLimit = 1000000); ;
+            var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(0UL, newBalanceAfterTransfer);
         }
         [Fact(DisplayName = "Transfer: Insufficient Funds Throws Error")]
         public async Task InsufficientFundsThrowsError()
         {
-            var initialBalance = (ulong)Generator.Integer(10, 100);
-            var transferAmount = (long)(initialBalance * 2);
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _network.NewClient();
-            var address = (await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = initialBalance,
-                PublicKey = publicKey
-            })).Address;
-            var account = new Account(address.RealmNum, address.ShardNum, address.AccountNum, privateKey);
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = (long)(fx.CreateParams.InitialBalance * 2);
+            var account = new Account(fx.Record.Address, fx.PrivateKey);
             var exception = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await client.TransferAsync(account, _network.Payer, transferAmount);
+                await fx.Client.TransferAsync(account, _network.Payer, transferAmount);
             });
             Assert.StartsWith("Unable to execute crypto transfer, status: InsufficientAccountBalance", exception.Message);
             Assert.NotNull(exception.TxId);
@@ -140,25 +106,18 @@ namespace Hashgraph.Test.Crypto
         [Fact(DisplayName = "Transfer: Insufficient Fee Throws Error")]
         public async Task InsufficientFeeThrowsError()
         {
-            var initialBalance = (ulong)Generator.Integer(10, 100);
-            var transferAmount = (long)(initialBalance / 2);
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _network.NewClient();
-            var address = (await client.CreateAccountAsync(new CreateAccountParams
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = (long)(fx.CreateParams.InitialBalance / 2);
+            var account = new Account(fx.Record.Address, fx.PrivateKey);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                InitialBalance = initialBalance,
-                PublicKey = publicKey
-            })).Address;
-            var account = new Account(address.RealmNum, address.ShardNum, address.AccountNum, privateKey);
-            var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await client.TransferAsync(account, _network.Payer, transferAmount, ctx =>
+                await fx.Client.TransferAsync(account, _network.Payer, transferAmount, ctx =>
                 {
                     ctx.FeeLimit = 1;
                 });
             });
-            Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", exception.Message);
-            Assert.Equal(ResponseCode.InsufficientTxFee, exception.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", pex.Message);
+            Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
         }
         [Fact(DisplayName = "Transfer: Can Send and Receive multiple accounts in single transaction.")]
         public async Task CanSendAndReceiveMultipleAccounts()
@@ -181,7 +140,7 @@ namespace Hashgraph.Test.Crypto
 
             sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
             receiveAddresses = new Dictionary<Address, long> { { payer, 2 * transferAmount } };
-            var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
+            var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx=>ctx.FeeLimit = 1_000_000);
             Assert.Equal(ResponseCode.Success, returnRecord.Status);
 
             Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
@@ -220,7 +179,7 @@ namespace Hashgraph.Test.Crypto
             var sendAccounts = new Dictionary<Account, long> { { payer, 3 * transferAmount } };
             var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount }, { payer, transferAmount } };
 
-            var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
+            var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx => ctx.FeeLimit = 1_000_000);
             Assert.Equal(ResponseCode.Success, sendRecord.Status);
 
             Assert.Equal((ulong)transferAmount + fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
@@ -228,7 +187,7 @@ namespace Hashgraph.Test.Crypto
 
             sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount }, { payer, transferAmount } };
             receiveAddresses = new Dictionary<Address, long> { { payer, 3 * transferAmount } };
-            var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
+            var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx => ctx.FeeLimit = 1_000_000);
             Assert.Equal(ResponseCode.Success, returnRecord.Status);
 
             Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
@@ -247,7 +206,7 @@ namespace Hashgraph.Test.Crypto
             var sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
             var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
 
-            var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
+            var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx => ctx.FeeLimit = 1_000_000);
             Assert.Equal(ResponseCode.Success, sendRecord.Status);
 
             Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
@@ -384,7 +343,7 @@ namespace Hashgraph.Test.Crypto
             var txId = receipt.Id;
             Assert.NotNull(txId);
             Assert.Equal(_network.Payer, txId.Address);
-            Assert.InRange(txId.ValidStartSeconds, lowerBound/1_000_000_000, upperBound/ 1_000_000_000);
+            Assert.InRange(txId.ValidStartSeconds, lowerBound / 1_000_000_000, upperBound / 1_000_000_000);
             Assert.InRange(txId.ValidStartNanos, 0, 1_000_000_000);
         }
         [Fact(DisplayName = "Transfer: Transaction ID Information Makes Sense for Record")]

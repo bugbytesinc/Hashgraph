@@ -213,6 +213,7 @@ namespace Hashgraph.Implementation
             result.Concensus = record.ConsensusTimestamp == null ? null : (DateTime?)Protobuf.FromTimestamp(record.ConsensusTimestamp);
             result.Memo = record.Memo;
             result.Fee = record.TransactionFee;
+            result.Transfers = FromTransferList(record.TransferList);
         }
         internal static ContractCallResult FromContractCallResult(ContractFunctionResult contractFunctionResult)
         {

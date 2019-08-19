@@ -20,6 +20,7 @@ namespace Hashgraph.Test.Contract
             await using var fx = await GreetingContract.CreateAsync(_network);
 
             var bytecode = await fx.Client.GetContractBytecodeAsync(fx.ContractRecord.Contract);
+            _network.Output.WriteLine($"Size {fx.FileParams.Contents.Length}");
             Assert.False(bytecode.IsEmpty);
         }
         [Fact(DisplayName = "Contract Bytecode: Can Get Stateful Contract Bytecode")]
@@ -28,6 +29,25 @@ namespace Hashgraph.Test.Contract
             await using var fx = await StatefulContract.CreateAsync(_network);
 
             var bytecode = await fx.Client.GetContractBytecodeAsync(fx.ContractRecord.Contract);
+
+            Assert.False(bytecode.IsEmpty);
+        }
+        [Fact(DisplayName = "Contract Bytecode: Can Get Event Emitting Contract Bytecode")]
+        public async Task CanGetEventEmittingContractBytecode()
+        {
+            await using var fx = await EventEmittingContract.CreateAsync(_network);
+
+            var bytecode = await fx.Client.GetContractBytecodeAsync(fx.ContractRecord.Contract);
+
+            Assert.False(bytecode.IsEmpty);
+        }
+        [Fact(DisplayName = "Contract Bytecode: Can Get Event Payable Contract Bytecode")]
+        public async Task CanGetEventPayableContractBytecode()
+        {
+            await using var fx = await PayableContract.CreateAsync(_network);
+
+            var bytecode = await fx.Client.GetContractBytecodeAsync(fx.ContractRecord.Contract);
+
             Assert.False(bytecode.IsEmpty);
         }
         [Fact(DisplayName = "Contract Bytecode: Retrieving Non Existent Contract Bytecode Raises Error")]

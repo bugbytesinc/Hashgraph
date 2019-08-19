@@ -15,7 +15,7 @@ namespace Hashgraph.Test.Claims
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Delete Claim: Can Delete a Claim, but sometimes network if flaky (IS THIS A NETWORK BUG?)")]
+        [Fact(DisplayName = "Delete Claim: Can Delete a Claim, but sometimes network if flaky (IS THIS A NETWORK BUG?): NOT SUPPORTED")]
         public async Task CanDeleteAClaimAsync()
         {
             await using var test = await TestAccount.CreateAsync(_network);
@@ -28,48 +28,61 @@ namespace Hashgraph.Test.Claims
                 ClaimDuration = TimeSpan.FromTicks(Generator.TruncatedFutureDate(24, 48).Ticks)
             };
 
-            var addReceipt = await test.Client.AddClaimAsync(claim);
-            Assert.Equal(ResponseCode.Success, addReceipt.Status);
-
-            for(int tryNo =0; tryNo < 50; tryNo ++ )
+            // Temporary until Functionality is Restored
+            Assert.Equal(ResponseCode.NotSupported, (await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                try
-                {
-                    var deleteReceipt = await test.Client.DeleteClaimAsync(claim.Address, claim.Hash);
-                    Assert.NotNull(deleteReceipt);
-                    Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
-                    if (tryNo > 0)
-                    {
-                        _network.Output?.WriteLine($"NETWORK SUCCESS: Finally Worked, was able to get find/delete claim after {tryNo} retries.");
-                    }
-                    var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-                    {
-                        await test.Client.GetClaimAsync(claim.Address, claim.Hash);
-                    });
-                    Assert.Equal(ResponseCode.ClaimNotFound, pex.Status);
-                    Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", pex.Message);
-                    return;
-                }
-                catch (TransactionException tex) when (tex.Status == ResponseCode.InvalidSignature)
-                {
-                    _network.Output?.WriteLine($"NETWORK ERROR: Ran across intermitent Get Claim (for delete) Race Condition in Network, Retry:{tryNo}");
-                    _network.Output?.WriteLine(tex.StackTrace);
-                    await Task.Delay(100);
-                }
-            }
-            _network.Output?.WriteLine("NETWORK ERROR: Gave Up, network won't let us finish this test.");
+                var addReceipt = await test.Client.AddClaimAsync(claim);
+            })).Status);
+
+
+            //var addReceipt = await test.Client.AddClaimAsync(claim);
+            //Assert.Equal(ResponseCode.Success, addReceipt.Status);
+
+            //for(int tryNo =0; tryNo < 50; tryNo ++ )
+            //{
+            //    try
+            //    {
+            //        var deleteReceipt = await test.Client.DeleteClaimAsync(claim.Address, claim.Hash);
+            //        Assert.NotNull(deleteReceipt);
+            //        Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
+            //        if (tryNo > 0)
+            //        {
+            //            _network.Output?.WriteLine($"NETWORK SUCCESS: Finally Worked, was able to get find/delete claim after {tryNo} retries.");
+            //        }
+            //        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            //        {
+            //            await test.Client.GetClaimAsync(claim.Address, claim.Hash);
+            //        });
+            //        Assert.Equal(ResponseCode.ClaimNotFound, pex.Status);
+            //        Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", pex.Message);
+            //        return;
+            //    }
+            //    catch (TransactionException tex) when (tex.Status == ResponseCode.InvalidSignature)
+            //    {
+            //        _network.Output?.WriteLine($"NETWORK ERROR: Ran across intermitent Get Claim (for delete) Race Condition in Network, Retry:{tryNo}");
+            //        _network.Output?.WriteLine(tex.StackTrace);
+            //        await Task.Delay(100);
+            //    }
+            //}
+            //_network.Output?.WriteLine("NETWORK ERROR: Gave Up, network won't let us finish this test.");
         }
-        [Fact(DisplayName = "Delete Claim: Deleting non existant claim throws error.")]
+        [Fact(DisplayName = "Delete Claim: Deleting non existant claim throws error: NOT SUPPORTED")]
         public async Task DeletingNonExistantClaimThrowsError()
         {
             await using var client = _network.NewClient();
 
-            var excepiton = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            // Temporary until Functionality is Restored
+            Assert.Equal(ResponseCode.NotSupported, (await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await client.GetClaimAsync(_network.Payer, Generator.SHA384Hash());
-            });
-            Assert.Equal(ResponseCode.ClaimNotFound, excepiton.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", excepiton.Message);
+            })).Status);
+
+            //var excepiton = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            //{
+            //    await client.GetClaimAsync(_network.Payer, Generator.SHA384Hash());
+            //});
+            //Assert.Equal(ResponseCode.ClaimNotFound, excepiton.Status);
+            //Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", excepiton.Message);
         }
         [Fact(DisplayName = "Delete Claim: Deleting missing hash throws error.")]
         public async Task DeletingMissingHashThrowsError()

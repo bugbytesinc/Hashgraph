@@ -26,19 +26,14 @@ namespace Hashgraph
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<ulong> GetAccountBalanceAsync(Address address, Action<IContext>? configure = null)
-        {
+        {            
             address = RequireInputParameter.Address(address);
             var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Account Balance");
             var query = new Query
             {
                 CryptogetAccountBalance = new CryptoGetAccountBalanceQuery
                 {
-                    Header = Transactions.SignQueryHeader(transactionBody, payer),
+                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetAccountBalance, "Get Account Balance", out var transactionId),
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };

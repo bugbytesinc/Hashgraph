@@ -51,6 +51,10 @@ namespace Hashgraph.Test.Fixtures
             return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, DateTimeKind.Utc);
         }
 
+        public static DateTime TruncateToSeconds(DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, DateTimeKind.Utc);
+        }
         public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) KeyPair()
         {
             // public prefix:  302a300506032b6570032100 
@@ -95,6 +99,13 @@ namespace Hashgraph.Test.Fixtures
                 }
             };
 
+        }
+
+        public static TxId GenerateTxId(Address address)
+        {
+            var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(true);
+            var timestamp = Protobuf.FromTimestamp(new Proto.Timestamp { Seconds = seconds, Nanos = nanos });
+            return new TxId(address, timestamp);
         }
     }
 }

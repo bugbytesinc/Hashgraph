@@ -80,7 +80,7 @@ namespace Hashgraph
                 // that are unreachable and can't be "Reset".
                 parent = new ContextStack(null)
                 {
-                    FeeLimit = 100000,
+                    FeeLimit = 2_900_000_000,
                     TransactionDuration = TimeSpan.FromSeconds(120),
                     RetryCount = 5,
                     RetryDelay = TimeSpan.FromMilliseconds(200),

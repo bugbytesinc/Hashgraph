@@ -31,16 +31,11 @@ namespace Hashgraph
         {
             file = RequireInputParameter.File(file);
             var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get File Contents");
             var query = new Query
             {
                 FileGetContents = new FileGetContentsQuery
                 {
-                    Header = Transactions.SignQueryHeader(transactionBody, payer),
+                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetFileContent, "Get File Contents", out var transactionId),
                     FileID = Protobuf.ToFileId(file)
                 }
             };

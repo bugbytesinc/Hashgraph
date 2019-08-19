@@ -68,7 +68,7 @@ namespace Hashgraph
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create Contract");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Contract");
             transactionBody.ContractCreateInstance = new ContractCreateTransactionBody
             {
                 FileID = Protobuf.ToFileId(createParameters.File),
@@ -90,7 +90,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is ContractRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_CreateContract);
                 Protobuf.FillRecordProperties(record, rec);
                 rec.Contract = Protobuf.FromContractID(receipt.ContractID);
             }

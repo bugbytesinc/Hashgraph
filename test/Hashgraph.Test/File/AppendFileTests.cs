@@ -24,7 +24,7 @@ namespace Hashgraph.Test.File
             var appendedContent = Encoding.Unicode.GetBytes(Generator.Code(50));
             var concatinatedContent = test.Contents.Concat(appendedContent).ToArray();
 
-            var appendRecord = await test.Client.AppendFileAsync(new AppendFileParams
+            var appendRecord = await test.Client.AppendFileWithRecordAsync(new AppendFileParams
             {
                 File = test.Record.File,
                 Contents = appendedContent

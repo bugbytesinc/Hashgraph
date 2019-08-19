@@ -44,7 +44,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(newMemo, info.Memo);
         }
 
-        [Fact(DisplayName = "Contract Update: Update Expiration Fails, but returns Success (IS THIS A NETWORK BUG?)")]
+        [Fact(DisplayName = "Contract Update: Can Update Expiration Date")]
         public async Task UpdateContractExpirationDate()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
@@ -60,10 +60,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(info);
             Assert.Equal(fx.ContractRecord.Contract, info.Contract);
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
-            // This is what it should be.
-            //Assert.Equal(newExpiration, info.Expiration);
-            // This is what it is
-            Assert.Equal(oldExpiration, info.Expiration);
+            Assert.Equal(newExpiration, info.Expiration);
             Assert.Equal(_network.PublicKey, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
@@ -240,7 +237,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
             var newMemo = Generator.Code(50);
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
@@ -248,8 +245,8 @@ namespace Hashgraph.Test.Contract
                     Memo = newMemo
                 });
             });
-            Assert.Equal(ResponseCode.InvalidContractId, tex.Status);
-            Assert.StartsWith("Unable to update Contract, status: InvalidContractId", tex.Message);
+            Assert.Equal(ResponseCode.InvalidContractId, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);
         }
         [Fact(DisplayName = "Contract Update: Updating invalid duration raises error.")]
         public async Task UpdateWithInvalidDurationRaisesError()
