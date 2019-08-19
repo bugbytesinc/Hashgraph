@@ -16,7 +16,7 @@ namespace Hashgraph.Test.Claims
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Get Claim: Can Reterieve a Claim, but admin keys are wrong (IS THIS A NETWORK BUG?)")]
+        [Fact(DisplayName = "Get Claim: Can Reterieve a Claim, but admin keys are wrong (IS THIS A NETWORK BUG?): NOT SUPPORTED")]
         public async Task CanRetriveAClaimAsync()
         {
             await using var accountFx = await TestAccount.CreateAsync(_network);
@@ -36,38 +36,44 @@ namespace Hashgraph.Test.Claims
                 ctx.Payer = _network.PayerWithKeys(privateKey1, privateKey2);
             });
 
-            var receipt = await accountFx.Client.AddClaimAsync(claim);
-            Assert.Equal(ResponseCode.Success, receipt.Status);
-
-            for (int tryNo = 0; tryNo < 20; tryNo++)
+            // Temporary until Functionality is Restored
+            Assert.Equal(ResponseCode.NotSupported, (await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                try
-                {
-                    var copy = await accountFx.Client.GetClaimAsync(claim.Address, claim.Hash);
-                    Assert.NotNull(copy);
-                    // We cannot do this because of a
-                    // network bug
-                    //Assert.Equal(claim, copy);
-                    // instead we must do this:
-                    Assert.Equal(claim.Address, copy.Address);
-                    Assert.Equal(claim.Hash.ToArray(), copy.Hash.ToArray());
-                    Assert.Equal(new Endorsement(claim.Endorsements), copy.Endorsements[0]); // Note: this is a bug in the network.
-                    Assert.Equal(claim.ClaimDuration, copy.ClaimDuration);
-                    if(tryNo>0)
-                    {
-                        _network.Output?.WriteLine($"NETWORK SUCCESS: Finally Worked, was able to get the claim after {tryNo} retries.");
-                    }
-                    return;
-                }
-                catch (PrecheckException pex) when (pex.Status == ResponseCode.ClaimNotFound)
-                {
-                    _network.Output?.WriteLine($"NETWORK ERROR: Ran across intermitent Get Claim Race Condition in Network, Retry:{tryNo}");
-                    _network.Output?.WriteLine(pex.StackTrace);
-                }
-            }
-            _network.Output?.WriteLine("NETWORK ERROR: Gave Up, network won't let us finish this test.");
+                var receipt = await accountFx.Client.AddClaimAsync(claim);
+            })).Status);
+
+            //var receipt = await accountFx.Client.AddClaimAsync(claim);
+            //Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            //for (int tryNo = 0; tryNo < 20; tryNo++)
+            //{
+            //    try
+            //    {
+            //        var copy = await accountFx.Client.GetClaimAsync(claim.Address, claim.Hash);
+            //        Assert.NotNull(copy);
+            //        // We cannot do this because of a
+            //        // network bug
+            //        //Assert.Equal(claim, copy);
+            //        // instead we must do this:
+            //        Assert.Equal(claim.Address, copy.Address);
+            //        Assert.Equal(claim.Hash.ToArray(), copy.Hash.ToArray());
+            //        Assert.Equal(new Endorsement(claim.Endorsements), copy.Endorsements[0]); // Note: this is a bug in the network.
+            //        Assert.Equal(claim.ClaimDuration, copy.ClaimDuration);
+            //        if(tryNo>0)
+            //        {
+            //            _network.Output?.WriteLine($"NETWORK SUCCESS: Finally Worked, was able to get the claim after {tryNo} retries.");
+            //        }
+            //        return;
+            //    }
+            //    catch (PrecheckException pex) when (pex.Status == ResponseCode.ClaimNotFound)
+            //    {
+            //        _network.Output?.WriteLine($"NETWORK ERROR: Ran across intermitent Get Claim Race Condition in Network, Retry:{tryNo}");
+            //        _network.Output?.WriteLine(pex.StackTrace);
+            //    }
+            //}
+            //_network.Output?.WriteLine("NETWORK ERROR: Gave Up, network won't let us finish this test.");
         }
-        [Fact(DisplayName = "Get Claim: Retrieving Non-Existent Claim throws")]
+        [Fact(DisplayName = "Get Claim: Retrieving Non-Existent Claim throws: NOT SUPPORTED")]
         public async Task RetriveAClaimThatDoesNotExistThrowsExcepiton()
         {
             await using var accountFx = await TestAccount.CreateAsync(_network);
@@ -87,12 +93,18 @@ namespace Hashgraph.Test.Claims
                 ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1, privateKey2);
             });
 
-            var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            // Temporary until Functionality is Restored
+            Assert.Equal(ResponseCode.NotSupported, (await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await accountFx.Client.GetClaimAsync(claim.Address, claim.Hash);
-            });
-            Assert.Equal(ResponseCode.ClaimNotFound, exception.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", exception.Message);
+                var receipt = await accountFx.Client.AddClaimAsync(claim);
+            })).Status);
+
+            //var exception = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            //{
+            //    await accountFx.Client.GetClaimAsync(claim.Address, claim.Hash);
+            //});
+            //Assert.Equal(ResponseCode.ClaimNotFound, exception.Status);
+            //Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", exception.Message);
         }
     }
 }

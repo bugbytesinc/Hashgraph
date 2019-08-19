@@ -70,7 +70,7 @@ namespace Hashgraph
                 Contents = ByteString.CopyFrom(appendParameters.Contents.ToArray())
             };
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Append File Content");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Append File Content");
             transactionBody.FileAppend = appendFileBody;
             var request = Transactions.SignTransaction(transactionBody, payer);
             var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
@@ -83,7 +83,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is TransactionRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_AppendFile);
                 Protobuf.FillRecordProperties(record, rec);
             }
             else if (result is TransactionReceipt rcpt)

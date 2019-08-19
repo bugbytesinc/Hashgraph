@@ -65,7 +65,7 @@ namespace Hashgraph
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Delete File");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Delete File");
             transactionBody.FileDelete = new FileDeleteTransactionBody
             {
                 FileID = Protobuf.ToFileId(fileToDelete)
@@ -81,7 +81,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is TransactionRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_DeleteFile);
                 Protobuf.FillRecordProperties(record, rec);
             }
             else if (result is TransactionReceipt rcpt)

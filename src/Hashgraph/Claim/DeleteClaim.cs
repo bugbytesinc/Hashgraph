@@ -31,7 +31,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteClaimAsync(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null)
+        /// 
+        /// <remarks>Marked Internal Because functionality removed from testnet</remarks>
+        internal Task<TransactionReceipt> DeleteClaimAsync(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null)
         {
             return DeleteClaimImplementationAsync<TransactionReceipt>(address, hash, configure);
         }
@@ -57,14 +59,16 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> DeleteClaimWithRecordAsync(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null)
+        /// 
+        /// <remarks>Marked Internal Because functionality removed from testnet</remarks>
+        internal Task<TransactionRecord> DeleteClaimWithRecordAsync(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null)
         {
             return DeleteClaimImplementationAsync<TransactionRecord>(address, hash);
         }
         /// <summary>
         /// Internal implementation of the Delete Claim Methods
         /// </summary>
-        public async Task<TResult> DeleteClaimImplementationAsync<TResult>(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null) where TResult : new()
+        private async Task<TResult> DeleteClaimImplementationAsync<TResult>(Address address, ReadOnlyMemory<byte> hash, Action<IContext>? configure = null) where TResult : new()
         {
             address = RequireInputParameter.Address(address);
             hash = RequireInputParameter.Hash(hash);
@@ -72,7 +76,7 @@ namespace Hashgraph
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Delete Claim");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Delete Claim");
             transactionBody.CryptoDeleteClaim = new CryptoDeleteClaimTransactionBody
             {
                 AccountIDToDeleteFrom = Protobuf.ToAccountID(address),
@@ -89,7 +93,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is TransactionRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_DeleteClaim);
                 Protobuf.FillRecordProperties(record, rec);
             }
             else if (result is TransactionReceipt rcpt)

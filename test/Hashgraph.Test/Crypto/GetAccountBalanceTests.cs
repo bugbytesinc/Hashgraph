@@ -75,37 +75,51 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.InvalidAccountId, ex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidAccount", ex.Message);
         }
-        [Fact(DisplayName = "Get Account Balance: Invalid Node Account Throws Exception")]
+        [Fact(DisplayName = "Get Account Balance: Gateway Node is Ignored because no Fee is Charged")]
         public async Task InvalidGatewayAddressThrowsException()
         {
             await using var client = _network.NewClient();
             client.Configure(cfg =>
             {
-                cfg.Gateway = new Gateway($"{_network.NetworkAddress}:{_network.NetworkPort}", 0, 0, 0);
+                cfg.Gateway = new Gateway($"{_network.NetworkAddress}:{_network.NetworkPort}", 0, 0, 999);
             });
-            var account = _network.Payer;
-            var ex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                var balance = await client.GetAccountBalanceAsync(account);
-            });
-            Assert.Equal(ResponseCode.InvalidNodeAccount, ex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: InvalidNodeAccount", ex.Message);
+            var balance = await client.GetAccountBalanceAsync(_network.Payer);
+            Assert.True(balance > 0);
         }
-        [Fact(DisplayName = "Get Account Balance: Insufficient Fees Throw Exception")]
-        public async Task InsuficientFeesThrowException()
+        [Fact(DisplayName = "Get Account Balance: Can Set FeeLimit to Zero")]
+        public async Task GetAccountBalanceRequiresNoFee()
         {
             await using var client = _network.NewClient();
             client.Configure(cfg =>
             {
                 cfg.FeeLimit = 0;
             });
+            var balance = await client.GetAccountBalanceAsync(_network.Payer);
+            Assert.True(balance > 0);
+        }
+        [Fact(DisplayName = "Get Account Balance: Retreiving Account Balances is Free")]
+        public async Task RetrievingAccountBalanceIsFree()
+        {
+            await using var client = _network.NewClient();
             var account = _network.Payer;
-            var ex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            var balance1 = await client.GetAccountBalanceAsync(account);
+            var balance2 = await client.GetAccountBalanceAsync(account);
+            Assert.Equal(balance1, balance2);
+        }
+        [Fact(DisplayName = "Get Account Balance: No Receipt is created for a Balance Query")]
+        public async Task RetrievingAccountBalanceDoesNotCreateReceipt()
+        {
+            await using var client = _network.NewClient();
+            var account = _network.Payer;
+            var txId = Generator.GenerateTxId(account);
+            var balance = await client.GetAccountBalanceAsync(account, ctx => ctx.Transaction = txId);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                var balance = await client.GetAccountBalanceAsync(account);
+                var receipt = await client.GetReceiptAsync(txId);
             });
-            Assert.Equal(ResponseCode.InsufficientTxFee, ex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", ex.Message);
+            Assert.Equal(txId, tex.TxId);
+            Assert.Equal(ResponseCode.ReceiptNotFound, tex.Status);
+            Assert.StartsWith("Network failed to return a transaction receipt", tex.Message);
         }
     }
 }

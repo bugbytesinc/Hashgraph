@@ -68,9 +68,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransferRecord> TransferWithRecordAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
+        public Task<TransactionRecord> TransferWithRecordAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransferRecord>(fromAccount, toAddress, amount, configure);
+            return TransferImplementationAsync<TransactionRecord>(fromAccount, toAddress, amount, configure);
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -134,9 +134,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransferRecord> TransferWithRecordAsync(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses, Action<IContext>? configure = null)
+        public Task<TransactionRecord> TransferWithRecordAsync(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransferRecord>(sendAccounts, receiveAddresses, configure);
+            return TransferImplementationAsync<TransactionRecord>(sendAccounts, receiveAddresses, configure);
         }
         /// <summary>
         /// Internal implementation for Transfer Crypto.
@@ -162,7 +162,8 @@ namespace Hashgraph
             var payers = sendAccounts.Keys.ToArray<ISigner>().Append(RequireInContext.Payer(context)).ToArray();
             var transfers = Transactions.CreateCryptoTransferList(transferList);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Transfer Crypto");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Transfer Crypto");
+            transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             var request = Transactions.SignTransaction(transactionBody, payers);
             var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
@@ -172,11 +173,10 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to execute crypto transfer, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is TransferRecord rec)
+            if (result is TransactionRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_Transfer);
                 Protobuf.FillRecordProperties(record, rec);
-                rec.Transfers = Protobuf.FromTransferList(record.TransferList);
             }
             else if (result is TransactionReceipt rcpt)
             {

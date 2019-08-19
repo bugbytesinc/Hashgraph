@@ -40,7 +40,7 @@ namespace Hashgraph
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Delete Account");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Delete Account");
             transactionBody.CryptoDelete = new CryptoDeleteTransactionBody
             {
                 DeleteAccountID = Protobuf.ToAccountID(accountToDelete),

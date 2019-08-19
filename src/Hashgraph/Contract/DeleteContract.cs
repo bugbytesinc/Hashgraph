@@ -32,7 +32,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Action<IContext>? configure = null)
+        ///
+        /// <remarks>Marked Internal Because functionality removed from testnet</remarks>
+        internal async Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
             contractToDelete = RequireInputParameter.ContractToDelete(contractToDelete);
             transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
@@ -40,7 +42,7 @@ namespace Hashgraph
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Delete Contract");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Delete Contract");
             transactionBody.ContractDeleteInstance = new ContractDeleteTransactionBody
             {
                 ContractID = Protobuf.ToContractID(contractToDelete),

@@ -29,21 +29,16 @@ namespace Hashgraph
         {
             file = RequireInputParameter.File(file);
             var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get File Info");
             var query = new Query
             {
                 FileGetInfo = new FileGetInfoQuery
                 {
-                    Header = Transactions.SignQueryHeader(transactionBody, payer),
+                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetFileInfo, "Get File Info", out var transactionId),
                     FileID = Protobuf.ToFileId(file)
                 }
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId,getResponseCode(response));
+            ValidateResult.PreCheck(transactionId, getResponseCode(response));
             return Protobuf.FromFileInfo(response.FileGetInfo.FileInfo);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)

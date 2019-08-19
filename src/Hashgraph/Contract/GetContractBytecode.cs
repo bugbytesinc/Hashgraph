@@ -25,20 +25,22 @@ namespace Hashgraph
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        public async Task<ReadOnlyMemory<byte>> GetContractBytecodeAsync(Address contract, Action<IContext>? configure = null)
+        ///
+        /// <remarks>
+        /// For now this is marked internal because this method cannot be implemented
+        /// in a safe maner that does not waste hBars.  The cost of the query is variable
+        /// and there is no public information on how to efficiently compute the cost prior
+        /// to calling the method.  So the query fee must be in excess of the actual cost.
+        /// </remarks>
+        internal async Task<ReadOnlyMemory<byte>> GetContractBytecodeAsync(Address contract, Action<IContext>? configure = null)
         {
             contract = RequireInputParameter.Contract(contract);
             var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Contract Bytecode");
             var query = new Query
             {
                 ContractGetBytecode = new ContractGetBytecodeQuery
                 {
-                    Header = Transactions.SignQueryHeader(transactionBody, payer),
+                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetContractBytecode, "Get Contract Bytecode", out var transactionId),
                     ContractID = Protobuf.ToContractID(contract)
                 }
             };

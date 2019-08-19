@@ -363,5 +363,37 @@ namespace Hashgraph
         /// Special Account Operations should be performed by only Genesis account, return this code if it is not Genesis Account
         /// </summary>
         [Description("ACCOUNT_IS_NOT_GENESIS_ACCOUNT")] AccountIsNotGenesisAccount = 88,
+        /// <summary>
+        /// The fee payer account doesn't have permission to submit such Transaction
+        /// </summary>
+        [Description("PAYER_ACCOUNT_UNAUTHORIZED")] PayerAccountUnauthorized = 89,
+        /// <summary>
+        /// FreezeTransactionBody is invalid
+        /// </summary>
+        [Description("INVALID_FREEZE_TRANSACTION_BODY")] InvalidFreezeTransactionBody = 90,
+        /// <summary>
+        /// FreezeTransactionBody does not exist
+        /// </summary>
+        [Description("FREEZE_TRANSACTION_BODY_NOT_FOUND")] FreezeTransactionBodyNotFound = 91,
+        /// <summary>
+        ///Exceeded the number of accounts (both from and to) allowed for crypto transfer list
+        /// </summary>
+        [Description("TRANSFER_LIST_SIZE_LIMIT_EXCEEDED")] TransferListSizeLimitExceeded = 92,
+        /// <summary>
+        /// Smart contract result size greater than specified maxResultSize
+        /// </summary>
+        [Description("RESULT_SIZE_LIMIT_EXCEEDED")] ResultSizeLimitExceeded = 93,
+        /// <summary>
+        ///The payer account is not a special account(account 0.0.55)
+        /// </summary>
+        [Description("NOT_SPECIAL_ACCOUNT")] NotSpecialAccount = 94,
+        /// <summary>
+        /// Negative gas was offered in smart contract call
+        /// </summary>
+        [Description("CONTRACT_NEGATIVE_GAS")] ContractNegativeGas = 95,
+        /// <summary>
+        /// Negative value / initial balance was specified in a smart contract call / create
+        /// </summary>
+        [Description("CONTRACT_NEGATIVE_VALUE")] ContractNegativeValue = 96,
     }
 }

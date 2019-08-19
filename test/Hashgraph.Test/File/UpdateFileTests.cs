@@ -23,16 +23,10 @@ namespace Hashgraph.Test.File
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             test.Client.Configure(ctx =>
             {
-                ctx.Payer = new Account(
-                    _network.AccountRealm,
-                    _network.AccountShard,
-                    _network.AccountNumber,
-                    _network.PrivateKey,
-                    test.PrivateKey,
-                    newPrivateKey);
+                ctx.Payer = new Account( _network.Payer, _network.PrivateKey, test.PrivateKey, newPrivateKey);
             });
 
-            var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            var updateRecord = await test.Client.UpdateFileWithRecordAsync(new UpdateFileParams
             {
                 File = test.Record.File,
                 Endorsements = new Endorsement[] { newPublicKey }
@@ -42,7 +36,7 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
-            Assert.Equal(test.Contents.Length + 30, info.Size);
+            Assert.Equal(test.Contents.Length, info.Size);
             Assert.Equal(test.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { newPublicKey }, info.Endorsements);
             Assert.False(info.Deleted);

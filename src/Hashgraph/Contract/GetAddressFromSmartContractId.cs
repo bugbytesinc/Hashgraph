@@ -25,25 +25,20 @@ namespace Hashgraph
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        public async Task<Address> GetAddressFromSmartContractId(string smartContractId, Action<IContext>? configure = null)
+        public async Task<Address> GetAddressFromSmartContractIdAsync(string smartContractId, Action<IContext>? configure = null)
         {
             smartContractId = RequireInputParameter.SmartContractId(smartContractId);
             var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var transfers = Transactions.CreateCryptoTransferList((payer, -context.FeeLimit), (gateway, context.FeeLimit));
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateCryptoTransferTransactionBody(context, transfers, transactionId, "Get Contract By Solidity ID");
             var query = new Query
             {
                 GetBySolidityID = new GetBySolidityIDQuery
                 {
-                    Header = Transactions.SignQueryHeader(transactionBody, payer),
+                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetAddressFromSmartContractId, "Get Contract By Solidity ID", out var transactionId),
                     SolidityID = smartContractId
                 }
             };
             var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));            
+            ValidateResult.PreCheck(transactionId, getResponseCode(response));
             var data = response.GetBySolidityID;
             if (data.ContractID != null)
             {

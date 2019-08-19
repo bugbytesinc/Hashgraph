@@ -26,7 +26,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
             Assert.NotNull(fx.ContractRecord.Concensus);
             Assert.NotNull(fx.ContractRecord.Memo);
-            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 420_000_000UL);
         }
         [Fact(DisplayName = "Create Contract: Missing File Address Raises Error")]
         public async Task MissingFileAddressRaisesError()
@@ -84,7 +84,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
             Assert.NotNull(fx.ContractRecord.Concensus);
             Assert.NotNull(fx.ContractRecord.Memo);
-            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 420_000_000UL);
         }
         [Fact(DisplayName = "Create Contract: Random Constructor Data when not needed is ignored.")]
         public async Task CanCreateContractWithUnneededConstructorData()
@@ -98,7 +98,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
             Assert.NotNull(fx.ContractRecord.Concensus);
             Assert.NotNull(fx.ContractRecord.Memo);
-            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 420_000_000UL);
         }
         [Fact(DisplayName = "Create Contract: Can Create Contract with Parameters")]
         public async Task CanCreateAContractWithParameters()
@@ -110,7 +110,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
             Assert.NotNull(fx.ContractRecord.Concensus);
             Assert.NotNull(fx.ContractRecord.Memo);
-            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 430_000_000UL);
         }
 
         [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]
@@ -134,7 +134,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
             Assert.NotNull(fx.ContractRecord.Concensus);
             Assert.NotNull(fx.ContractRecord.Memo);
-            Assert.InRange(fx.ContractRecord.Fee, 0UL, 100000UL);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 420_000_000UL);
         }
     }
 }

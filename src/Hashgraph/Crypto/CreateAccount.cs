@@ -74,7 +74,7 @@ namespace Hashgraph
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Create Account");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Account");
             // Create Account requires just the 32 bits of the public key, without the prefix.
             var publicKeyWithoutPrefix = Keys.ImportPublicEd25519KeyFromBytes(createParameters.PublicKey).Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray();
             transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
@@ -102,7 +102,7 @@ namespace Hashgraph
             }
             else if (result is AccountRecord arec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_CreateAccount);
                 Protobuf.FillRecordProperties(record, arec);
                 arec.Address = Protobuf.FromAccountID(receipt.AccountID);
             }

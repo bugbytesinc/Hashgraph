@@ -25,6 +25,7 @@ namespace Hashgraph.Implementation
         public int RetryCount { get => get<int>(nameof(RetryCount)); set => set(nameof(RetryCount), value); }
         public TimeSpan RetryDelay { get => get<TimeSpan>(nameof(RetryDelay)); set => set(nameof(RetryDelay), value); }
         public string? Memo { get => get<string>(nameof(Memo)); set => set(nameof(Memo), value); }
+        [Obsolete("Generate Record Flag has been deprecated and will soon be removed.")]
         public bool GenerateRecord { get => get<bool>(nameof(GenerateRecord)); set => set(nameof(GenerateRecord), value); }
         public bool AdjustForLocalClockDrift { get => get<bool>(nameof(AdjustForLocalClockDrift)); set => set(nameof(AdjustForLocalClockDrift), value); }
         public TxId? Transaction { get => get<TxId>(nameof(Transaction)); set => set(nameof(Transaction), value); }

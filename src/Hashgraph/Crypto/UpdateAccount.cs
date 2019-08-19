@@ -94,7 +94,7 @@ namespace Hashgraph
                 updateAccountBody.ExpirationTime = Protobuf.ToTimestamp(updateParameters.Expiration.Value);
             }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Update Account");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update Account");
             transactionBody.CryptoUpdateAccount = updateAccountBody;
             var request = Transactions.SignTransaction(transactionBody, updateParameters.Account, payer);
             var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
@@ -107,7 +107,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is AccountRecord arec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_CreateAccount);
                 Protobuf.FillRecordProperties(record, arec);
                 arec.Address = Protobuf.FromAccountID(receipt.AccountID);
             }

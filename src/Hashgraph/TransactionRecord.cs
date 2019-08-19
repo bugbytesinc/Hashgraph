@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
 using System;
+using System.Collections.ObjectModel;
 
 namespace Hashgraph
 {
@@ -26,5 +27,11 @@ namespace Hashgraph
         /// transaction and generating associated receipts and records.
         /// </summary>
         public ulong Fee { get; internal set; }
+        /// <summary>
+        /// A map of tinybar transfers to and from accounts associated with
+        /// the record represented by this transaction.
+        /// <see cref="IContext.Payer"/>.
+        /// </summary>
+        public ReadOnlyDictionary<Address, long> Transfers { get; internal set; }
     }
 }

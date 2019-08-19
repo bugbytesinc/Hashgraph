@@ -74,7 +74,7 @@ namespace Hashgraph
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateEmptyTransactionBody(context, transactionId, "Call Contract");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Call Contract");
             transactionBody.ContractCall = new ContractCallTransactionBody
             {
                 ContractID = Protobuf.ToContractID(callParmeters.Contract),
@@ -93,7 +93,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is CallContractRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
+                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_CallContract);
                 Protobuf.FillRecordProperties(record, rec);
                 rec.Contract = Protobuf.FromContractID(record.Receipt.ContractID);
                 rec.CallResult = Protobuf.FromContractCallResult(record.ContractCallResult);
