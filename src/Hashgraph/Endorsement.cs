@@ -180,7 +180,7 @@ namespace Hashgraph
                     if (_requiredCount == other._requiredCount)
                     {
                         var thisList = (Endorsement[])_data;
-                        var otherList = (Endorsement[])_data;
+                        var otherList = (Endorsement[])other._data;
                         if (thisList.Length == otherList.Length)
                         {
                             for (int i = 0; i < thisList.Length; i++)
