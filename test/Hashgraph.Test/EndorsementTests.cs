@@ -103,5 +103,36 @@ namespace Hashgraph.Tests
             Assert.False(endorsements1 == endorsements2);
             Assert.True(endorsements1 != endorsements2);
         }
+
+        [Fact(DisplayName = "Endorsements: Disimilar Multi-Key Endorsements are not considered Equal")]
+        public void DisimilarMultiKeyEndorsementsAreNotConsideredEqual()
+        {
+            var (publicKey1, _) = Generator.KeyPair();
+            var (publicKey2, _) = Generator.KeyPair();
+            var (publicKey3, _) = Generator.KeyPair();
+            var endorsements1 = new Endorsement(publicKey1, publicKey2);
+            var endorsements2 = new Endorsement(publicKey2, publicKey3);
+            Assert.NotEqual(endorsements1, endorsements2);
+            Assert.False(endorsements1 == endorsements2);
+            Assert.True(endorsements1 != endorsements2);
+
+            endorsements1 = new Endorsement(1, publicKey1, publicKey2);
+            endorsements2 = new Endorsement(2, publicKey2, publicKey3);
+            Assert.NotEqual(endorsements1, endorsements2);
+            Assert.False(endorsements1 == endorsements2);
+            Assert.True(endorsements1 != endorsements2);
+
+            endorsements1 = new Endorsement(1, publicKey1, publicKey2, publicKey3);
+            endorsements2 = new Endorsement(2, publicKey1, publicKey2, publicKey3);
+            Assert.NotEqual(endorsements1, endorsements2);
+            Assert.False(endorsements1 == endorsements2);
+            Assert.True(endorsements1 != endorsements2);
+
+            endorsements1 = new Endorsement(2, publicKey1, publicKey2, publicKey3);
+            endorsements2 = new Endorsement(3, publicKey1, publicKey2, publicKey3);
+            Assert.NotEqual(endorsements1, endorsements2);
+            Assert.False(endorsements1 == endorsements2);
+            Assert.True(endorsements1 != endorsements2);
+        }
     }
 }

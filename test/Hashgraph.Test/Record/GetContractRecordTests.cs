@@ -36,7 +36,7 @@ namespace Hashgraph.Test.Record
         {
             await using var fxContract = await StatefulContract.CreateAsync(_network);
 
-            var transactionCount = Generator.Integer(2, 5);
+            var transactionCount = Generator.Integer(2, 3);
             for (int i = 0; i < transactionCount; i++)
             {
                 await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
@@ -48,8 +48,8 @@ namespace Hashgraph.Test.Record
             }
             var records = await fxContract.Client.GetContractRecordsAsync(fxContract.ContractRecord.Contract);
             Assert.NotNull(records);
-            Assert.Equal(transactionCount+1, records.Length);            
-            foreach( var record in records.Skip(1))
+            Assert.Equal(transactionCount + 1, records.Length);
+            foreach (var record in records.Skip(1))
             {
                 Assert.Equal(ResponseCode.Success, record.Status);
                 Assert.InRange(record.Fee, 0UL, 41_666_667UL);
