@@ -116,7 +116,7 @@ namespace Hashgraph
         /// if id is identical to the other <code>TxId</code> object, 
         /// otherwise <code>False</code>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
             {

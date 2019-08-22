@@ -63,7 +63,7 @@ namespace Hashgraph
         /// <code>Claim</code> object, otherwise 
         /// <code>False</code>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is null)
             {
