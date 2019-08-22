@@ -14,7 +14,7 @@
     public static class QueryFees
     {
         public static long GetClaim = 0;
-        public static long GetContractRecords = 3;
+        public static long GetContractRecords = 8;
         public static long GetAccountRecords = 2;
         public static long GetFileContent = 8;
         public static long GetStakers = 0;
