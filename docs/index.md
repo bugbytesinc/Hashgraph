@@ -58,7 +58,7 @@ $ git clone --recurse-submodules https://github.com/bugbytesinc/Hashgraph.git
 ## Build Requirements
 This project relies protobuf support found in .net core 3, 
 previous versions of the .net core framework will not work.
-(At the time of this writing we are in [preview5](https://dotnet.microsoft.com/download/dotnet-core/3.0))
+(At the time of this writing we are in [preview8](https://dotnet.microsoft.com/download/dotnet-core/3.0))
 
 Visual Studio is not required to build the library, however the project
 references the [NSec.Cryptography](https://nsec.rocks/) library, which 

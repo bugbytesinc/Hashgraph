@@ -120,7 +120,9 @@ namespace Hashgraph.Implementation
         }
         private static ReadOnlyMemory<byte> EncodeStringPart(object value)
         {
+            #nullable disable
             return EncodeByteArrayPart(Encoding.UTF8.GetBytes(Convert.ToString(value)));
+            #nullable enable
         }
         private static object DecodeStringPart(ReadOnlyMemory<byte> arg)
         {
@@ -308,11 +310,13 @@ namespace Hashgraph.Implementation
         }
         private static TypeMapping GetMapping(Type type)
         {
+            #nullable disable
             if (_typeMap.TryGetValue(type, out TypeMapping mapping))
             {
                 return mapping;
             }
             throw new InvalidOperationException($"Encoding of type {type.Name} is not currently supported.");
+            #nullable enable
         }
         private static readonly Dictionary<Type, TypeMapping> _typeMap;
         static Abi()
