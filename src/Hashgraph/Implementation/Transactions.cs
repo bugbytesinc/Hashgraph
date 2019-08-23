@@ -73,7 +73,6 @@ namespace Hashgraph
                 NodeAccountID = Protobuf.ToAccountID(RequireInContext.Gateway(context)),
                 TransactionFee = (ulong)context.FeeLimit,
                 TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
-                GenerateRecord = context.GenerateRecord,
                 Memo = context.Memo ?? defaultMemo ?? "",
             };
         }
