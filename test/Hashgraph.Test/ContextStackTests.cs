@@ -184,33 +184,6 @@ namespace Hashgraph.Tests
                 Assert.Null(context.Memo);
             });
         }
-        [Fact(DisplayName = "Context: Can Set and Reset Generate Record Property")]
-        public async Task CanSetAndUnsetGenerateRecord()
-        {
-            var defaultValue = false;
-            var newValue = false;
-            await using var client = new Client(context =>
-            {
-                defaultValue = context.GenerateRecord;
-                newValue = !defaultValue;
-                context.GenerateRecord = newValue;
-                Assert.Equal(newValue, context.GenerateRecord);
-            });
-            await using var clone = client.Clone(context =>
-            {
-                Assert.Equal(newValue, context.GenerateRecord);
-            });
-            client.Configure(context =>
-            {
-                Assert.Equal(newValue, context.GenerateRecord);
-                context.Reset(nameof(IContext.GenerateRecord));
-                Assert.Equal(defaultValue, context.GenerateRecord);
-            });
-            clone.Configure(context =>
-            {
-                Assert.Equal(defaultValue, context.GenerateRecord);
-            });
-        }
         [Fact(DisplayName = "Context: Can Set and Reset Retry Count Property")]
         public async Task CanSetAndUnsetRetryCount()
         {
