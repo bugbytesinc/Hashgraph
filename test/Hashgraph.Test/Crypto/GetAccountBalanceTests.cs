@@ -111,7 +111,7 @@ namespace Hashgraph.Test.Crypto
         {
             await using var client = _network.NewClient();
             var account = _network.Payer;
-            var txId = Generator.GenerateTxId(account);
+            var txId = client.CreateNewTxId();
             var balance = await client.GetAccountBalanceAsync(account, ctx => ctx.Transaction = txId);
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
