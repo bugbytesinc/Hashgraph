@@ -30,7 +30,7 @@ namespace Hashgraph.Test.QueryFee
 
             var balanceBeforeQuery = (long)await fx.Client.GetAccountBalanceAsync(account);
 
-            var txGetAccountInfo = Generator.GenerateTxId(account);
+            var txGetAccountInfo = client.CreateNewTxId();
             var accountInfo = await client.GetAccountInfoAsync(_network.Payer, ctx => ctx.Transaction = txGetAccountInfo);
 
             // Since accountInfo is returned before the transaction to pay for it settles, 
@@ -39,7 +39,7 @@ namespace Hashgraph.Test.QueryFee
             var balanceAfterQuery = (long)await fx.Client.GetAccountBalanceAsync(account);
 
             // Get the the transaction record with target account for real
-            var txQueryRecord = Generator.GenerateTxId(account);
+            var txQueryRecord = client.CreateNewTxId();
             var queryRecord = await client.GetTransactionRecordAsync(txGetAccountInfo, ctx => ctx.Transaction = txQueryRecord);
 
             // Once again wait for transaction to settle using payer account, then get target balance
@@ -47,7 +47,7 @@ namespace Hashgraph.Test.QueryFee
             var balanceAfterQueryRecord = (long)await fx.Client.GetAccountBalanceAsync(account);
 
             // Get the transaction record one more time with target account
-            var txQueryRecordRecord = Generator.GenerateTxId(account);
+            var txQueryRecordRecord = client.CreateNewTxId();
             var queryRecordRecord = await client.GetTransactionRecordAsync(txQueryRecord, ctx => ctx.Transaction = txQueryRecordRecord);
 
             // Once again wait for transaction to settle using payer account, then get target balance

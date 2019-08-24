@@ -100,12 +100,5 @@ namespace Hashgraph.Test.Fixtures
             };
 
         }
-
-        public static TxId GenerateTxId(Address address)
-        {
-            var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(true);
-            var timestamp = Protobuf.FromTimestamp(new Proto.Timestamp { Seconds = seconds, Nanos = nanos });
-            return new TxId(address, timestamp);
-        }
     }
 }

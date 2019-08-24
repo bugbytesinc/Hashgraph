@@ -27,7 +27,7 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var txId = Generator.GenerateTxId(_network.Payer);
+            var txId = test.Client.CreateNewTxId();
             var contents = await test.Client.GetFileContentAsync(test.Record.File, ctx => ctx.Transaction = txId);
             var record = await test.Client.GetTransactionRecordAsync(txId);
             Assert.True(record.Transfers[_network.Payer] < 0);
