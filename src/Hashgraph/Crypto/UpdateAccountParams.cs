@@ -57,5 +57,12 @@ namespace Hashgraph
         /// account will be deleted.
         /// </summary>
         public TimeSpan? AutoRenewPeriod { get; set; }
+        /// <summary>
+        /// The account to which the created account will proxy its stake to.
+        /// If invalid, or is the account that is not a node, or the
+        /// node does not accept proxy staking; then this account is automatically 
+        /// proxy staked to a node chosen by the network without earning payments.
+        /// </summary>
+        public Address? Proxy { get; set; }
     }
 }

@@ -138,7 +138,8 @@ namespace Hashgraph.Implementation
                 updateParameters.SendThresholdCreateRecord is null &&
                 updateParameters.ReceiveThresholdCreateRecord is null &&
                 updateParameters.Expiration is null &&
-                updateParameters.AutoRenewPeriod is null)
+                updateParameters.AutoRenewPeriod is null &&
+                updateParameters.Proxy is null)
             {
                 throw new ArgumentException(nameof(updateParameters), "The Account Updates contains no update properties, it is blank.");
             }

@@ -85,6 +85,7 @@ namespace Hashgraph
                 ReceiveRecordThreshold = createParameters.ReceiveThresholdCreateRecord,
                 ReceiverSigRequired = createParameters.RequireReceiveSignature,
                 AutoRenewPeriod = Protobuf.ToDuration(createParameters.AutoRenewPeriod),
+                ProxyAccountID = createParameters.Proxy is null ? null : Protobuf.ToAccountID(createParameters.Proxy),
             };
             var request = Transactions.SignTransaction(transactionBody, payer);
             var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

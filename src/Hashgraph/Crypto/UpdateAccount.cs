@@ -93,6 +93,10 @@ namespace Hashgraph
             {
                 updateAccountBody.ExpirationTime = Protobuf.ToTimestamp(updateParameters.Expiration.Value);
             }
+            if (!(updateParameters.Proxy is null))
+            {
+                updateAccountBody.ProxyAccountID = Protobuf.ToAccountID(updateParameters.Proxy);
+            }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update Account");
             transactionBody.CryptoUpdateAccount = updateAccountBody;
