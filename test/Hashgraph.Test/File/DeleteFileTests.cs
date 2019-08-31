@@ -23,10 +23,13 @@ namespace Hashgraph.Test.File
             Assert.NotNull(result);
             Assert.Equal(ResponseCode.Success, result.Status);
 
-            var exception = await Assert.ThrowsAnyAsync<PrecheckException>(async () =>
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await test.Client.GetFileInfoAsync(test.Record.File);
             });
+            Assert.Equal(ResponseCode.FileDeleted, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: FileDeleted", pex.Message);
+
         }
     }
 }

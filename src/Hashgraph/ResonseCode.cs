@@ -395,5 +395,41 @@ namespace Hashgraph
         /// Negative value / initial balance was specified in a smart contract call / create
         /// </summary>
         [Description("CONTRACT_NEGATIVE_VALUE")] ContractNegativeValue = 96,
+        /// <summary>
+        /// Failed to update fee file
+        /// </summary>
+        [Description("INVALID_FEE_FILE")] InvalidFeeFile = 97,
+        /// <summary>
+        /// Failed to update exchange rate file
+        /// </summary>
+        [Description("INVALID_EXCHANGE_RATE_FILE")] InvalidExchangeRateFile = 98,
+        /// <summary>
+        /// Payment tendered for contract local call cannot cover both the fee and the gas
+        /// </summary>
+        [Description("INSUFFICIENT_LOCAL_CALL_GAS")] InsufficientLocalCallGas = 99,
+        /// <summary>
+        /// Entities with Entity ID below 1000 are not allowed to be deleted
+        /// </summary>
+        [Description("ENTITY_NOT_ALLOWED_TO_DELETE")] EntityNotAllowedToDelete = 100,
+        /// <summary>
+        /// Violating one of these rules: 1) treasury account can update all entities below 0.0.1000, 2) account 0.0.50 can update all entities from 0.0.51 - 0.0.80, 3) Network Function Master Account A/c 0.0.50 - Update all Network Function accounts &amp; perform all the Network Functions listed below, 4) Network Function Accounts: i) A/c 0.0.55 - Update Address Book files (0.0.101/102), ii) A/c 0.0.56 - Update Fee schedule (0.0.111), iii) A/c 0.0.57 - Update Exchange Rate (0.0.112).
+        /// </summary>
+        [Description("AUTHORIZATION_FAILED")] AuthorizationFailed = 101,
+        /// <summary>
+        /// Fee Schedule Proto uploaded but not valid (append or update is required)
+        /// </summary>
+        [Description("FILE_UPLOADED_PROTO_INVALID")] FileUploadedProtoInvalid = 102,
+        /// <summary>
+        /// Fee Schedule Proto uploaded but not valid (append or update is required)
+        /// </summary>
+        [Description("FILE_UPLOADED_PROTO_NOT_SAVED_TO_DISK")] FileUploadedProtoNotSavedToDisk = 103,
+        /// <summary>
+        /// Fee Schedule Proto File Part uploaded
+        /// </summary>
+        [Description("FEE_SCHEDULE_FILE_PART_UPLOADED")] FeeScheduleFilePartUploaded = 104,
+        /// <summary>
+        /// The change on Exchange Rate exceeds Exchange_Rate_Allowed_Percentage
+        /// </summary>
+        [Description("EXCHANGE_RATE_CHANGE_LIMIT_EXCEEDED")] ExchangeRateChangeLimitExceeded = 105,
     }
 }

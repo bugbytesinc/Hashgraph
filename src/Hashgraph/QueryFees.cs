@@ -20,7 +20,7 @@
         public static long GetStakers = 0;
         public static long GetAccountInfo = 8;
         public static long GetAccountBalance = 0;
-        public static long QueryContract = 400_000;
+        public static long QueryContract = 550_000;
         public static long GetAddressFromSmartContractId = 8;
         public static long GetContractBytecode = 41_666_666;  // This is excessivley high in most cases.
         public static long GetContractInfo = 8;
@@ -35,7 +35,7 @@
         public static long GetTransactionRecord_CreateFile = 8;
         public static long GetTransactionRecord_AddClaim = 1;
         public static long GetTransactionRecord_CallContract = 9;
-        public static long GetTransactionRecord_DeleteFile = 7;
+        public static long GetTransactionRecord_DeleteFile = 8;
         public static long GetTransactionRecord_UpdateFile = 8;
         public static long GetTransactionRecord_DeleteClaim = 1;
     }

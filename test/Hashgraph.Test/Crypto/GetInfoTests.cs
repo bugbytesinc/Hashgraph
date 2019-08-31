@@ -36,8 +36,6 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.SendThresholdCreateRecord > 0);
             Assert.True(info.ReceiveThresholdCreateRecord > 0);
             Assert.False(info.ReceiveSignatureRequired);
-            // At the moment, it appears this is off.
-            //Assert.True(info.Expiration > DateTime.UtcNow);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Server Node")]
@@ -61,8 +59,6 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.SendThresholdCreateRecord > 0);
             Assert.True(info.ReceiveThresholdCreateRecord > 0);
             Assert.False(info.ReceiveSignatureRequired);
-            // At the moment, it appears this is off.
-            //Assert.True(info.Expiration > DateTime.UtcNow);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
         }
     }

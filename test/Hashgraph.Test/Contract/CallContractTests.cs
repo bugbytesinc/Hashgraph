@@ -107,25 +107,24 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
             Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         }
-        // Can't Do While Can't delete Contract
-        //[Fact(DisplayName = "Call Contract: Calling Deleted Contract Raises Error")]
-        //public async Task CallingDeletedContractRaisesError()
-        //{
-        //    await using var fx = await GreetingContract.CreateAsync(_network);
-        //    var deleteReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
-        //    Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
+        [Fact(DisplayName = "Call Contract: Calling Deleted Contract Raises Error")]
+        public async Task CallingDeletedContractRaisesError()
+        {
+            await using var fx = await GreetingContract.CreateAsync(_network);
+            var deleteReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+            Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
 
-        //    var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-        //    {
-        //        await fx.Client.CallContractWithRecordAsync(new CallContractParams
-        //        {
-        //            Contract = fx.ContractRecord.Contract,
-        //            Gas = 30_000,
-        //            FunctionName = "greet",                                        
-        //        });
-        //    });
-        //    Assert.Equal(ResponseCode.ContractDeleted, tex.Status);
-        //    Assert.StartsWith("Contract call failed, status: ContractDeleted", tex.Message);
-        //}
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await fx.Client.CallContractWithRecordAsync(new CallContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    Gas = 30_000,
+                    FunctionName = "greet",
+                });
+            });
+            Assert.Equal(ResponseCode.ContractDeleted, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: ContractDeleted", pex.Message);
+        }
     }
 }
