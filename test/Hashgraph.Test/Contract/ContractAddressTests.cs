@@ -48,7 +48,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.Record.Address, address);
         }
         [Fact(DisplayName = "Contract Address: Retrieving Deleted Address from Smart Contract ID Succeeds")]
-        public async Task GetNonExistantContractRaisesError()
+        public async Task RetrieveDeletedAddressFromSmartContractID()
         {
             await using var fx = await TestAccount.CreateAsync(_network);
             var info = await fx.Client.GetAccountInfoAsync(fx.Record.Address);

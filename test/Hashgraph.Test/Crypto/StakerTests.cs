@@ -14,7 +14,7 @@ namespace Hashgraph.Test.Crypto
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Get Stakers: Is Not Implemented")]
+        [Fact(DisplayName = "NOT IMPLEMENTED: Get Stakers: Can get stakers for an address.")]
         public async Task GetStakersIsNotImplemented()
         {
             await using var client = _network.NewClient();

@@ -38,7 +38,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(info);
             Assert.Equal(fx.ContractRecord.Contract, info.Contract);
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
-            //Assert.Equal(newExpiration, info.Expiration);
+            Assert.Equal(newExpiration, info.Expiration);
             Assert.Equal(newEndorsement, info.Administrator);
             Assert.Equal(newRenewal, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
@@ -235,13 +235,16 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Contract Update: Updating non-existant contract raises error.")]
         public async Task UpdateWithNonExistantContractRaisesError()
         {
-            await using var fx = await GreetingContract.CreateAsync(_network);
+            await using var fx = await TestFile.CreateAsync(_network);
+            var invalidContractAddress = fx.Record.File;
+            await fx.Client.DeleteFileAsync(invalidContractAddress);
+
             var newMemo = Generator.Code(50);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
-                    Contract = new Address(0, 0, 2),
+                    Contract = invalidContractAddress,
                     Memo = newMemo
                 });
             });

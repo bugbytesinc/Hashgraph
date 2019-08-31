@@ -58,7 +58,7 @@ namespace Hashgraph.Test.File
             var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
             Assert.Equal(newContents, retrievedContents.ToArray());
         }
-        [Fact(DisplayName = "File Update: Can Replace Contents of deleted file?")]
+        [Fact(DisplayName = "File Update: Cannot Replace Contents of deleted file")]
         public async Task CanUpdateFileContentsOfDeletedFile()
         {
             await using var test = await TestFile.CreateAsync(_network);
