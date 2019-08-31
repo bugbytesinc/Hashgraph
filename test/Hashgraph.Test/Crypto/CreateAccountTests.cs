@@ -37,6 +37,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(createResult.Address.RealmNum, info.Address.RealmNum);
             Assert.Equal(createResult.Address.ShardNum, info.Address.ShardNum);
             Assert.Equal(createResult.Address.AccountNum, info.Address.AccountNum);
+            Assert.Equal(new Address(0,0,0), info.Proxy);
             Assert.False(info.Deleted);
 
             // Move remaining funds back to primary account.
@@ -138,6 +139,22 @@ namespace Hashgraph.Test.Crypto
 
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(expectedValue, info.AutoRenewPeriod);
+        }
+        [Fact(DisplayName = "Create Account: Set Account Proxy Stake")]
+        public async Task CanSetProxyStakeAccount()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();
+            await using var client = _network.NewClient();
+            var createResult = await client.CreateAccountAsync(new CreateAccountParams
+            {
+                InitialBalance = 1,
+                PublicKey = publicKey,
+                Proxy = _network.Gateway,
+            });
+            Assert.Equal(ResponseCode.Success, createResult.Status);
+
+            var info = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(_network.Gateway,info.Proxy);
         }
     }
 }

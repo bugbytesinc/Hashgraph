@@ -125,5 +125,47 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(newValue, updatedInfo.AutoRenewPeriod);
         }
+        [Fact(DisplayName = "Update Account: Can Update Proxy Stake")]
+        public async Task CanUpdateProxyStake()
+        {
+            var fx = await TestAccount.CreateAsync(_network);
+
+            var originalInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(new Address(0, 0, 0), originalInfo.Proxy);
+
+            var updateResult = await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Account = new Account(fx.Record.Address, fx.PrivateKey),
+                Proxy = _network.Gateway
+            });
+            Assert.Equal(ResponseCode.Success, updateResult.Status);
+
+            var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(_network.Gateway, updatedInfo.Proxy);
+        }
+        [Fact(DisplayName = "Update Account: Can Update Proxy Stake to Invalid Address")]
+        public async Task CanUpdateProxyStakeToInvalidAddress()
+        {
+            var emptyAddress = new Address(0, 0, 0);
+            var fx = await TestAccount.CreateAsync(_network);
+            await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Account = new Account(fx.Record.Address, fx.PrivateKey),
+                Proxy = _network.Gateway
+            });
+
+            var originalInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(_network.Gateway, originalInfo.Proxy);
+
+            var updateResult = await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Account = new Account(fx.Record.Address, fx.PrivateKey),
+                Proxy = emptyAddress
+            });
+            Assert.Equal(ResponseCode.Success, updateResult.Status);
+
+            var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(emptyAddress, updatedInfo.Proxy);
+        }
     }
 }

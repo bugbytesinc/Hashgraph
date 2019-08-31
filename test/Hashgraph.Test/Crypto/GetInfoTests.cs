@@ -27,9 +27,7 @@ namespace Hashgraph.Test.Crypto
             Assert.NotNull(info.SmartContractId);
             Assert.False(info.Deleted);
             Assert.NotNull(info.Proxy);
-            Assert.True(info.Proxy.RealmNum > -1);
-            Assert.True(info.Proxy.ShardNum > -1);
-            Assert.True(info.Proxy.AccountNum > -1);
+            Assert.Equal(new Address(0, 0, 0), info.Proxy);
             Assert.Equal(0, info.ProxiedToAccount);
             Assert.Equal(new Endorsement(_network.PublicKey), info.Endorsement);
             Assert.True(info.Balance > 0);
@@ -51,9 +49,7 @@ namespace Hashgraph.Test.Crypto
             Assert.NotNull(info.SmartContractId);
             Assert.False(info.Deleted);
             Assert.NotNull(info.Proxy);
-            Assert.True(info.Proxy.RealmNum > -1);
-            Assert.True(info.Proxy.ShardNum > -1);
-            Assert.True(info.Proxy.AccountNum > -1);
+            Assert.Equal(new Address(0, 0, 0), info.Proxy);
             Assert.True(info.ProxiedToAccount > -1);
             Assert.True(info.Balance > 0);
             Assert.True(info.SendThresholdCreateRecord > 0);

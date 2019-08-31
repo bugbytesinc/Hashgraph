@@ -58,5 +58,12 @@ namespace Hashgraph
         /// hbars sufficient to cover the renewal charge.
         /// </summary>
         public TimeSpan AutoRenewPeriod { get; set; } = TimeSpan.FromDays(31);
+        /// <summary>
+        /// The account to which the created account will proxy its stake to.
+        /// If null or is an invalid, or is the account that is not a node, or the
+        /// node does not accept proxy staking; then this account is automatically 
+        /// proxy staked to a node chosen by the network without earning payments.
+        /// </summary>
+        public Address? Proxy { get; set; }
     }
 }
