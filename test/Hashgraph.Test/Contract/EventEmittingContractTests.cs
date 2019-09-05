@@ -112,6 +112,14 @@ namespace Hashgraph.Test.Contract
             var delete1Receipt = await fxAccount1.Client.DeleteAccountAsync(new Account(fxAccount1.Record.Address, fxAccount1.PrivateKey), fxAccount1.Network.Payer);
             Assert.Equal(ResponseCode.Success, delete1Receipt.Status);
 
+            // Confirm deleted account by trying to get info on the deleted account, 
+            // this will throw an exception.
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
+            });
+            Assert.Equal(ResponseCode.AccountDeleted, pex.Status);
+
             // Double check the balance on the contract, confirm it has hbars
             var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
@@ -163,13 +171,14 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(contractBalanceAfter);
             Assert.Equal(0, contractBalanceAfter.CallResult.Result.As<long>());
 
-            // Try to get info on the deleted account, but this will fail because the
-            // account is already deleted.
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            // Double Check: try to get info on the deleted account, 
+            // but this will fail because the account is already deleted.
+            pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 // So if this throws an error, why did the above transfer not fail?
                 await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
             });
+            Assert.Equal(ResponseCode.AccountDeleted, pex.Status);
 
             // Delete the Contract, returning any hidden hbars to account number 2
             var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount2.Record.Address);
