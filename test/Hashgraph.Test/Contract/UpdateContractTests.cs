@@ -15,14 +15,13 @@ namespace Hashgraph.Test.Contract
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Contract Update: Can Update Multiple Properties of Contract.")]
+        [Fact(DisplayName = "Contract Update: Can Update Multiple Properties of Contract (excluding auto-renewal period).")]
         public async Task CanUpdateMultiplePropertiesInOneCall()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             var newExpiration = Generator.TruncatedFutureDate(2400, 4800);
             var newEndorsement = new Endorsement(newPublicKey);
-            var newRenewal = TimeSpan.FromDays(Generator.Integer(60, 90));
             var updatedPayer = _network.PayerWithKeys(newPrivateKey);
             var newMemo = Generator.Code(50);
             fx.Client.Configure(ctx => ctx.Payer = updatedPayer);
@@ -31,7 +30,6 @@ namespace Hashgraph.Test.Contract
                 Contract = fx.ContractRecord.Contract,
                 Expiration = newExpiration,
                 Administrator = newEndorsement,
-                RenewPeriod = newRenewal,
                 Memo = newMemo
             });
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
@@ -40,8 +38,43 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(newExpiration, info.Expiration);
             Assert.Equal(newEndorsement, info.Administrator);
-            Assert.Equal(newRenewal, info.RenewPeriod);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
+        }
+        [Fact(DisplayName = "Contract Update: Can't update properties when Renewal Period is not 7890000 seconds.")]
+        public async Task CanUpdateMultiplePropertiesInOneCallButNotRenewalPeriod()
+        {
+            await using var fx = await GreetingContract.CreateAsync(_network);
+            var originalInfo = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            var (newPublicKey, newPrivateKey) = Generator.KeyPair();
+            var newExpiration = Generator.TruncatedFutureDate(2400, 4800);
+            var newEndorsement = new Endorsement(newPublicKey);
+            var updatedPayer = _network.PayerWithKeys(newPrivateKey);
+            var newRenewPeriod = TimeSpan.FromDays(Generator.Integer(180, 365));
+            var newMemo = Generator.Code(50);
+            fx.Client.Configure(ctx => ctx.Payer = updatedPayer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    Expiration = newExpiration,
+                    Administrator = newEndorsement,
+                    RenewPeriod = newRenewPeriod,
+                    Memo = newMemo
+                });
+            });
+            Assert.Equal(ResponseCode.AutorenewDurationNotInRange, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", pex.Message);
+
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
+            Assert.Equal(originalInfo.Expiration, info.Expiration);
+            Assert.Equal(originalInfo.Administrator, info.Administrator);
+            Assert.Equal(originalInfo.RenewPeriod, info.RenewPeriod);
+            Assert.Equal(originalInfo.Memo, info.Memo);
         }
 
         [Fact(DisplayName = "Contract Update: Can Update Expiration Date")]
@@ -88,22 +121,28 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.Memo, info.Memo);
         }
 
-        [Fact(DisplayName = "Contract Update: Can Update Renew Period.")]
+        [Fact(DisplayName = "Contract Update: Can't Update Renew Period other than 7890000 seconds.")]
         public async Task CanUpdateRenewPeriod()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
-            var newRenewal = TimeSpan.FromDays(Generator.Integer(60, 90));
-            var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+            var newRenewal = TimeSpan.FromDays(Generator.Integer(180, 365));
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                Contract = fx.ContractRecord.Contract,
-                RenewPeriod = newRenewal,
+                var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    RenewPeriod = newRenewal,
+                });
             });
+            Assert.Equal(ResponseCode.AutorenewDurationNotInRange, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", pex.Message);
+
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
             Assert.Equal(fx.ContractRecord.Contract, info.Contract);
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
-            Assert.Equal(newRenewal, info.RenewPeriod);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
         }
         [Fact(DisplayName = "Contract Update: Updating Contract Bytecode Silently Fails (IS THIS A NETWORK BUG?)")]

@@ -52,7 +52,7 @@ namespace Hashgraph.Test.Record
             await using var client = _network.NewClient();
             client.Configure(ctx => ctx.Payer = null);
 
-            var ioe = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            var ioe = Assert.Throws<InvalidOperationException>(() =>
             {
                 var txId = client.CreateNewTxId();
             });

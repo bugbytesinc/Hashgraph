@@ -98,7 +98,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
             Assert.NotNull(fx.ContractRecord.Concensus);
             Assert.NotNull(fx.ContractRecord.Memo);
-            Assert.InRange(fx.ContractRecord.Fee, 0UL, 430_000_000UL);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 440_000_000UL);
         }
         [Fact(DisplayName = "Create Contract: Can Create Contract with Parameters")]
         public async Task CanCreateAContractWithParameters()
@@ -110,7 +110,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
             Assert.NotNull(fx.ContractRecord.Concensus);
             Assert.NotNull(fx.ContractRecord.Memo);
-            Assert.InRange(fx.ContractRecord.Fee, 0UL, 440_000_000UL);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, 450_000_000UL);
         }
 
         [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]

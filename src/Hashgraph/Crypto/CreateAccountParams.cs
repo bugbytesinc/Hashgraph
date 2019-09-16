@@ -57,7 +57,7 @@ namespace Hashgraph
         /// to be renewed at the given interval for as long as the account contains 
         /// hbars sufficient to cover the renewal charge.
         /// </summary>
-        public TimeSpan AutoRenewPeriod { get; set; } = TimeSpan.FromDays(31);
+        public TimeSpan AutoRenewPeriod { get; set; } = TimeSpan.FromSeconds(7890000);
         /// <summary>
         /// The account to which the created account will proxy its stake to.
         /// If null or is an invalid, or is the account that is not a node, or the

@@ -45,7 +45,7 @@ namespace Hashgraph.Test.Fixtures
             fx.Network = networkCredentials;
             fx.FileParams = new CreateFileParams
             {
-                Expiration = Generator.TruncatedFutureDate(12, 24),
+                Expiration = DateTime.UtcNow.AddSeconds(7890000),
                 Endorsements = new Endorsement[] { networkCredentials.PublicKey },
                 Contents = Encoding.UTF8.GetBytes(STATEFUL_CONTRACT_BYTECODE)
             };
@@ -60,7 +60,7 @@ namespace Hashgraph.Test.Fixtures
                 File = fx.FileRecord.File,
                 Administrator = networkCredentials.PublicKey,
                 Gas = 500_000,
-                RenewPeriod = TimeSpan.FromDays(Generator.Integer(2, 4)),
+                RenewPeriod = TimeSpan.FromSeconds(7890000),
                 Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
             };
             return fx;

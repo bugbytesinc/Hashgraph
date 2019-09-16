@@ -97,11 +97,11 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(newValue, updatedInfo.ReceiveThresholdCreateRecord);
         }
-        [Fact(DisplayName = "Update Account: Can Update Auto Renew Period")]
+        [Fact(DisplayName = "Update Account: Can't Update Auto Renew Period to other than 7890000 seconds")]
         public async Task CanUpdateAutoRenewPeriod()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            var originalValue = TimeSpan.FromDays(Generator.Integer(10, 20));
+            var originalValue = TimeSpan.FromSeconds(7890000);
             await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
@@ -115,15 +115,20 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(originalValue, originalInfo.AutoRenewPeriod);
 
             var newValue = originalValue.Add(TimeSpan.FromDays(Generator.Integer(10, 20)));
-            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
+
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                Account = new Account(createResult.Address, privateKey),
-                AutoRenewPeriod = newValue
+                var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
+                {
+                    Account = new Account(createResult.Address, privateKey),
+                    AutoRenewPeriod = newValue
+                });
             });
-            Assert.Equal(ResponseCode.Success, updateResult.Status);
+            Assert.Equal(ResponseCode.AutorenewDurationNotInRange, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", pex.Message);
 
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(newValue, updatedInfo.AutoRenewPeriod);
+            Assert.Equal(originalValue, updatedInfo.AutoRenewPeriod);
         }
         [Fact(DisplayName = "Update Account: Can Update Proxy Stake")]
         public async Task CanUpdateProxyStake()
