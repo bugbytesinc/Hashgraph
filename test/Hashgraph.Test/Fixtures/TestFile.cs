@@ -24,7 +24,7 @@ namespace Hashgraph.Test.Fixtures
             test.Network.Output?.WriteLine("STARTING SETUP: Test File Instance");
             test.Contents = Encoding.Unicode.GetBytes("Hello From .NET" + Generator.Code(50)).Take(48).ToArray();
             (test.PublicKey, test.PrivateKey) = Generator.KeyPair();
-            test.Expiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddDays(30));
+            test.Expiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddSeconds(7890000));
             test.Payer = networkCredentials.PayerWithKeys(networkCredentials.PrivateKey, test.PrivateKey);
             test.Client = networkCredentials.NewClient();
             test.Client.Configure(ctx => { ctx.Payer = test.Payer; });

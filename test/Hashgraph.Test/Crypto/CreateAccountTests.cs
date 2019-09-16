@@ -123,22 +123,23 @@ namespace Hashgraph.Test.Crypto
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.False(info.ReceiveSignatureRequired);
         }
-        [Fact(DisplayName = "Create Account: Set Auto Renew Period")]
+        [Fact(DisplayName = "Create Account: Can't Set Auto Renew Period other than 7890000 seconds")]
         public async Task CanSetAutoRenewPeriod()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var expectedValue = TimeSpan.FromDays(Generator.Integer(20, 60));
             await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                InitialBalance = 1,
-                PublicKey = publicKey,
-                AutoRenewPeriod = expectedValue
+                var createResult = await client.CreateAccountAsync(new CreateAccountParams
+                {
+                    InitialBalance = 1,
+                    PublicKey = publicKey,
+                    AutoRenewPeriod = expectedValue
+                });
             });
-            Assert.Equal(ResponseCode.Success, createResult.Status);
-
-            var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(expectedValue, info.AutoRenewPeriod);
+            Assert.Equal(ResponseCode.AutorenewDurationNotInRange, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", pex.Message);
         }
         [Fact(DisplayName = "Create Account: Set Account Proxy Stake")]
         public async Task CanSetProxyStakeAccount()

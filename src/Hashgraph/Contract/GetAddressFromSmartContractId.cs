@@ -25,7 +25,11 @@ namespace Hashgraph
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        public async Task<Address> GetAddressFromSmartContractIdAsync(string smartContractId, Action<IContext>? configure = null)
+        ///
+        /// <remarks>
+        /// Marked internal at this point because it functionality was turned off on the network
+        /// </remarks>
+        internal async Task<Address> GetAddressFromSmartContractIdAsync(string smartContractId, Action<IContext>? configure = null)
         {
             smartContractId = RequireInputParameter.SmartContractId(smartContractId);
             var context = CreateChildContext(configure);

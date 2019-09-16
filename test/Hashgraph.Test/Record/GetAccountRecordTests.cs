@@ -21,7 +21,7 @@ namespace Hashgraph.Test.Record
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             var childFeeLImit = 1_000_000;
             var transferAmount = Generator.Integer(200, 500);
-            var transactionCount = Generator.Integer(2, 5);
+            var transactionCount = Generator.Integer(3, 6);
             var childAccount = new Account(fxAccount.Record.Address, fxAccount.PrivateKey);
             var parentAccount = _network.Payer;
             await fxAccount.Client.TransferAsync(parentAccount, childAccount, transactionCount * (childFeeLImit + transferAmount));
