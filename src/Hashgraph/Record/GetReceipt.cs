@@ -35,7 +35,7 @@ namespace Hashgraph
                     TransactionID = transactionId
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
+            var response = await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             switch (responseCode)
             {

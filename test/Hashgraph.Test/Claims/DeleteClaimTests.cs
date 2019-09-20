@@ -48,24 +48,24 @@ namespace Hashgraph.Test.Claims
                 Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", pex.Message);
             }
         }
-        [Fact(DisplayName = "NOT SUPPORTED: Delete Claim: Deleting non existant claim throws error")]
-        public async Task DeletingNonExistantClaimThrowsErrorNotSupported()
-        {
-            Assert.StartsWith("Assert.Equal() Failure", (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(DeletingNonExistantClaimThrowsError)).Message);
+        //[Fact(DisplayName = "NOT SUPPORTED: Delete Claim: Deleting non existant claim throws error")]
+        //public async Task DeletingNonExistantClaimThrowsErrorNotSupported()
+        //{
+        //    Assert.StartsWith("Assert.Equal() Failure", (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(DeletingNonExistantClaimThrowsError)).Message);
 
-            //[Fact(DisplayName = "Delete Claim: Deleting non existant claim throws error")]
-            async Task DeletingNonExistantClaimThrowsError()
-            {
-                await using var client = _network.NewClient();
+        //    //[Fact(DisplayName = "Delete Claim: Deleting non existant claim throws error")]
+        //    async Task DeletingNonExistantClaimThrowsError()
+        //    {
+        //        await using var client = _network.NewClient();
 
-                var excepiton = await Assert.ThrowsAsync<PrecheckException>(async () =>
-                {
-                    await client.GetClaimAsync(_network.Payer, Generator.SHA384Hash());
-                });
-                Assert.Equal(ResponseCode.ClaimNotFound, excepiton.Status);
-                Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", excepiton.Message);
-            }
-        }
+        //        var excepiton = await Assert.ThrowsAsync<PrecheckException>(async () =>
+        //        {
+        //            await client.GetClaimAsync(_network.Payer, Generator.SHA384Hash());
+        //        });
+        //        Assert.Equal(ResponseCode.ClaimNotFound, excepiton.Status);
+        //        Assert.StartsWith("Transaction Failed Pre-Check: ClaimNotFound", excepiton.Message);
+        //    }
+        //}
         [Fact(DisplayName = "Delete Claim: Deleting missing hash throws error.")]
         public async Task DeletingMissingHashThrowsError()
         {

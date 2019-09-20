@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Contract
             {
                 Contract = fx.ContractRecord.Contract,
                 Gas = 400,
-                FunctionName = "get_balance"
+                FunctionName = "get_balance"                
             });
 
             Assert.NotNull(result);

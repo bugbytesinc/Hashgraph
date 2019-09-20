@@ -35,12 +35,18 @@ namespace Hashgraph
             {
                 ContractGetRecords = new ContractGetRecordsQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetContractRecords, "Get Contract Records", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     ContractID = Protobuf.ToContractID(contract)
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            long cost = (long)response.ContractGetRecordsResponse.Header.Cost;
+            if (cost > 0)
+            {
+                query.ContractGetRecords.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Contract Records", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            }
             return response.ContractGetRecordsResponse.Records.Select(record =>
             {
                 var result = new TransactionRecord();

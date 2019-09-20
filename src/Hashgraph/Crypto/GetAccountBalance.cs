@@ -26,19 +26,25 @@ namespace Hashgraph
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<ulong> GetAccountBalanceAsync(Address address, Action<IContext>? configure = null)
-        {            
+        {
             address = RequireInputParameter.Address(address);
             var context = CreateChildContext(configure);
             var query = new Query
             {
                 CryptogetAccountBalance = new CryptoGetAccountBalanceQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetAccountBalance, "Get Account Balance", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var cost = (long)response.CryptogetAccountBalance.Header.Cost;
+            if (cost > 0)
+            {
+                query.CryptogetAccountBalance.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Account Balance", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            }
             return response.CryptogetAccountBalance.Balance;
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)

@@ -39,15 +39,21 @@ namespace Hashgraph
             {
                 ContractCallLocal = new ContractCallLocalQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.QueryContract, "Query Contract Local Call", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     ContractID = Protobuf.ToContractID(queryParameters.Contract),
                     Gas = queryParameters.Gas,
                     FunctionParameters = Abi.EncodeFunctionWithArguments(queryParameters.FunctionName, queryParameters.FunctionArgs).ToByteString(),
                     MaxResultSize = queryParameters.MaxAllowedReturnSize
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            long cost = (long)response.ContractCallLocal.Header.Cost;
+            if (cost > 0)
+            {
+                query.ContractCallLocal.Header = Transactions.CreateAndSignQueryHeader(context, cost + queryParameters.ReturnValueCharge, "Query Contract Local Call", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            }
             return Protobuf.FromContractCallResult(response.ContractCallLocal.FunctionResult);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)

@@ -24,7 +24,7 @@ namespace Hashgraph.Implementation
             var gateway = context.Gateway;
             if (gateway is null)
             {
-                throw new InvalidOperationException("Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
+                throw new InvalidOperationException("The Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
             }
             return gateway;
         }

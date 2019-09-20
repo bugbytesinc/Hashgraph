@@ -35,12 +35,18 @@ namespace Hashgraph
             {
                 CryptoGetAccountRecords = new CryptoGetAccountRecordsQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetAccountRecords, "Get Account Records", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            long cost = (long)response.CryptoGetAccountRecords.Header.Cost;
+            if (cost > 0)
+            {
+                query.CryptoGetAccountRecords.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Account Records", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            }
             return response.CryptoGetAccountRecords.Records.Select(record =>
             {
                 var result = new TransactionRecord();

@@ -101,7 +101,7 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update Account");
             transactionBody.CryptoUpdateAccount = updateAccountBody;
             var request = Transactions.SignTransaction(transactionBody, updateParameters.Account, payer);
-            var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
@@ -111,7 +111,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is AccountRecord arec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_CreateAccount);
+                var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, arec);
                 arec.Address = Protobuf.FromAccountID(receipt.AccountID);
             }

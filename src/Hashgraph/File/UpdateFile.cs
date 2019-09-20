@@ -83,7 +83,7 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update File");
             transactionBody.FileUpdate = updateFileBody;
             var request = Transactions.SignTransaction(transactionBody, payer);
-            var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
@@ -93,7 +93,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is TransactionRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_UpdateFile);
+                var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, rec);
             }
             else if (result is TransactionReceipt rcpt)

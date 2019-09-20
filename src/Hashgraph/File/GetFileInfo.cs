@@ -33,12 +33,18 @@ namespace Hashgraph
             {
                 FileGetInfo = new FileGetInfoQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetFileInfo, "Get File Info", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     FileID = Protobuf.ToFileId(file)
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            long cost = (long)response.FileGetInfo.Header.Cost;
+            if (cost > 0)
+            {
+                query.FileGetInfo.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get File Info", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            }
             return Protobuf.FromFileInfo(response.FileGetInfo.FileInfo);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)

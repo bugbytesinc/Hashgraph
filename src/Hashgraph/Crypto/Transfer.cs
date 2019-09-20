@@ -165,7 +165,7 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Transfer Crypto");
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             var request = Transactions.SignTransaction(transactionBody, payers);
-            var precheck = await Transactions.ExecuteRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
@@ -175,7 +175,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is TransactionRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_Transfer);
+                var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, rec);
             }
             else if (result is TransactionReceipt rcpt)

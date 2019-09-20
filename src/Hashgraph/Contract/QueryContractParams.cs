@@ -16,6 +16,15 @@ namespace Hashgraph
         /// </summary>
         public long Gas { get; set; }
         /// <summary>
+        /// The amount of tinybars required to pay for 
+        /// returning the output data from the contract.
+        /// </summary>
+        /// <remarks>
+        /// At the time of writing it is 186 tinybars for
+        /// every 32byte ABI encoded block returned.
+        /// </remarks>
+        public long ReturnValueCharge { get; set; }
+        /// <summary>
         /// Name of the contract function to call.
         /// </summary>
         public string FunctionName { get; set; }

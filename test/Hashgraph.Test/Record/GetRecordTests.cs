@@ -50,12 +50,12 @@ namespace Hashgraph.Test.Record
         {
             await using var client = _network.NewClient();
             var txId = Protobuf.FromTransactionId(new Proto.TransactionID { AccountID = Protobuf.ToAccountID(_network.Payer), TransactionValidStart = new Proto.Timestamp { Seconds = 500, Nanos = 100 } });
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await client.GetTransactionRecordAsync(txId);
             });
-            Assert.Equal(ResponseCode.RecordNotFound, tex.Status);
-            Assert.StartsWith("Unable to retrieve transaction record.", tex.Message);
+            Assert.Equal(ResponseCode.RecordNotFound, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: RecordNotFound", pex.Message);
         }
         [Fact(DisplayName = "Get Record: Can Get Record for Existing but Failed Transaction")]
         public async Task CanGetRecordForFailedTransaction()

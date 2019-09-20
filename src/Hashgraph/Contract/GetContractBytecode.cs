@@ -40,12 +40,18 @@ namespace Hashgraph
             {
                 ContractGetBytecode = new ContractGetBytecodeQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetContractBytecode, "Get Contract Bytecode", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     ContractID = Protobuf.ToContractID(contract)
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            long cost = (long)response.ContractGetBytecodeResponse.Header.Cost;
+            if (cost > 0)
+            {
+                query.ContractGetBytecode.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Contract Bytecode", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            }
             return response.ContractGetBytecodeResponse.Bytecode.ToByteArray();
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)

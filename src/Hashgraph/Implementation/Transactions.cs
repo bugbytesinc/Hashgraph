@@ -76,6 +76,14 @@ namespace Hashgraph
                 Memo = context.Memo ?? defaultMemo ?? "",
             };
         }
+        internal static QueryHeader CreateAskCostHeader()
+        {
+            return new QueryHeader
+            {
+                Payment = new Transaction { BodyBytes = ByteString.Empty },
+                ResponseType = ResponseType.CostAnswer
+            };
+        }
         internal static QueryHeader CreateAndSignQueryHeader(ContextStack context, long queryFee, string defaultMemo, out TransactionID transactionId)
         {
             var gateway = RequireInContext.Gateway(context);
@@ -90,11 +98,8 @@ namespace Hashgraph
                 TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
                 Memo = context.Memo ?? defaultMemo ?? "",
             };
-            if (fee > 0)
-            {
-                var transfers = CreateCryptoTransferList((payer, -fee), (gateway, fee));
-                transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
-            }
+            var transfers = CreateCryptoTransferList((payer, -fee), (gateway, fee));
+            transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             return SignQueryHeader(transactionBody, payer);
         }
         internal static Proto.Transaction SignTransaction(TransactionBody transactionBody, params ISigner[] signers)
@@ -126,12 +131,27 @@ namespace Hashgraph
                 Payment = SignTransaction(transactionBody, signers)
             };
         }
-        internal static Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+        internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+        {
+            var answer = await ExecuteNetworkRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
+            var code = getResponseCode(answer);
+            if (code != ResponseCodeEnum.Ok)
+            {
+                throw new PrecheckException($"Transaction Failed Pre-Check: {code}", new TxId(), (ResponseCode)code);
+            }
+            return answer;
+
+            bool shouldRetryRequest(TResponse response)
+            {
+                return ResponseCodeEnum.Busy == getResponseCode(response);
+            }
+        }
+        internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {
             var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
             var startingInstant = trackTimeDrift ? Epoch.UniqueClockNanos() : 0;
 
-            return ExecuteRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
+            return ExecuteNetworkRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
 
             bool shouldRetryRequest(TResponse response)
             {
@@ -145,7 +165,7 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
-        internal static async Task<TResponse> ExecuteRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
+        internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
         {
             try
             {
