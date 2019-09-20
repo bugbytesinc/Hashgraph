@@ -69,9 +69,16 @@ namespace Hashgraph.Test.Fixtures
                 }
                 else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.BodyBytes != null)
                 {
-                    var transactionBody = Proto.TransactionBody.Parser.ParseFrom(payment.BodyBytes);
-                    Output.WriteLine($"{DateTime.UtcNow}  QX PYMT  {JsonFormatter.Default.Format(transactionBody)}");
-                    Output.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(message)}");
+                    if(payment.BodyBytes.IsEmpty)
+                    {
+                        Output.WriteLine($"{DateTime.UtcNow}  QX ASK → {JsonFormatter.Default.Format(message)}");
+                    }
+                    else
+                    {
+                        var transactionBody = Proto.TransactionBody.Parser.ParseFrom(payment.BodyBytes);
+                        Output.WriteLine($"{DateTime.UtcNow}  QX PYMT  {JsonFormatter.Default.Format(transactionBody)}");
+                        Output.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(message)}");
+                    }
                 }
                 else
                 {

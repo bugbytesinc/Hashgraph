@@ -33,12 +33,18 @@ namespace Hashgraph
             {
                 CryptoGetInfo = new CryptoGetInfoQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetAccountInfo, "Get Account Info", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            long cost = (long)response.CryptoGetInfo.Header.Cost;
+            if (cost > 0)
+            {
+                query.CryptoGetInfo.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Account Info", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            }
             return Protobuf.FromAccountInfo(response.CryptoGetInfo.AccountInfo);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)

@@ -22,7 +22,6 @@ namespace Hashgraph.Test.Internals
             await using var client = _network.NewClient();
             var account = _network.Payer;
             var startInstant = Epoch.UniqueClockNanos();
-            Assert.True(QueryFees.GetAccountInfo > 0, "Test is invalid, must use a query that requires a transaction to pay fee.");
             var info = await client.GetAccountInfoAsync(account, ctx => {
                 ctx.Transaction = Protobuf.FromTransactionId(new Proto.TransactionID {
                     AccountID = Protobuf.ToAccountID(_network.Payer),

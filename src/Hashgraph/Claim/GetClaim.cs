@@ -42,13 +42,19 @@ namespace Hashgraph
             {
                 CryptoGetClaim = new CryptoGetClaimQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, QueryFees.GetClaim, "Get Claim Info", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     AccountID = Protobuf.ToAccountID(address),
                     Hash = ByteString.CopyFrom(hash.ToArray())
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            long cost = (long)response.CryptoGetClaim.Header.Cost;
+            if (cost > 0)
+            {
+                query.CryptoGetClaim.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Claim Info", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+            }
             return Protobuf.FromClaim(response.CryptoGetClaim.Claim);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)

@@ -41,10 +41,10 @@ namespace Hashgraph
                     TransactionID = transactionId
                 }
             };
-            await Transactions.ExecuteRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
+            await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
-            var record = await GetTransactionRecordAsync(context, transactionId, QueryFees.GetTransactionRecord_UnknownType);
+            var record = await GetTransactionRecordAsync(context, transactionId);
             var result = new TransactionRecord();
             Protobuf.FillRecordProperties(record, result);
             return result;
@@ -66,26 +66,31 @@ namespace Hashgraph
         /// Internal Helper function to retrieve the transaction record provided 
         /// by the network following network consensus regarding a query or transaction.
         /// </summary>
-        private async Task<Proto.TransactionRecord> GetTransactionRecordAsync(ContextStack context, TransactionID transactionRecordId, long queryFee)
+        private async Task<Proto.TransactionRecord> GetTransactionRecordAsync(ContextStack context, TransactionID transactionRecordId)
         {
             var query = new Query
             {
                 TransactionGetRecord = new TransactionGetRecordQuery
                 {
-                    Header = Transactions.CreateAndSignQueryHeader(context, queryFee, "Get Transaction Record", out var transactionId),
+                    Header = Transactions.CreateAskCostHeader(),
                     TransactionID = transactionRecordId
                 }
             };
-            var response = await Transactions.ExecuteRequestWithRetryAsync(context, query, getServerMethod, getResponseCode);
-            var responseCode = getResponseCode(response);
-            if (responseCode != ResponseCodeEnum.Ok)
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            long cost = (long)response.TransactionGetRecord.Header.Cost;
+            if (cost > 0)
             {
-                throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), (ResponseCode)responseCode);
+                query.TransactionGetRecord.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Transaction Record", out var transactionId);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                var responseCode = getResponseCode(response);
+                if (responseCode != ResponseCodeEnum.Ok)
+                {
+                    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), (ResponseCode)responseCode);
+                }
             }
-            ValidateResult.PreCheck(transactionId, getResponseCode(response));
             return response.TransactionGetRecord.TransactionRecord;
 
-            static Func<Query, Task<Response>> getServerMethod(Channel channel)
+            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {
                 var client = new CryptoService.CryptoServiceClient(channel);
                 return async (Query query) => { return await client.getTxRecordByTxIDAsync(query); };

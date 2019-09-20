@@ -40,18 +40,15 @@ namespace Hashgraph.Test.Crypto
             {
                 var balance = await client.GetAccountBalanceAsync(account);
             });
-            Assert.StartsWith("Network Gateway Node has not been configured.", ex.Message);
+            Assert.StartsWith("The Network Gateway Node has not been configured.", ex.Message);
         }
-        [Fact(DisplayName = "Get Account Balance: Missing Payer Account Throws Exception")]
+        [Fact(DisplayName = "Get Account Balance: Missing Payer Account Does not Throw Exception (Free Query)")]
         public async Task MissingPayerAccountThrowsException()
         {
             var account = _network.Payer;
             await using var client = new Client(ctx => { ctx.Gateway = _network.Gateway; });
-            var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            {
-                var balance = await client.GetAccountBalanceAsync(account);
-            });
-            Assert.StartsWith("The Payer account has not been configured.", ex.Message);
+            var balance = await client.GetAccountBalanceAsync(account);
+            Assert.True(balance > 0);
         }
         [Fact(DisplayName = "Get Account Balance: Missing Account for Balance Check Throws Exception")]
         public async Task MissingBalanceAccountThrowsException()

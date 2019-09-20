@@ -23,6 +23,7 @@ namespace Hashgraph.Test.Contract
             {
                 Contract = fx.ContractRecord.Contract,
                 Gas = 30_000,
+                ReturnValueCharge = 186,
                 FunctionName = "greet"
             });
             Assert.NotNull(result);
@@ -36,11 +37,11 @@ namespace Hashgraph.Test.Contract
         public async Task CanCreateAContractWithStateAsync()
         {
             await using var fx = await StatefulContract.CreateAsync(_network);
-
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 30_000,
+                Gas = 1223,
+                ReturnValueCharge = 372,
                 FunctionName = "get_message"
             });
             Assert.NotNull(result);

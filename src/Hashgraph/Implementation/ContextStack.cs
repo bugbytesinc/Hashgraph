@@ -63,7 +63,7 @@ namespace Hashgraph.Implementation
             var url = Gateway?.Url;
             if (string.IsNullOrWhiteSpace(url))
             {
-                throw new InvalidOperationException("A proper Gateway has not been configured.");
+                throw new InvalidOperationException("The Network Gateway Node has not been configured.");
             }
             return _channels.GetOrAdd(url, url => new Channel(url, ChannelCredentials.Insecure));
         }
