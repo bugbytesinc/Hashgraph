@@ -360,5 +360,29 @@ namespace Hashgraph.Test.Crypto
             Assert.InRange(txId.ValidStartSeconds, lowerBound / 1_000_000_000, upperBound / 1_000_000_000);
             Assert.InRange(txId.ValidStartNanos, 0, 1_000_000_000);
         }
+        [Fact(DisplayName = "Transfer: Receipt Contains Exchange Information")]
+        public async Task TransferReceiptContainsExchangeInformation()
+        {
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = (long)Generator.Integer(10, 100);
+            var receipt = await fx.Client.TransferAsync(_network.Payer, fx.Record.Address, transferAmount);
+            Assert.NotNull(receipt.CurrentExchangeRate);
+            // Well, testnet doesn't actually have good data here
+            Assert.InRange(receipt.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+            Assert.NotNull(receipt.NextExchangeRate);
+            Assert.InRange(receipt.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        }
+        [Fact(DisplayName = "Transfer: Receipt Contains Exchange Information")]
+        public async Task TransferRecordContainsExchangeInformation()
+        {
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = (long)Generator.Integer(10, 100);
+            var record = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, transferAmount);
+            Assert.NotNull(record.CurrentExchangeRate);
+            // Well, testnet doesn't actually have good data here
+            Assert.InRange(record.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.InRange(record.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        }
     }
 }

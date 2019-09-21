@@ -14,7 +14,7 @@ namespace Hashgraph.Implementation
     /// protobuf messages.
     /// </summary>
     internal static class Protobuf
-    {        
+    {
         internal static TxId FromTransactionId(TransactionID transactionId)
         {
             return new TxId
@@ -102,6 +102,10 @@ namespace Hashgraph.Implementation
         internal static DateTime FromTimestamp(Timestamp timestamp)
         {
             return Epoch.ToDate(timestamp.Seconds, timestamp.Nanos);
+        }
+        internal static DateTime FromTimestamp(TimestampSeconds timestamp)
+        {
+            return Epoch.ToDate(timestamp.Seconds, 0);
         }
         internal static Key ToPublicKey(Endorsement endorsement)
         {
@@ -204,7 +208,13 @@ namespace Hashgraph.Implementation
         {
             result.Id = FromTransactionId(transactionId);
             result.Status = (ResponseCode)receipt.Status;
+            if (receipt.ExchangeRate != null)
+            {
+                result.CurrentExchangeRate = FromExchangeRate(receipt.ExchangeRate.CurrentRate);
+                result.NextExchangeRate = FromExchangeRate(receipt.ExchangeRate.NextRate);
+            }
         }
+
         internal static void FillRecordProperties(Proto.TransactionRecord record, TransactionRecord result)
         {
             result.Id = FromTransactionId(record.TransactionID);
@@ -214,6 +224,11 @@ namespace Hashgraph.Implementation
             result.Memo = record.Memo;
             result.Fee = record.TransactionFee;
             result.Transfers = FromTransferList(record.TransferList);
+            if (record.Receipt.ExchangeRate != null)
+            {
+                result.CurrentExchangeRate = FromExchangeRate(record.Receipt.ExchangeRate.CurrentRate);
+                result.NextExchangeRate = FromExchangeRate(record.Receipt.ExchangeRate.NextRate);
+            }
         }
         internal static ContractCallResult FromContractCallResult(ContractFunctionResult contractFunctionResult)
         {
@@ -241,6 +256,17 @@ namespace Hashgraph.Implementation
                 Hash = claim.Hash.ToByteArray(),
                 Endorsements = FromPublicKeyList(claim.Keys),
                 ClaimDuration = FromDuration(claim.ClaimDuration)
+            };
+        }
+        internal static ExchangeRate? FromExchangeRate(Proto.ExchangeRate rate)
+        {
+            return rate == null
+                ? null :
+            new ExchangeRate
+            {
+                HBarPerUSDCent = rate.HbarEquiv,
+                USDCentPerHbar = rate.CentEquiv,
+                Expiration = FromTimestamp(rate.ExpirationTime)
             };
         }
     }

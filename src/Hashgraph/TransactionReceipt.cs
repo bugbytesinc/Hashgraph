@@ -16,5 +16,23 @@ namespace Hashgraph
         /// The response code returned from the server.
         /// </summary>
         public ResponseCode Status { get; internal set; }
+        /// <summary>
+        /// The current exchange between USD and hBars as
+        /// broadcast by the hedera Network.
+        /// </summary>
+        /// <remarks>
+        /// Not all Receipts and Records will have this information
+        /// returned from the network.  This value can be <code>null</code>.
+        /// </remarks>
+        public ExchangeRate? CurrentExchangeRate { get; set; }
+        /// <summary>
+        /// The next/future exchange between USD and 
+        /// hBars as broadcast by the hedera Network.
+        /// </summary>
+        /// <remarks>
+        /// Not all Receipts and Records will have this information
+        /// returned from the network.  This value can be <code>null</code>.
+        /// </remarks>
+        public ExchangeRate? NextExchangeRate { get; set; }
     }
 }
