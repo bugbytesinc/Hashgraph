@@ -264,8 +264,8 @@ namespace Hashgraph.Implementation
                 ? null :
             new ExchangeRate
             {
-                HBarPerUSDCent = rate.HbarEquiv,
-                USDCentPerHbar = rate.CentEquiv,
+                HBarEquivalent = rate.HbarEquiv,
+                USDCentEquivalent = rate.CentEquiv,
                 Expiration = FromTimestamp(rate.ExpirationTime)
             };
         }
