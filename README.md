@@ -7,7 +7,7 @@ We've started working on our documentation, you can see our progress [here](http
 __Please Note__:  This library is very new and as we gain experience interacting with the Hedera Network any commit to this project may cause breaking changes.  Please be patient as we gain the necessary experience to provide a best in class library to access the Hedera Network.  
 
 ## Example
-The ```Client``` object orchestrates the request construction and communication with the hedera network.   It requires a small amount of configuration when created.  At a minimum to retrieve an account balance, the client must be configured with a Gateway and Payer Account.  The ```Gateway``` object represents the internet network address and account for the node processing requests and the Payer ```Account``` represents the account that will sign and pay for the query.  The following code example illustrates retrieving an account balance for an ```Address```:
+The `Client` object orchestrates the request construction and communication with the hedera network.   It requires a small amount of configuration when created.  At a minimum to retrieve an account balance, the client must be configured with a Gateway and Payer Account (in most cases).  The `Gateway` object represents the internet network address and account for the node processing requests and the Payer `Account` represents the account that will sign and pay for the query.  The following code example illustrates retrieving an account balance for an `Address`:
 ```csharp
 class Program
 {
@@ -15,19 +15,16 @@ class Program
     {                                                 // For Example:
         var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
         var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
-        var payerAccountNo = long.Parse(args[2]);     //   20 (account 0.0.20)
-        var payerPrivateKey = Hex.ToBytes(args[3]);   //   302e0201... (48 byte Ed25519 private in hex)
-        var queryAccountNo = long.Parse(args[4]);     //   2300 (account 0.0.2300)
+        var queryAccountNo = long.Parse(args[2]);     //   2300 (account 0.0.2300)
         try
         {
             await using var client = new Client(ctx =>
             {
                 ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
-                ctx.Payer = new Account(0, 0, payerAccountNo, payerPrivateKey);
             });
             var account = new Address(0, 0, queryAccountNo);
             var balance = await client.GetAccountBalanceAsync(account);
-            Console.WriteLine($"Account Balance for {account.AccountNum} is {balance} tinybars.");
+            Console.WriteLine($"Account Balance for {account.AccountNum} is {balance:#,#} tinybars.");
         }
         catch (Exception ex)
         {
@@ -61,7 +58,7 @@ $ git clone --recurse-submodules https://github.com/bugbytesinc/Hashgraph.git
 ## Build Requirements
 This project relies protobuf support found in .net core 3, 
 previous versions of the .net core framework will not work.
-(At the time of this writing we are in [preview8](https://dotnet.microsoft.com/download/dotnet-core/3.0))
+(At the time of this writing we are in [3.0.100](https://dotnet.microsoft.com/download/dotnet-core/3.0))
 
 Visual Studio is not required to build the library, however the project
 references the [NSec.Cryptography](https://nsec.rocks/) library, which 
