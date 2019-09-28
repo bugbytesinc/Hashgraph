@@ -30,7 +30,7 @@ namespace Hashgraph.Test.Contract
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
             Assert.Equal("Call Contract", record.Memo);
-            Assert.InRange(record.Fee, 0UL, 31_000_000UL);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(fx.ContractRecord.Contract, record.Contract);
             Assert.Empty(record.CallResult.Error);
             Assert.True(record.CallResult.Bloom.IsEmpty);
@@ -54,7 +54,7 @@ namespace Hashgraph.Test.Contract
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
             Assert.Equal("Call Contract", record.Memo);
-            Assert.InRange(record.Fee, 0UL, 31_000_000UL);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(fx.ContractRecord.Contract, record.Contract);
             Assert.Empty(record.CallResult.Error);
             Assert.True(record.CallResult.Bloom.IsEmpty);
@@ -80,7 +80,7 @@ namespace Hashgraph.Test.Contract
             Assert.False(setRecord.Hash.IsEmpty);
             Assert.NotNull(setRecord.Concensus);
             Assert.Equal("Call Contract", setRecord.Memo);
-            Assert.InRange(setRecord.Fee, 0UL, 32_000_000UL);
+            Assert.InRange(setRecord.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(fx.ContractRecord.Contract, setRecord.Contract);
             Assert.Empty(setRecord.CallResult.Error);
             Assert.True(setRecord.CallResult.Bloom.IsEmpty);
@@ -98,7 +98,7 @@ namespace Hashgraph.Test.Contract
             Assert.False(getRecord.Hash.IsEmpty);
             Assert.NotNull(getRecord.Concensus);
             Assert.Equal("Call Contract", getRecord.Memo);
-            Assert.InRange(getRecord.Fee, 0UL, 31_000_000UL);
+            Assert.InRange(getRecord.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(fx.ContractRecord.Contract, getRecord.Contract);
             Assert.Empty(getRecord.CallResult.Error);
             Assert.True(getRecord.CallResult.Bloom.IsEmpty);

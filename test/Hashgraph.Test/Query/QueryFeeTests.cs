@@ -22,7 +22,7 @@ namespace Hashgraph.Test.QueryFee
 
             await using var fx = await TestAccount.CreateAsync(_network);
             var account = new Account(fx.Record.Address, fx.PrivateKey);
-            await fx.Client.TransferAsync(_network.Payer, account, 10_000_000, ctx => ctx.FeeLimit = 85_000);
+            await fx.Client.TransferAsync(_network.Payer, account, 10_000_000);
             await using var client = fx.Client.Clone(ctx => {
                 ctx.Payer = account;
                 ctx.FeeLimit = 1_000_000;

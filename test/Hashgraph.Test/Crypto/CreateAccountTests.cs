@@ -42,9 +42,9 @@ namespace Hashgraph.Test.Crypto
 
             // Move remaining funds back to primary account.
             var from = new Account(createResult.Address, privateKey);
-            await client.TransferAsync(from, _network.Payer, (long)initialBalance, ctx => ctx.FeeLimit = 140_000);
+            await client.TransferAsync(from, _network.Payer, (long)initialBalance);
 
-            var receipt = await client.DeleteAccountAsync(new Account(createResult.Address, privateKey), _network.Payer, ctx => ctx.FeeLimit = 6922777);
+            var receipt = await client.DeleteAccountAsync(new Account(createResult.Address, privateKey), _network.Payer);
             Assert.NotNull(receipt);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
