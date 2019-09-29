@@ -42,7 +42,7 @@ namespace Hashgraph.Test.Record
                 await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fxContract.ContractRecord.Contract,
-                    Gas = 30_000,
+                    Gas = await _network.TinybarsFromGas(400),
                     FunctionName = "get_message"
                 });
             }

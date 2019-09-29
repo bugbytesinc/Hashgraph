@@ -59,7 +59,7 @@ namespace Hashgraph.Test.Fixtures
             {
                 File = fx.FileRecord.File,
                 Administrator = networkCredentials.PublicKey,
-                Gas = 500_000,
+                Gas = await networkCredentials.TinybarsFromGas(200),
                 RenewPeriod = TimeSpan.FromSeconds(7890000),
                 Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
             };

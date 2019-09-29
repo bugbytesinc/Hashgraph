@@ -1,8 +1,10 @@
 ﻿using Google.Protobuf;
+using Hashgraph.Extensions;
 using Microsoft.Extensions.Configuration;
 using Proto;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,6 +13,7 @@ namespace Hashgraph.Test.Fixtures
     public class NetworkCredentials
     {
         private readonly IConfiguration _configuration;
+        private ExchangeRate _exchangeRate = null;
         public string NetworkAddress { get { return _configuration["network:address"]; } }
         public int NetworkPort { get { return getAsInt("network:port"); } }
         public long ServerRealm { get { return getAsInt("server:realm"); } }
@@ -47,6 +50,18 @@ namespace Hashgraph.Test.Fixtures
         public Account PayerWithKeys(params ReadOnlyMemory<byte>[] privateKeys)
         {
             return new Account(AccountRealm, AccountShard, AccountNumber, privateKeys.Append(PrivateKey).ToArray());
+        }
+        public async Task<long> TinybarsFromGas(double usd)
+        {
+            if(_exchangeRate == null)
+            {
+                await using(var client = NewClient())
+                {
+                    _exchangeRate = (await client.GetExchangeRatesAsync()).Current;
+                }                
+            }
+            // This is not necessarily correct, but hopefully stable.
+            return ((long)(usd * 100 * _exchangeRate.HBarEquivalent)) / (_exchangeRate.USDCentEquivalent);
         }
         private int getAsInt(string key)
         {

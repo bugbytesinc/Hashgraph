@@ -22,7 +22,7 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 30_000,
+                Gas = await _network.TinybarsFromGas(400),
                 FunctionName = "greet"
             });
             Assert.NotNull(record);
@@ -46,7 +46,7 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 30_000,
+                Gas = await _network.TinybarsFromGas(400),
                 FunctionName = "get_message"
             });
             Assert.NotNull(record);
@@ -71,7 +71,7 @@ namespace Hashgraph.Test.Contract
             var setRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 50_000,
+                Gas = await _network.TinybarsFromGas(1000),
                 FunctionName = "set_message",
                 FunctionArgs = new object[] { newMessage }
             });
@@ -90,7 +90,7 @@ namespace Hashgraph.Test.Contract
             var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 30_000,
+                Gas = await _network.TinybarsFromGas(400),
                 FunctionName = "get_message"
             });
             Assert.NotNull(getRecord);
@@ -119,7 +119,7 @@ namespace Hashgraph.Test.Contract
                 await fx.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    Gas = 30_000,
+                    Gas = await _network.TinybarsFromGas(400),
                     FunctionName = "greet",
                 });
             });

@@ -169,7 +169,7 @@ namespace Hashgraph.Test.Contract
             var callRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 30_000,
+                Gas = await _network.TinybarsFromGas(400),
                 FunctionName = "greet",
             });
             Assert.NotNull(callRecord);

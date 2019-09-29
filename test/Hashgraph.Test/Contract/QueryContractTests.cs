@@ -22,14 +22,14 @@ namespace Hashgraph.Test.Contract
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 30_000,
-                ReturnValueCharge = 5000,
+                Gas = await _network.TinybarsFromGas(400),
+                ReturnValueCharge = await _network.TinybarsFromGas(400),
                 FunctionName = "greet"
             });
             Assert.NotNull(result);
             Assert.Empty(result.Error);
             Assert.True(result.Bloom.IsEmpty);
-            Assert.InRange(result.Gas, 0UL, 30_000UL);
+            Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(result.Events);
             Assert.Equal("Hello, world!", result.Result.As<string>()); ;
         }
@@ -40,8 +40,8 @@ namespace Hashgraph.Test.Contract
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 1234,
-                ReturnValueCharge = 5000,
+                Gas = await _network.TinybarsFromGas(400),
+                ReturnValueCharge = await _network.TinybarsFromGas(400),
                 FunctionName = "get_message"
             });
             Assert.NotNull(result);
@@ -62,7 +62,7 @@ namespace Hashgraph.Test.Contract
                 await fx.Client.QueryContractAsync(new QueryContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    Gas = 50_000,
+                    Gas = await _network.TinybarsFromGas(400),
                     FunctionName = "set_message",
                     FunctionArgs = new object[] { newMessage }
                 });
@@ -80,7 +80,7 @@ namespace Hashgraph.Test.Contract
                 await fx.Client.QueryContractAsync(new QueryContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    Gas = 30_000,
+                    Gas = await _network.TinybarsFromGas(400),
                     FunctionName = "greet",
                     MaxAllowedReturnSize = 1
                 });

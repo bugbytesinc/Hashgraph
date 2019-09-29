@@ -60,7 +60,7 @@ namespace Hashgraph.Test.Fixtures
             {
                 File = fx.FileRecord.File,
                 Administrator = networkCredentials.PublicKey,
-                Gas = 500_000,
+                Gas = await networkCredentials.TinybarsFromGas(200),
                 InitialBalance = 1_000_000,
                 RenewPeriod = TimeSpan.FromSeconds(7890000),//TimeSpan.FromDays(Generator.Integer(2, 4))
             };
