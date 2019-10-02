@@ -15,26 +15,31 @@ namespace Hashgraph.Test.Claims
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Add Claim: Can Add a Claim")]
-        async Task CanCreateAClaim()
+        [Fact(DisplayName = "NOT SUPPORTED: Add Claim: Can Add a Claim")]
+        public async Task CanCreateAClaimNotSupported()
         {
-            await using var test = await TestAccount.CreateAsync(_network);
-
-            var (publicKey1, privateKey1) = Generator.KeyPair();
-            var (publicKey2, privateKey2) = Generator.KeyPair();
-            var claim = new Claim
+            Assert.Equal(ResponseCode.NotSupported, (await Assert.ThrowsAsync<PrecheckException>(CanCreateAClaim)).Status);
+            //[Fact(DisplayName = "Add Claim: Can Add a Claim")]
+            async Task CanCreateAClaim()
             {
-                Address = test.Record.Address,
-                Hash = Generator.SHA384Hash(),
-                Endorsements = new Endorsement[] { publicKey1, publicKey2 },
-                ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
-            };
+                await using var test = await TestAccount.CreateAsync(_network);
 
-            var receipt = await test.Client.AddClaimAsync(claim, ctx =>
-            {
-                ctx.Payer = _network.PayerWithKeys(privateKey1, privateKey2);
-            });
-            Assert.Equal(ResponseCode.Success, receipt.Status);
+                var (publicKey1, privateKey1) = Generator.KeyPair();
+                var (publicKey2, privateKey2) = Generator.KeyPair();
+                var claim = new Claim
+                {
+                    Address = test.Record.Address,
+                    Hash = Generator.SHA384Hash(),
+                    Endorsements = new Endorsement[] { publicKey1, publicKey2 },
+                    ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
+                };
+
+                var receipt = await test.Client.AddClaimAsync(claim, ctx =>
+                {
+                    ctx.Payer = _network.PayerWithKeys(privateKey1, privateKey2);
+                });
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+            }
         }
         [Fact(DisplayName = "Add Claim: Adding claim without address raises error")]
         public async Task AddingClaimWithoutAddressThrowsError()
@@ -180,30 +185,38 @@ namespace Hashgraph.Test.Claims
             Assert.Equal("ClaimDuration", exception.ParamName);
             Assert.StartsWith("Claim Duration must have some length.", exception.Message);
         }
-        [Fact(DisplayName = "Add Claim: Adding claim without all signatures throws an error.")]
-        public async Task AddingClaimWithoutAllSignaturesThrowsError()
+        [Fact(DisplayName = "NOT SUPPORTED: Delete Claim: Can Delete a Claim")]
+        public async Task AddingClaimWithoutAllSignaturesThrowsErrorNotSupported()
         {
-            await using var test = await TestAccount.CreateAsync(_network);
+            var ex = await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(AddingClaimWithoutAllSignaturesThrowsError);
+            Assert.StartsWith("Assert.Throws() Failure", ex.Message);
+            Assert.True(ex.Message.IndexOf("Transaction Failed Pre-Check: NotSupported") > 0);
 
-            var (publicKey1, privateKey1) = Generator.KeyPair();
-            var (publicKey2, privateKey2) = Generator.KeyPair();
-            var claim = new Claim
+            //[Fact(DisplayName = "Add Claim: Adding claim without all signatures throws an error.")]
+            async Task AddingClaimWithoutAllSignaturesThrowsError()
             {
-                Address = test.Record.Address,
-                Hash = Generator.SHA384Hash(),
-                Endorsements = new Endorsement[] { publicKey1, publicKey2 },
-                ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
-            };
+                await using var test = await TestAccount.CreateAsync(_network);
 
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await test.Client.AddClaimAsync(claim, ctx =>
+                var (publicKey1, privateKey1) = Generator.KeyPair();
+                var (publicKey2, privateKey2) = Generator.KeyPair();
+                var claim = new Claim
                 {
-                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
+                    Address = test.Record.Address,
+                    Hash = Generator.SHA384Hash(),
+                    Endorsements = new Endorsement[] { publicKey1, publicKey2 },
+                    ClaimDuration = TimeSpan.FromDays(Generator.Integer(10, 20))
+                };
+
+                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+                {
+                    await test.Client.AddClaimAsync(claim, ctx =>
+                    {
+                        ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
+                    });
                 });
-            });
-            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
-            Assert.StartsWith("Unable to attach claim, status: InvalidSignature", tex.Message);
+                Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+                Assert.StartsWith("Unable to attach claim, status: InvalidSignature", tex.Message);
+            }
         }
     }
 }

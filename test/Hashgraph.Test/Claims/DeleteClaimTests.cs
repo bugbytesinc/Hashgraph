@@ -18,7 +18,7 @@ namespace Hashgraph.Test.Claims
         [Fact(DisplayName = "NOT SUPPORTED: Delete Claim: Can Delete a Claim")]
         public async Task CanDeleteAClaimNotSupported()
         {
-            Assert.Equal(ResponseCode.InsufficientTxFee, (await Assert.ThrowsAsync<PrecheckException>(CanDeleteAClaim)).Status);
+            Assert.Equal(ResponseCode.NotSupported, (await Assert.ThrowsAsync<PrecheckException>(CanDeleteAClaim)).Status);
 
             //[Fact(DisplayName = "Delete Claim: Can Delete a Claim")]
             async Task CanDeleteAClaim()
