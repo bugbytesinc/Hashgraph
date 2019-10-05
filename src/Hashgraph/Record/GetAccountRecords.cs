@@ -11,7 +11,8 @@ namespace Hashgraph
     {
         /// <summary>
         /// Retrieves the account records associated with an account that are presently
-        /// held within the network.
+        /// held within the network because they exceeded the receive or send threshold
+        /// values for autogeneration of records.
         /// </summary>
         /// <param name="address">
         /// The Hedera Network Address to retrieve associated records.

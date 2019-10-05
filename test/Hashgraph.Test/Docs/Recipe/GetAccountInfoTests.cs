@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 namespace Hashgraph.Tests.Docs.Recipe
 {
     [Collection(nameof(NetworkCredentials))]
-    public class GetFileInfoTests
+    public class GetAccountInfoTests
     {
         // Code Example:  Docs / Recipe / Get Account Info
         static async Task Main(string[] args)
@@ -43,7 +43,7 @@ namespace Hashgraph.Tests.Docs.Recipe
         }
 
         private readonly NetworkCredentials _network;
-        public GetFileInfoTests(NetworkCredentials network, ITestOutputHelper output)
+        public GetAccountInfoTests(NetworkCredentials network, ITestOutputHelper output)
         {
             _network = network;
             _network.Output = output;
