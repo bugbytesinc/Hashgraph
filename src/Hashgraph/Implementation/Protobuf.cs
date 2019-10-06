@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Hashgraph.Extensions;
 using Proto;
 using System;
 using System.Collections.Generic;
@@ -268,6 +269,16 @@ namespace Hashgraph.Implementation
                 USDCentEquivalent = rate.CentEquiv,
                 Expiration = FromTimestamp(rate.ExpirationTime)
             };
+        }
+        internal static NodeInfo[] FromNodeAddressBook(NodeAddressBook book)
+        {
+            return book.NodeAddress.Select(a => new NodeInfo
+            {
+                IpAddress = a.IpAddress.ToStringUtf8(),
+                Port = a.Portno,
+                Memo = a.Memo.ToStringUtf8(),
+                RsaPublicKey = a.RSAPubKey
+            }).ToArray();
         }
     }
 }
