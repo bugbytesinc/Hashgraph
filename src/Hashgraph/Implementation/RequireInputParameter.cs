@@ -30,7 +30,7 @@ namespace Hashgraph.Implementation
         }
         internal static string SmartContractId(string smartContractId)
         {
-            if(string.IsNullOrWhiteSpace(smartContractId))
+            if (string.IsNullOrWhiteSpace(smartContractId))
             {
                 throw new ArgumentNullException(nameof(smartContractId), "Smart Contract ID is missing. Please check that it is not null.");
             }
@@ -111,6 +111,7 @@ namespace Hashgraph.Implementation
             }
             return transaction;
         }
+
         internal static ReadOnlyMemory<byte> Hash(ReadOnlyMemory<byte> hash)
         {
             if (hash.IsEmpty)
@@ -148,11 +149,11 @@ namespace Hashgraph.Implementation
 
         internal static (Address address, long amount)[] MultiTransfers(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses)
         {
-            if(sendAccounts is null)
+            if (sendAccounts is null)
             {
                 throw new ArgumentNullException(nameof(sendAccounts), "The send accounts parameter cannot be null.");
             }
-            if(sendAccounts.Count == 0)
+            if (sendAccounts.Count == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(sendAccounts), "There must be at least one send account to transfer money from.");
             }
@@ -166,13 +167,13 @@ namespace Hashgraph.Implementation
             }
             long total = 0;
             var list = new List<(Address address, long amount)>();
-            foreach(var pair in sendAccounts)
+            foreach (var pair in sendAccounts)
             {
-                if(pair.Key is null)
+                if (pair.Key is null)
                 {
                     throw new ArgumentNullException(nameof(sendAccounts), "Found a null entry in the send accounts list.");
                 }
-                if(pair.Value <= 0)
+                if (pair.Value <= 0)
                 {
                     throw new ArgumentOutOfRangeException(nameof(sendAccounts), "All amount entries must be positive values");
                 }
@@ -192,7 +193,7 @@ namespace Hashgraph.Implementation
                 total += pair.Value;
                 list.Add((pair.Key, pair.Value));
             }
-            if(total != 0)
+            if (total != 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(sendAccounts), "The sum of sends and receives does not balance.");
             }
@@ -320,25 +321,36 @@ namespace Hashgraph.Implementation
             }
             return requiredCount;
         }
-        internal static CreateAccountParams CreateParameters(CreateAccountParams createParameters)
+        internal static Proto.Key KeysFromCreateParameters(CreateAccountParams createParameters)
         {
             if (createParameters is null)
             {
                 throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
             }
-            if (createParameters.PublicKey.IsEmpty)
+            if (createParameters.PublicKey is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(createParameters.PublicKey), "The public key is required.");
+                if (createParameters.Endorsement is null)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(createParameters), "Both 'PublicKey' and 'Endorsement' are null, one must be specified.");
+                }
+                return Protobuf.ToPublicKey(createParameters.Endorsement);
             }
-            try
+            else if (createParameters.Endorsement is null)
             {
-                Keys.ImportPublicEd25519KeyFromBytes(createParameters.PublicKey);
+                if (createParameters.PublicKey.Value.IsEmpty)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(createParameters.PublicKey), "The 'PublicKey' must not be empty if specified.");
+                }
+                try
+                {
+                    return Protobuf.ToPublicKey(new Endorsement(Endorsement.Type.Ed25519, createParameters.PublicKey.Value));
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(createParameters.PublicKey), ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                throw new ArgumentOutOfRangeException(nameof(createParameters.PublicKey), ex.Message);
-            }
-            return createParameters;
+            throw new ArgumentOutOfRangeException(nameof(createParameters), "Both 'PublicKey' and 'Endorsement' are specified, only one without the other may be specified.");
         }
         internal static CreateFileParams CreateParameters(CreateFileParams createParameters)
         {

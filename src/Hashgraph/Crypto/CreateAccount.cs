@@ -69,17 +69,15 @@ namespace Hashgraph
         /// </summary>
         private async Task<TResult> CreateAccountImplementationAsync<TResult>(CreateAccountParams createParameters, Action<IContext>? configure) where TResult : new()
         {
-            createParameters = RequireInputParameter.CreateParameters(createParameters);
+            var publicKey = RequireInputParameter.KeysFromCreateParameters(createParameters);
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Account");
-            // Create Account requires just the 32 bits of the public key, without the prefix.
-            var publicKeyWithoutPrefix = Keys.ImportPublicEd25519KeyFromBytes(createParameters.PublicKey).Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray();
             transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
             {
-                Key = new Proto.Key { Ed25519 = ByteString.CopyFrom(publicKeyWithoutPrefix) },
+                Key = publicKey,
                 InitialBalance = createParameters.InitialBalance,
                 SendRecordThreshold = createParameters.SendThresholdCreateRecord,
                 ReceiveRecordThreshold = createParameters.ReceiveThresholdCreateRecord,

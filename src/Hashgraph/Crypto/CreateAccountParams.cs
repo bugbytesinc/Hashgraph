@@ -13,7 +13,28 @@ namespace Hashgraph
         /// length is expected to be 44 bytes long and start with the prefix 
         /// of 0x302a300506032b6570032100.
         /// </summary>
-        public ReadOnlyMemory<byte> PublicKey { get; set; }
+        /// <remarks>
+        /// If this value is <code>null</code>, then the <code>Endorsement</code>
+        /// value must be set.  Setting this value is the equivalent of creating
+        /// a single Ed25519 key endorsement.  If this value is set, then the
+        /// <code>Endorsement</code> value must be null.
+        /// At some point in the future, this property will be depricated.
+        /// </remarks>
+        public ReadOnlyMemory<byte>? PublicKey { get; set; }
+        /// <summary>
+        /// The public key structure representing the signature or signatures
+        /// required to sign on behalf of this new account.  It can represent
+        /// a single Ed25519 key, set of n-of-m keys or any other key structure
+        /// supported by the network.
+        /// </summary>
+        /// <remarks>
+        /// If this value is not <code>null</code> then the <code>PublicKey</code>
+        /// value must be set instead.  Setting that value is the equivalent of 
+        /// setting this value with a single Ed25519 key.  Alternatively, if this 
+        /// value is <code>null</code>, the <code>PublicKey</code> must 
+        /// not be set to an Ed25519 public key.
+        /// </remarks>
+        public Endorsement? Endorsement { get; set; }
         /// <summary>
         /// The initial balance that will be transferred from the 
         /// <see cref="IContext.Payer"/> account to the new account 
