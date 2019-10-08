@@ -278,7 +278,7 @@ namespace Hashgraph.Implementation
         {
             if (privateKeys.Length == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(privateKeys), "At least one private key is required.");
+                throw new ArgumentOutOfRangeException(nameof(privateKeys), "The Account object constructor was given no private signing keys, it requires least one (do you need an Address object instead?)");
             }
             var result = new Key[privateKeys.Length];
             for (int i = 0; i < privateKeys.Length; i++)
@@ -289,7 +289,7 @@ namespace Hashgraph.Implementation
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(privateKeys), ex.Message);
+                    throw new ArgumentOutOfRangeException(nameof(privateKeys), $"Unable to create Account object, {ex.Message}");
                 }
             }
             return result;
