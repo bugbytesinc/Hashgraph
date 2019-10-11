@@ -188,7 +188,11 @@ namespace Hashgraph
                     }
                     catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable)
                     {
-                        callOnResponseReceivedHandlers(retryCount, new StringValue { Value = $"Unable to communicate with network: {rpcex.Status}" });
+                        var channel = context.GetChannel();
+                        var message = channel.State == ChannelState.Connecting ?
+                            $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
+                            $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
+                        callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
                     }
                     await Task.Delay(retryDelay * (retryCount + 1));
                 }
@@ -198,7 +202,11 @@ namespace Hashgraph
             }
             catch (RpcException rpcex)
             {
-                throw new PrecheckException($"Unable to communicate with network: {rpcex.Status}", new TxId(), ResponseCode.Unknown, rpcex);
+                var channel = context.GetChannel();
+                var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ChannelState.Connecting ?
+                    $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
+                    $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
+                throw new PrecheckException(message, new TxId(), ResponseCode.Unknown, rpcex);
             }
         }
 
