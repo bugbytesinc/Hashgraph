@@ -1,10 +1,7 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Hashgraph.Implementation;
-using NSec.Cryptography;
 using Proto;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -73,6 +70,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
+            var signatory = Transactions.GatherSignatories(context, new Signatory(payer));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Account");
             transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
@@ -85,7 +83,7 @@ namespace Hashgraph
                 AutoRenewPeriod = Protobuf.ToDuration(createParameters.AutoRenewPeriod),
                 ProxyAccountID = createParameters.Proxy is null ? null : Protobuf.ToAccountID(createParameters.Proxy),
             };
-            var request = Transactions.SignTransaction(transactionBody, payer);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);

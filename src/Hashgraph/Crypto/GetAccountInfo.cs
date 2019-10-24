@@ -41,7 +41,8 @@ namespace Hashgraph
             long cost = (long)response.CryptoGetInfo.Header.Cost;
             if (cost > 0)
             {
-                query.CryptoGetInfo.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Account Info", out var transactionId);
+                var transactionId = Transactions.GetOrCreateTransactionID(context);
+                query.CryptoGetInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Account Info", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
                 ValidateResult.PreCheck(transactionId, getResponseCode(response));
             }

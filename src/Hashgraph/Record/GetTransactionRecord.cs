@@ -80,7 +80,8 @@ namespace Hashgraph
             long cost = (long)response.TransactionGetRecord.Header.Cost;
             if (cost > 0)
             {
-                query.TransactionGetRecord.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Transaction Record", out var transactionId);
+                var transactionId = Transactions.GetOrCreateTransactionID(context);
+                query.TransactionGetRecord.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Transaction Record", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
                 var responseCode = getResponseCode(response);
                 if (responseCode != ResponseCodeEnum.Ok)

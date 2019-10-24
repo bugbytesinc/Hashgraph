@@ -44,7 +44,8 @@ namespace Hashgraph
             long cost = (long)response.CryptoGetAccountRecords.Header.Cost;
             if (cost > 0)
             {
-                query.CryptoGetAccountRecords.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Account Records", out var transactionId);
+                var transactionId = Transactions.GetOrCreateTransactionID(context);
+                query.CryptoGetAccountRecords.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Account Records", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
                 ValidateResult.PreCheck(transactionId, getResponseCode(response));
             }

@@ -16,6 +16,19 @@ namespace Hashgraph
     /// </summary>
     internal static class Transactions
     {
+        internal static Signatory GatherSignatories(ContextStack context, params Signatory[] extraSignatories)
+        {
+            var signatories = new List<Signatory>(1 + extraSignatories.Length);
+            var signatory = context.Signatory;
+            if (!(signatory is null))
+            {
+                signatories.Add(signatory);
+            }
+            signatories.AddRange(extraSignatories);
+            return signatories.Count == 1 ?
+                signatories[0] :
+                new Signatory(signatories.ToArray());
+        }
         internal static TransactionID GetOrCreateTransactionID(ContextStack context)
         {
             var preExistingTransaction = context.Transaction;
@@ -84,12 +97,12 @@ namespace Hashgraph
                 ResponseType = ResponseType.CostAnswer
             };
         }
-        internal static QueryHeader CreateAndSignQueryHeader(ContextStack context, long queryFee, string defaultMemo, out TransactionID transactionId)
+        internal static async Task<QueryHeader> CreateAndSignQueryHeaderAsync(ContextStack context, long queryFee, string defaultMemo, TransactionID transactionId)
         {
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
+            var signatory = GatherSignatories(context, new Signatory(payer));
             var fee = RequireInContext.QueryFee(context, queryFee);
-            transactionId = GetOrCreateTransactionID(context);
             TransactionBody transactionBody = new TransactionBody
             {
                 TransactionID = transactionId,
@@ -100,36 +113,16 @@ namespace Hashgraph
             };
             var transfers = CreateCryptoTransferList((payer, -fee), (gateway, fee));
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
-            return SignQueryHeader(transactionBody, payer);
-        }
-        internal static Proto.Transaction SignTransaction(TransactionBody transactionBody, params ISigner[] signers)
-        {
-            var map = new Dictionary<ByteString, SignaturePair>();
-            var bytes = transactionBody.ToByteArray();
-            foreach (var signer in signers)
-            {
-                foreach (var signature in signer.Sign(bytes))
-                {
-                    map[signature.PubKeyPrefix] = signature;
-                }
-            }
-            var signatures = new SignatureMap();
-            foreach (var signature in map.Values)
-            {
-                signatures.SigPair.Add(signature);
-            }
-            return new Proto.Transaction
-            {
-                BodyBytes = ByteString.CopyFrom(bytes),
-                SigMap = signatures
-            };
-        }
-        internal static QueryHeader SignQueryHeader(TransactionBody transactionBody, params ISigner[] signers)
-        {
             return new QueryHeader
             {
-                Payment = SignTransaction(transactionBody, signers)
+                Payment = await SignTransactionAsync(transactionBody, signatory)
             };
+        }
+        internal static async Task<Proto.Transaction> SignTransactionAsync(TransactionBody transactionBody, ISignatory signatory)
+        {
+            var invoice = new Invoice(transactionBody);
+            await signatory.SignAsync(invoice);
+            return invoice.GetSignedTransaction();
         }
         internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {

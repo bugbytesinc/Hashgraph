@@ -159,12 +159,13 @@ namespace Hashgraph
             var transferList = RequireInputParameter.MultiTransfers(sendAccounts, receiveAddresses);
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
-            var payers = sendAccounts.Keys.ToArray<ISigner>().Append(RequireInContext.Payer(context)).ToArray();
+            var payers = new Signatory(sendAccounts.Keys.ToArray<ISignatory>().Append(RequireInContext.Payer(context)).Select(s => new Signatory(s)).ToArray());
+            var signatory = Transactions.GatherSignatories(context, new Signatory(payers));
             var transfers = Transactions.CreateCryptoTransferList(transferList);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Transfer Crypto");
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
-            var request = Transactions.SignTransaction(transactionBody, payers);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);

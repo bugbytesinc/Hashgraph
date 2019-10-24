@@ -1,5 +1,4 @@
-﻿using Proto;
-using System;
+﻿using System.Threading.Tasks;
 
 namespace Hashgraph.Implementation
 {
@@ -7,8 +6,8 @@ namespace Hashgraph.Implementation
     /// Internal interface implemented by objects that 
     /// can sign transactions.  Not intended for public use.
     /// </summary>
-    internal interface ISigner
+    internal interface ISignatory
     {
-        SignaturePair[] Sign(ReadOnlyMemory<byte> data);
+        Task SignAsync(IInvoice invoice);
     }
 }

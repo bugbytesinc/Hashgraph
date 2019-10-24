@@ -1,6 +1,7 @@
 ﻿using NSec.Cryptography;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Hashgraph.Implementation
 {
@@ -87,6 +88,7 @@ namespace Hashgraph.Implementation
             }
             return fromAccount;
         }
+
         internal static Address ToAddress(Address toAddress)
         {
             if (toAddress is null)
@@ -276,12 +278,12 @@ namespace Hashgraph.Implementation
         }
         internal static Key[] PrivateKeys(ReadOnlyMemory<byte>[] privateKeys)
         {
-            if (privateKeys.Length == 0)
+            if(privateKeys is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(privateKeys), "The Account object constructor was given no private signing keys, it requires least one (do you need an Address object instead?)");
+                return new Key[0];
             }
             var result = new Key[privateKeys.Length];
-            for (int i = 0; i < privateKeys.Length; i++)
+            for (int i = 0; i < result.Length; i++)
             {
                 try
                 {
@@ -320,6 +322,33 @@ namespace Hashgraph.Implementation
                 throw new ArgumentOutOfRangeException(nameof(requiredCount), "The required number of keys for a valid signature cannot exceed the number of public keys provided.");
             }
             return requiredCount;
+        }
+        internal static Signatory[] Signatories(Signatory[] signatories)
+        {
+            if (signatories is null)
+            {
+                throw new ArgumentNullException(nameof(signatories), "The list of signatories may not be null.");
+            }
+            else if (signatories.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(signatories), "At least one Signatory in a list is required.");
+            }
+            for (int i = 0; i < signatories.Length; i++)
+            {
+                if (signatories[i] is null)
+                {
+                    throw new ArgumentNullException(nameof(signatories), "No signatory within the list may be null.");
+                }
+            }
+            return signatories;
+        }
+        internal static Func<IInvoice, Task> SigningCallback(Func<IInvoice,Task> signingCallback)
+        {
+            if (signingCallback is null)
+            {
+                throw new ArgumentNullException(nameof(signingCallback), "The signing callback must not be null.");
+            }
+            return signingCallback;
         }
         internal static Proto.Key KeysFromCreateParameters(CreateAccountParams createParameters)
         {
