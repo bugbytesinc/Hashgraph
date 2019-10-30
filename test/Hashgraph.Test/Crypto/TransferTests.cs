@@ -129,7 +129,7 @@ namespace Hashgraph.Test.Crypto
             var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
-            var sendAccounts = new Dictionary<Account, long> { { payer, 2 * transferAmount } };
+            var sendAccounts = new Dictionary<Account, long> { {_network.PayerAsAccountWithPrivateKey, 2 * transferAmount } };
             var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
 
             var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
@@ -156,7 +156,7 @@ namespace Hashgraph.Test.Crypto
             var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
-            var sendAccounts = new Dictionary<Account, long> { { payer, transferAmount } };
+            var sendAccounts = new Dictionary<Account, long> { { _network.PayerAsAccountWithPrivateKey, transferAmount } };
             var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
 
             var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
@@ -176,7 +176,7 @@ namespace Hashgraph.Test.Crypto
             var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
-            var sendAccounts = new Dictionary<Account, long> { { payer, 3 * transferAmount } };
+            var sendAccounts = new Dictionary<Account, long> { { _network.PayerAsAccountWithPrivateKey, 3 * transferAmount } };
             var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount }, { payer, transferAmount } };
 
             var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx => ctx.FeeLimit = 1_000_000);
@@ -185,7 +185,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal((ulong)transferAmount + fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
             Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
 
-            sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount }, { payer, transferAmount } };
+            sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount }, { _network.PayerAsAccountWithPrivateKey, transferAmount } };
             receiveAddresses = new Dictionary<Address, long> { { payer, 3 * transferAmount } };
             var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx => ctx.FeeLimit = 1_000_000);
             Assert.Equal(ResponseCode.Success, returnRecord.Status);

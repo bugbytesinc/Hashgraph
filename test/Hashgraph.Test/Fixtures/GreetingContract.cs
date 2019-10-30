@@ -7,6 +7,7 @@ namespace Hashgraph.Test.Fixtures
 {
     public class GreetingContract : IAsyncDisposable
     {
+        public string TestInstanceId;
         public string Memo;
         public Client Client;
         public CreateFileParams FileParams;
@@ -44,7 +45,8 @@ namespace Hashgraph.Test.Fixtures
         {
             var fx = new GreetingContract();
             fx.Network = networkCredentials;
-            fx.Memo = "Greeting Contract Create: Instantiating Contract Instance " + Generator.Code(10);
+            fx.TestInstanceId = Generator.Code(10);
+            fx.Memo = "Greeting Contract Create: Instantiating Contract Instance " + fx.TestInstanceId;
             fx.FileParams = new CreateFileParams
             {
                 Expiration = DateTime.UtcNow.AddSeconds(7890000),
@@ -54,7 +56,7 @@ namespace Hashgraph.Test.Fixtures
             fx.Client = networkCredentials.NewClient();
             fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
-                ctx.Memo = "Greeting Contract Create: Uploading Contract File " + Generator.Code(10);
+                ctx.Memo = "Greeting Contract Create: Uploading Contract File " + fx.TestInstanceId;
             });
             Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
             fx.ContractParams = new CreateContractParams
@@ -81,11 +83,11 @@ namespace Hashgraph.Test.Fixtures
             {
                 await Client.DeleteFileAsync(FileRecord.File, ctx =>
                 {
-                    ctx.Memo = "Greeting Contract Teardown: Delete Contract File (may already be deleted)";
+                    ctx.Memo = "Greeting Contract Teardown: Delete Contract File (may already be deleted) " + TestInstanceId;
                 });
                 await Client.DeleteContractAsync(ContractRecord.Contract, Network.Payer, ctx =>
                 {
-                    ctx.Memo = "Greeting Contract Teardown: Delete Contract (may already be deleted)";
+                    ctx.Memo = "Greeting Contract Teardown: Delete Contract (may already be deleted) " + TestInstanceId;
                 });
             }
             catch

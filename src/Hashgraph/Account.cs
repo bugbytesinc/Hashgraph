@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using NSec.Cryptography;
 using System;
 using System.Linq;
@@ -29,6 +28,15 @@ namespace Hashgraph
         /// Private Key Implementation
         /// </summary>
         private readonly Key[] _keys;
+#pragma warning disable CS0618 // Type or member is obsolete
+        /// <summary>
+        /// Public Constructor, an <code>Account</code> is immutable after creation.
+        /// </summary>
+        /// <param name="address">
+        /// Network Address associated with this account.
+        /// </param>
+        public Account(Address address) : this(address.RealmNum, address.ShardNum, address.AccountNum, new ReadOnlyMemory<byte>[0]) { }
+#pragma warning restore CS0618 // Type or member is obsolete
         /// <summary>
         /// Public Constructor, an <code>Account</code> is immutable after creation.
         /// </summary>
@@ -40,7 +48,23 @@ namespace Hashgraph
         /// signing transactions.  It is expected to be 48 bytes in length, prefixed 
         /// with <code>0x302e020100300506032b6570</code>.
         /// </param>
+        [Obsolete("Please use Signatory object to hold private keys instead of the Account Object, The Account object will be replaced with the Address object in a future release.")]
         public Account(Address address, params ReadOnlyMemory<byte>[] privateKeys) : this(address.RealmNum, address.ShardNum, address.AccountNum, privateKeys) { }
+#pragma warning disable CS0618 // Type or member is obsolete
+        /// <summary>
+        /// Public Constructor, an <code>Account</code> is immutable after creation.
+        /// </summary>
+        /// <param name="realmNum">
+        /// Network Realm Number
+        /// </param>
+        /// <param name="shardNum">
+        /// Network Shard Number
+        /// </param>
+        /// <param name="accountNum">
+        /// Network Account Number
+        /// </param>
+        public Account(long realmNum, long shardNum, long accountNum) : this(realmNum, shardNum, accountNum, new ReadOnlyMemory<byte>[0]) { }
+#pragma warning restore CS0618 // Type or member is obsolete
         /// <summary>
         /// Public Constructor, an <code>Account</code> is immutable after creation.
         /// </summary>
@@ -58,6 +82,7 @@ namespace Hashgraph
         /// signing transactions.  It is expected to be 48 bytes in length, prefixed 
         /// with <code>0x302e020100300506032b6570</code>.
         /// </param>
+        [Obsolete("Please use Signatory object to hold private keys instead of the Account Object, The Account object will be replaced with the Address object in a future release.")]
         public Account(long realmNum, long shardNum, long accountNum, params ReadOnlyMemory<byte>[] privateKeys)
         {
             RealmNum = RequireInputParameter.RealmNumber(realmNum);
@@ -78,7 +103,7 @@ namespace Hashgraph
         /// </param>
         Task ISignatory.SignAsync(IInvoice invoice)
         {
-            foreach(var key in _keys)
+            foreach (var key in _keys)
             {
                 invoice.AddSignature(
                     KeyType.Ed25519,

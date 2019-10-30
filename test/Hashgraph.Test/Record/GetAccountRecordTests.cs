@@ -30,7 +30,7 @@ namespace Hashgraph.Test.Record
             {
                 for (int i = 0; i < transactionCount; i++)
                 {
-                    await client.TransferWithRecordAsync(childAccount, parentAccount, transferAmount);
+                    await client.TransferAsync(childAccount, parentAccount, transferAmount);
                 }
             }
             var records = await fxAccount.Client.GetAccountRecordsAsync(childAccount);

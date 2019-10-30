@@ -12,7 +12,8 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> PublicKey;
         public ReadOnlyMemory<byte> PrivateKey;
         public DateTime Expiration;
-        public Account Payer;
+        public Address Payer;
+        public Signatory Signatory;
         public Client Client;
         public FileRecord Record;
         public NetworkCredentials Network;
@@ -25,9 +26,10 @@ namespace Hashgraph.Test.Fixtures
             test.Contents = Encoding.Unicode.GetBytes("Hello From .NET" + Generator.Code(50)).Take(48).ToArray();
             (test.PublicKey, test.PrivateKey) = Generator.KeyPair();
             test.Expiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddSeconds(7890000));
-            test.Payer = networkCredentials.PayerWithKeys(networkCredentials.PrivateKey, test.PrivateKey);
+            test.Payer = networkCredentials.Payer;
+            test.Signatory = new Signatory(networkCredentials.Signatory, test.PrivateKey);
             test.Client = networkCredentials.NewClient();
-            test.Client.Configure(ctx => { ctx.Payer = test.Payer; });
+            test.Client.Configure(ctx => { ctx.Signatory = test.Signatory; });
             test.Record = await test.Client.CreateFileWithRecordAsync(new CreateFileParams
             {
                 Expiration = test.Expiration,

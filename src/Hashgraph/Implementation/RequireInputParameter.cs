@@ -38,13 +38,13 @@ namespace Hashgraph.Implementation
             return smartContractId;
         }
 
-        internal static Account AccountToDelete(Account accountToDelete)
+        internal static Address AddressToDelete(Address addressToDelete)
         {
-            if (accountToDelete is null)
+            if (addressToDelete is null)
             {
-                throw new ArgumentNullException(nameof(accountToDelete), "Account to Delete is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(addressToDelete), "Address to Delete is missing. Please check that it is not null.");
             }
-            return accountToDelete;
+            return addressToDelete;
         }
         internal static Address File(Address file)
         {
@@ -89,6 +89,14 @@ namespace Hashgraph.Implementation
             return fromAccount;
         }
 
+        internal static Address FromAddress(Address fromAddress)
+        {
+            if (fromAddress is null)
+            {
+                throw new ArgumentNullException(nameof(fromAddress), "Address to transfer from is missing. Please check that it is not null.");
+            }
+            return fromAddress;
+        }
         internal static Address ToAddress(Address toAddress)
         {
             if (toAddress is null)
@@ -104,6 +112,27 @@ namespace Hashgraph.Implementation
                 throw new ArgumentOutOfRangeException(nameof(amount), "The amount to transfer must be non-negative.");
             }
             return amount;
+        }
+        internal static (Address address, long amount)[] TransferList(Dictionary<Address,long> transfers)
+        {
+            if(transfers is null)
+            {
+                throw new ArgumentNullException(nameof(transfers), "The dictionary of transfers can not be null.");
+            }
+            if(transfers.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(transfers), "The dictionary of transfers can not be empty.");
+            }
+            var result = new List<(Address address, long amount)>();
+            foreach(var transfer in transfers)
+            {
+                if(transfer.Value == 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(transfers), $"The amount to transfer to/from {transfer.Key.RealmNum}.{transfer.Key.ShardNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                }
+                result.Add((transfer.Key, transfer.Value));
+            }
+            return result.ToArray();
         }
         internal static TxId Transaction(TxId transaction)
         {

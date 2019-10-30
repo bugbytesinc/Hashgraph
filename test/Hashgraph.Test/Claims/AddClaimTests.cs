@@ -36,7 +36,7 @@ namespace Hashgraph.Test.Claims
 
                 var receipt = await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = _network.PayerWithKeys(privateKey1, privateKey2);
+                    ctx.Signatory = new Signatory(ctx.Signatory, privateKey1, privateKey2);
                 });
                 Assert.Equal(ResponseCode.Success, receipt.Status);
             }

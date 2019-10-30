@@ -195,7 +195,7 @@ namespace Hashgraph.Test.Crypto
                 Endorsement = publicKey3
             }, ctx =>
             {
-                ctx.Payer = _network.PayerWithKeys(privateKey1a, privateKey2a);
+                ctx.Signatory = new Signatory(_network.Signatory, privateKey1a, privateKey2a);
             });
 
             // Now try with proper set of signatures

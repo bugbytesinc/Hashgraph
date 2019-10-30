@@ -59,7 +59,7 @@ namespace Hashgraph.Test.Contract
             var (publicKey, privateKey) = Generator.KeyPair();
             await using var fx = await GreetingContract.SetupAsync(_network);
             fx.ContractParams.Administrator = publicKey;  // Default is to use Payor's
-            fx.Client.Configure(ctx => ctx.Payer = _network.PayerWithKeys(privateKey));
+            fx.Client.Configure(ctx => ctx.Signatory = new Signatory(ctx.Signatory, privateKey));
             await fx.CompleteCreateAsync();
 
             await using (var client = _network.NewClient())  // Will not have private key

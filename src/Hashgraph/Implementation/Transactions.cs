@@ -16,15 +16,21 @@ namespace Hashgraph
     /// </summary>
     internal static class Transactions
     {
-        internal static Signatory GatherSignatories(ContextStack context, params Signatory[] extraSignatories)
+        internal static Signatory GatherSignatories(ContextStack context, params Signatory?[] extraSignatories)
         {
             var signatories = new List<Signatory>(1 + extraSignatories.Length);
-            var signatory = context.Signatory;
-            if (!(signatory is null))
+            var contextSignatory = context.Signatory;
+            if (!(contextSignatory is null))
             {
-                signatories.Add(signatory);
+                signatories.Add(contextSignatory);
             }
-            signatories.AddRange(extraSignatories);
+            foreach(var extraSignatory in extraSignatories)
+            {
+                if(!(extraSignatory is null))
+                {
+                    signatories.Add(extraSignatory);
+                }
+            }
             return signatories.Count == 1 ?
                 signatories[0] :
                 new Signatory(signatories.ToArray());

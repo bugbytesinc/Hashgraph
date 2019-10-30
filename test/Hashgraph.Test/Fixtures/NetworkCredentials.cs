@@ -24,7 +24,9 @@ namespace Hashgraph.Test.Fixtures
         public long AccountNumber { get { return getAsInt("account:number"); } }
         public ReadOnlyMemory<byte> PrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
         public ReadOnlyMemory<byte> PublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
-        public Account Payer { get { return new Account(AccountRealm, AccountShard, AccountNumber, PrivateKey); } }
+        public Address Payer { get { return new Address(AccountRealm, AccountShard, AccountNumber); } }
+        public Account PayerAsAccountWithPrivateKey { get { return new Account(AccountRealm, AccountShard, AccountNumber, PrivateKey); } }
+        public Signatory Signatory { get { return new Signatory(PrivateKey); } }
         public Gateway Gateway { get { return new Gateway($"{NetworkAddress}:{NetworkPort}", ServerRealm, ServerShard, ServerNumber); } }
         public ITestOutputHelper Output { get; set; }
         public NetworkCredentials()
@@ -40,25 +42,22 @@ namespace Hashgraph.Test.Fixtures
             return new Client(ctx =>
             {
                 ctx.Gateway = Gateway;
-                ctx.Payer = Payer;
+                ctx.Payer = new Account(Payer);
+                ctx.Signatory = Signatory;
                 ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
                 ctx.OnSendingRequest = OutputSendingRequest;
                 ctx.OnResponseReceived = OutputReceivResponse;
                 ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
             });
         }
-        public Account PayerWithKeys(params ReadOnlyMemory<byte>[] privateKeys)
-        {
-            return new Account(AccountRealm, AccountShard, AccountNumber, privateKeys.Append(PrivateKey).ToArray());
-        }
         public async Task<long> TinybarsFromGas(double usd)
         {
-            if(_exchangeRate == null)
+            if (_exchangeRate == null)
             {
-                await using(var client = NewClient())
+                await using (var client = NewClient())
                 {
                     _exchangeRate = (await client.GetExchangeRatesAsync()).Current;
-                }                
+                }
             }
             // This is not necessarily correct, but hopefully stable.
             return ((long)(usd * 100 * _exchangeRate.HBarEquivalent)) / (_exchangeRate.USDCentEquivalent);
@@ -84,7 +83,7 @@ namespace Hashgraph.Test.Fixtures
                 }
                 else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.BodyBytes != null)
                 {
-                    if(payment.BodyBytes.IsEmpty)
+                    if (payment.BodyBytes.IsEmpty)
                     {
                         Output.WriteLine($"{DateTime.UtcNow}  QX ASK → {JsonFormatter.Default.Format(message)}");
                     }
