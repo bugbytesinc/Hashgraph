@@ -41,7 +41,8 @@ namespace Hashgraph
             long cost = (long)response.ContractGetInfo.Header.Cost;
             if (cost > 0)
             {
-                query.ContractGetInfo.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Contract Info", out var transactionId);
+                var transactionId = Transactions.GetOrCreateTransactionID(context);
+                query.ContractGetInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Contract Info", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
                 ValidateResult.PreCheck(transactionId, getResponseCode(response));
             }

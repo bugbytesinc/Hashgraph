@@ -41,7 +41,8 @@ namespace Hashgraph
             var cost = (long)response.CryptogetAccountBalance.Header.Cost;
             if (cost > 0)
             {
-                query.CryptogetAccountBalance.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Account Balance", out var transactionId);
+                var transactionId = Transactions.GetOrCreateTransactionID(context);
+                query.CryptogetAccountBalance.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Account Balance", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
                 ValidateResult.PreCheck(transactionId, getResponseCode(response));
             }

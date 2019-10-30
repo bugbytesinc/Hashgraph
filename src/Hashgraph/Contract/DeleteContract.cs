@@ -39,6 +39,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
+            var signatory = Transactions.GatherSignatories(context, new Signatory(payer));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Delete Contract");
             transactionBody.ContractDeleteInstance = new ContractDeleteTransactionBody
@@ -46,7 +47,7 @@ namespace Hashgraph
                 ContractID = Protobuf.ToContractID(contractToDelete),
                 TransferAccountID = Protobuf.ToAccountID(transferToAddress)
             };
-            var request = Transactions.SignTransaction(transactionBody, payer);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);

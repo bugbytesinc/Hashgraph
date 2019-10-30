@@ -20,6 +20,7 @@ namespace Hashgraph.Implementation
 
         public Gateway? Gateway { get => get<Gateway>(nameof(Gateway)); set => set(nameof(Gateway), value); }
         public Account? Payer { get => get<Account>(nameof(Payer)); set => set(nameof(Payer), value); }
+        public Signatory? Signatory { get => get<Signatory>(nameof(Signatory)); set => set(nameof(Signatory), value); }
         public long FeeLimit { get => get<long>(nameof(FeeLimit)); set => set(nameof(FeeLimit), value); }
         public TimeSpan TransactionDuration { get => get<TimeSpan>(nameof(TransactionDuration)); set => set(nameof(TransactionDuration), value); }
         public int RetryCount { get => get<int>(nameof(RetryCount)); set => set(nameof(RetryCount), value); }
@@ -43,6 +44,7 @@ namespace Hashgraph.Implementation
             {
                 case nameof(Gateway):
                 case nameof(Payer):
+                case nameof(Signatory):
                 case nameof(FeeLimit):
                 case nameof(RetryCount):
                 case nameof(RetryDelay):

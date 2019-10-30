@@ -3,6 +3,7 @@ using Hashgraph.Implementation;
 using NSec.Cryptography;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Hashgraph
 {
@@ -10,7 +11,7 @@ namespace Hashgraph
     /// Represents a Hedera Network Address with an associated 
     /// private keys capable of signing transactions.
     /// </summary>
-    public sealed class Account : ISigner, IDisposable, IEquatable<Account>
+    public sealed class Account : ISignatory, IDisposable, IEquatable<Account>
     {
         /// <summary>
         /// Network Realm Number for Account
@@ -69,18 +70,22 @@ namespace Hashgraph
         /// This method is used internally by the library at the point when it needs this 
         /// account to sign a transaction.  It is not intended to be used by client code.
         /// </summary>
-        /// <param name="data">
-        /// The bytes to sign, typically this is a transaction message body serialized in 
-        /// the protobuf format.
+        /// <param name="invoice">
+        /// The context object containing the transaction message body serialized
+        /// in protobuf format and a method receiving the signature(s).  Accounts
+        /// can only sign Ed25519 Signatures, one for each private key held by 
+        /// this object.
         /// </param>
-        /// <returns>A list of Ed25519 Signatures, one for each private key held by this object.</returns>
-        Proto.SignaturePair[] ISigner.Sign(ReadOnlyMemory<byte> data)
+        Task ISignatory.SignAsync(IInvoice invoice)
         {
-            return _keys.Select(k => new Proto.SignaturePair
+            foreach(var key in _keys)
             {
-                PubKeyPrefix = ByteString.CopyFrom(k.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray()),
-                Ed25519 = ByteString.CopyFrom(SignatureAlgorithm.Ed25519.Sign(k, data.Span))
-            }).ToArray();
+                invoice.AddSignature(
+                    KeyType.Ed25519,
+                    key.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray(),
+                    SignatureAlgorithm.Ed25519.Sign(key, invoice.TxBytes.Span));
+            }
+            return Task.CompletedTask;
         }
         /// <summary>
         /// .NET Dispose implementation, releases internal resources holding 

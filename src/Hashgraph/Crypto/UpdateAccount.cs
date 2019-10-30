@@ -97,10 +97,11 @@ namespace Hashgraph
             {
                 updateAccountBody.ProxyAccountID = Protobuf.ToAccountID(updateParameters.Proxy);
             }
+            var signatory = Transactions.GatherSignatories(context, new Signatory(updateParameters.Account), new Signatory(payer));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update Account");
             transactionBody.CryptoUpdateAccount = updateAccountBody;
-            var request = Transactions.SignTransaction(transactionBody, updateParameters.Account, payer);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);

@@ -67,6 +67,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
+            var signatory = Transactions.GatherSignatories(context, new Signatory(payer));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Contract");
             transactionBody.ContractCreateInstance = new ContractCreateTransactionBody
@@ -79,7 +80,7 @@ namespace Hashgraph
                 ConstructorParameters = ByteString.CopyFrom(Abi.EncodeArguments(createParameters.Arguments).ToArray()),
                 Memo = context.Memo ?? "Create Contract"
             };
-            var request = Transactions.SignTransaction(transactionBody, payer);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);

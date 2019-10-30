@@ -47,7 +47,8 @@ namespace Hashgraph
             long cost = (long)response.CryptoGetProxyStakers.Header.Cost;
             if (cost > 0)
             {
-                query.CryptoGetProxyStakers.Header = Transactions.CreateAndSignQueryHeader(context, cost, "Get Proxy Stakers", out var transactionId);
+                var transactionId = Transactions.GetOrCreateTransactionID(context);
+                query.CryptoGetProxyStakers.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Proxy Stakers", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
                 ValidateResult.PreCheck(transactionId, getResponseCode(response));
             }

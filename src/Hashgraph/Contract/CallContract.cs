@@ -73,6 +73,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
+            var signatory = Transactions.GatherSignatories(context, new Signatory(payer));
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Call Contract");
             transactionBody.ContractCall = new ContractCallTransactionBody
@@ -82,7 +83,7 @@ namespace Hashgraph
                 Amount = callParmeters.PayableAmount,
                 FunctionParameters = Abi.EncodeFunctionWithArguments(callParmeters.FunctionName, callParmeters.FunctionArgs).ToByteString()
             };
-            var request = Transactions.SignTransaction(transactionBody, payer);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);

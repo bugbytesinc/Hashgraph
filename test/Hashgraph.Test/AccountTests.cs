@@ -77,18 +77,27 @@ namespace Hashgraph.Tests
             Assert.StartsWith("Unable to create Account object, Private Key cannot be empty.", exception.Message);
         }
         [Fact(DisplayName = "Accounts: Empty Array of Private keys throws Exception")]
-        public void EmptyArrayOfKeysThrowsError()
+        public void EmptyArrayOfKeysSucceeds()
         {
             var realmNum = Generator.Integer(0, 200);
             var shardNum = Generator.Integer(0, 200);
             var accountNum = Generator.Integer(3, 200);
             var privateKeys = new ReadOnlyMemory<byte>[0];
-            var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
-            {
-                new Account(realmNum, shardNum, accountNum, privateKeys);
-            });
-            Assert.Equal("privateKeys", exception.ParamName);
-            Assert.StartsWith("The Account object constructor was given no private signing keys, it requires least one (do you need an Address object instead?)", exception.Message);
+            using var account = new Account(realmNum, shardNum, accountNum, privateKeys);
+            Assert.Equal(realmNum, account.RealmNum);
+            Assert.Equal(shardNum, account.ShardNum);
+            Assert.Equal(accountNum, account.AccountNum);
+        }
+        [Fact(DisplayName = "Accounts: Constructor without keys succeeds.")]
+        public void ConstructorWithoutKeysSucceeds()
+        {
+            var realmNum = Generator.Integer(0, 200);
+            var shardNum = Generator.Integer(0, 200);
+            var accountNum = Generator.Integer(3, 200);
+            using var account = new Account(realmNum, shardNum, accountNum);
+            Assert.Equal(realmNum, account.RealmNum);
+            Assert.Equal(shardNum, account.ShardNum);
+            Assert.Equal(accountNum, account.AccountNum);
         }
         [Fact(DisplayName = "Accounts: Invalid Bytes in Private key throws Exception")]
         public void InvalidBytesForValueForKeyThrowsError()

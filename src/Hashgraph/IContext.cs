@@ -33,6 +33,21 @@ namespace Hashgraph
         /// </summary>
         Account? Payer { get; set; }
         /// <summary>
+        /// The private key, keys or signing callback method that 
+        /// are needed to sign the transaction.  At a minimum, this
+        /// typically includes the Payer's signing key, but can also
+        /// include other signatories such as those required when 
+        /// creating claims, files and contracts.
+        /// </summary>
+        /// <remarks>
+        /// The library is currently in transition away from the
+        /// `Account` object that embeds signing keys in favor of
+        /// the explicit list of Signatories.  At some point in the
+        /// future, the `Payer` property will become a simple address
+        /// and the `Account` object will be removed from the library.
+        /// </remarks>
+        Signatory? Signatory { get; set; }
+        /// <summary>
         /// The maximum fee the payer is willing to pay for a transaction.
         /// </summary>
         long FeeLimit { get; set; }
