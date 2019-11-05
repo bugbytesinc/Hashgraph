@@ -81,7 +81,7 @@ namespace Hashgraph
             {
                 return true;
             }
-            if (obj is Account other)
+            if (obj is ExchangeRate other)
             {
                 return Equals(other);
             }

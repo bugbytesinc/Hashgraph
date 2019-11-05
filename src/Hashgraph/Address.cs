@@ -82,7 +82,7 @@ namespace Hashgraph
             {
                 return true;
             }
-            if (obj is Account other)
+            if (obj is Address other)
             {
                 return Equals(other);
             }

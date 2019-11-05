@@ -10,6 +10,7 @@ namespace Hashgraph
 {
     public partial class Client
     {
+        #region DEPRICATED_REMOVE_WHEN_ACCOUNTS_REMOVED
         /// <summary>
         /// Transfer tinybars from one account to another.
         /// </summary>
@@ -37,9 +38,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        [Obsolete("Please use Address objects for identifying accounts and Signatory objects to hold private keys. The Account object will be removed in a future release.")]
         public Task<TransactionReceipt> TransferAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransactionReceipt>(fromAccount, toAddress, amount, configure);
+            return TransferImplementationDeprecatedAsync<TransactionReceipt>(fromAccount, toAddress, amount, configure);
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -68,9 +70,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        [Obsolete("Please use Address objects for identifying accounts and Signatory objects to hold private keys. The Account object will be removed in a future release.")]
         public Task<TransactionRecord> TransferWithRecordAsync(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransactionRecord>(fromAccount, toAddress, amount, configure);
+            return TransferImplementationDeprecatedAsync<TransactionRecord>(fromAccount, toAddress, amount, configure);
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -101,9 +104,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        [Obsolete("Please use Address objects for identifying accounts and Signatory objects to hold private keys. The Account object will be removed in a future release.")]
         public Task<TransactionReceipt> TransferAsync(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransactionReceipt>(sendAccounts, receiveAddresses, configure);
+            return TransferImplementationDeprecatedAsync<TransactionReceipt>(sendAccounts, receiveAddresses, configure);
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -134,38 +138,340 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        [Obsolete("Please use Address objects for identifying accounts and Signatory objects to hold private keys. The Account object will be removed in a future release.")]
         public Task<TransactionRecord> TransferWithRecordAsync(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransactionRecord>(sendAccounts, receiveAddresses, configure);
+            return TransferImplementationDeprecatedAsync<TransactionRecord>(sendAccounts, receiveAddresses, configure);
         }
         /// <summary>
         /// Internal implementation for Transfer Crypto.
         /// Returns either a receipt or record or throws
         /// an exception.
         /// </summary>
-        private async Task<TResult> TransferImplementationAsync<TResult>(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> TransferImplementationDeprecatedAsync<TResult>(Account fromAccount, Address toAddress, long amount, Action<IContext>? configure) where TResult : new()
         {
             fromAccount = RequireInputParameter.FromAccount(fromAccount);
             toAddress = RequireInputParameter.ToAddress(toAddress);
             amount = RequireInputParameter.Amount(amount);
-            return await TransferImplementationAsync<TResult>(new Dictionary<Account, long> { { fromAccount, amount } }, new Dictionary<Address, long> { { toAddress, amount } }, configure);
+            var signatory = new Signatory(fromAccount);
+            var transferList = new[] { (fromAccount, -amount), (toAddress, amount) };
+            return await TransferImplementationAsync<TResult>(transferList, signatory, configure);
+        }
+        /// <summary>
+        /// Internal implementation for Transfer Crypto.
+        /// Returns either a receipt or record or throws
+        /// an exception.
+        /// </summary>
+        private Task<TResult> TransferImplementationDeprecatedAsync<TResult>(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses, Action<IContext>? configure) where TResult : new()
+        {
+            var transferList = RequireInputParameter.MultiTransfers(sendAccounts, receiveAddresses);
+            var signatory = new Signatory(sendAccounts.Keys.ToArray<ISignatory>().Select(s => new Signatory(s)).ToArray());
+            return TransferImplementationAsync<TResult>(transferList, signatory, configure);
+        }
+        #endregion DEPRICATED_REMOVE_WHEN_ACCOUNTS_REMOVED
+        /// <summary>
+        /// Transfer tinybars from one account to another.
+        /// </summary>
+        /// <param name="fromAddress">
+        /// The address to transfer the tinybars from.  Ensure that
+        /// a signatory either in the context or passed with this
+        /// call can fulfill the signing requrements to transfer 
+        /// crypto out of the account identified by this address.
+        /// </param>
+        /// <param name="toAddress">
+        /// The address receiving the tinybars.
+        /// </param>
+        /// <param name="amount">
+        /// The amount of tinybars to transfer.
+        /// </param>
+        /// <param name="signatory">
+        /// The signatory containing any additional private keys or callbacks
+        /// to meet the requirements for the sending and receiving accounts.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer receipt indicating success of the operation.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionReceipt> TransferAsync(Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
+        {
+            return TransferImplementationAsync<TransactionReceipt>(fromAddress, toAddress, amount, null, configure);
+        }
+        /// <summary>
+        /// Transfer tinybars from one account to another.
+        /// </summary>
+        /// <param name="fromAddress">
+        /// The address to transfer the tinybars from.  Ensure that
+        /// a signatory either in the context or passed with this
+        /// call can fulfill the signing requrements to transfer 
+        /// crypto out of the account identified by this address.
+        /// </param>
+        /// <param name="toAddress">
+        /// The address receiving the tinybars.
+        /// </param>
+        /// <param name="amount">
+        /// The amount of tinybars to transfer.
+        /// </param>
+        /// <param name="signatory">
+        /// The signatory containing any additional private keys or callbacks
+        /// to meet the requirements for the sending and receiving accounts.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer receipt indicating success of the operation.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionReceipt> TransferAsync(Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
+        {
+            return TransferImplementationAsync<TransactionReceipt>(fromAddress, toAddress, amount, signatory, configure);
+        }
+        /// <summary>
+        /// Transfer tinybars from one account to another.
+        /// </summary>
+        /// <param name="fromAddress">
+        /// The address to transfer the tinybars from.  Ensure that
+        /// a signatory either in the context can fulfill the signing 
+        /// requrements to transfer crypto out of the account identified 
+        /// by this address.
+        /// </param>
+        /// <param name="toAddress">
+        /// The address receiving the tinybars.
+        /// </param>
+        /// <param name="amount">
+        /// The amount of tinybars to transfer.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer record describing the details of the concensus transaction.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionRecord> TransferWithRecordAsync(Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
+        {
+            return TransferImplementationAsync<TransactionRecord>(fromAddress, toAddress, amount, null, configure);
+        }
+        /// <summary>
+        /// Transfer tinybars from one account to another.
+        /// </summary>
+        /// <param name="fromAddress">
+        /// The address to transfer the tinybars from.  Ensure that
+        /// a signatory either in the context or passed with this
+        /// call can fulfill the signing requrements to transfer 
+        /// crypto out of the account identified by this address.
+        /// </param>
+        /// <param name="toAddress">
+        /// The address receiving the tinybars.
+        /// </param>
+        /// <param name="amount">
+        /// The amount of tinybars to transfer.
+        /// </param>
+        /// <param name="signatory">
+        /// The signatory containing any additional private keys or callbacks
+        /// to meet the requirements for the sending and receiving accounts.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer record describing the details of the concensus transaction.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionRecord> TransferWithRecordAsync(Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
+        {
+            return TransferImplementationAsync<TransactionRecord>(fromAddress, toAddress, amount, signatory, configure);
+        }
+        /// <summary>
+        /// Transfer tinybars from an arbitray set of accounts to
+        /// another arbitrary set of accounts.
+        /// </summary>
+        /// <param name="transfers">
+        /// A dictionary mapping how much crypto to transfer
+        /// from and to each address.  Negative values send 
+        /// crypto out of the account, positive values receive
+        /// crypto into the account.  The value of all the 
+        /// transfer values in the dictionary must sum to zero.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer receipt indicating success of the operation.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionReceipt> TransferAsync(Dictionary<Address, long> transfers, Action<IContext>? configure = null)
+        {
+            return TransferImplementationAsync<TransactionReceipt>(transfers, null, configure);
+        }
+        /// <summary>
+        /// Transfer tinybars from an arbitray set of accounts to
+        /// another arbitrary set of accounts.
+        /// </summary>
+        /// <param name="transfers">
+        /// A dictionary mapping how much crypto to transfer
+        /// from and to each address.  Negative values send 
+        /// crypto out of the account, positive values receive
+        /// crypto into the account.  The value of all the 
+        /// transfer values in the dictionary must sum to zero.
+        /// </param>
+        /// <param name="signatory">
+        /// The signatory containing any additional private keys or callbacks
+        /// to meet the requirements for the sending and receiving accounts.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer receipt indicating success of the operation.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionReceipt> TransferAsync(Dictionary<Address, long> transfers, Signatory signatory, Action<IContext>? configure = null)
+        {
+            return TransferImplementationAsync<TransactionReceipt>(transfers, signatory, configure);
+        }
+        /// <summary>
+        /// Transfer tinybars from an arbitray set of accounts to
+        /// another arbitrary set of accounts.
+        /// </summary>
+        /// <param name="transfers">
+        /// A dictionary mapping how much crypto to transfer
+        /// from and to each address.  Negative values send 
+        /// crypto out of the account, positive values receive
+        /// crypto into the account.  The value of all the 
+        /// transfer values in the dictionary must sum to zero.
+        /// </param>
+        /// <param name="signatory">
+        /// The signatory containing any additional private keys or callbacks
+        /// to meet the requirements for the sending and receiving accounts.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer record describing the details of the concensus transaction.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionRecord> TransferWithRecordAsync(Dictionary<Address, long> transfers, Action<IContext>? configure = null)
+        {
+            return TransferImplementationAsync<TransactionRecord>(transfers, null, configure);
+        }
+        /// <summary>
+        /// Transfer tinybars from an arbitray set of accounts to
+        /// another arbitrary set of accounts.
+        /// </summary>
+        /// <param name="transfers">
+        /// A dictionary mapping how much crypto to transfer
+        /// from and to each address.  Negative values send 
+        /// crypto out of the account, positive values receive
+        /// crypto into the account.  The value of all the 
+        /// transfer values in the dictionary must sum to zero.
+        /// </param>
+        /// <param name="signatory">
+        /// The signatory containing any additional private keys or callbacks
+        /// to meet the requirements for the sending and receiving accounts.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transfer record describing the details of the concensus transaction.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionRecord> TransferWithRecordAsync(Dictionary<Address, long> transfers, Signatory signatory, Action<IContext>? configure = null)
+        {
+            return TransferImplementationAsync<TransactionRecord>(transfers, signatory, configure);
+        }
+        /// <summary>
+        /// Internal implementation for Transfer Crypto.
+        /// Returns either a receipt or record or throws
+        /// an exception.
+        /// </summary>
+        private async Task<TResult> TransferImplementationAsync<TResult>(Address fromAddress, Address toAddress, long amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        {
+            fromAddress = RequireInputParameter.FromAddress(fromAddress);
+            toAddress = RequireInputParameter.ToAddress(toAddress);
+            amount = RequireInputParameter.Amount(amount);
+            var transferList = new[] { (fromAddress, -amount), (toAddress, amount) };
+            return await TransferImplementationAsync<TResult>(transferList, signatory, configure);
+        }
+        /// <summary>
+        /// Internal implementation for Transfer Crypto.
+        /// Returns either a receipt or record or throws
+        /// an exception.
+        /// </summary>
+        private async Task<TResult> TransferImplementationAsync<TResult>(Dictionary<Address, long> transfers, Signatory? signatory, Action<IContext>? configure = null) where TResult : new()
+        {
+            var transferList = RequireInputParameter.TransferList(transfers);
+            return await TransferImplementationAsync<TResult>(transferList, signatory, configure);
         }
         /// <summary>
         /// Internal implementation for Multi Account Transfer Crypto.
         /// Returns either a receipt or record or throws an exception.
         /// </summary>
-        private async Task<TResult> TransferImplementationAsync<TResult>(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> TransferImplementationAsync<TResult>((Address address, long amount)[] transferList, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
-            var transferList = RequireInputParameter.MultiTransfers(sendAccounts, receiveAddresses);
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
-            var payers = new Signatory(sendAccounts.Keys.ToArray<ISignatory>().Append(RequireInContext.Payer(context)).Select(s => new Signatory(s)).ToArray());
-            var signatory = Transactions.GatherSignatories(context, new Signatory(payers));
+            var signatories = signatory is null ?
+                Transactions.GatherSignatories(context) :
+                Transactions.GatherSignatories(context, signatory);
             var transfers = Transactions.CreateCryptoTransferList(transferList);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Transfer Crypto");
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);

@@ -21,13 +21,10 @@ namespace Hashgraph.Implementation
             for (int i = 0; i < 1000; i++)
             {
                 var nanos = (DateTime.UtcNow - EPOCH).Ticks * NanosPerTick;
-                if (nanos > Interlocked.Read(ref _previousNano))
+                var previousNano = Interlocked.Exchange(ref _previousNano, nanos);
+                if (nanos > previousNano)
                 {
-                    var previousNano = Interlocked.Exchange(ref _previousNano, nanos);
-                    if (nanos > previousNano)
-                    {
-                        return nanos;
-                    }
+                    return nanos;
                 }
                 Thread.Yield();
             }

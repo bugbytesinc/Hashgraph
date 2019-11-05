@@ -22,9 +22,9 @@ namespace Hashgraph.Test.Contract
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             var newExpiration = Generator.TruncatedFutureDate(2400, 4800);
             var newEndorsement = new Endorsement(newPublicKey);
-            var updatedPayer = _network.PayerWithKeys(newPrivateKey);
+            var updatedSignatory = new Signatory(_network.Signatory, newPrivateKey);
             var newMemo = Generator.Code(50);
-            fx.Client.Configure(ctx => ctx.Payer = updatedPayer);
+            fx.Client.Configure(ctx => ctx.Signatory = updatedSignatory);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
                 Contract = fx.ContractRecord.Contract,
@@ -49,10 +49,10 @@ namespace Hashgraph.Test.Contract
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             var newExpiration = Generator.TruncatedFutureDate(2400, 4800);
             var newEndorsement = new Endorsement(newPublicKey);
-            var updatedPayer = _network.PayerWithKeys(newPrivateKey);
+            var updatedSignatory = new Signatory(_network.Signatory, newPrivateKey);
             var newRenewPeriod = TimeSpan.FromDays(Generator.Integer(180, 365));
             var newMemo = Generator.Code(50);
-            fx.Client.Configure(ctx => ctx.Payer = updatedPayer);
+            fx.Client.Configure(ctx => ctx.Signatory = updatedSignatory);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
@@ -105,8 +105,8 @@ namespace Hashgraph.Test.Contract
             await using var fx = await GreetingContract.CreateAsync(_network);
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             var newEndorsement = new Endorsement(newPublicKey);
-            var updatedPayer = _network.PayerWithKeys(newPrivateKey);
-            fx.Client.Configure(ctx => ctx.Payer = updatedPayer);
+            var updatedSignatory = new Signatory(_network.Signatory, newPrivateKey);
+            fx.Client.Configure(ctx => ctx.Signatory = updatedSignatory);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
                 Contract = fx.ContractRecord.Contract,
@@ -218,12 +218,12 @@ namespace Hashgraph.Test.Contract
             var (publicKey, privateKey) = Generator.KeyPair();
             await using var fx = await GreetingContract.SetupAsync(_network);
             fx.ContractParams.Administrator = publicKey;
-            fx.Client.Configure(ctx => ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey));
+            fx.Client.Configure(ctx => ctx.Signatory = new Signatory(ctx.Signatory, privateKey));
             await fx.CompleteCreateAsync();
             // First, Remove admin key from Payer's Account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                fx.Client.Configure(ctx => ctx.Payer = new Account(ctx.Payer, _network.PrivateKey));
+                fx.Client.Configure(ctx => ctx.Signatory = new Signatory(_network.PrivateKey));
                 await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
