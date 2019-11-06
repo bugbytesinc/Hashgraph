@@ -8,65 +8,6 @@ namespace Hashgraph
 {
     public partial class Client
     {
-        #region DEPRICATED_REMOVE_WHEN_ACCOUNTS_REMOVED
-        /// <summary>
-        /// Deletes an account from the network returning the remaining 
-        /// crypto balance to the specified account.  Must be signed 
-        /// by the account being deleted.
-        /// </summary>
-        /// <param name="accountToDelete">
-        /// The account that will be deleted.
-        /// </param>
-        /// <param name="transferToAddress">
-        /// The account that will receive any remaining balance from the deleted account.
-        /// </param>
-        /// <param name="configure">
-        /// Optional callback method providing an opportunity to modify 
-        /// the execution configuration for just this method call. 
-        /// It is executed prior to submitting the request to the network.
-        /// </param>
-        /// <returns>
-        /// A transaction receipt indicating a successful operation.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
-        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
-        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
-        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        [Obsolete("Please use Address objects for identifying accounts and Signatory objects to hold private keys. The Account object will be removed in a future release.")]
-        public Task<TransactionReceipt> DeleteAccountAsync(Account accountToDelete, Address transferToAddress, Action<IContext>? configure = null)
-        {
-            return DeleteAccountImplementationAsync(accountToDelete, transferToAddress, new Signatory(accountToDelete), configure);
-        }
-        #endregion DEPRICATED_REMOVE_WHEN_ACCOUNTS_REMOVED
-        /// <summary>
-        /// Deletes an account from the network returning the remaining 
-        /// crypto balance to the specified account.  Must be signed 
-        /// by the account being deleted.
-        /// </summary>
-        /// <param name="addressToDelete">
-        /// The address for account that will be deleted.
-        /// </param>
-        /// <param name="transferToAddress">
-        /// The account that will receive any remaining balance from the deleted account.
-        /// </param>
-        /// <param name="signatory">
-        /// The signatory containing any additional private keys or callbacks
-        /// to meet the requirements for deleting the account and transferring 
-        /// the remaining crypto balance.
-        /// </param>
-        /// <returns>
-        /// A transaction receipt indicating a successful operation.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
-        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
-        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
-        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Signatory signatory)
-        {
-            return DeleteAccountImplementationAsync(addressToDelete, transferToAddress, signatory, null);
-        }
         /// <summary>
         /// Deletes an account from the network returning the remaining 
         /// crypto balance to the specified account.  Must be signed 
@@ -96,6 +37,39 @@ namespace Hashgraph
             return DeleteAccountImplementationAsync(addressToDelete, transferToAddress, null, configure);
         }
         /// <summary>
+        /// Deletes an account from the network returning the remaining 
+        /// crypto balance to the specified account.  Must be signed 
+        /// by the account being deleted.
+        /// </summary>
+        /// <param name="addressToDelete">
+        /// The address for account that will be deleted.
+        /// </param>
+        /// <param name="transferToAddress">
+        /// The account that will receive any remaining balance from the deleted account.
+        /// </param>
+        /// <param name="signatory">
+        /// The signatory containing any additional private keys or callbacks
+        /// to meet the requirements for deleting the account and transferring 
+        /// the remaining crypto balance.
+        /// </param>
+        /// <param name="configure">
+        /// Optional callback method providing an opportunity to modify 
+        /// the execution configuration for just this method call. 
+        /// It is executed prior to submitting the request to the network.
+        /// </param>
+        /// <returns>
+        /// A transaction receipt indicating a successful operation.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
+        /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
+        /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
+        /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
+        public Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Signatory signatory, Action<IContext>? configure = null)
+        {
+            return DeleteAccountImplementationAsync(addressToDelete, transferToAddress, signatory, configure);
+        }
+        /// <summary>
         /// Internal implementation of delete account method.
         /// </summary>
         private async Task<TransactionReceipt> DeleteAccountImplementationAsync(Address addressToDelete, Address transferToAddress, Signatory? signatory, Action<IContext>? configure)
@@ -105,7 +79,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory, new Signatory(payer));
+            var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Delete Account");
             transactionBody.CryptoDelete = new CryptoDeleteTransactionBody

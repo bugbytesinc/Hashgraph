@@ -73,7 +73,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, new Signatory(payer));
+            var signatory = Transactions.GatherSignatories(context, callParmeters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Call Contract");
             transactionBody.ContractCall = new ContractCallTransactionBody

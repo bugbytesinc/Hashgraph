@@ -13,9 +13,23 @@ namespace Hashgraph
     public sealed class UpdateAccountParams
     {
         /// <summary>
-        /// The network address and private key for the account to update.
+        /// The network address of account to update.
         /// </summary>
-        public Account Account { get; set; }
+        public Address Address { get; set; }
+        /// <summary>
+        /// Any additional signing keys required to validate the transaction
+        /// that are not already specified in the client object's context.
+        /// </summary>
+        /// <remarks>
+        /// Keys/callbacks added here will be combined with those already
+        /// identified in the client object's context when signing this 
+        /// transaction to change the state of this account.  They will 
+        /// not be asked to sign transactions to retrieve the record
+        /// if the "WithRecord" form of the method call is made.  The
+        /// client will rely on the Signatory from the context to sign
+        /// the transaction requesting the record.
+        /// </remarks>
+        public Signatory? Signatory { get; set; }
         /// <summary>
         /// Replace this Account's current key signing rquirements with new signing
         /// requirements.</summary>
@@ -25,7 +39,7 @@ namespace Hashgraph
         /// The existing key must sign for security and the new key must sign as a 
         /// safeguard to avoid accidentally changing the key to an invalid value.  
         /// Either the <see cref="IContext.Payer"/> account or 
-        /// <see cref="UpdateAccountParams.Account"/> may carry the new private key 
+        /// <see cref="UpdateAccountParams.Address"/> may carry the new private key 
         /// for signing to meet this requirement.
         /// </remarks>
         public Endorsement? Endorsement { get; set; }

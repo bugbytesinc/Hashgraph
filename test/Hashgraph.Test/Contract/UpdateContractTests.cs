@@ -234,9 +234,9 @@ namespace Hashgraph.Test.Contract
             Assert.StartsWith("Unable to update Contract, status: InvalidSignature", tex.Message);
 
             // Try again with the admin key to prove we have the keys right
-            fx.Client.Configure(ctx => ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey));
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
+                Signatory = new Signatory(_network.PrivateKey, privateKey),
                 Contract = fx.ContractRecord.Contract,
                 Memo = Generator.Code(50)
             });

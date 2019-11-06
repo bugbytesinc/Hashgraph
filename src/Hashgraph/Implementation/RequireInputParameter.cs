@@ -80,14 +80,14 @@ namespace Hashgraph.Implementation
             }
             return transferToAddress;
         }
-        internal static Account FromAccount(Account fromAccount)
-        {
-            if (fromAccount is null)
-            {
-                throw new ArgumentNullException(nameof(fromAccount), "Account to transfer from is missing. Please check that it is not null.");
-            }
-            return fromAccount;
-        }
+        //internal static Account FromAccount(Account fromAccount)
+        //{
+        //    if (fromAccount is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(fromAccount), "Account to transfer from is missing. Please check that it is not null.");
+        //    }
+        //    return fromAccount;
+        //}
 
         internal static Address FromAddress(Address fromAddress)
         {
@@ -113,24 +113,30 @@ namespace Hashgraph.Implementation
             }
             return amount;
         }
-        internal static (Address address, long amount)[] TransferList(Dictionary<Address,long> transfers)
+        internal static (Address address, long amount)[] TransferList(Dictionary<Address, long> transfers)
         {
-            if(transfers is null)
+            long sum = 0;
+            if (transfers is null)
             {
                 throw new ArgumentNullException(nameof(transfers), "The dictionary of transfers can not be null.");
             }
-            if(transfers.Count == 0)
+            if (transfers.Count == 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(transfers), "The dictionary of transfers can not be empty.");
             }
             var result = new List<(Address address, long amount)>();
-            foreach(var transfer in transfers)
+            foreach (var transfer in transfers)
             {
-                if(transfer.Value == 0)
+                if (transfer.Value == 0)
                 {
                     throw new ArgumentOutOfRangeException(nameof(transfers), $"The amount to transfer to/from {transfer.Key.RealmNum}.{transfer.Key.ShardNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
                 }
                 result.Add((transfer.Key, transfer.Value));
+                sum = sum + transfer.Value;
+            }
+            if (sum != 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(transfers), "The sum of sends and receives does not balance.");
             }
             return result.ToArray();
         }
@@ -162,9 +168,9 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(updateParameters), "Account Update Parameters argument is missing. Please check that it is not null.");
             }
-            if (updateParameters.Account is null)
+            if (updateParameters.Address is null)
             {
-                throw new ArgumentNullException(nameof(updateParameters.Account), "Account is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(updateParameters.Address), "Account is missing. Please check that it is not null.");
             }
             if (updateParameters.Endorsement is null &&
                 updateParameters.SendThresholdCreateRecord is null &&
@@ -178,58 +184,58 @@ namespace Hashgraph.Implementation
             return updateParameters;
         }
 
-        internal static (Address address, long amount)[] MultiTransfers(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses)
-        {
-            if (sendAccounts is null)
-            {
-                throw new ArgumentNullException(nameof(sendAccounts), "The send accounts parameter cannot be null.");
-            }
-            if (sendAccounts.Count == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(sendAccounts), "There must be at least one send account to transfer money from.");
-            }
-            if (receiveAddresses is null)
-            {
-                throw new ArgumentNullException(nameof(receiveAddresses), "The receive address parameter cannot be null.");
-            }
-            if (receiveAddresses.Count == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(receiveAddresses), "There must be at least one receive address to transfer money to.");
-            }
-            long total = 0;
-            var list = new List<(Address address, long amount)>();
-            foreach (var pair in sendAccounts)
-            {
-                if (pair.Key is null)
-                {
-                    throw new ArgumentNullException(nameof(sendAccounts), "Found a null entry in the send accounts list.");
-                }
-                if (pair.Value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(sendAccounts), "All amount entries must be positive values");
-                }
-                total -= pair.Value;
-                list.Add((pair.Key, -pair.Value));
-            }
-            foreach (var pair in receiveAddresses)
-            {
-                if (pair.Key is null)
-                {
-                    throw new ArgumentNullException(nameof(receiveAddresses), "Found a null entry in the receive addresses list.");
-                }
-                if (pair.Value <= 0)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(receiveAddresses), "All amount entries must be positive values");
-                }
-                total += pair.Value;
-                list.Add((pair.Key, pair.Value));
-            }
-            if (total != 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(sendAccounts), "The sum of sends and receives does not balance.");
-            }
-            return list.ToArray();
-        }
+        //internal static (Address address, long amount)[] MultiTransfers(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses)
+        //{
+        //    if (sendAccounts is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(sendAccounts), "The send accounts parameter cannot be null.");
+        //    }
+        //    if (sendAccounts.Count == 0)
+        //    {
+        //        throw new ArgumentOutOfRangeException(nameof(sendAccounts), "There must be at least one send account to transfer money from.");
+        //    }
+        //    if (receiveAddresses is null)
+        //    {
+        //        throw new ArgumentNullException(nameof(receiveAddresses), "The receive address parameter cannot be null.");
+        //    }
+        //    if (receiveAddresses.Count == 0)
+        //    {
+        //        throw new ArgumentOutOfRangeException(nameof(receiveAddresses), "There must be at least one receive address to transfer money to.");
+        //    }
+        //    long total = 0;
+        //    var list = new List<(Address address, long amount)>();
+        //    foreach (var pair in sendAccounts)
+        //    {
+        //        if (pair.Key is null)
+        //        {
+        //            throw new ArgumentNullException(nameof(sendAccounts), "Found a null entry in the send accounts list.");
+        //        }
+        //        if (pair.Value <= 0)
+        //        {
+        //            throw new ArgumentOutOfRangeException(nameof(sendAccounts), "All amount entries must be positive values");
+        //        }
+        //        total -= pair.Value;
+        //        list.Add((pair.Key, -pair.Value));
+        //    }
+        //    foreach (var pair in receiveAddresses)
+        //    {
+        //        if (pair.Key is null)
+        //        {
+        //            throw new ArgumentNullException(nameof(receiveAddresses), "Found a null entry in the receive addresses list.");
+        //        }
+        //        if (pair.Value <= 0)
+        //        {
+        //            throw new ArgumentOutOfRangeException(nameof(receiveAddresses), "All amount entries must be positive values");
+        //        }
+        //        total += pair.Value;
+        //        list.Add((pair.Key, pair.Value));
+        //    }
+        //    if (total != 0)
+        //    {
+        //        throw new ArgumentOutOfRangeException(nameof(sendAccounts), "The sum of sends and receives does not balance.");
+        //    }
+        //    return list.ToArray();
+        //}
 
         internal static UpdateContractParams UpdateParameters(UpdateContractParams updateParameters)
         {
@@ -307,7 +313,7 @@ namespace Hashgraph.Implementation
         }
         internal static Key[] PrivateKeys(ReadOnlyMemory<byte>[] privateKeys)
         {
-            if(privateKeys is null)
+            if (privateKeys is null)
             {
                 return new Key[0];
             }
@@ -371,7 +377,7 @@ namespace Hashgraph.Implementation
             }
             return signatories;
         }
-        internal static Func<IInvoice, Task> SigningCallback(Func<IInvoice,Task> signingCallback)
+        internal static Func<IInvoice, Task> SigningCallback(Func<IInvoice, Task> signingCallback)
         {
             if (signingCallback is null)
             {
@@ -379,36 +385,17 @@ namespace Hashgraph.Implementation
             }
             return signingCallback;
         }
-        internal static Proto.Key KeysFromCreateParameters(CreateAccountParams createParameters)
+        internal static Proto.Key KeysFromEndorsements(CreateAccountParams createParameters)
         {
             if (createParameters is null)
             {
                 throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
             }
-            if (createParameters.PublicKey is null)
+            if (createParameters.Endorsement is null)
             {
-                if (createParameters.Endorsement is null)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(createParameters), "Both 'PublicKey' and 'Endorsement' are null, one must be specified.");
-                }
-                return Protobuf.ToPublicKey(createParameters.Endorsement);
+                throw new ArgumentOutOfRangeException(nameof(createParameters), "The Endorsement for the account is missing, it is required.");
             }
-            else if (createParameters.Endorsement is null)
-            {
-                if (createParameters.PublicKey.Value.IsEmpty)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(createParameters.PublicKey), "The 'PublicKey' must not be empty if specified.");
-                }
-                try
-                {
-                    return Protobuf.ToPublicKey(new Endorsement(Endorsement.Type.Ed25519, createParameters.PublicKey.Value));
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(createParameters.PublicKey), ex.Message);
-                }
-            }
-            throw new ArgumentOutOfRangeException(nameof(createParameters), "Both 'PublicKey' and 'Endorsement' are specified, only one without the other may be specified.");
+            return Protobuf.ToPublicKey(createParameters.Endorsement);
         }
         internal static CreateFileParams CreateParameters(CreateFileParams createParameters)
         {

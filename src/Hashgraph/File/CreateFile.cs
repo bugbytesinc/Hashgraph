@@ -66,7 +66,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, new Signatory(payer));
+            var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create File");
             transactionBody.FileCreate = new FileCreateTransactionBody

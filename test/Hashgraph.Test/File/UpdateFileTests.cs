@@ -21,15 +21,11 @@ namespace Hashgraph.Test.File
             await using var test = await TestFile.CreateAsync(_network);
 
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
-            test.Client.Configure(ctx =>
-            {
-                ctx.Payer = new Account( _network.Payer, _network.PrivateKey, test.PrivateKey, newPrivateKey);
-            });
-
             var updateRecord = await test.Client.UpdateFileWithRecordAsync(new UpdateFileParams
             {
                 File = test.Record.File,
-                Endorsements = new Endorsement[] { newPublicKey }
+                Endorsements = new Endorsement[] { newPublicKey },
+                Signatory = new Signatory(_network.PrivateKey, test.PrivateKey, newPrivateKey)
             });
             Assert.Equal(ResponseCode.Success, updateRecord.Status);
 

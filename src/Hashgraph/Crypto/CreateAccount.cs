@@ -66,11 +66,11 @@ namespace Hashgraph
         /// </summary>
         private async Task<TResult> CreateAccountImplementationAsync<TResult>(CreateAccountParams createParameters, Action<IContext>? configure) where TResult : new()
         {
-            var publicKey = RequireInputParameter.KeysFromCreateParameters(createParameters);
+            var publicKey = RequireInputParameter.KeysFromEndorsements(createParameters);
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, new Signatory(payer));
+            var signatories = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Account");
             transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
@@ -83,7 +83,7 @@ namespace Hashgraph
                 AutoRenewPeriod = Protobuf.ToDuration(createParameters.AutoRenewPeriod),
                 ProxyAccountID = createParameters.Proxy is null ? null : Protobuf.ToAccountID(createParameters.Proxy),
             };
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
             var receipt = await GetReceiptAsync(context, transactionId);

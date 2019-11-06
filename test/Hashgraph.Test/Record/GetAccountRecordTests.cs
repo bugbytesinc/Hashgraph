@@ -19,21 +19,21 @@ namespace Hashgraph.Test.Record
         [Fact(DisplayName = "Account Records: No transactions are stored when thresholds are at max values.")]
         public async Task GetTransactionRecordsForRecentTransfers()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fx = await TestAccount.CreateAsync(_network);
             var childFeeLImit = 1_000_000;
             var transferAmount = Generator.Integer(200, 500);
             var transactionCount = Generator.Integer(3, 6);
-            var childAccount = new Account(fxAccount.Record.Address, fxAccount.PrivateKey);
+            var childAccount = fx.Record.Address;
             var parentAccount = _network.Payer;
-            await fxAccount.Client.TransferAsync(parentAccount, childAccount, transactionCount * (childFeeLImit + transferAmount));
-            await using (var client = fxAccount.Client.Clone(ctx => { ctx.Payer = childAccount; ctx.FeeLimit = childFeeLImit; }))
+            await fx.Client.TransferAsync(parentAccount, childAccount, transactionCount * (childFeeLImit + transferAmount));
+            await using (var client = fx.Client.Clone(ctx => { ctx.Payer = childAccount; ctx.Signatory = fx.PrivateKey; ctx.FeeLimit = childFeeLImit; }))
             {
                 for (int i = 0; i < transactionCount; i++)
                 {
                     await client.TransferAsync(childAccount, parentAccount, transferAmount);
                 }
             }
-            var records = await fxAccount.Client.GetAccountRecordsAsync(childAccount);
+            var records = await fx.Client.GetAccountRecordsAsync(childAccount);
             Assert.NotNull(records);
             Assert.Empty(records);
         }
@@ -51,7 +51,8 @@ namespace Hashgraph.Test.Record
                 await using var fx = await TestAccount.CreateAsync(_network);
                 await fx.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
                 {
-                    Account = new Account(fx.Record.Address, fx.PrivateKey),
+                    Address = fx.Record.Address,
+                    Signatory = fx.PrivateKey,
                     ReceiveThresholdCreateRecord = 100
                 });
                 var record1 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(10, 90));
@@ -98,18 +99,19 @@ namespace Hashgraph.Test.Record
         public async Task GetTransactionRecordsForRecentTransfersOutAboveThreshold()
         {
             await using var fx = await TestAccount.CreateAsync(_network);
-            var fromAccount = new Account(fx.Record.Address, fx.PrivateKey);
+            var fromAccount = fx.Record.Address;
             await fx.Client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = fromAccount,
+                Address = fromAccount,
+                Signatory = fx.PrivateKey,
                 SendThresholdCreateRecord = 100
             });
             await fx.Client.TransferWithRecordAsync(_network.Payer, fromAccount, 1_000_000);
-            var record1 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(10, 90));
-            var record2 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(101, 200));
-            var record3 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(200, 300));
-            var record4 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(300, 400));
-            var record5 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(400, 500));
+            var record1 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(10, 90), fx.PrivateKey);
+            var record2 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(101, 200), fx.PrivateKey);
+            var record3 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(200, 300), fx.PrivateKey);
+            var record4 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(300, 400), fx.PrivateKey);
+            var record5 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(400, 500), fx.PrivateKey);
             var records = await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
             Assert.NotNull(records);
             Assert.Equal(4, records.Length);
@@ -160,7 +162,7 @@ namespace Hashgraph.Test.Record
         public async Task DeletedAccountRaisesError()
         {
             await using var fx = await TestAccount.CreateAsync(_network);
-            await fx.Client.DeleteAccountAsync(new Account(fx.Record.Address, fx.PrivateKey), _network.Payer);
+            await fx.Client.DeleteAccountAsync(fx.Record.Address, _network.Payer, fx.PrivateKey);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
@@ -175,7 +177,8 @@ namespace Hashgraph.Test.Record
             await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, 10_000_000);
             await fx.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
             {
-                Account = new Account(fx.Record.Address, fx.PrivateKey),
+                Address = fx.Record.Address,
+                Signatory = fx.PrivateKey,
                 ReceiveThresholdCreateRecord = 0
             });
             var infoBeforeTransfer = await fx.Client.GetAccountInfoAsync(fx.Record.Address);

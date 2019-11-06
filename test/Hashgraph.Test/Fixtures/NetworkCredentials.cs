@@ -25,7 +25,6 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> PrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
         public ReadOnlyMemory<byte> PublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
         public Address Payer { get { return new Address(AccountRealm, AccountShard, AccountNumber); } }
-        public Account PayerAsAccountWithPrivateKey { get { return new Account(AccountRealm, AccountShard, AccountNumber, PrivateKey); } }
         public Signatory Signatory { get { return new Signatory(PrivateKey); } }
         public Gateway Gateway { get { return new Gateway($"{NetworkAddress}:{NetworkPort}", ServerRealm, ServerShard, ServerNumber); } }
         public ITestOutputHelper Output { get; set; }
@@ -42,7 +41,7 @@ namespace Hashgraph.Test.Fixtures
             return new Client(ctx =>
             {
                 ctx.Gateway = Gateway;
-                ctx.Payer = new Account(Payer);
+                ctx.Payer = Payer;
                 ctx.Signatory = Signatory;
                 ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
                 ctx.OnSendingRequest = OutputSendingRequest;

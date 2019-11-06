@@ -66,10 +66,10 @@ namespace Hashgraph.Test.Record
             var cryptoTransferFee = 83_333_334;
             var transferAmount = Generator.Integer(200, 500);
             var transactionCount = Generator.Integer(2, 5);
-            var childAccount = new Account(fxAccount.Record.Address, fxAccount.PrivateKey);
+            var childAccount = fxAccount.Record.Address;
             var parentAccount = _network.Payer;
             await fxAccount.Client.TransferAsync(parentAccount, childAccount, transactionCount * (cryptoTransferFee + transferAmount));
-            await using (var client = fxAccount.Client.Clone(ctx => ctx.Payer = childAccount))
+            await using (var client = fxAccount.Client.Clone(ctx => { ctx.Payer = childAccount; ctx.Signatory = fxAccount.PrivateKey; }))
             {
                 for (int i = 0; i < transactionCount; i++)
                 {

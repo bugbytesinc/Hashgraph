@@ -21,10 +21,12 @@ namespace Hashgraph.Test.QueryFee
             // at this time expose the TX used to pay for a query.
 
             await using var fx = await TestAccount.CreateAsync(_network);
-            var account = new Account(fx.Record.Address, fx.PrivateKey);
+            var account = fx.Record.Address;
             await fx.Client.TransferAsync(_network.Payer, account, 10_000_000);
-            await using var client = fx.Client.Clone(ctx => {
+            await using var client = fx.Client.Clone(ctx =>
+            {
                 ctx.Payer = account;
+                ctx.Signatory = fx.PrivateKey;
                 ctx.FeeLimit = 1_000_000;
             });
 

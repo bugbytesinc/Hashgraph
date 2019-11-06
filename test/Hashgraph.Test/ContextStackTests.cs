@@ -60,8 +60,8 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Context: Can Set and Reset Payer Property")]
         public async Task CanSetAndUnsetPayer()
         {
-            var account1 = new Account(0, 0, Generator.Integer(3, 100), Generator.KeyPair().privateKey);
-            var account2 = new Account(0, 0, Generator.Integer(101, 200), Generator.KeyPair().privateKey);
+            var account1 = new Address(0, 0, Generator.Integer(3, 100));
+            var account2 = new Address(0, 0, Generator.Integer(101, 200));
             await using var client1 = new Client(context =>
             {
                 Assert.Null(context.Payer);
@@ -105,6 +105,56 @@ namespace Hashgraph.Tests
             client1.Configure(context =>
             {
                 Assert.Equal(account2, context.Payer);
+            });
+        }
+        [Fact(DisplayName = "Context: Can Set and Reset Signatory Property")]
+        public async Task CanSetAndUnsetSignatory()
+        {
+            var signatory1 = new Signatory(Generator.KeyPair().privateKey);
+            var signatory2 = new Signatory(Generator.KeyPair().privateKey);
+            await using var client1 = new Client(context =>
+            {
+                Assert.Null(context.Signatory);
+                context.Signatory = signatory1;
+                Assert.Equal(signatory1, context.Signatory);
+            });
+            await using var client2 = client1.Clone(context =>
+            {
+                Assert.Equal(signatory1, context.Signatory);
+                context.Signatory = signatory2;
+                Assert.Equal(signatory2, context.Signatory);
+            });
+            client2.Configure(context =>
+            {
+                Assert.Equal(signatory2, context.Signatory);
+                context.Reset(nameof(IContext.Signatory));
+                Assert.Equal(signatory1, context.Signatory);
+            });
+            client1.Configure(context =>
+            {
+                Assert.Equal(signatory1, context.Signatory);
+                context.Reset(nameof(context.Signatory));
+                Assert.Null(context.Signatory);
+            });
+            client2.Configure(context =>
+            {
+                Assert.Null(context.Signatory);
+            });
+            client1.Configure(context =>
+            {
+                Assert.Null(context.Signatory);
+                context.Signatory = signatory2;
+                Assert.Equal(signatory2, context.Signatory);
+            });
+            client2.Configure(context =>
+            {
+                Assert.Equal(signatory2, context.Signatory);
+                context.Signatory = null;
+                Assert.Null(context.Signatory);
+            });
+            client1.Configure(context =>
+            {
+                Assert.Equal(signatory2, context.Signatory);
             });
         }
         [Fact(DisplayName = "Context: Can Set and Reset FeeLimit Property")]

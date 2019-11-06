@@ -24,7 +24,7 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = initialBalance,
-                PublicKey = publicKey
+                Endorsement = publicKey
             });
             Assert.NotNull(createResult);
             Assert.NotNull(createResult.Address);
@@ -37,14 +37,14 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(createResult.Address.RealmNum, info.Address.RealmNum);
             Assert.Equal(createResult.Address.ShardNum, info.Address.ShardNum);
             Assert.Equal(createResult.Address.AccountNum, info.Address.AccountNum);
-            Assert.Equal(new Address(0,0,0), info.Proxy);
+            Assert.Equal(new Address(0, 0, 0), info.Proxy);
             Assert.False(info.Deleted);
 
             // Move remaining funds back to primary account.
-            var from = new Account(createResult.Address, privateKey);
-            await client.TransferAsync(from, _network.Payer, (long)initialBalance);
+            var from = createResult.Address;
+            await client.TransferAsync(from, _network.Payer, (long)initialBalance, privateKey);
 
-            var receipt = await client.DeleteAccountAsync(new Account(createResult.Address, privateKey), _network.Payer);
+            var receipt = await client.DeleteAccountAsync(createResult.Address, _network.Payer, privateKey);
             Assert.NotNull(receipt);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
@@ -63,7 +63,7 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = publicKey,
+                Endorsement = publicKey,
                 SendThresholdCreateRecord = expectedValue
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
@@ -80,7 +80,7 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = publicKey,
+                Endorsement = publicKey,
                 ReceiveThresholdCreateRecord = expectedValue
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
@@ -96,11 +96,9 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = publicKey,
+                Endorsement = publicKey,
+                Signatory = privateKey,
                 RequireReceiveSignature = true
-            }, ctx =>
-            {
-                ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey);
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
@@ -115,7 +113,7 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = publicKey,
+                Endorsement = publicKey,
                 RequireReceiveSignature = false
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
@@ -134,7 +132,7 @@ namespace Hashgraph.Test.Crypto
                 var createResult = await client.CreateAccountAsync(new CreateAccountParams
                 {
                     InitialBalance = 1,
-                    PublicKey = publicKey,
+                    Endorsement = publicKey,
                     AutoRenewPeriod = expectedValue
                 });
             });
@@ -149,13 +147,13 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = publicKey,
+                Endorsement = publicKey,
                 Proxy = _network.Gateway,
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(_network.Gateway,info.Proxy);
+            Assert.Equal(_network.Gateway, info.Proxy);
         }
     }
 }

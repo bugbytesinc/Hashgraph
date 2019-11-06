@@ -22,18 +22,6 @@ namespace Hashgraph.Web.Models
         [Required(ErrorMessage = "The Node Account Number is Required.")]
         [Range(3, int.MaxValue, ErrorMessage = "A valid Node account number value is required.")]
         public long GatewayAccountNum { get; set; }
-        [Required(ErrorMessage = "The Payer Realm is Required.")]
-        [Range(0, int.MaxValue, ErrorMessage = "A valid Payer Realm value is required.")]
-        public long PayerRealmNum { get; set; }
-        [Required(ErrorMessage = "The Payer Shard is Required.")]
-        [Range(0, int.MaxValue, ErrorMessage = "A valid Payer Shard value is required.")]
-        public long PayerShardNum { get; set; }
-        [Required(ErrorMessage = "The Payer Account Number is Required.")]
-        [Range(3, int.MaxValue, ErrorMessage = "A valid Payer account number value is required.")]
-        public long PayerAccountNum { get; set; }
-        [Required(ErrorMessage = "The paying account private key is required.")]
-        [DataType(DataType.Password)]
-        public string PayerPrivateKey { get; set; }
         [Required(ErrorMessage = "The Account Realm is Required.")]
         [Range(0, int.MaxValue, ErrorMessage = "A valid Account Realm value is required.")]
         public long AccountRealmNum { get; set; }

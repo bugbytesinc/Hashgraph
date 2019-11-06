@@ -1,5 +1,5 @@
-﻿using System;
-using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Test.Fixtures;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -58,46 +58,17 @@ namespace Hashgraph.Test.Crypto
             Assert.False(info.ReceiveSignatureRequired);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
         }
-        [Fact(DisplayName = "Get Account Info: Can Get Info for Account using Signatory")]
-        public async Task CanGetInfoForAccountUsingSignatory()
-        {
-            await using var client = _network.NewClient();
-            client.Configure(ctx => {
-                ctx.Payer = new Account(_network.Payer, null);
-                ctx.Signatory = _network.PrivateKey;
-            });
-            var account = _network.Payer;
-            var info = await client.GetAccountInfoAsync(account);
-            Assert.NotNull(info.Address);
-            Assert.Equal(account.RealmNum, info.Address.RealmNum);
-            Assert.Equal(account.ShardNum, info.Address.ShardNum);
-            Assert.Equal(account.AccountNum, info.Address.AccountNum);
-            Assert.NotNull(info.SmartContractId);
-            Assert.False(info.Deleted);
-            Assert.NotNull(info.Proxy);
-            Assert.Equal(new Address(0, 0, 0), info.Proxy);
-            Assert.Equal(0, info.ProxiedToAccount);
-            Assert.Equal(new Endorsement(_network.PublicKey), info.Endorsement);
-            Assert.True(info.Balance > 0);
-            Assert.True(info.SendThresholdCreateRecord > 0);
-            Assert.True(info.ReceiveThresholdCreateRecord > 0);
-            Assert.False(info.ReceiveSignatureRequired);
-            Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
-        }
         [Fact(DisplayName = "Get Account Info: Getting Account Info without paying signature fails.")]
         public async Task GetInfoWithoutPayingSignatureThrowsException()
         {
             await using var client = _network.NewClient();
-            client.Configure(ctx => {
-                ctx.Payer = new Account(_network.Payer, null);
-                ctx.Signatory = null;
-            });
+            client.Configure(ctx => ctx.Signatory = null);
             var account = _network.Payer;
             var ioe = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await client.GetAccountInfoAsync(account);
             });
-            Assert.StartsWith("A transaction or query requires at least one signature, sometimes more.  None were found, did you forget to assign a Signatory to the context, transaction or query?", ioe.Message);
+            Assert.StartsWith("The Payer's signatory (signing key/callback) has not been configured. This is required for retreiving records and other general network Queries. Please check that", ioe.Message);
         }
     }
 }

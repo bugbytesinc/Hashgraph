@@ -112,7 +112,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
             await using var fx2 = await TestAccount.CreateAsync(_network);
-            var deleteAccountRecord = await fx2.Client.DeleteAccountAsync(new Account(fx2.Record.Address, fx2.PrivateKey), _network.Payer);
+            var deleteAccountRecord = await fx2.Client.DeleteAccountAsync(fx2.Record.Address, _network.Payer, fx2.PrivateKey);
             Assert.Equal(ResponseCode.Success, deleteAccountRecord.Status);
 
             var deleteContractReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, fx2.Record.Address);

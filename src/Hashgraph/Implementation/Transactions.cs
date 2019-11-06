@@ -107,7 +107,7 @@ namespace Hashgraph
         {
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
-            var signatory = GatherSignatories(context, new Signatory(payer));
+            var signatory = RequireInContext.Signatory(context);
             var fee = RequireInContext.QueryFee(context, queryFee);
             TransactionBody transactionBody = new TransactionBody
             {
