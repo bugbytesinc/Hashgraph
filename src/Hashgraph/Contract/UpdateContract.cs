@@ -69,7 +69,7 @@ namespace Hashgraph
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, new Signatory(payer));
+            var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var updateContractBody = new ContractUpdateTransactionBody
             {
                 ContractID = Protobuf.ToContractID(updateParameters.Contract)

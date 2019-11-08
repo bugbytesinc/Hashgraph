@@ -24,7 +24,7 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = originalKeyPair.publicKey
+                Endorsement = originalKeyPair.publicKey
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
@@ -33,8 +33,9 @@ namespace Hashgraph.Test.Crypto
 
             var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = new Account(createResult.Address, originalKeyPair.privateKey, updatedKeyPair.privateKey),
-                Endorsement = new Endorsement(updatedKeyPair.publicKey)
+                Address = createResult.Address,
+                Endorsement = new Endorsement(updatedKeyPair.publicKey),
+                Signatory = new Signatory(originalKeyPair.privateKey, updatedKeyPair.privateKey)
             });
             Assert.Equal(ResponseCode.Success, updateResult.Status);
 
@@ -50,7 +51,8 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = publicKey,
+                Endorsement = publicKey,
+                Signatory = privateKey,
                 SendThresholdCreateRecord = originalValue
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
@@ -61,7 +63,8 @@ namespace Hashgraph.Test.Crypto
             var newValue = originalValue + (ulong)Generator.Integer(500, 1000);
             var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = new Account(createResult.Address, privateKey),
+                Address = createResult.Address,
+                Signatory = privateKey,
                 SendThresholdCreateRecord = newValue
             });
             Assert.Equal(ResponseCode.Success, updateResult.Status);
@@ -78,7 +81,7 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = publicKey,
+                Endorsement = publicKey,
                 ReceiveThresholdCreateRecord = originalValue
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
@@ -89,7 +92,8 @@ namespace Hashgraph.Test.Crypto
             var newValue = originalValue + (ulong)Generator.Integer(500, 1000);
             var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = new Account(createResult.Address, privateKey),
+                Address = createResult.Address,
+                Signatory = privateKey,
                 ReceiveThresholdCreateRecord = newValue
             });
             Assert.Equal(ResponseCode.Success, updateResult.Status);
@@ -106,7 +110,7 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
-                PublicKey = publicKey,
+                Endorsement = publicKey,
                 AutoRenewPeriod = originalValue
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
@@ -120,7 +124,8 @@ namespace Hashgraph.Test.Crypto
             {
                 var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
                 {
-                    Account = new Account(createResult.Address, privateKey),
+                    Address = createResult.Address,
+                    Signatory = privateKey,
                     AutoRenewPeriod = newValue
                 });
             });
@@ -140,7 +145,8 @@ namespace Hashgraph.Test.Crypto
 
             var updateResult = await fx.Client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = new Account(fx.Record.Address, fx.PrivateKey),
+                Address = fx.Record.Address,
+                Signatory = fx.PrivateKey,
                 Proxy = _network.Gateway
             });
             Assert.Equal(ResponseCode.Success, updateResult.Status);
@@ -155,7 +161,8 @@ namespace Hashgraph.Test.Crypto
             var fx = await TestAccount.CreateAsync(_network);
             await fx.Client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = new Account(fx.Record.Address, fx.PrivateKey),
+                Address = fx.Record.Address,
+                Signatory = fx.PrivateKey,
                 Proxy = _network.Gateway
             });
 
@@ -164,7 +171,8 @@ namespace Hashgraph.Test.Crypto
 
             var updateResult = await fx.Client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = new Account(fx.Record.Address, fx.PrivateKey),
+                Address = fx.Record.Address,
+                Signatory = fx.PrivateKey,
                 Proxy = emptyAddress
             });
             Assert.Equal(ResponseCode.Success, updateResult.Status);

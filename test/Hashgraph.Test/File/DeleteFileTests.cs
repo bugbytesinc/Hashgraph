@@ -19,7 +19,7 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var result = await test.Client.DeleteFileWithRecordAsync(test.Record.File);
+            var result = await test.Client.DeleteFileWithRecordAsync(test.Record.File, test.Signatory);
             Assert.NotNull(result);
             Assert.Equal(ResponseCode.Success, result.Status);
 

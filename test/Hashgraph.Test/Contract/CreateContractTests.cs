@@ -28,6 +28,34 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(fx.ContractRecord.Memo);
             Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
         }
+        [Fact(DisplayName = "Create Contract: Can Create with Additional Signature")]
+        public async Task CanCreateAContractWithSignatureAsync()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();            
+            await using var fx = await GreetingContract.SetupAsync(_network);
+            fx.ContractParams.Administrator = publicKey;
+            fx.ContractParams.Signatory = privateKey;
+            await fx.CompleteCreateAsync();
+            Assert.NotNull(fx.ContractRecord);
+            Assert.NotNull(fx.ContractRecord.Contract);
+            Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+            Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+            Assert.NotNull(fx.ContractRecord.Concensus);
+            Assert.NotNull(fx.ContractRecord.Memo);
+            Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
+        }
+        [Fact(DisplayName = "Create Contract: Missing Signatory Raises Error")]
+        public async Task CreateAContractWithoutSignatoryRaisesErrorAsync()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();
+            await using var fx = await GreetingContract.SetupAsync(_network);
+            fx.ContractParams.Administrator = publicKey;
+            var ex = await Assert.ThrowsAsync<TransactionException>(async () => {
+                await fx.CompleteCreateAsync();
+            });
+            Assert.StartsWith("Unable to create contract, status: InvalidSignature", ex.Message);
+            Assert.Equal(ResponseCode.InvalidSignature, ex.Status);
+        }
         [Fact(DisplayName = "Create Contract: Missing File Address Raises Error")]
         public async Task MissingFileAddressRaisesError()
         {
@@ -99,6 +127,15 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(fx.ContractRecord.Concensus);
             Assert.NotNull(fx.ContractRecord.Memo);
             Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
+        }
+        [Fact(DisplayName = "Create Contract: Can create without returning record.")]
+        public async Task CanCreateContractWithoutReturningRecordData()
+        {
+            await using var fx = await GreetingContract.SetupAsync(_network);
+            var receipt = await fx.Client.CreateContractAsync(fx.ContractParams);
+            Assert.NotNull(receipt);
+            Assert.NotNull(receipt.Contract);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
         }
         [Fact(DisplayName = "Create Contract: Can Create Contract with Parameters")]
         public async Task CanCreateAContractWithParameters()

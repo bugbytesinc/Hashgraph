@@ -23,7 +23,8 @@ namespace Hashgraph.Tests.Docs.Recipe
                 await using var client = new Client(ctx =>
                 {
                     ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
-                    ctx.Payer = new Account(0, 0, payerAccountNo, payerPrivateKey);
+                    ctx.Payer = new Address(0, 0, payerAccountNo);
+                    ctx.Signatory = new Signatory(payerPrivateKey);
                 });
                 var file = new Address(0, 0, fileNo);
                 var bytes = await client.GetFileContentAsync(file);

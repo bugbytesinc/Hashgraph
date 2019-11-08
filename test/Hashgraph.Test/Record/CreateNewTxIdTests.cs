@@ -56,7 +56,7 @@ namespace Hashgraph.Test.Record
             {
                 var txId = client.CreateNewTxId();
             });
-            Assert.StartsWith("The Payer account has not been configured. Please check that 'Payer' is set in the Client context.", ioe.Message);
+            Assert.StartsWith("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.", ioe.Message);
         }
         [Fact(DisplayName = "Create TxId: Creating Two in a row increases timestamp.")]
         public async Task CreatingTwoInARowIncreasesTimestamp()
@@ -96,17 +96,17 @@ namespace Hashgraph.Test.Record
         {
             await using var client = _network.NewClient();
 
-            var account = new Account(new Address(0, Generator.Integer(20, 100), Generator.Integer(20, 100)), Generator.KeyPair().privateKey);
-            var txId = client.CreateNewTxId(ctx => ctx.Payer = account);
+            var address = new Address(Generator.Integer(20, 100), 0, Generator.Integer(20, 100));
+            var txId = client.CreateNewTxId(ctx => ctx.Payer = address);
 
-            Assert.Equal(account, txId.Address);
+            Assert.Equal(address, txId.Address);
         }
         [Fact(DisplayName = "Create TxId: Can Pin Transaction ID in options.")]
         public async Task CanPinTransactionIdInOptions()
         {
             await using var client = _network.NewClient();
 
-            var txExpected = new TxId(new Address(0, Generator.Integer(20, 100), Generator.Integer(20, 100)), DateTime.UtcNow);
+            var txExpected = new TxId(new Address(Generator.Integer(20, 100), 0, Generator.Integer(20, 100)), DateTime.UtcNow);
 
             var txReturned = client.CreateNewTxId(ctx => ctx.Transaction = txExpected);
 

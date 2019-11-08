@@ -44,6 +44,19 @@ namespace Hashgraph.Test.Crypto
             var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(fx.CreateParams.InitialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
         }
+        [Fact(DisplayName = "Transfer: Can Send to multitransfer to New Account")]
+        public async Task CanMultiTransferCryptoToNewAccount()
+        {
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = (long)Generator.Integer(10, 100);
+            var newBalance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance, newBalance);
+
+            var transfers = new Dictionary<Address, long> { { _network.Payer, -transferAmount }, { fx.Record.Address, transferAmount } };
+            var receipt = await fx.Client.TransferAsync(transfers);
+            var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
+        }
         [Fact(DisplayName = "Transfer: Can Get Transfer Record Showing Transfers")]
         public async Task CanGetTransferRecordShowingTransfers()
         {
@@ -67,12 +80,25 @@ namespace Hashgraph.Test.Crypto
             await using var fx = await TestAccount.CreateAsync(_network);
             var transferAmount = fx.CreateParams.InitialBalance / 2;
             await using var client = _network.NewClient();
-            var newAccount = new Account(fx.Record.Address, fx.PrivateKey);
             var info = await client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(fx.CreateParams.InitialBalance, info.Balance);
             Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
 
-            var receipt = await client.TransferAsync(newAccount, _network.Payer, (long)transferAmount);
+            var receipt = await client.TransferAsync(fx.Record.Address, _network.Payer, (long)transferAmount, fx.PrivateKey);
+            var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, newBalanceAfterTransfer);
+        }
+        [Fact(DisplayName = "Transfer: Can Send from New Account via Transfers Map")]
+        public async Task CanTransferCryptoFromNewAccountViaDictionary()
+        {
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = (long)(fx.CreateParams.InitialBalance / 2);
+            await using var client = _network.NewClient();
+            var info = await client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance, info.Balance);
+            Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
+            var transfers = new Dictionary<Address, long> { { fx.Record.Address, -transferAmount }, { _network.Payer, transferAmount } };
+            var receipt = await client.TransferAsync(transfers, fx.PrivateKey);
             var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, newBalanceAfterTransfer);
         }
@@ -80,12 +106,11 @@ namespace Hashgraph.Test.Crypto
         public async Task CanTransferAllCryptoFromNewAccount()
         {
             await using var fx = await TestAccount.CreateAsync(_network);
-            var newAccount = new Account(fx.Record.Address, fx.PrivateKey);
             var info = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(fx.CreateParams.InitialBalance, info.Balance);
             Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
 
-            var receipt = await fx.Client.TransferAsync(newAccount, _network.Payer, (long)fx.CreateParams.InitialBalance, ctx=>ctx.FeeLimit = 1000000); ;
+            var receipt = await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, (long)fx.CreateParams.InitialBalance, fx.PrivateKey, ctx => ctx.FeeLimit = 1000000);
             var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(0UL, newBalanceAfterTransfer);
         }
@@ -94,10 +119,9 @@ namespace Hashgraph.Test.Crypto
         {
             await using var fx = await TestAccount.CreateAsync(_network);
             var transferAmount = (long)(fx.CreateParams.InitialBalance * 2);
-            var account = new Account(fx.Record.Address, fx.PrivateKey);
             var exception = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fx.Client.TransferAsync(account, _network.Payer, transferAmount);
+                await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey);
             });
             Assert.StartsWith("Unable to execute crypto transfer, status: InsufficientAccountBalance", exception.Message);
             Assert.NotNull(exception.TxId);
@@ -108,10 +132,9 @@ namespace Hashgraph.Test.Crypto
         {
             await using var fx = await TestAccount.CreateAsync(_network);
             var transferAmount = (long)(fx.CreateParams.InitialBalance / 2);
-            var account = new Account(fx.Record.Address, fx.PrivateKey);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await fx.Client.TransferAsync(account, _network.Payer, transferAmount, ctx =>
+                await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
                 {
                     ctx.FeeLimit = 1;
                 });
@@ -125,22 +148,29 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
+            var account1 = fx1.Record.Address;
+            var account2 = fx2.Record.Address;
+            var sig1 = new Signatory(fx1.PrivateKey);
+            var sig2 = new Signatory(fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
-
-            var sendAccounts = new Dictionary<Account, long> { {_network.PayerAsAccountWithPrivateKey, 2 * transferAmount } };
-            var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
-
-            var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
+            var transfers = new Dictionary<Address, long>
+            {
+                { payer, -2 * transferAmount },
+                { account1, transferAmount },
+                { account2, transferAmount }
+            };
+            var sendRecord = await fx1.Client.TransferWithRecordAsync(transfers);
             Assert.Equal(ResponseCode.Success, sendRecord.Status);
 
             Assert.Equal((ulong)transferAmount + fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
             Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
-
-            sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
-            receiveAddresses = new Dictionary<Address, long> { { payer, 2 * transferAmount } };
-            var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx=>ctx.FeeLimit = 1_000_000);
+            transfers = new Dictionary<Address, long>
+            {
+                { account1, -transferAmount },
+                { account2, -transferAmount },
+                { payer, 2 * transferAmount }
+            };
+            var returnRecord = await fx1.Client.TransferWithRecordAsync(transfers, new Signatory(sig1, sig2), ctx => ctx.FeeLimit = 1_000_000);
             Assert.Equal(ResponseCode.Success, returnRecord.Status);
 
             Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
@@ -152,185 +182,79 @@ namespace Hashgraph.Test.Crypto
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
+            var account1 = fx1.Record.Address;
+            var account2 = fx2.Record.Address;
+            var sig1 = new Signatory(fx1.PrivateKey);
+            var sig2 = new Signatory(fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
-
-            var sendAccounts = new Dictionary<Account, long> { { _network.PayerAsAccountWithPrivateKey, transferAmount } };
-            var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
-
+            var transfers = new Dictionary<Address, long>
+            {
+                { payer, -transferAmount },
+                { account1, transferAmount },
+                { account2, transferAmount }
+            };
             var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
+                await fx1.Client.TransferWithRecordAsync(transfers);
             });
-            Assert.Equal("sendAccounts", aor.ParamName);
+            Assert.Equal("transfers", aor.ParamName);
             Assert.StartsWith("The sum of sends and receives does not balance.", aor.Message);
         }
-        [Fact(DisplayName = "Transfer: Overlapping transfer entries are allowed.")]
-        public async Task OverlappingTransferEntiesAreAllowed()
-        {
-            var fx1 = await TestAccount.CreateAsync(_network);
-            var fx2 = await TestAccount.CreateAsync(_network);
-            var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
-            var transferAmount = (long)Generator.Integer(100, 200);
-
-            var sendAccounts = new Dictionary<Account, long> { { _network.PayerAsAccountWithPrivateKey, 3 * transferAmount } };
-            var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount }, { payer, transferAmount } };
-
-            var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx => ctx.FeeLimit = 1_000_000);
-            Assert.Equal(ResponseCode.Success, sendRecord.Status);
-
-            Assert.Equal((ulong)transferAmount + fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
-            Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
-
-            sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount }, { _network.PayerAsAccountWithPrivateKey, transferAmount } };
-            receiveAddresses = new Dictionary<Address, long> { { payer, 3 * transferAmount } };
-            var returnRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx => ctx.FeeLimit = 1_000_000);
-            Assert.Equal(ResponseCode.Success, returnRecord.Status);
-
-            Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
-            Assert.Equal(fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
-        }
-        [Fact(DisplayName = "Transfer: Net Zero Transacton Is Allowed")]
+        [Fact(DisplayName = "Transfer: net values of aero are not allowed in transfers.")]
         public async Task NetZeroTransactionIsAllowed()
         {
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
+            var account1 = fx1.Record.Address;
+            var account2 = fx2.Record.Address;
+            var sig1 = new Signatory(fx1.PrivateKey);
+            var sig2 = new Signatory(fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
-
-            var sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
-            var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
-
-            var sendRecord = await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses, ctx => ctx.FeeLimit = 1_000_000);
-            Assert.Equal(ResponseCode.Success, sendRecord.Status);
+            var transfers = new Dictionary<Address, long>
+            {
+                { account1, 0 },
+                { account2, 0 },
+            };
+            var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            {
+                await fx1.Client.TransferWithRecordAsync(transfers, sig1);
+            });
+            Assert.Equal("transfers", aor.ParamName);
+            Assert.StartsWith($"The amount to transfer to/from 0.0.{account1.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.", aor.Message);
 
             Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
             Assert.Equal(fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
         }
-        [Fact(DisplayName = "Transfer: Null Send Dictionary Raises Error.")]
+        [Fact(DisplayName = "Transfer: Null Transfers Dictionary Raises Error.")]
         public async Task NullSendDictionaryRaisesError()
         {
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
-
-            var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
-
             var and = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
-                await fx1.Client.TransferWithRecordAsync(null, receiveAddresses);
+                await fx1.Client.TransferWithRecordAsync(null);
             });
-            Assert.Equal("sendAccounts", and.ParamName);
-            Assert.StartsWith("The send accounts parameter cannot be null.", and.Message);
+            Assert.Equal("transfers", and.ParamName);
+            Assert.StartsWith("The dictionary of transfers can not be null", and.Message);
         }
-        [Fact(DisplayName = "Transfer: Missing Send Dictionary Raises Error.")]
+        [Fact(DisplayName = "Transfer: Empty Transfers Dictionary Raises Error.")]
         public async Task MissingSendDictionaryRaisesError()
         {
             var fx1 = await TestAccount.CreateAsync(_network);
             var fx2 = await TestAccount.CreateAsync(_network);
             var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
 
-            var sendAccounts = new Dictionary<Account, long> { };
-            var receiveAddresses = new Dictionary<Address, long> { { account1, transferAmount }, { account2, transferAmount } };
-
+            var transfers = new Dictionary<Address, long> { };
             var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
             {
-                await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
+                await fx1.Client.TransferWithRecordAsync(transfers);
             });
-            Assert.Equal("sendAccounts", aor.ParamName);
-            Assert.StartsWith("There must be at least one send account to transfer money from.", aor.Message);
-        }
-
-
-        [Fact(DisplayName = "Transfer: Null Receive Dictionary Raises Error.")]
-        public async Task NullReceiveDictionaryRaisesError()
-        {
-            var fx1 = await TestAccount.CreateAsync(_network);
-            var fx2 = await TestAccount.CreateAsync(_network);
-            var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
-            var transferAmount = (long)Generator.Integer(100, 200);
-
-            var sendAaccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
-
-            var and = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
-            {
-                await fx1.Client.TransferWithRecordAsync(sendAaccounts, null);
-            });
-            Assert.Equal("receiveAddresses", and.ParamName);
-            Assert.StartsWith("The receive address parameter cannot be null.", and.Message);
-        }
-        [Fact(DisplayName = "Transfer: Missing Send Dictionary Raises Error.")]
-        public async Task MissingReceiveDictionaryRaisesError()
-        {
-            var fx1 = await TestAccount.CreateAsync(_network);
-            var fx2 = await TestAccount.CreateAsync(_network);
-            var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
-            var transferAmount = (long)Generator.Integer(100, 200);
-
-            var sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, transferAmount } };
-            var receiveAddresses = new Dictionary<Address, long> { };
-
-            var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-            {
-                await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
-            });
-            Assert.Equal("receiveAddresses", aor.ParamName);
-            Assert.StartsWith("There must be at least one receive address to transfer money to.", aor.Message);
-        }
-        [Fact(DisplayName = "Transfer: Negative Send Dictionary Raises Error.")]
-        public async Task NegativeSendValueRaisesError()
-        {
-            var fx1 = await TestAccount.CreateAsync(_network);
-            var fx2 = await TestAccount.CreateAsync(_network);
-            var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
-            var transferAmount = (long)Generator.Integer(100, 200);
-
-            var sendAccounts = new Dictionary<Account, long> { { account1, -transferAmount }, { account2, 2 * transferAmount } };
-            var receiveAddresses = new Dictionary<Address, long> { { payer, 2 * transferAmount } };
-
-            var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-            {
-                await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
-            });
-            Assert.Equal("sendAccounts", aor.ParamName);
-            Assert.StartsWith("All amount entries must be positive values", aor.Message);
-        }
-        [Fact(DisplayName = "Transfer: Negative Receive Dictionary Raises Error.")]
-        public async Task NegativeReceiveValueRaisesError()
-        {
-            var fx1 = await TestAccount.CreateAsync(_network);
-            var fx2 = await TestAccount.CreateAsync(_network);
-            var payer = _network.Payer;
-            var account1 = new Account(fx1.Record.Address, fx1.PrivateKey);
-            var account2 = new Account(fx2.Record.Address, fx2.PrivateKey);
-            var transferAmount = (long)Generator.Integer(100, 200);
-
-            var sendAccounts = new Dictionary<Account, long> { { account1, transferAmount }, { account2, 2 * transferAmount } };
-            var receiveAddresses = new Dictionary<Address, long> { { payer, -transferAmount } };
-
-            var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-            {
-                await fx1.Client.TransferWithRecordAsync(sendAccounts, receiveAddresses);
-            });
-            Assert.Equal("receiveAddresses", aor.ParamName);
-            Assert.StartsWith("All amount entries must be positive values", aor.Message);
+            Assert.Equal("transfers", aor.ParamName);
+            Assert.StartsWith("The dictionary of transfers can not be empty. (Parameter 'tran", aor.Message);
         }
         [Fact(DisplayName = "Transfer: Transaction ID Information Makes Sense for Receipt")]
         public async Task TransactionIdMakesSenseForReceipt()

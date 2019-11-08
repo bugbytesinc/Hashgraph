@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Contract
             {
                 Contract = fx.ContractRecord.Contract,
                 Gas = await _network.TinybarsFromGas(400),
-                FunctionName = "get_balance",                
+                FunctionName = "get_balance",
             });
             Assert.NotNull(result);
             Assert.Empty(result.Error);
@@ -133,7 +133,7 @@ namespace Hashgraph.Test.Contract
 
             // Get the Info for the account state and then delete the account.
             var infoBefore = await fxAccount.Client.GetAccountInfoAsync(fxAccount.Record.Address);
-            var deleteReceipt = await fxAccount.Client.DeleteAccountAsync(new Account(fxAccount.Record.Address, fxAccount.PrivateKey), fxAccount.Network.Payer);
+            var deleteReceipt = await fxAccount.Client.DeleteAccountAsync(fxAccount.Record.Address, fxAccount.Network.Payer, fxAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
 
             // Double check the balance on the contract, confirm it has hbars
@@ -214,7 +214,7 @@ namespace Hashgraph.Test.Contract
             // Get the Info for the account state and then delete the account.
             var info1Before = await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
             var info2Before = await fxAccount2.Client.GetAccountInfoAsync(fxAccount2.Record.Address);
-            var delete1Receipt = await fxAccount1.Client.DeleteAccountAsync(new Account(fxAccount1.Record.Address, fxAccount1.PrivateKey), fxAccount1.Network.Payer);
+            var delete1Receipt = await fxAccount1.Client.DeleteAccountAsync(fxAccount1.Record.Address, fxAccount1.Network.Payer, fxAccount1.PrivateKey);
             Assert.Equal(ResponseCode.Success, delete1Receipt.Status);
 
             // Double check the balance on the contract, confirm it has hbars

@@ -23,6 +23,14 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
             Assert.Equal(ResponseCode.Success, record.Status);
         }
+        [Fact(DisplayName = "Contract Delete: Can Call Delete without Error using Signatory")]
+        public async Task CanDeleteContractUsingSignatory()
+        {
+            await using var fx = await GreetingContract.CreateAsync(_network);
+
+            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, _network.PrivateKey, ctx => ctx.Signatory = null);
+            Assert.Equal(ResponseCode.Success, record.Status);
+        }
         [Fact(DisplayName = "Contract Delete: Deleting contract removes it (get info should fail).")]
         public async Task DeleteContractRemovesContract()
         {
@@ -112,7 +120,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
             await using var fx2 = await TestAccount.CreateAsync(_network);
-            var deleteAccountRecord = await fx2.Client.DeleteAccountAsync(new Account(fx2.Record.Address, fx2.PrivateKey), _network.Payer);
+            var deleteAccountRecord = await fx2.Client.DeleteAccountAsync(fx2.Record.Address, _network.Payer, fx2.PrivateKey);
             Assert.Equal(ResponseCode.Success, deleteAccountRecord.Status);
 
             var deleteContractReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, fx2.Record.Address);

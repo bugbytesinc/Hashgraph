@@ -8,32 +8,11 @@ namespace Hashgraph
     public sealed class CreateAccountParams
     {
         /// <summary>
-        /// The public Ed25519 key corresponding to the private key authorized 
-        /// to sign transactions on behalf of this new account.  The key 
-        /// length is expected to be 44 bytes long and start with the prefix 
-        /// of 0x302a300506032b6570032100.
-        /// </summary>
-        /// <remarks>
-        /// If this value is <code>null</code>, then the <code>Endorsement</code>
-        /// value must be set.  Setting this value is the equivalent of creating
-        /// a single Ed25519 key endorsement.  If this value is set, then the
-        /// <code>Endorsement</code> value must be null.
-        /// At some point in the future, this property will be depricated.
-        /// </remarks>
-        public ReadOnlyMemory<byte>? PublicKey { get; set; }
-        /// <summary>
         /// The public key structure representing the signature or signatures
         /// required to sign on behalf of this new account.  It can represent
         /// a single Ed25519 key, set of n-of-m keys or any other key structure
         /// supported by the network.
         /// </summary>
-        /// <remarks>
-        /// If this value is not <code>null</code> then the <code>PublicKey</code>
-        /// value must be set instead.  Setting that value is the equivalent of 
-        /// setting this value with a single Ed25519 key.  Alternatively, if this 
-        /// value is <code>null</code>, the <code>PublicKey</code> must 
-        /// not be set to an Ed25519 public key.
-        /// </remarks>
         public Endorsement? Endorsement { get; set; }
         /// <summary>
         /// The initial balance that will be transferred from the 
@@ -86,5 +65,20 @@ namespace Hashgraph
         /// proxy staked to a node chosen by the network without earning payments.
         /// </summary>
         public Address? Proxy { get; set; }
+        /// <summary>
+        /// Additional private key, keys or signing callback method 
+        /// required to create this account.  Typically matches the
+        /// Endorsement assigned to this new account.
+        /// </summary>
+        /// <remarks>
+        /// Keys/callbacks added here will be combined with those already
+        /// identified in the client object's context when signing this 
+        /// transaction to change the state of this account.  They will 
+        /// not be asked to sign transactions to retrieve the record
+        /// if the "WithRecord" form of the method call is made.  The
+        /// client will rely on the Signatory from the context to sign
+        /// the transaction requesting the record.
+        /// </remarks>
+        public Signatory? Signatory { get; set; }
     }
 }

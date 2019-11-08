@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Contract
             {
                 Contract = fx.ContractRecord.Contract,
                 Gas = await _network.TinybarsFromGas(400),
-                FunctionName = "get_balance"                
+                FunctionName = "get_balance"
             });
 
             Assert.NotNull(result);
@@ -94,6 +94,11 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx2.Record.Address, address);
             Assert.Equal(fx.ContractParams.InitialBalance, amount);
 
+            // Alternate Way
+            var objects = result.Data.GetAll(typeof(Address), typeof(long));
+            Assert.Equal(fx2.Record.Address, objects[0]);
+            Assert.Equal(fx.ContractParams.InitialBalance, objects[1]);
+
             var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
         }
@@ -109,7 +114,7 @@ namespace Hashgraph.Test.Contract
             // Get the Info for the account state and then delete the account.
             var info1Before = await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
             var info2Before = await fxAccount2.Client.GetAccountInfoAsync(fxAccount2.Record.Address);
-            var delete1Receipt = await fxAccount1.Client.DeleteAccountAsync(new Account(fxAccount1.Record.Address, fxAccount1.PrivateKey), fxAccount1.Network.Payer);
+            var delete1Receipt = await fxAccount1.Client.DeleteAccountAsync(fxAccount1.Record.Address, fxAccount1.Network.Payer, fxAccount1.PrivateKey);
             Assert.Equal(ResponseCode.Success, delete1Receipt.Status);
 
             // Confirm deleted account by trying to get info on the deleted account, 

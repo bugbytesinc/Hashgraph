@@ -16,14 +16,11 @@ namespace Hashgraph.Web.Pages
         {
             GetBalanceRequest = new GetBalanceRequestModel
             {
-                GatewayName = "testnet.hedera.com",
-                GatewayPort = 0,
+                GatewayName = "2.testnet.hedera.com",
+                GatewayPort = 50211,
                 GatewayRealmNum = 0,
                 GatewayShardNum = 0,
-                GatewayAccountNum = 3,
-                PayerRealmNum = 0,
-                PayerShardNum = 0,
-                PayerAccountNum = 3,
+                GatewayAccountNum = 5,
                 AccountRealmNum = 0,
                 AccountShardNum = 0,
                 AccountAccountNum = 3
@@ -44,11 +41,6 @@ namespace Hashgraph.Web.Pages
                          GetBalanceRequest.GatewayRealmNum,
                          GetBalanceRequest.GatewayShardNum,
                          GetBalanceRequest.GatewayAccountNum);
-                     ctx.Payer = new Account(
-                         GetBalanceRequest.PayerRealmNum,
-                         GetBalanceRequest.PayerShardNum,
-                         GetBalanceRequest.PayerAccountNum,
-                         Hex.ToBytes(GetBalanceRequest.PayerPrivateKey));
                  });
                 Balance = await client.GetAccountBalanceAsync(
                     new Address(

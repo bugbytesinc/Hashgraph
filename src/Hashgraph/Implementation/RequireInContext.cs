@@ -10,14 +10,23 @@ namespace Hashgraph.Implementation
     /// </summary>
     internal static class RequireInContext
     {
-        internal static Account Payer(ContextStack context)
+        internal static Address Payer(ContextStack context)
         {
             var payer = context.Payer;
             if (payer is null)
             {
-                throw new InvalidOperationException("The Payer account has not been configured. Please check that 'Payer' is set in the Client context.");
+                throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.");
             }
             return payer;
+        }
+        internal static Signatory Signatory(ContextStack context)
+        {
+            var signatory = context.Signatory;
+            if (signatory is null)
+            {
+                throw new InvalidOperationException("The Payer's signatory (signing key/callback) has not been configured. This is required for retreiving records and other general network Queries. Please check that 'Signatory' is set in the Client context.");
+            }
+            return signatory;
         }
         internal static Gateway Gateway(ContextStack context)
         {
@@ -32,7 +41,7 @@ namespace Hashgraph.Implementation
         internal static long QueryFee(ContextStack context, long requiredFee)
         {
             var feeLimit = context.FeeLimit;
-            if(feeLimit < requiredFee)
+            if (feeLimit < requiredFee)
             {
                 throw new InvalidOperationException($"The user specified fee limit is not enough for the anticipated query required fee of {requiredFee:n0} tinybars.");
             }

@@ -41,43 +41,43 @@ namespace Hashgraph.Implementation
         {
             return new AccountID
             {
-                RealmNum = address.RealmNum,
                 ShardNum = address.ShardNum,
+                RealmNum = address.RealmNum,
                 AccountNum = address.AccountNum
             };
         }
         internal static Address FromAccountID(AccountID accountId)
         {
-            return new Address(accountId.RealmNum, accountId.ShardNum, accountId.AccountNum);
+            return new Address(accountId.ShardNum, accountId.RealmNum, accountId.AccountNum);
         }
         internal static FileID ToFileId(Address file)
         {
             return new FileID
             {
-                RealmNum = file.RealmNum,
                 ShardNum = file.ShardNum,
+                RealmNum = file.RealmNum,
                 FileNum = file.AccountNum
             };
         }
 
         internal static Address FromFileID(FileID fileID)
         {
-            return new Address(fileID.RealmNum, fileID.ShardNum, fileID.FileNum);
+            return new Address(fileID.ShardNum, fileID.RealmNum, fileID.FileNum);
         }
 
         internal static ContractID ToContractID(Address address)
         {
             return new ContractID
             {
-                RealmNum = address.RealmNum,
                 ShardNum = address.ShardNum,
+                RealmNum = address.RealmNum,
                 ContractNum = address.AccountNum
             };
         }
 
         internal static Address FromContractID(ContractID contract)
         {
-            return new Address(contract.RealmNum, contract.ShardNum, contract.ContractNum);
+            return new Address(contract.ShardNum, contract.RealmNum, contract.ContractNum);
         }
 
         internal static Duration ToDuration(TimeSpan timespan)

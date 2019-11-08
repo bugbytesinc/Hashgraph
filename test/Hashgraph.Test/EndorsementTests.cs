@@ -79,6 +79,12 @@ namespace Hashgraph.Tests
             Assert.Equal(endorsement1, endorsement2);
             Assert.True(endorsement1 == endorsement2);
             Assert.False(endorsement1 != endorsement2);
+
+            object asObject1 = endorsement1;
+            object asObject2 = endorsement2;
+            Assert.Equal(asObject1, asObject2);
+            Assert.True(endorsement1.Equals(asObject1));
+            Assert.True(asObject1.Equals(endorsement1));
         }
         [Fact(DisplayName = "Endorsements: Disimilar Endorsements are not considered Equal")]
         public void DisimilarEndorsementsAreNotConsideredEqual()

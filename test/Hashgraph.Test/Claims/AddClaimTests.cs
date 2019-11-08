@@ -59,7 +59,7 @@ namespace Hashgraph.Test.Claims
             {
                 await client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1, privateKey2);
+                    ctx.Signatory = new Signatory(_network.PrivateKey, privateKey1, privateKey2);
                 });
             });
             Assert.Equal("Address", exception.ParamName);
@@ -83,7 +83,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
+                    ctx.Signatory = new Signatory(_network.PrivateKey, privateKey1);
                 });
             });
             Assert.Equal("Hash", exception.ParamName);
@@ -108,7 +108,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
+                    ctx.Signatory = new Signatory(_network.PrivateKey, privateKey1);
                 });
             });
             Assert.Equal("Hash", exception.ParamName);
@@ -131,7 +131,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
+                    ctx.Signatory = new Signatory(_network.PrivateKey, privateKey1);
                 });
             });
             Assert.Equal("Endorsements", exception.ParamName);
@@ -155,7 +155,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
+                    ctx.Signatory = new Signatory(_network.PrivateKey, privateKey1);
                 });
             });
             Assert.Equal("Endorsements", exception.ParamName);
@@ -179,7 +179,7 @@ namespace Hashgraph.Test.Claims
             {
                 await test.Client.AddClaimAsync(claim, ctx =>
                 {
-                    ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1, privateKey2);
+                    ctx.Signatory = new Signatory(_network.PrivateKey, privateKey1, privateKey2);
                 });
             });
             Assert.Equal("ClaimDuration", exception.ParamName);
@@ -211,7 +211,7 @@ namespace Hashgraph.Test.Claims
                 {
                     await test.Client.AddClaimAsync(claim, ctx =>
                     {
-                        ctx.Payer = new Account(ctx.Payer, _network.PrivateKey, privateKey1);
+                        ctx.Signatory = new Signatory(_network.PrivateKey, privateKey1);
                     });
                 });
                 Assert.Equal(ResponseCode.InvalidSignature, tex.Status);

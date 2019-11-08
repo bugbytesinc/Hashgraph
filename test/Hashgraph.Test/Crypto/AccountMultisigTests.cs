@@ -21,6 +21,7 @@ namespace Hashgraph.Test.Crypto
             var (publicKey1, privateKey1) = Generator.KeyPair();
             var (publicKey2, privateKey2) = Generator.KeyPair();
             var endorsement = new Endorsement(publicKey1, publicKey2);
+            var signatory = new Signatory(privateKey1, privateKey2);
             var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
@@ -43,10 +44,10 @@ namespace Hashgraph.Test.Crypto
             Assert.False(info.Deleted);
 
             // Move remaining funds back to primary account.
-            var from = new Account(createResult.Address, privateKey1, privateKey2);
-            await client.TransferAsync(from, _network.Payer, (long)initialBalance);
+            var from = createResult.Address;
+            await client.TransferAsync(from, _network.Payer, (long)initialBalance, signatory);
 
-            var receipt = await client.DeleteAccountAsync(new Account(createResult.Address, privateKey1, privateKey2), _network.Payer);
+            var receipt = await client.DeleteAccountAsync(createResult.Address, _network.Payer, signatory);
             Assert.NotNull(receipt);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
@@ -72,8 +73,8 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             // Move funds back to primary account (still use Payer to pay TX Fee)
-            var from = new Account(createResult.Address, privateKey1, privateKey2);
-            var record = await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance);
+            var from = createResult.Address;
+            var record = await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance, new Signatory(privateKey1, privateKey2));
 
             var balance = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(0UL, balance);
@@ -94,8 +95,8 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             // Move funds back to primary account (still use Payer to pay TX Fee)
-            var from = new Account(createResult.Address, privateKey1);
-            var record = await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance);
+            var from = createResult.Address;
+            var record = await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance, privateKey1);
 
             var balance = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(0UL, balance);
@@ -118,16 +119,16 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             // Fail by not providing all necessary keys (note only one of the root keys here)
-            var from = new Account(createResult.Address, privateKey1a, privateKey1b);
+            var from = createResult.Address;
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance);
+                await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance, privateKey1a);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
 
             // Now try with proper set of signatures
-            from = new Account(createResult.Address, privateKey1a, privateKey2b);
-            var record = await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance);
+            from = createResult.Address;
+            var record = await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance, new Signatory(privateKey1b, privateKey2a));
 
             var balance = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(0UL, balance);
@@ -143,22 +144,21 @@ namespace Hashgraph.Test.Crypto
             var endorsement = new Endorsement(new Endorsement(1, publicKey1a, publicKey1b), new Endorsement(1, publicKey2a, publicKey2b));
             var receipt = await fx.Client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = new Account(fx.Record.Address, fx.PrivateKey, privateKey1a, privateKey1b, privateKey2a, privateKey2b),
-                Endorsement = endorsement
+                Address = fx.Record.Address,
+                Endorsement = endorsement,
+                Signatory = new Signatory(fx.PrivateKey, privateKey1a, privateKey1b, privateKey2a, privateKey2b)
             });
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             // Fail by not providing all necessary keys (note only one of the root keys here)
-            var from = new Account(new Account(fx.Record.Address, fx.PrivateKey), fx.PrivateKey);
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fx.Client.TransferWithRecordAsync(from, _network.Payer, (long)fx.CreateParams.InitialBalance);
+                await fx.Client.TransferWithRecordAsync(fx.Record.Address, _network.Payer, (long)fx.CreateParams.InitialBalance, fx.PrivateKey);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
 
             // Now try with proper set of signatures
-            from = new Account(fx.Record.Address, privateKey1a, privateKey2b);
-            var record = await fx.Client.TransferWithRecordAsync(from, _network.Payer, (long)fx.CreateParams.InitialBalance);
+            var record = await fx.Client.TransferWithRecordAsync(fx.Record.Address, _network.Payer, (long)fx.CreateParams.InitialBalance, new Signatory(privateKey1a, privateKey2b));
 
             var balance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(0UL, balance);
@@ -177,29 +177,30 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = initialBalance,
-                Endorsement = endorsement
+                Endorsement = endorsement,
+                Signatory = new Signatory(privateKey1a, privateKey1b, privateKey2a, privateKey2b)
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             // Fail by not providing all necessary keys (note only one of the root keys here)
-            var from = new Account(createResult.Address, privateKey3);
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance);
+                await client.TransferWithRecordAsync(createResult.Address, _network.Payer, (long)initialBalance, privateKey3);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
 
             await client.UpdateAccountAsync(new UpdateAccountParams
             {
-                Account = from,
-                Endorsement = publicKey3
+                Address = createResult.Address,
+                Endorsement = publicKey3,
+                Signatory = privateKey3,
             }, ctx =>
             {
                 ctx.Signatory = new Signatory(_network.Signatory, privateKey1a, privateKey2a);
             });
 
             // Now try with proper set of signatures
-            var record = await client.TransferWithRecordAsync(from, _network.Payer, (long)initialBalance);
+            var record = await client.TransferWithRecordAsync(createResult.Address, _network.Payer, (long)initialBalance, privateKey3);
 
             var balance = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(0UL, balance);

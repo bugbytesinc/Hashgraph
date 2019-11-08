@@ -71,7 +71,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var updateAccountBody = new CryptoUpdateTransactionBody
             {
-                AccountIDToUpdate = Protobuf.ToAccountID(updateParameters.Account)
+                AccountIDToUpdate = Protobuf.ToAccountID(updateParameters.Address)
             };
             if (!(updateParameters.Endorsement is null))
             {
@@ -97,7 +97,7 @@ namespace Hashgraph
             {
                 updateAccountBody.ProxyAccountID = Protobuf.ToAccountID(updateParameters.Proxy);
             }
-            var signatory = Transactions.GatherSignatories(context, new Signatory(updateParameters.Account), new Signatory(payer));
+            var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update Account");
             transactionBody.CryptoUpdateAccount = updateAccountBody;

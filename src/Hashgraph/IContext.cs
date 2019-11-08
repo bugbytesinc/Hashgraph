@@ -28,10 +28,11 @@ namespace Hashgraph
         /// </summary>
         Gateway? Gateway { get; set; }
         /// <summary>
-        /// The account that pays for transactions submitted to
-        /// the network.
+        /// The address of the account that pays for transactions 
+        /// submitted to the network, otherwise known as the 
+        /// "Operator".
         /// </summary>
-        Account? Payer { get; set; }
+        Address? Payer { get; set; }
         /// <summary>
         /// The private key, keys or signing callback method that 
         /// are needed to sign the transaction.  At a minimum, this
@@ -40,11 +41,22 @@ namespace Hashgraph
         /// creating claims, files and contracts.
         /// </summary>
         /// <remarks>
-        /// The library is currently in transition away from the
-        /// `Account` object that embeds signing keys in favor of
-        /// the explicit list of Signatories.  At some point in the
-        /// future, the `Payer` property will become a simple address
-        /// and the `Account` object will be removed from the library.
+        /// Every key added into this context will sign every 
+        /// transaction made by the owning client object.  This 
+        /// includes the "second" transaction required to obtain
+        /// a record from the network when the "WithRecord" form
+        /// of method calls are invoked.  It is important to note
+        /// that many of the API calls have additional opportunities
+        /// to identify specific signatories for various transactions.
+        /// It is not necessary to add all the keys on this context 
+        /// for say, a key rotation on an account; especially if the
+        /// "WithRecord" form is invoked.  It is recommended to place
+        /// only the keys associated with the Payer account in this
+        /// property.  Not doing so may result in extraneous unecessary
+        /// signatures being sent with transactions.  If this happens
+        /// the transaction cost goes up due to the larger transaction
+        /// size, waisting crypto due to unecessary signature processing
+        /// fees.
         /// </remarks>
         Signatory? Signatory { get; set; }
         /// <summary>

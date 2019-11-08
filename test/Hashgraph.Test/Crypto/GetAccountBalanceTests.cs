@@ -35,7 +35,7 @@ namespace Hashgraph.Test.Crypto
         public async Task MissingNodeInformationThrowsException()
         {
             var account = _network.Payer;
-            await using var client = new Client(ctx => { ctx.Payer = _network.PayerAsAccountWithPrivateKey; });
+            await using var client = new Client(ctx => { ctx.Payer = _network.Payer; });
             var ex = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 var balance = await client.GetAccountBalanceAsync(account);

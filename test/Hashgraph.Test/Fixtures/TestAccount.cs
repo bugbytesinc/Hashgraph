@@ -21,7 +21,7 @@ namespace Hashgraph.Test.Fixtures
             (fx.PublicKey, fx.PrivateKey) = Generator.KeyPair();
             fx.CreateParams = new CreateAccountParams
             {
-                PublicKey = fx.PublicKey,
+                Endorsement = fx.PublicKey,
                 InitialBalance = (ulong)Generator.Integer(10, 20)
             };
             fx.Client = networkCredentials.NewClient();
@@ -39,7 +39,7 @@ namespace Hashgraph.Test.Fixtures
             Network.Output?.WriteLine("STARTING TEARDOWN: Test Account Instance");
             try
             {
-                await Client.DeleteAccountAsync(new Account(Record.Address, PrivateKey), Network.Payer, ctx =>
+                await Client.DeleteAccountAsync(Record.Address, Network.Payer, PrivateKey, ctx =>
                   {
                       ctx.Memo = "Test Account Instance Teardown: Attempting to delete Account from Network (if exists)";
                   });

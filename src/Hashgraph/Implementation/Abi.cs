@@ -262,7 +262,7 @@ namespace Hashgraph.Implementation
             }
             var num = BitConverter.ToInt64(numAsBytes);
 
-            return new Address(realm, shard, num);
+            return new Address(shard, realm, num);
         }
         private static void WriteInt256(Span<byte> buffer, long value)
         {
