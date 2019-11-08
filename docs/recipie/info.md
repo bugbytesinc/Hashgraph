@@ -5,7 +5,7 @@ layout: default
 
 # Get Account Info
 
-In preparation for querying detailed information about an account, the first step is to create a Hashgraph `Client` object.  The Client object orchestrates the request construction and communication with the hedera network. It requires a small amount of configuration when created. At a minimum to retrieve the information, the client must be configured with a `Gateway` and Payer `Account`. The Gateway object represents the internet network address and account for the node processing requests and the Payer Account represents the account that will sign and pay for the query. Note, retreiving information about an account is not free, the network requires a nominal payment of a few _tinybars_ from the paying account to process the request.  After creating and configuring the client object, the `GetAccountInfoAsync` method submits the request to the network and returns an `AccountInfo` object describing the details of the account, including its balance in _tinybars_.  The following code example illustrates a small program performing these actions:
+In preparation for querying detailed information about an account, the first step is to create a Hashgraph `Client` object.  The Client object orchestrates the request construction and communication with the hedera network. It requires a small amount of configuration when created. At a minimum to retrieve the information, the client must be configured with a `Gateway` and Payer. The Gateway object represents the internet network address and account for the node processing requests and the Payer Account represents the account that will sign and pay for the query.  The Payer consists of two things: and `Address` identifying the account paying transaction fees for the request; and a `Signatory` holding the signing key associated with the Payer account.  Retrieving information about an account is not free, the network requires a nominal payment of a few _tinybars_ from the paying account to process the request.  After creating and configuring the client object, the `GetAccountInfoAsync` method submits the request to the network and returns an `AccountInfo` object describing the details of the account, including its balance in _tinybars_.  The following code example illustrates a small program performing these actions:
 
 ```csharp
 class Program
@@ -22,7 +22,8 @@ class Program
             await using var client = new Client(ctx =>
             {
                 ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
-                ctx.Payer = new Account(0, 0, payerAccountNo, payerPrivateKey);
+                ctx.Payer = new Address(0, 0, payerAccountNo);
+                ctx.Signatory = new Signatory(payerPrivateKey);
             });
             var account = new Address(0, 0, queryAccountNo);
             var info = await client.GetAccountInfoAsync(account);
@@ -44,4 +45,6 @@ class Program
 }
 ```
 
-One should note that to construct a payer account, one does need to have access to the necessary private keys to sign the transaction to pay for the network query request (as well as the paying account’s address number).  For the account being queried, only the address number need be known.
+One should note that to create a `Signatory` associated with the payer account, one does need to have access to the account’s private key(s) to sign the transaction authorizing payment to the network query request.  For the account being queried, only the address number need be known.  
+
+While outside the scope of this recipe, it is possible to create a signatory that invokes an external method to sign the transaction instead; this is useful for scenarios where the private key is held outside of the system using this library.  Thru this mechanism it is possible for the library to _never_ see a private signing key.
