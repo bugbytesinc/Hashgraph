@@ -16,17 +16,17 @@ namespace Hashgraph.Test.Fixtures
         private ExchangeRate _exchangeRate = null;
         public string NetworkAddress { get { return _configuration["network:address"]; } }
         public int NetworkPort { get { return getAsInt("network:port"); } }
-        public long ServerRealm { get { return getAsInt("server:realm"); } }
         public long ServerShard { get { return getAsInt("server:shard"); } }
+        public long ServerRealm { get { return getAsInt("server:realm"); } }
         public long ServerNumber { get { return getAsInt("server:number"); } }
-        public long AccountRealm { get { return getAsInt("account:realm"); } }
         public long AccountShard { get { return getAsInt("account:shard"); } }
+        public long AccountRealm { get { return getAsInt("account:realm"); } }
         public long AccountNumber { get { return getAsInt("account:number"); } }
         public ReadOnlyMemory<byte> PrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
         public ReadOnlyMemory<byte> PublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
-        public Address Payer { get { return new Address(AccountRealm, AccountShard, AccountNumber); } }
+        public Address Payer { get { return new Address(AccountShard, AccountRealm, AccountNumber); } }
         public Signatory Signatory { get { return new Signatory(PrivateKey); } }
-        public Gateway Gateway { get { return new Gateway($"{NetworkAddress}:{NetworkPort}", ServerRealm, ServerShard, ServerNumber); } }
+        public Gateway Gateway { get { return new Gateway($"{NetworkAddress}:{NetworkPort}", ServerShard, ServerRealm, ServerNumber); } }
         public ITestOutputHelper Output { get; set; }
         public NetworkCredentials()
         {

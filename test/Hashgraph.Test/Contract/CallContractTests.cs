@@ -62,6 +62,22 @@ namespace Hashgraph.Test.Contract
             Assert.Empty(record.CallResult.Events);
             Assert.Equal(fx.ContractParams.Arguments[0] as string, record.CallResult.Result.As<string>());
         }
+        [Fact(DisplayName = "Call Contract: Can Call Contract that keeps State alternate Signatory")]
+        public async Task CanCreateAContractWithStateAlternateSignatoryAsync()
+        {
+            await using var fx = await StatefulContract.CreateAsync(_network);
+
+            var receipt = await fx.Client.CallContractAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_message",
+                Signatory = _network.PrivateKey
+            }, ctx => ctx.Signatory = null);
+            Assert.NotNull(receipt);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(fx.ContractRecord.Contract, receipt.Contract);
+        }
         [Fact(DisplayName = "Call Contract: Can Call Contract that sets State")]
         public async Task CanCreateAContractAndSetStateAsync()
         {
@@ -86,6 +102,43 @@ namespace Hashgraph.Test.Contract
             Assert.True(setRecord.CallResult.Bloom.IsEmpty);
             Assert.InRange(setRecord.CallResult.Gas, 0UL, 50_000UL);
             Assert.Empty(setRecord.CallResult.Events);
+
+            var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_message"
+            });
+            Assert.NotNull(getRecord);
+            Assert.Equal(ResponseCode.Success, getRecord.Status);
+            Assert.False(getRecord.Hash.IsEmpty);
+            Assert.NotNull(getRecord.Concensus);
+            Assert.Equal("Call Contract", getRecord.Memo);
+            Assert.InRange(getRecord.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(fx.ContractRecord.Contract, getRecord.Contract);
+            Assert.Empty(getRecord.CallResult.Error);
+            Assert.True(getRecord.CallResult.Bloom.IsEmpty);
+            Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
+            Assert.Empty(getRecord.CallResult.Events);
+            Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
+            Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
+        }
+        [Fact(DisplayName = "Call Contract: Can Call Contract that sets State (receipt version)")]
+        public async Task CanCreateAContractAndSetStateWithoutRecordAsync()
+        {
+            await using var fx = await StatefulContract.CreateAsync(_network);
+
+            var newMessage = Generator.Code(50);
+            var setRecord = await fx.Client.CallContractAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(1000),
+                FunctionName = "set_message",
+                FunctionArgs = new object[] { newMessage }
+            });
+            Assert.NotNull(setRecord);
+            Assert.Equal(ResponseCode.Success, setRecord.Status);
+            Assert.Equal(fx.ContractRecord.Contract, setRecord.Contract);
 
             var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {

@@ -195,6 +195,24 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
         }
+        [Fact(DisplayName = "Contract Update: Can Update Memo, skip Record")]
+        public async Task CanUpdateMemoNoRecord()
+        {
+            await using var fx = await GreetingContract.CreateAsync(_network);
+            var newMemo = Generator.Code(50);
+            var receipt = await fx.Client.UpdateContractAsync(new UpdateContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Memo = newMemo
+            });
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
+            Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.Equal(newMemo, info.Memo);
+        }
         [Fact(DisplayName = "Contract Update: Updating an immutable contract raises error.")]
         public async Task UpdatingImmutableContractRaisesError()
         {
@@ -276,7 +294,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await TestFile.CreateAsync(_network);
             var invalidContractAddress = fx.Record.File;
-            await fx.Client.DeleteFileAsync(invalidContractAddress);
+            await fx.Client.DeleteFileAsync(invalidContractAddress, fx.Signatory);
 
             var newMemo = Generator.Code(50);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>

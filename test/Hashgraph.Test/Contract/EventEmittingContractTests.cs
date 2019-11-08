@@ -94,6 +94,11 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx2.Record.Address, address);
             Assert.Equal(fx.ContractParams.InitialBalance, amount);
 
+            // Alternate Way
+            var objects = result.Data.GetAll(typeof(Address), typeof(long));
+            Assert.Equal(fx2.Record.Address, objects[0]);
+            Assert.Equal(fx.ContractParams.InitialBalance, objects[1]);
+
             var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
         }

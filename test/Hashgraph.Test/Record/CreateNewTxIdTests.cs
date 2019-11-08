@@ -96,7 +96,7 @@ namespace Hashgraph.Test.Record
         {
             await using var client = _network.NewClient();
 
-            var address = new Address(0, Generator.Integer(20, 100), Generator.Integer(20, 100));
+            var address = new Address(Generator.Integer(20, 100), 0, Generator.Integer(20, 100));
             var txId = client.CreateNewTxId(ctx => ctx.Payer = address);
 
             Assert.Equal(address, txId.Address);
@@ -106,7 +106,7 @@ namespace Hashgraph.Test.Record
         {
             await using var client = _network.NewClient();
 
-            var txExpected = new TxId(new Address(0, Generator.Integer(20, 100), Generator.Integer(20, 100)), DateTime.UtcNow);
+            var txExpected = new TxId(new Address(Generator.Integer(20, 100), 0, Generator.Integer(20, 100)), DateTime.UtcNow);
 
             var txReturned = client.CreateNewTxId(ctx => ctx.Transaction = txExpected);
 

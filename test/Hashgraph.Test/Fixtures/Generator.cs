@@ -81,15 +81,15 @@ namespace Hashgraph.Test.Fixtures
         public static Proto.TransactionID TransactionID()
         {
             var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(false);
-            var realmNum = Generator.Integer(0, 200);
             var shardNum = Generator.Integer(0, 200);
+            var realmNum = Generator.Integer(0, 200);
             var accountNum = Generator.Integer(0, 200);
             return new Proto.TransactionID
             {
                 AccountID = new Proto.AccountID
                 {
-                    RealmNum = realmNum,
                     ShardNum = shardNum,
+                    RealmNum = realmNum,
                     AccountNum = accountNum
                 },
                 TransactionValidStart = new Proto.Timestamp

@@ -47,7 +47,8 @@ namespace Hashgraph.Test.File
             var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
             {
                 File = test.Record.File,
-                Contents = newContents
+                Contents = newContents,
+                Signatory = test.Signatory
             });
             Assert.Equal(ResponseCode.Success, updateRecord.Status);
 
@@ -59,7 +60,7 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var deleteResult = await test.Client.DeleteFileAsync(test.Record.File);
+            var deleteResult = await test.Client.DeleteFileAsync(test.Record.File, test.Signatory);
             Assert.Equal(ResponseCode.Success, deleteResult.Status);
 
             var exception = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -67,7 +68,8 @@ namespace Hashgraph.Test.File
                 await test.Client.UpdateFileAsync(new UpdateFileParams
                 {
                     File = test.Record.File,
-                    Contents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50))
+                    Contents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50)),
+                    Signatory = test.Signatory
                 });
             });
             Assert.StartsWith("Unable to update file, status: FileDeleted", exception.Message);

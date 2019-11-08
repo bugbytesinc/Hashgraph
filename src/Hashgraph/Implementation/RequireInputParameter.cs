@@ -29,15 +29,6 @@ namespace Hashgraph.Implementation
             }
             return contract;
         }
-        internal static string SmartContractId(string smartContractId)
-        {
-            if (string.IsNullOrWhiteSpace(smartContractId))
-            {
-                throw new ArgumentNullException(nameof(smartContractId), "Smart Contract ID is missing. Please check that it is not null.");
-            }
-            return smartContractId;
-        }
-
         internal static Address AddressToDelete(Address addressToDelete)
         {
             if (addressToDelete is null)
@@ -80,15 +71,6 @@ namespace Hashgraph.Implementation
             }
             return transferToAddress;
         }
-        //internal static Account FromAccount(Account fromAccount)
-        //{
-        //    if (fromAccount is null)
-        //    {
-        //        throw new ArgumentNullException(nameof(fromAccount), "Account to transfer from is missing. Please check that it is not null.");
-        //    }
-        //    return fromAccount;
-        //}
-
         internal static Address FromAddress(Address fromAddress)
         {
             if (fromAddress is null)
@@ -129,7 +111,7 @@ namespace Hashgraph.Implementation
             {
                 if (transfer.Value == 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(transfers), $"The amount to transfer to/from {transfer.Key.RealmNum}.{transfer.Key.ShardNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                    throw new ArgumentOutOfRangeException(nameof(transfers), $"The amount to transfer to/from {transfer.Key.ShardNum}.{transfer.Key.RealmNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
                 }
                 result.Add((transfer.Key, transfer.Value));
                 sum = sum + transfer.Value;
@@ -183,60 +165,6 @@ namespace Hashgraph.Implementation
             }
             return updateParameters;
         }
-
-        //internal static (Address address, long amount)[] MultiTransfers(Dictionary<Account, long> sendAccounts, Dictionary<Address, long> receiveAddresses)
-        //{
-        //    if (sendAccounts is null)
-        //    {
-        //        throw new ArgumentNullException(nameof(sendAccounts), "The send accounts parameter cannot be null.");
-        //    }
-        //    if (sendAccounts.Count == 0)
-        //    {
-        //        throw new ArgumentOutOfRangeException(nameof(sendAccounts), "There must be at least one send account to transfer money from.");
-        //    }
-        //    if (receiveAddresses is null)
-        //    {
-        //        throw new ArgumentNullException(nameof(receiveAddresses), "The receive address parameter cannot be null.");
-        //    }
-        //    if (receiveAddresses.Count == 0)
-        //    {
-        //        throw new ArgumentOutOfRangeException(nameof(receiveAddresses), "There must be at least one receive address to transfer money to.");
-        //    }
-        //    long total = 0;
-        //    var list = new List<(Address address, long amount)>();
-        //    foreach (var pair in sendAccounts)
-        //    {
-        //        if (pair.Key is null)
-        //        {
-        //            throw new ArgumentNullException(nameof(sendAccounts), "Found a null entry in the send accounts list.");
-        //        }
-        //        if (pair.Value <= 0)
-        //        {
-        //            throw new ArgumentOutOfRangeException(nameof(sendAccounts), "All amount entries must be positive values");
-        //        }
-        //        total -= pair.Value;
-        //        list.Add((pair.Key, -pair.Value));
-        //    }
-        //    foreach (var pair in receiveAddresses)
-        //    {
-        //        if (pair.Key is null)
-        //        {
-        //            throw new ArgumentNullException(nameof(receiveAddresses), "Found a null entry in the receive addresses list.");
-        //        }
-        //        if (pair.Value <= 0)
-        //        {
-        //            throw new ArgumentOutOfRangeException(nameof(receiveAddresses), "All amount entries must be positive values");
-        //        }
-        //        total += pair.Value;
-        //        list.Add((pair.Key, pair.Value));
-        //    }
-        //    if (total != 0)
-        //    {
-        //        throw new ArgumentOutOfRangeException(nameof(sendAccounts), "The sum of sends and receives does not balance.");
-        //    }
-        //    return list.ToArray();
-        //}
-
         internal static UpdateContractParams UpdateParameters(UpdateContractParams updateParameters)
         {
             {
@@ -290,46 +218,6 @@ namespace Hashgraph.Implementation
                 throw new ArgumentOutOfRangeException(nameof(url), "URL is required.");
             }
             return url;
-        }
-        internal static PublicKey[] PublicKeys(ReadOnlyMemory<byte>[] publicKeys)
-        {
-            if (publicKeys.Length == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(publicKeys), "At least one public key is required.");
-            }
-            var result = new PublicKey[publicKeys.Length];
-            for (int i = 0; i < publicKeys.Length; i++)
-            {
-                try
-                {
-                    result[i] = Keys.ImportPublicEd25519KeyFromBytes(publicKeys[i]);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(publicKeys), ex.Message);
-                }
-            }
-            return result;
-        }
-        internal static Key[] PrivateKeys(ReadOnlyMemory<byte>[] privateKeys)
-        {
-            if (privateKeys is null)
-            {
-                return new Key[0];
-            }
-            var result = new Key[privateKeys.Length];
-            for (int i = 0; i < result.Length; i++)
-            {
-                try
-                {
-                    result[i] = Keys.ImportPrivateEd25519KeyFromBytes(privateKeys[i]);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(privateKeys), $"Unable to create Account object, {ex.Message}");
-                }
-            }
-            return result;
         }
         internal static Endorsement[] Endorsements(Endorsement[] endorsements)
         {

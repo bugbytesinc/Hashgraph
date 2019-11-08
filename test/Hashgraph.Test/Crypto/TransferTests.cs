@@ -44,6 +44,19 @@ namespace Hashgraph.Test.Crypto
             var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(fx.CreateParams.InitialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
         }
+        [Fact(DisplayName = "Transfer: Can Send to multitransfer to New Account")]
+        public async Task CanMultiTransferCryptoToNewAccount()
+        {
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = (long)Generator.Integer(10, 100);
+            var newBalance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance, newBalance);
+
+            var transfers = new Dictionary<Address, long> { { _network.Payer, -transferAmount }, { fx.Record.Address, transferAmount } };
+            var receipt = await fx.Client.TransferAsync(transfers);
+            var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance + (ulong)transferAmount, newBalanceAfterTransfer);
+        }
         [Fact(DisplayName = "Transfer: Can Get Transfer Record Showing Transfers")]
         public async Task CanGetTransferRecordShowingTransfers()
         {
@@ -72,6 +85,20 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
 
             var receipt = await client.TransferAsync(fx.Record.Address, _network.Payer, (long)transferAmount, fx.PrivateKey);
+            var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, newBalanceAfterTransfer);
+        }
+        [Fact(DisplayName = "Transfer: Can Send from New Account via Transfers Map")]
+        public async Task CanTransferCryptoFromNewAccountViaDictionary()
+        {
+            await using var fx = await TestAccount.CreateAsync(_network);
+            var transferAmount = (long)(fx.CreateParams.InitialBalance / 2);
+            await using var client = _network.NewClient();
+            var info = await client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(fx.CreateParams.InitialBalance, info.Balance);
+            Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
+            var transfers = new Dictionary<Address, long> { { fx.Record.Address, -transferAmount }, { _network.Payer, transferAmount } };
+            var receipt = await client.TransferAsync(transfers, fx.PrivateKey);
             var newBalanceAfterTransfer = await client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, newBalanceAfterTransfer);
         }

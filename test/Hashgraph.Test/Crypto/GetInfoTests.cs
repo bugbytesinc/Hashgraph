@@ -44,8 +44,8 @@ namespace Hashgraph.Test.Crypto
             var account = _network.Gateway;
             var info = await client.GetAccountInfoAsync(account);
             Assert.NotNull(info.Address);
-            Assert.Equal(account.RealmNum, info.Address.RealmNum);
             Assert.Equal(account.ShardNum, info.Address.ShardNum);
+            Assert.Equal(account.RealmNum, info.Address.RealmNum);
             Assert.Equal(account.AccountNum, info.Address.AccountNum);
             Assert.NotNull(info.SmartContractId);
             Assert.False(info.Deleted);

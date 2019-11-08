@@ -12,7 +12,7 @@ namespace Hashgraph.Test.Internals
         [Fact(DisplayName = "ABI: Can Pack Address to UInt160")]
         public void CanPackAddressToUint160()
         {
-            var address = new Address(1, 2, 3);
+            var address = new Address(2, 1, 3);
             var bytes = Abi.EncodeArguments(new[] { address });
             var hex = Hex.FromBytes(bytes)[^40..^0];
             Assert.Equal("0000000200000000000000010000000000000003", hex);
@@ -20,10 +20,10 @@ namespace Hashgraph.Test.Internals
         [Fact(DisplayName = "ABI: Can Pack and Unpack Address")]
         public void CanPackAndUnpackAddress()
         {
-            var realm = Generator.Integer(1, 50);
             var shard = Generator.Integer(1, 50);
+            var realm = Generator.Integer(1, 50);
             var num = Generator.Integer(1, 50);
-            var expected = new Address(realm, shard, num);
+            var expected = new Address(shard, realm, num);
             var bytes = Abi.EncodeArguments(new[] { expected });
             var decoded = Abi.DecodeArguments(bytes, typeof(Address));
             Assert.Single(decoded);

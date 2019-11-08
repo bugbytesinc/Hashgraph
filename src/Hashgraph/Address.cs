@@ -9,13 +9,13 @@ namespace Hashgraph
     public sealed class Address : IEquatable<Address>
     {
         /// <summary>
-        /// Network Realm Number for Account
-        /// </summary>
-        public long RealmNum { get; private set; }
-        /// <summary>
         /// Network Shard Number for Account
         /// </summary>
         public long ShardNum { get; private set; }
+        /// <summary>
+        /// Network Realm Number for Account
+        /// </summary>
+        public long RealmNum { get; private set; }
         /// <summary>
         /// Network Account Number for Account
         /// </summary>
@@ -23,19 +23,19 @@ namespace Hashgraph
         /// <summary>
         /// Public Constructor, an <code>Address</code> is immutable after creation.
         /// </summary>
-        /// <param name="realmNum">
-        /// Network Realm Number
-        /// </param>
         /// <param name="shardNum">
         /// Network Shard Number
+        /// </param>
+        /// <param name="realmNum">
+        /// Network Realm Number
         /// </param>
         /// <param name="accountNum">
         /// Network Account Number
         /// </param>
-        public Address(long realmNum, long shardNum, long accountNum)
+        public Address(long shardNum, long realmNum, long accountNum)
         {
-            RealmNum = RequireInputParameter.RealmNumber(realmNum);
             ShardNum = RequireInputParameter.ShardNumber(shardNum);
+            RealmNum = RequireInputParameter.RealmNumber(realmNum);
             AccountNum = RequireInputParameter.AcountNumber(accountNum);
         }
         /// <summary>
@@ -45,7 +45,7 @@ namespace Hashgraph
         /// The other <code>Address</code> object to compare.
         /// </param>
         /// <returns>
-        /// True if the Realm, Shard and Account Number are identical to the 
+        /// True if the  Shard, Realm and Account Number are identical to the 
         /// other <code>Address</code> object.
         /// </returns>
         public bool Equals(Address other)
@@ -55,8 +55,8 @@ namespace Hashgraph
                 return false;
             }
             return
-                RealmNum == other.RealmNum &&
                 ShardNum == other.ShardNum &&
+                RealmNum == other.RealmNum &&
                 AccountNum == other.AccountNum;
         }
         /// <summary>
@@ -68,7 +68,7 @@ namespace Hashgraph
         /// </param>
         /// <returns>
         /// If the other object is an Address, then <code>True</code> 
-        /// if the Realm, Shard and Account Number are identical 
+        /// if the Shard, Realm and Account Number are identical 
         /// to the other <code>Address</code> object, otherwise 
         /// <code>False</code>.
         /// </returns>
@@ -110,7 +110,7 @@ namespace Hashgraph
         /// Right hand <code>Address</code> argument.
         /// </param>
         /// <returns>
-        /// True if the Realm, Shard and Account Number are identical 
+        /// True if the Shard, Realm and Account Number are identical 
         /// within each <code>Address</code> objects.
         /// </returns>
         public static bool operator ==(Address left, Address right)
@@ -131,7 +131,7 @@ namespace Hashgraph
         /// Right hand <code>Address</code> argument.
         /// </param>
         /// <returns>
-        /// <code>False</code> if the Realm, Shard, Account Number and 
+        /// <code>False</code> if the Shard, Realm, Account Number and 
         /// Key are identical within each <code>Address</code> object.  
         /// <code>True</code> if they are not identical.
         /// </returns>

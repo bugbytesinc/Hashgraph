@@ -23,6 +23,14 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
             Assert.Equal(ResponseCode.Success, record.Status);
         }
+        [Fact(DisplayName = "Contract Delete: Can Call Delete without Error using Signatory")]
+        public async Task CanDeleteContractUsingSignatory()
+        {
+            await using var fx = await GreetingContract.CreateAsync(_network);
+
+            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, _network.PrivateKey, ctx => ctx.Signatory = null);
+            Assert.Equal(ResponseCode.Success, record.Status);
+        }
         [Fact(DisplayName = "Contract Delete: Deleting contract removes it (get info should fail).")]
         public async Task DeleteContractRemovesContract()
         {

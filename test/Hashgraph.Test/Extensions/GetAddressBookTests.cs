@@ -27,7 +27,7 @@ namespace Hashgraph.Test.Extensions
         [Fact(DisplayName = "Address Book: Can Find Current Gateway RSA Key in Address Book")]
         public async Task CanGetCurrentGatewayRsaFromAddressBook()
         {
-            var nodeId = $"{_network.Gateway.RealmNum}.{_network.Gateway.ShardNum}.{_network.Gateway.AccountNum}";
+            var nodeId = $"{_network.Gateway.ShardNum}.{_network.Gateway.RealmNum}.{_network.Gateway.AccountNum}";
             var client = _network.NewClient();
             var book = await client.GetAddressBookAsync();
             var node = book.FirstOrDefault(n => n.Memo == nodeId);

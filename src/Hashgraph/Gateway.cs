@@ -20,13 +20,13 @@ namespace Hashgraph
         /// </summary>
         public string Url { get; private set; }
         /// <summary>
-        /// Network Realm Number for Gateway Account
-        /// </summary>
-        public long RealmNum { get; private set; }
-        /// <summary>
         /// Network Shard Number for Gateway Account
         /// </summary>
         public long ShardNum { get; private set; }
+        /// <summary>
+        /// Network Realm Number for Gateway Account
+        /// </summary>
+        public long RealmNum { get; private set; }
         /// <summary>
         /// Network Account Number for Gateway Account
         /// </summary>
@@ -40,27 +40,27 @@ namespace Hashgraph
         /// <param name="address">
         /// Main Network Node Address
         /// </param>
-        public Gateway(string url, Address address) : this(url, address.RealmNum, address.ShardNum, address.AccountNum) { }
+        public Gateway(string url, Address address) : this(url, address.ShardNum, address.RealmNum, address.AccountNum) { }
         /// <summary>
         /// Public Constructor, a <code>Gateway</code> is immutable after creation.
         /// </summary>
         /// <param name="url">
         /// The URL and port of the public Hedera Network access point.
         /// </param>
-        /// <param name="realmNum">
-        /// Main Network Node Realm Number
-        /// </param>
         /// <param name="shardNum">
         /// Main Network Node Shard Number
+        /// </param>
+        /// <param name="realmNum">
+        /// Main Network Node Realm Number
         /// </param>
         /// <param name="accountNum">
         /// Main Network Node Account Number
         /// </param>
-        public Gateway(string url, long realmNum, long shardNum, long accountNum)
+        public Gateway(string url, long shardNum, long realmNum, long accountNum)
         {
             Url = RequireInputParameter.Url(url);
-            RealmNum = RequireInputParameter.RealmNumber(realmNum);
             ShardNum = RequireInputParameter.ShardNumber(shardNum);
+            RealmNum = RequireInputParameter.RealmNumber(realmNum);
             AccountNum = RequireInputParameter.AcountNumber(accountNum);
         }
         /// <summary>
@@ -70,7 +70,7 @@ namespace Hashgraph
         /// The other <code>Gateway</code> object to compare.
         /// </param>
         /// <returns>
-        /// True if the Realm, Shard, Account Number and Url are identical to the 
+        /// True if the Shard, Realm, Account Number and Url are identical to the 
         /// other <code>Gateway</code> object.
         /// </returns>
         public bool Equals(Gateway other)
@@ -80,8 +80,8 @@ namespace Hashgraph
                 return false;
             }
             return
-                RealmNum == other.RealmNum &&
                 ShardNum == other.ShardNum &&
+                RealmNum == other.RealmNum &&
                 AccountNum == other.AccountNum &&
                 string.Equals(Url, other.Url);
         }
@@ -94,7 +94,7 @@ namespace Hashgraph
         /// </param>
         /// <returns>
         /// If the other object is an Account, then <code>True</code> 
-        /// if the Realm, Shard, Account Number and Url are identical 
+        /// if the Shard, Realm, Account Number and Url are identical 
         /// to the other <code>Gateway</code> object, otherwise 
         /// <code>False</code>.
         /// </returns>
@@ -124,7 +124,7 @@ namespace Hashgraph
         /// </returns>
         public override int GetHashCode()
         {
-            return $"Gateway:{RealmNum}:{ShardNum}:{AccountNum}:{Url}".GetHashCode();
+            return $"Gateway:{ShardNum}:{RealmNum}:{AccountNum}:{Url}".GetHashCode();
         }
         /// <summary>
         /// Equals implementation.
@@ -136,7 +136,7 @@ namespace Hashgraph
         /// Right hand <code>Gateway</code> argument.
         /// </param>
         /// <returns>
-        /// True if the Realm, Shard, Account Number and Url are identical 
+        /// True if the Shard, Realm, Account Number and Url are identical 
         /// within each <code>Gateway</code> objects.
         /// </returns>
         public static bool operator ==(Gateway left, Gateway right)
@@ -157,7 +157,7 @@ namespace Hashgraph
         /// Right hand <code>Gateway</code> argument.
         /// </param>
         /// <returns>
-        /// <code>False</code> if the Realm, Shard, Account Number and 
+        /// <code>False</code> if the Shard, Realm, Account Number and 
         /// Url are identical within each <code>Account</code> object.  
         /// <code>True</code> if they are not identical.
         /// </returns>
@@ -174,7 +174,7 @@ namespace Hashgraph
         /// </param>
         public static implicit operator Address(Gateway gateway)
         {
-            return new Address(gateway.RealmNum, gateway.ShardNum, gateway.AccountNum);
+            return new Address(gateway.ShardNum, gateway.RealmNum, gateway.AccountNum);
         }
     }
 }
