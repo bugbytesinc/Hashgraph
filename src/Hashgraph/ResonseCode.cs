@@ -431,5 +431,17 @@ namespace Hashgraph
         /// The change on Exchange Rate exceeds Exchange_Rate_Allowed_Percentage
         /// </summary>
         [Description("EXCHANGE_RATE_CHANGE_LIMIT_EXCEEDED")] ExchangeRateChangeLimitExceeded = 105,
+        /// <summary>
+        /// Contract permanent storage exceeded the currently allowable limit
+        /// </summary>
+        [Description("MAX_CONTRACT_STORAGE_EXCEEDED")] MaxContractStorageExceeded = 106,
+        /// <summary>
+        ///Gas exceeded currently allowable gas limit per transaction
+        /// </summary>
+        [Description("MAX_GAS_LIMIT_EXCEEDED")] MaxGasLimitExceeded = 111,
+        /// <summary>
+        /// File size exceeded the currently allowable limit
+        /// </summary>
+        [Description("MAX_FILE_SIZE_EXCEEDED")] MaxFileSizeExceeded = 112,
     }
 }
