@@ -248,17 +248,6 @@ namespace Hashgraph.Implementation
                 }).ToArray() ?? new ContractEvent[0]
             };
         }
-
-        internal static Claim FromClaim(Proto.Claim claim)
-        {
-            return new Claim
-            {
-                Address = FromAccountID(claim.AccountID),
-                Hash = claim.Hash.ToByteArray(),
-                Endorsements = FromPublicKeyList(claim.Keys),
-                ClaimDuration = FromDuration(claim.ClaimDuration)
-            };
-        }
         internal static ExchangeRate? FromExchangeRate(Proto.ExchangeRate rate)
         {
             return rate == null
