@@ -12,33 +12,60 @@ namespace Hashgraph
     public sealed class Endorsement : IEquatable<Endorsement>
     {
         /// <summary>
+        /// Holds the data for this endorsement, may be a Key or 
+        /// a list of child endorsements.
+        /// </summary>
+        internal readonly object _data;
+        /// <summary>
+        /// Returns a list of child endorsements identified by
+        /// this endorsment (of list type).  If the endorsement
+        /// is not of a list type, the list will be empty.
+        /// </summary>
+        public Endorsement[] List
+        {
+            get
+            {
+                switch (Type)
+                {
+                    case KeyType.List: return (Endorsement[])((Endorsement[])_data).Clone();
+                    default: return new Endorsement[0];
+                }
+            }
+        }
+        /// <summary>
+        /// When this endorsment contains a list of child endorsements, 
+        /// this represents the number of child endorsements that must
+        /// be fulfilled in order to consider this endorsment fulfilled.
+        /// </summary>
+        public uint RequiredCount { get; internal set; }
+        /// <summary>
         /// The type of endorsment this object is.  It either contains
         /// a representation of a public key or a list of child endorsements
         /// with a not of how many are requrired to be fullfilled for this
         /// endorsment to be fulfilled.
         /// </summary>
-        public enum Type
+        public KeyType Type { get; internal set; }
+        /// <summary>
+        /// The value of the public key held by this endorsement if it is
+        /// of a key type.  If it is a list type, the value returned will
+        /// be <code>Empty</code>.
+        /// </summary>
+        public ReadOnlyMemory<byte> PublicKey
         {
-            /// <summary>
-            /// Ed25519 Public Key (Stored as a <see cref="NSec.Cryptography.PublicKey"/>).
-            /// </summary>
-            Ed25519 = 1,
-            /// <summary>
-            /// RSA-3072 Public Key (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
-            /// </summary>
-            RSA3072 = 2,
-            /// <summary>
-            /// ECDSA with the p-384 curve (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
-            /// </summary>
-            ECDSA384 = 3,
-            /// <summary>
-            /// Smart Contract ID (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
-            /// </summary>
-            ContractID = 4,
-            /// <summary>
-            /// This endorsement represents a n-to-m required list of child endorsements.
-            /// </summary>
-            List = 5
+            get
+            {
+                switch (Type)
+                {
+                    case KeyType.Ed25519:
+                        return ((PublicKey)_data).Export(KeyBlobFormat.PkixPublicKey);
+                    case KeyType.RSA3072:
+                    case KeyType.ECDSA384:
+                    case KeyType.ContractID:
+                        return (ReadOnlyMemory<byte>)_data;
+                    default:
+                        return new byte[0];
+                }
+            }
         }
         /// <summary>
         /// Convenience constructor creating an Ed25519 public key
@@ -47,25 +74,7 @@ namespace Hashgraph
         /// <param name="publicKey">
         /// Bytes representing a public Ed25519 key.
         /// </param>
-        public Endorsement(ReadOnlyMemory<byte> publicKey) : this(Type.Ed25519, publicKey) { }
-        /// <summary>
-        /// When this endorsment contains a list of child endorsements, 
-        /// this represents the number of child endorsements that must
-        /// be fulfilled in order to consider this endorsment fulfilled.
-        /// </summary>
-        internal readonly uint _requiredCount;
-        /// <summary>
-        /// The type of endorsment this object is.  It either contains
-        /// a representation of a public key or a list of child endorsements
-        /// with a not of how many are requrired to be fullfilled for this
-        /// endorsment to be fulfilled.
-        /// </summary>
-        internal readonly Type _type;
-        /// <summary>
-        /// Holds the data for this endorsement, may be a Key or 
-        /// a list of child endorsements.
-        /// </summary>
-        internal readonly object _data;
+        public Endorsement(ReadOnlyMemory<byte> publicKey) : this(KeyType.Ed25519, publicKey) { }
         /// <summary>
         /// Create a M of M requied list of endorsements.  All listed endorsements
         /// must be fulfilled to fulfill this endorsement.
@@ -94,9 +103,9 @@ namespace Hashgraph
         /// greater than tne number of endorsements</exception>
         public Endorsement(uint requiredCount, params Endorsement[] endorsements)
         {
-            _type = Type.List;
+            Type = KeyType.List;
             _data = RequireInputParameter.Endorsements(endorsements);
-            _requiredCount = RequireInputParameter.RequiredCount(requiredCount, endorsements.Length);
+            RequiredCount = RequireInputParameter.RequiredCount(requiredCount, endorsements.Length);
         }
         /// <summary>
         /// Creates an endorsement representing a single key of a
@@ -115,21 +124,21 @@ namespace Hashgraph
         /// If type passed into the constructor was not a valid single key type. 
         /// Or, for an Ed25519 key that is not recognizable from supplied bytes.
         /// </exception>
-        public Endorsement(Type type, ReadOnlyMemory<byte> publicKey)
+        public Endorsement(KeyType type, ReadOnlyMemory<byte> publicKey)
         {
-            _type = type;
+            Type = type;
             switch (type)
             {
-                case Type.Ed25519:
+                case KeyType.Ed25519:
                     _data = Keys.ImportPublicEd25519KeyFromBytes(publicKey);
                     break;
-                case Type.RSA3072:
-                case Type.ECDSA384:
-                case Type.ContractID:
+                case KeyType.RSA3072:
+                case KeyType.ECDSA384:
+                case KeyType.ContractID:
                     _data = publicKey;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(type), "Not a valid endorsement type.");
+                    throw new ArgumentOutOfRangeException(nameof(type), "Only endorsements representing a single key are supported with this constructor, please use the list constructor instead.");
             }
         }
         /// <summary>
@@ -147,7 +156,7 @@ namespace Hashgraph
         /// </exception>
         public static implicit operator Endorsement(ReadOnlyMemory<byte> publicKey)
         {
-            return new Endorsement(Type.Ed25519, publicKey);
+            return new Endorsement(KeyType.Ed25519, publicKey);
         }
         /// <summary>
         /// Equality implementation.
@@ -165,19 +174,19 @@ namespace Hashgraph
             {
                 return false;
             }
-            if (_type != other._type)
+            if (Type != other.Type)
             {
                 return false;
             }
-            switch (_type)
+            switch (Type)
             {
-                case Type.Ed25519:
-                case Type.RSA3072:
-                case Type.ECDSA384:
-                case Type.ContractID:
+                case KeyType.Ed25519:
+                case KeyType.RSA3072:
+                case KeyType.ECDSA384:
+                case KeyType.ContractID:
                     return Equals(_data, other._data);
-                case Type.List:
-                    if (_requiredCount == other._requiredCount)
+                case KeyType.List:
+                    if (RequiredCount == other.RequiredCount)
                     {
                         var thisList = (Endorsement[])_data;
                         var otherList = (Endorsement[])other._data;
@@ -236,16 +245,16 @@ namespace Hashgraph
         /// </returns>
         public override int GetHashCode()
         {
-            switch (_type)
+            switch (Type)
             {
-                case Type.Ed25519:
-                    return $"Endorsement:{_type}:{((PublicKey)_data).GetHashCode().ToString()}".GetHashCode();
-                case Type.RSA3072:
-                case Type.ECDSA384:
-                case Type.ContractID:
-                    return $"Endorsement:{_type}:{BitConverter.ToString(((ReadOnlyMemory<byte>)_data).ToArray())}".GetHashCode();
-                case Type.List:
-                    return $"Endorsement:{_type}:{string.Join(':', ((Endorsement[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode();
+                case KeyType.Ed25519:
+                    return $"Endorsement:{Type}:{((PublicKey)_data).GetHashCode().ToString()}".GetHashCode();
+                case KeyType.RSA3072:
+                case KeyType.ECDSA384:
+                case KeyType.ContractID:
+                    return $"Endorsement:{Type}:{BitConverter.ToString(((ReadOnlyMemory<byte>)_data).ToArray())}".GetHashCode();
+                case KeyType.List:
+                    return $"Endorsement:{Type}:{string.Join(':', ((Endorsement[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode();
             }
             return "Endorsment:Empty".GetHashCode();
         }

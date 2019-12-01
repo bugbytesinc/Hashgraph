@@ -48,7 +48,7 @@ namespace Hashgraph.Tests
             invalidKey[0] = 0;
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                new Endorsement(Endorsement.Type.Ed25519, invalidKey);
+                new Endorsement(KeyType.Ed25519, invalidKey);
             });
             Assert.StartsWith("The public key was not provided in a recognizable Ed25519 format.", exception.Message);
         }
@@ -59,7 +59,7 @@ namespace Hashgraph.Tests
             var invalidKey = originalKey.ToArray().Take(32).ToArray();
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                new Endorsement(Endorsement.Type.Ed25519, invalidKey);
+                new Endorsement(KeyType.Ed25519, invalidKey);
             });
             Assert.StartsWith("The public key was not provided in a recognizable Ed25519 format.", exception.Message);
         }
@@ -139,6 +139,162 @@ namespace Hashgraph.Tests
             Assert.NotEqual(endorsements1, endorsements2);
             Assert.False(endorsements1 == endorsements2);
             Assert.True(endorsements1 != endorsements2);
+        }
+        [Fact(DisplayName = "Endorsements: Default Creates Ed25519 Type")]
+        public void CreateWithDefaultConsturctorProducesEd25519KeyType()
+        {
+            var (publicKey1, _) = Generator.KeyPair();
+
+            var endorsement = new Endorsement(publicKey1);
+            Assert.Equal(KeyType.Ed25519, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        }
+        [Fact(DisplayName = "Endorsements: Creating Ed25519 Type produces Ed25519 type")]
+        public void CanCreateEd25519Type()
+        {
+            var (publicKey1, _) = Generator.KeyPair();
+
+            var endorsement = new Endorsement(KeyType.Ed25519, publicKey1);
+            Assert.Equal(KeyType.Ed25519, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        }
+        [Fact(DisplayName = "Endorsements: Creating RSA3072 Type produces RSA3072 type")]
+        public void CanCreateRSA3072Type()
+        {
+            var (publicKey1, _) = Generator.KeyPair();
+
+            var endorsement = new Endorsement(KeyType.RSA3072, publicKey1);
+            Assert.Equal(KeyType.RSA3072, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        }
+        [Fact(DisplayName = "Endorsements: Creating ECDSA384 Type produces RSA3072 type")]
+        public void CanCreateECDSA384Type()
+        {
+            var (publicKey1, _) = Generator.KeyPair();
+
+            var endorsement = new Endorsement(KeyType.ECDSA384, publicKey1);
+            Assert.Equal(KeyType.ECDSA384, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        }
+        [Fact(DisplayName = "Endorsements: Creating ContractID Type produces ContractID type")]
+        public void CanCreateContractIDType()
+        {
+            var (publicKey1, _) = Generator.KeyPair();
+
+            var endorsement = new Endorsement(KeyType.ContractID, publicKey1);
+            Assert.Equal(KeyType.ContractID, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        }
+        [Fact(DisplayName = "Endorsements: Creating 1 of 1 List produces 1 of 1 List type")]
+        public void CanCreateOneOfOneList()
+        {
+            var (publicKey1, _) = Generator.KeyPair();
+            var endorsement = new Endorsement(KeyType.ContractID, publicKey1);
+            var list = new Endorsement(endorsement);
+            Assert.Equal(KeyType.List, list.Type);
+            Assert.Equal(1U, list.RequiredCount);
+            Assert.Single(list.List);
+            Assert.Empty(list.PublicKey.ToArray());
+        }
+        [Fact(DisplayName = "Endorsements: Creating n of m List produces n of m List type")]
+        public void CanCreateNofMList()
+        {
+            var n = (uint)Generator.Integer(1, 4);
+            var m = Generator.Integer(5, 10);
+            var keys = Enumerable.Range(0, m).Select(i => new Endorsement(Generator.KeyPair().publicKey)).ToArray();
+            var list = new Endorsement(n, keys);
+            Assert.Equal(KeyType.List, list.Type);
+            Assert.Equal(n, list.RequiredCount);
+            Assert.Equal(m, list.List.Length);
+            for (int i = 0; i < m; i++)
+            {
+                Assert.Equal(keys[i], list.List[i]);
+            }
+        }
+        [Fact(DisplayName = "Endorsements: Can Enumerte a Tree")]
+        public void CanEnumrateAnEndorsementTree()
+        {
+            var (publicKey1a, _) = Generator.KeyPair();
+            var (publicKey2a, _) = Generator.KeyPair();
+            var (publicKey3a, _) = Generator.KeyPair();
+            var (publicKey1b, _) = Generator.KeyPair();
+            var (publicKey2b, _) = Generator.KeyPair();
+            var (publicKey3b, _) = Generator.KeyPair();
+            var endorsements1 = new Endorsement(1, publicKey1a, publicKey1b);
+            var endorsements2 = new Endorsement(1, publicKey2a, publicKey2b);
+            var endorsements3 = new Endorsement(publicKey3a, publicKey3b);
+            var tree = new Endorsement(endorsements1, endorsements2, endorsements3);
+
+            Assert.Equal(KeyType.List, tree.Type);
+            Assert.Equal(3U, tree.RequiredCount);
+            Assert.Equal(3, tree.List.Length);
+            Assert.Empty(tree.PublicKey.ToArray());
+
+            Assert.Equal(KeyType.List, tree.List[0].Type);
+            Assert.Equal(1U, tree.List[0].RequiredCount);
+            Assert.Equal(2, tree.List[0].List.Length);
+            Assert.Empty(tree.List[0].PublicKey.ToArray());
+
+            Assert.Equal(KeyType.Ed25519, tree.List[0].List[0].Type);
+            Assert.Equal(0U, tree.List[0].List[0].RequiredCount);
+            Assert.Empty(tree.List[0].List[0].List);
+            Assert.Equal(publicKey1a.ToArray(), tree.List[0].List[0].PublicKey.ToArray());
+
+            Assert.Equal(KeyType.Ed25519, tree.List[0].List[1].Type);
+            Assert.Equal(0U, tree.List[0].List[1].RequiredCount);
+            Assert.Empty(tree.List[0].List[1].List);
+            Assert.Equal(publicKey1b.ToArray(), tree.List[0].List[1].PublicKey.ToArray());
+
+            Assert.Equal(KeyType.List, tree.List[1].Type);
+            Assert.Equal(1U, tree.List[1].RequiredCount);
+            Assert.Equal(2, tree.List[1].List.Length);
+            Assert.Empty(tree.List[1].PublicKey.ToArray());
+
+            Assert.Equal(KeyType.Ed25519, tree.List[1].List[0].Type);
+            Assert.Equal(0U, tree.List[1].List[0].RequiredCount);
+            Assert.Empty(tree.List[1].List[0].List);
+            Assert.Equal(publicKey2a.ToArray(), tree.List[1].List[0].PublicKey.ToArray());
+
+            Assert.Equal(KeyType.Ed25519, tree.List[1].List[1].Type);
+            Assert.Equal(0U, tree.List[1].List[1].RequiredCount);
+            Assert.Empty(tree.List[1].List[1].List);
+            Assert.Equal(publicKey2b.ToArray(), tree.List[1].List[1].PublicKey.ToArray());
+
+            Assert.Equal(KeyType.List, tree.List[2].Type);
+            Assert.Equal(2U, tree.List[2].RequiredCount);
+            Assert.Equal(2, tree.List[2].List.Length);
+            Assert.Empty(tree.List[2].PublicKey.ToArray());
+
+            Assert.Equal(KeyType.Ed25519, tree.List[2].List[0].Type);
+            Assert.Equal(0U, tree.List[2].List[0].RequiredCount);
+            Assert.Empty(tree.List[2].List[0].List);
+            Assert.Equal(publicKey3a.ToArray(), tree.List[2].List[0].PublicKey.ToArray());
+
+            Assert.Equal(KeyType.Ed25519, tree.List[2].List[1].Type);
+            Assert.Equal(0U, tree.List[2].List[1].RequiredCount);
+            Assert.Empty(tree.List[2].List[1].List);
+            Assert.Equal(publicKey3b.ToArray(), tree.List[2].List[1].PublicKey.ToArray());
+        }
+        [Fact(DisplayName = "Endorsements: Make List Type from Key type constructor throws error.")]
+        public void CreateListTypeFromKeyTypeConstructorThrowsError()
+        {
+            var (publicKey, _) = Generator.KeyPair();
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new Endorsement(KeyType.List, publicKey);
+            });
+            Assert.Equal("type", exception.ParamName);
+            Assert.StartsWith("Only endorsements representing a single key are supported with this constructor, please use the list constructor instead.", exception.Message);
         }
     }
 }
