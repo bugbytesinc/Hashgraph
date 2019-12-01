@@ -38,7 +38,7 @@ namespace Hashgraph
         /// are needed to sign the transaction.  At a minimum, this
         /// typically includes the Payer's signing key, but can also
         /// include other signatories such as those required when 
-        /// creating claims, files and contracts.
+        /// creating files and contracts.
         /// </summary>
         /// <remarks>
         /// Every key added into this context will sign every 

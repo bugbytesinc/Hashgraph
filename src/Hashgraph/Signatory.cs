@@ -135,6 +135,8 @@ namespace Hashgraph
                     _type = Type.Ed25519;
                     _data = Keys.ImportPrivateEd25519KeyFromBytes(privateKey);
                     break;
+                case KeyType.List:
+                    throw new ArgumentOutOfRangeException(nameof(type), "Only signatories representing a single key are supported with this constructor, please use the list constructor instead.");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), "Not a presently supported Signatory key type, please consider the callback signatory as an alternative.");
             }

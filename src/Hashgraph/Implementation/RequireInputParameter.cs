@@ -1,5 +1,4 @@
-﻿using NSec.Cryptography;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -53,7 +52,6 @@ namespace Hashgraph.Implementation
             }
             return fileToDelete;
         }
-
         internal static Address ContractToDelete(Address contractToDelete)
         {
             if (contractToDelete is null)
@@ -62,7 +60,6 @@ namespace Hashgraph.Implementation
             }
             return contractToDelete;
         }
-
         internal static Address TransferToAddress(Address transferToAddress)
         {
             if (transferToAddress is null)
@@ -130,20 +127,6 @@ namespace Hashgraph.Implementation
             }
             return transaction;
         }
-
-        internal static ReadOnlyMemory<byte> Hash(ReadOnlyMemory<byte> hash)
-        {
-            if (hash.IsEmpty)
-            {
-                throw new ArgumentNullException(nameof(hash), "The claim hash is missing. Please check that it is not null.");
-            }
-            if (hash.Length != 48)
-            {
-                throw new ArgumentOutOfRangeException(nameof(hash), "The claim hash is expected to be 48 bytes in length.");
-            }
-            return hash;
-        }
-
         internal static UpdateAccountParams UpdateParameters(UpdateAccountParams updateParameters)
         {
             if (updateParameters is null)
@@ -353,38 +336,6 @@ namespace Hashgraph.Implementation
                 throw new ArgumentNullException(nameof(appendParameters.File), "File identifier is missing. Please check that it is not null.");
             }
             return appendParameters;
-        }
-        internal static Claim AddParameters(Claim addParameters)
-        {
-            if (addParameters is null)
-            {
-                throw new ArgumentNullException(nameof(addParameters), "Add Claim Parameters argument is missing. Please check that it is not null.");
-            }
-            if (addParameters.Address is null)
-            {
-                throw new ArgumentNullException(nameof(addParameters.Address), "The address to attach the claim to is missing. Please check that it is not null.");
-            }
-            if (addParameters.Hash.IsEmpty)
-            {
-                throw new ArgumentNullException(nameof(addParameters.Hash), "The claim hash is missing. Please check that it is not null.");
-            }
-            if (addParameters.Hash.Length != 48)
-            {
-                throw new ArgumentOutOfRangeException(nameof(addParameters.Hash), "The claim hash is expected to be 48 bytes in length.");
-            }
-            if (addParameters.Endorsements is null)
-            {
-                throw new ArgumentNullException(nameof(addParameters.Endorsements), "The endorsements property is missing. Please check that it is not null.");
-            }
-            if (addParameters.Endorsements.Length == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(addParameters.Endorsements), "The endorsements array is empty. Please must include at least one endorsement.");
-            }
-            if (addParameters.ClaimDuration.Ticks == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(addParameters.ClaimDuration), "Claim Duration must have some length.");
-            }
-            return addParameters;
         }
     }
 }

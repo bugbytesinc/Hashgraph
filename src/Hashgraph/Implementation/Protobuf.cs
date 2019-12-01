@@ -110,18 +110,18 @@ namespace Hashgraph.Implementation
         }
         internal static Key ToPublicKey(Endorsement endorsement)
         {
-            switch (endorsement._type)
+            switch (endorsement.Type)
             {
-                case Endorsement.Type.Ed25519: return new Key { Ed25519 = ByteString.CopyFrom(((NSec.Cryptography.PublicKey)endorsement._data).Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray()) };
-                case Endorsement.Type.RSA3072: return new Key { RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
-                case Endorsement.Type.ECDSA384: return new Key { ECDSA384 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
-                case Endorsement.Type.ContractID: return new Key { ContractID = ContractID.Parser.ParseFrom((byte[])endorsement._data) };
-                case Endorsement.Type.List:
+                case KeyType.Ed25519: return new Key { Ed25519 = ByteString.CopyFrom(((NSec.Cryptography.PublicKey)endorsement._data).Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray()) };
+                case KeyType.RSA3072: return new Key { RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
+                case KeyType.ECDSA384: return new Key { ECDSA384 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
+                case KeyType.ContractID: return new Key { ContractID = ContractID.Parser.ParseFrom((byte[])endorsement._data) };
+                case KeyType.List:
                     return new Key
                     {
                         ThresholdKey = new ThresholdKey
                         {
-                            Threshold = endorsement._requiredCount,
+                            Threshold = endorsement.RequiredCount,
                             Keys = ToPublicKeyList((Endorsement[])endorsement._data)
                         }
                     };
@@ -132,10 +132,10 @@ namespace Hashgraph.Implementation
         {
             switch (key.KeyCase)
             {
-                case Key.KeyOneofCase.ContractID: return new Endorsement(Endorsement.Type.ContractID, key.ContractID.ToByteArray());
-                case Key.KeyOneofCase.Ed25519: return new Endorsement(Endorsement.Type.Ed25519, new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
-                case Key.KeyOneofCase.RSA3072: return new Endorsement(Endorsement.Type.RSA3072, key.RSA3072.ToByteArray());
-                case Key.KeyOneofCase.ECDSA384: return new Endorsement(Endorsement.Type.ECDSA384, key.ECDSA384.ToByteArray());
+                case Key.KeyOneofCase.ContractID: return new Endorsement(KeyType.ContractID, key.ContractID.ToByteArray());
+                case Key.KeyOneofCase.Ed25519: return new Endorsement(KeyType.Ed25519, new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
+                case Key.KeyOneofCase.RSA3072: return new Endorsement(KeyType.RSA3072, key.RSA3072.ToByteArray());
+                case Key.KeyOneofCase.ECDSA384: return new Endorsement(KeyType.ECDSA384, key.ECDSA384.ToByteArray());
                 case Key.KeyOneofCase.ThresholdKey: return new Endorsement(key.ThresholdKey.Threshold, FromPublicKeyList(key.ThresholdKey.Keys));
                 case Key.KeyOneofCase.KeyList: return new Endorsement(FromPublicKeyList(key.KeyList));
             }
@@ -246,17 +246,6 @@ namespace Hashgraph.Implementation
                     Topic = log.Topic.Select(bs => new ReadOnlyMemory<byte>(bs.ToArray())).ToArray(),
                     Data = new ContractCallResultData(log.Data.ToArray())
                 }).ToArray() ?? new ContractEvent[0]
-            };
-        }
-
-        internal static Claim FromClaim(Proto.Claim claim)
-        {
-            return new Claim
-            {
-                Address = FromAccountID(claim.AccountID),
-                Hash = claim.Hash.ToByteArray(),
-                Endorsements = FromPublicKeyList(claim.Keys),
-                ClaimDuration = FromDuration(claim.ClaimDuration)
             };
         }
         internal static ExchangeRate? FromExchangeRate(Proto.ExchangeRate rate)
