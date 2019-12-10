@@ -74,5 +74,176 @@ namespace Hashgraph.Test.File
             });
             Assert.StartsWith("Unable to update file, status: FileDeleted", exception.Message);
         }
+        [Fact(DisplayName = "File Update: Can Update File after Rotating Keys")]
+        public async Task CanUpdateFileAfterKeyRotation()
+        {
+            await using var test = await TestFile.CreateAsync(_network);
+
+            var (newPublicKey1, newPrivateKey1) = Generator.KeyPair();
+            var (newPublicKey2, newPrivateKey2) = Generator.KeyPair();
+            var updateRecord = await test.Client.UpdateFileWithRecordAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Endorsements = new Endorsement[] { newPublicKey1, newPublicKey2 },
+                Signatory = new Signatory(_network.PrivateKey, test.PrivateKey, newPrivateKey1, newPrivateKey2)
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(test.Contents.Length, info.Size);
+            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { newPublicKey1, newPublicKey2 }, info.Endorsements);
+            Assert.False(info.Deleted);
+
+            var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
+
+            // Should Fail if try to Update with old File Key (note: payer signatory part of context already)
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await test.Client.UpdateFileAsync(new UpdateFileParams
+                {
+                    File = test.Record.File,
+                    Contents = newContents,
+                    Signatory = test.Signatory
+                });
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.StartsWith("Unable to update file, status: InvalidSignature", tex.Message);
+
+            // Should Fail if try to Update with new Private Key One
+            tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await test.Client.UpdateFileAsync(new UpdateFileParams
+                {
+                    File = test.Record.File,
+                    Contents = newContents,
+                    Signatory = newPrivateKey1
+                });
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.StartsWith("Unable to update file, status: InvalidSignature", tex.Message);
+
+            // Should Fail if try to Update with new Private Key One
+            tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await test.Client.UpdateFileAsync(new UpdateFileParams
+                {
+                    File = test.Record.File,
+                    Contents = newContents,
+                    Signatory = newPrivateKey2
+                });
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.StartsWith("Unable to update file, status: InvalidSignature", tex.Message);
+
+            // Both of the new Keys are Required to update
+            var updateContentRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Contents = newContents,
+                Signatory = new Signatory(newPrivateKey1, newPrivateKey2)
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+            var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
+            Assert.Equal(newContents, retrievedContents.ToArray());
+
+            // Should Fail if try to Delete with new Private Key One
+            tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await test.Client.DeleteFileWithRecordAsync(test.Record.File, newPrivateKey1);
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.StartsWith("Unable to delete file, status: InvalidSignature", tex.Message);
+
+            // Still Need Both Signatures to Delete
+            var deleteResult = await test.Client.DeleteFileWithRecordAsync(test.Record.File, new Signatory(newPrivateKey1, newPrivateKey2));
+            Assert.NotNull(deleteResult);
+            Assert.Equal(ResponseCode.Success, deleteResult.Status);
+
+            // Confirm File is Deleted
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await test.Client.GetFileInfoAsync(test.Record.File);
+            });
+            Assert.Equal(ResponseCode.FileDeleted, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: FileDeleted", pex.Message);
+        }
+
+        [Fact(DisplayName = "File Update: Can Update File after Rotating Keys using One of Many List")]
+        public async Task CanUpdateFileAfterKeyRotationOneOfMany()
+        {
+            await using var test = await TestFile.CreateAsync(_network);
+
+            var (newPublicKey1, newPrivateKey1) = Generator.KeyPair();
+            var (newPublicKey2, newPrivateKey2) = Generator.KeyPair();
+            var (newPublicKey3, newPrivateKey3) = Generator.KeyPair();
+            var updateRecord = await test.Client.UpdateFileWithRecordAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Endorsements = new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) },
+                Signatory = new Signatory(_network.PrivateKey, test.PrivateKey, newPrivateKey1, newPrivateKey2, newPrivateKey3)
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(test.Contents.Length, info.Size);
+            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
+            Assert.False(info.Deleted);
+
+            // First Key can change contents.
+            var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
+            var updateContentRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Contents = newContents,
+                Signatory = newPrivateKey1
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+            var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
+            Assert.Equal(newContents, retrievedContents.ToArray());
+
+            // Try Second Key
+            newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
+            updateContentRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Contents = newContents,
+                Signatory = newPrivateKey2
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+            retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
+            Assert.Equal(newContents, retrievedContents.ToArray());
+
+            // Try Third Key
+            newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
+            updateContentRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Contents = newContents,
+                Signatory = newPrivateKey3
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+            retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
+            Assert.Equal(newContents, retrievedContents.ToArray());
+
+            // Only One Signature needed to Delete
+            var deleteResult = await test.Client.DeleteFileWithRecordAsync(test.Record.File, newPrivateKey1);
+            Assert.NotNull(deleteResult);
+            Assert.Equal(ResponseCode.Success, deleteResult.Status);
+
+            // Confirm File is Deleted
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await test.Client.GetFileInfoAsync(test.Record.File);
+            });
+            Assert.Equal(ResponseCode.FileDeleted, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: FileDeleted", pex.Message);
+        }
     }
 }

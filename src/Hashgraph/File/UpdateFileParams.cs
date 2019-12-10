@@ -25,8 +25,9 @@ namespace Hashgraph
         public ReadOnlyMemory<byte>? Contents { get; set; }
         /// <summary>
         /// Additional private key, keys or signing callback method 
-        /// required to replace the contents of this file.  Typically 
-        /// matches the Endorsement associated with this file.
+        /// required to replace the contents of this file.  Typically
+        /// matchs all the Endorsements in the Endorsement array
+        /// associated with this file.
         /// </summary>
         /// <remarks>
         /// Keys/callbacks added here will be combined with those already
