@@ -62,6 +62,10 @@ namespace Hashgraph.Test.Contract
             // Ensure matches API vesion.
             var apiBalance = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, apiBalance);
+
+            // Ensure matches Info version
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds")]
         public async Task CanCallContractMethodSendingFunds()
@@ -156,6 +160,10 @@ namespace Hashgraph.Test.Contract
             var apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
             Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
 
+            // Ensure matches Info version
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, info.Balance);
+
             // Call the contract, sending to the address of the now deleted account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -183,6 +191,11 @@ namespace Hashgraph.Test.Contract
             // Ensure matches API vesion.
             apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
             Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
+
+            // Ensure matches Info version
+            info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, info.Balance);
+
         }
         [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds to Non Existent Account Raises Error")]
         public async Task SendFundsToInvalidAccountRaisesError()

@@ -40,6 +40,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(newEndorsement, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Contract Update: Can't update properties when Renewal Period is not 7890000 seconds.")]
         public async Task CanUpdateMultiplePropertiesInOneCallButNotRenewalPeriod()
@@ -75,6 +76,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(originalInfo.Administrator, info.Administrator);
             Assert.Equal(originalInfo.RenewPeriod, info.RenewPeriod);
             Assert.Equal(originalInfo.Memo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
 
         [Fact(DisplayName = "Contract Update: Can Update Expiration Date")]
@@ -97,6 +99,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(_network.PublicKey, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
 
         [Fact(DisplayName = "Contract Update: Can Update Admin Key.")]
@@ -119,6 +122,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(newEndorsement, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
 
         [Fact(DisplayName = "Contract Update: Can't Update Renew Period other than 7890000 seconds.")]
@@ -144,6 +148,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Contract Update: Updating Contract Bytecode Silently Fails (IS THIS A NETWORK BUG?)")]
         public async Task CanUpdateContractBytecode()
@@ -162,6 +167,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
 
             // Call a method that was not part of the original contract to check update.
             // Note, this is a bug with the network, the call returned success but we are still 
@@ -194,6 +200,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Contract Update: Can Update Memo, skip Record")]
         public async Task CanUpdateMemoNoRecord()
@@ -212,6 +219,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Contract Update: Updating an immutable contract raises error.")]
         public async Task UpdatingImmutableContractRaisesError()

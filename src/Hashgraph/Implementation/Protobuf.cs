@@ -177,7 +177,8 @@ namespace Hashgraph.Implementation
                 Expiration = FromTimestamp(contractInfo.ExpirationTime),
                 RenewPeriod = FromDuration(contractInfo.AutoRenewPeriod),
                 Size = contractInfo.Storage,
-                Memo = contractInfo.Memo
+                Memo = contractInfo.Memo,
+                Balance = contractInfo.Balance
             };
         }
 
