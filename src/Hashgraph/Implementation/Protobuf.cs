@@ -163,7 +163,8 @@ namespace Hashgraph.Implementation
                 SendThresholdCreateRecord = accountInfo.GenerateSendRecordThreshold,
                 ReceiveThresholdCreateRecord = accountInfo.GenerateReceiveRecordThreshold,
                 ReceiveSignatureRequired = accountInfo.ReceiverSigRequired,
-                AutoRenewPeriod = FromDuration(accountInfo.AutoRenewPeriod)
+                AutoRenewPeriod = FromDuration(accountInfo.AutoRenewPeriod),
+                Expiration = FromTimestamp(accountInfo.ExpirationTime)
             };
         }
         internal static ContractInfo FromContractInfo(ContractGetInfoResponse.Types.ContractInfo contractInfo)

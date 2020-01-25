@@ -36,6 +36,7 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.ReceiveThresholdCreateRecord > 0);
             Assert.False(info.ReceiveSignatureRequired);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+            Assert.True(info.Expiration > DateTime.UtcNow);
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Server Node")]
         public async Task CanGetInfoForGatewayAsync()
@@ -57,6 +58,7 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.ReceiveThresholdCreateRecord > 0);
             Assert.False(info.ReceiveSignatureRequired);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+            Assert.True(info.Expiration > DateTime.UtcNow);
         }
         [Fact(DisplayName = "Get Account Info: Getting Account Info without paying signature fails.")]
         public async Task GetInfoWithoutPayingSignatureThrowsException()
