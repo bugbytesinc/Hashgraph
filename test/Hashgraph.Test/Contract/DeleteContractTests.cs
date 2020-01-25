@@ -115,16 +115,20 @@ namespace Hashgraph.Test.Contract
             Assert.Equal("transferToAddress", ane.ParamName);
             Assert.StartsWith("Transfer address is missing. Please check that it is not null.", ane.Message);
         }
-        [Fact(DisplayName = "Contract Delete: Deleting with invalid return crypto address succeeds (IS THIS A NETWORK BUG?)")]
-        public async Task DeleteContractWithInvalidReturnToAddressRaisesError()
+        [Fact(DisplayName = "Contract Delete: Deleting with invalid return crypto fails.")]
+        public async Task DeleteContractWithInvalidAddressRaisesError()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
             await using var fx2 = await TestAccount.CreateAsync(_network);
             var deleteAccountRecord = await fx2.Client.DeleteAccountAsync(fx2.Record.Address, _network.Payer, fx2.PrivateKey);
             Assert.Equal(ResponseCode.Success, deleteAccountRecord.Status);
 
-            var deleteContractReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, fx2.Record.Address);
-            Assert.Equal(ResponseCode.Success, deleteContractReceipt.Status);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, fx2.Record.Address);
+            });
+            Assert.Equal(ResponseCode.AccountDeleted, tex.Status);
+            Assert.StartsWith("Unable to delete contract, status: AccountDeleted", tex.Message);
         }
         [Fact(DisplayName = "Contract Delete: Remaining Contract Balance is Returned to Account")]
         public async Task ReturnRemainingContractBalanceUponDelete()

@@ -9,7 +9,7 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> PublicKey;
         public ReadOnlyMemory<byte> PrivateKey;
         public CreateAccountParams CreateParams;
-        public AccountRecord Record;
+        public CreateAccountRecord Record;
         public NetworkCredentials Network;
         public Client Client;
 

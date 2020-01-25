@@ -11,7 +11,7 @@ namespace Hashgraph.Test.Fixtures
         public CreateFileParams FileParams;
         public FileRecord FileRecord;
         public CreateContractParams ContractParams;
-        public ContractRecord ContractRecord;
+        public CreateContractRecord ContractRecord;
         public NetworkCredentials Network;
 
         /// <summary>

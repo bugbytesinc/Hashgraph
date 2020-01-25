@@ -5,7 +5,7 @@ namespace Hashgraph
     /// <summary>
     /// Record produced from creating a new contract.
     /// </summary>
-    public sealed class ContractRecord : TransactionRecord
+    public sealed class CreateContractRecord : TransactionRecord
     {
         /// <summary>
         /// The newly created contract instance address.
