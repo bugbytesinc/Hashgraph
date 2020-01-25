@@ -36,6 +36,10 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
             Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
+
+            // Ensure matches API vesion.
+            var apiBalance = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, apiBalance);
         }
         [Fact(DisplayName = "Payable Contract: Can Get Contract Balance from Call (Local Call)")]
         public async Task CanGetContractBalanceFromLocalCall()
@@ -54,6 +58,10 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(result.Gas, 0UL, 30_000UL);
             Assert.Empty(result.Events);
             Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
+
+            // Ensure matches API vesion.
+            var apiBalance = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, apiBalance);
         }
         [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds")]
         public async Task CanCallContractMethodSendingFunds()
@@ -144,6 +152,10 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(fxContract.ContractParams.InitialBalance, 1, int.MaxValue);
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
 
+            // Ensure matches API vesion.
+            var apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
+
             // Call the contract, sending to the address of the now deleted account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -167,6 +179,10 @@ namespace Hashgraph.Test.Contract
             });
             Assert.NotNull(contractBalanceAfter);
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceAfter.CallResult.Result.As<long>());
+
+            // Ensure matches API vesion.
+            apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
         }
         [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds to Non Existent Account Raises Error")]
         public async Task SendFundsToInvalidAccountRaisesError()
@@ -211,6 +227,10 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(fxContract.ContractParams.InitialBalance, 1, int.MaxValue);
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
 
+            // Ensure matches API vesion.
+            var apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
+
             // Call the contract, sending to the address of the now deleted account
             // Call the contract, sending to the address of the now deleted account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -235,6 +255,10 @@ namespace Hashgraph.Test.Contract
             });
             Assert.NotNull(contractBalanceAfter);
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceAfter.CallResult.Result.As<long>());
+
+            // Ensure matches API vesion.
+            apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
 
             // Try to get info on the deleted account, but this will fail because the
             // account is already deleted.
