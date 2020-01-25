@@ -29,9 +29,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<AccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public Task<CreateAccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateAccountImplementationAsync<AccountReceipt>(createParameters, configure);
+            return CreateAccountImplementationAsync<CreateAccountReceipt>(createParameters, configure);
         }
         /// <summary>
         /// Creates a new network account with a given initial balance
@@ -55,9 +55,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<AccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public Task<CreateAccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateAccountImplementationAsync<AccountRecord>(createParameters, configure);
+            return CreateAccountImplementationAsync<CreateAccountRecord>(createParameters, configure);
         }
         /// <summary>
         /// Internal implementation for Create Account
@@ -92,16 +92,16 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to create account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is AccountReceipt arcpt)
-            {
-                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
-                arcpt.Address = Protobuf.FromAccountID(receipt.AccountID);
-            }
-            else if (result is AccountRecord arec)
+            if (result is CreateAccountRecord arec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, arec);
                 arec.Address = Protobuf.FromAccountID(receipt.AccountID);
+            }
+            else if (result is CreateAccountReceipt arcpt)
+            {
+                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
+                arcpt.Address = Protobuf.FromAccountID(receipt.AccountID);
             }
             return result;
 

@@ -33,9 +33,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<ContractReceipt> CallContractAsync(CallContractParams callParameters, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> CallContractAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return CallContractImplementationAsync<ContractReceipt>(callParameters, configure);
+            return CallContractImplementationAsync<TransactionReceipt>(callParameters, configure);
         }
         /// <summary>
         /// Calls a smart contract returning if successful.  The CallContractReceipt 
@@ -96,13 +96,11 @@ namespace Hashgraph
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, rec);
-                rec.Contract = Protobuf.FromContractID(record.Receipt.ContractID);
                 rec.CallResult = Protobuf.FromContractCallResult(record.ContractCallResult);
             }
-            else if (result is ContractReceipt rcpt)
+            else if (result is TransactionReceipt rcpt)
             {
                 Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-                rcpt.Contract = Protobuf.FromContractID(receipt.ContractID);
             }
             return result;
 

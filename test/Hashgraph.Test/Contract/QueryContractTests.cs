@@ -64,7 +64,8 @@ namespace Hashgraph.Test.Contract
                     Contract = fx.ContractRecord.Contract,
                     Gas = await _network.TinybarsFromGas(400),
                     FunctionName = "set_message",
-                    FunctionArgs = new object[] { newMessage }
+                    FunctionArgs = new object[] { newMessage },
+                    ReturnValueCharge = 700
                 });
             });
             Assert.Equal(ResponseCode.LocalCallModificationException, pex.Status);
@@ -82,6 +83,7 @@ namespace Hashgraph.Test.Contract
                     Contract = fx.ContractRecord.Contract,
                     Gas = await _network.TinybarsFromGas(400),
                     FunctionName = "greet",
+                    ReturnValueCharge = 1000,
                     MaxAllowedReturnSize = 1
                 });
             });

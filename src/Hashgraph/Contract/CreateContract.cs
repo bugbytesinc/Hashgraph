@@ -29,9 +29,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<ContractReceipt> CreateContractAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
+        public Task<CreateContractReceipt> CreateContractAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateContractImplementationAsync<ContractReceipt>(createParameters, configure);
+            return CreateContractImplementationAsync<CreateContractReceipt>(createParameters, configure);
         }
         /// <summary>
         /// Creates a new contract instance with the given create parameters 
@@ -54,9 +54,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<ContractRecord> CreateContractWithRecordAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
+        public Task<CreateContractRecord> CreateContractWithRecordAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateContractImplementationAsync<ContractRecord>(createParameters, configure);
+            return CreateContractImplementationAsync<CreateContractRecord>(createParameters, configure);
         }
         /// <summary>
         /// Internal Create Contract Implementation
@@ -89,13 +89,13 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to create contract, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is ContractRecord rec)
+            if (result is CreateContractRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, rec);
                 rec.Contract = Protobuf.FromContractID(receipt.ContractID);
             }
-            else if (result is ContractReceipt rcpt)
+            else if (result is CreateContractReceipt rcpt)
             {
                 Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
                 rcpt.Contract = Protobuf.FromContractID(receipt.ContractID);

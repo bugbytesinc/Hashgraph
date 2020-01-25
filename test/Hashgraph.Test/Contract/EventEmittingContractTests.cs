@@ -31,7 +31,6 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(record.Concensus);
             Assert.Equal("Call Contract", record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
-            Assert.Equal(fx.ContractRecord.Contract, record.Contract);
             Assert.Empty(record.CallResult.Error);
             Assert.True(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
@@ -77,7 +76,6 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(record.Concensus);
             Assert.Equal("Call Contract", record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
-            Assert.Equal(fx.ContractRecord.Contract, record.Contract);
             Assert.Empty(record.CallResult.Error);
             Assert.True(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 300_000UL);
@@ -103,8 +101,8 @@ namespace Hashgraph.Test.Contract
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
         }
 
-        [Fact(DisplayName = "Event Emitting Contract: It appears to be possible to burn hbars (IS THIS A NETWORK BUG?)")]
-        public async Task ItAppearsToBePossibleToBurnHbars()
+        [Fact(DisplayName = "Event Emitting Contract: Attempts to Misplace Hbars Fails")]
+        public async Task AttemptToSendHbarsToDeletedAccountFails()
         {
             // Setup the Simple Event Emitting Contract and An account for "send to".
             await using var fxAccount1 = await TestAccount.CreateAsync(_network);
@@ -137,36 +135,20 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
 
             // Call the contract, sending to the address of the now deleted account
-            var sendRecord = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                Contract = fxContract.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
-                FunctionName = "send_to",
-                FunctionArgs = new[] { fxAccount1.Record.Address }
+                await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+                {
+                    Contract = fxContract.ContractRecord.Contract,
+                    Gas = await _network.TinybarsFromGas(400),
+                    FunctionName = "send_to",
+                    FunctionArgs = new[] { fxAccount1.Record.Address }
+                });
             });
-            Assert.NotNull(sendRecord);
-            Assert.Equal(ResponseCode.Success, sendRecord.Status);
-            Assert.False(sendRecord.Hash.IsEmpty);
-            Assert.NotNull(sendRecord.Concensus);
-            Assert.Equal("Call Contract", sendRecord.Memo);
-            Assert.InRange(sendRecord.Fee, 0UL, ulong.MaxValue);
-            Assert.Equal(fxContract.ContractRecord.Contract, sendRecord.Contract);
-            Assert.Empty(sendRecord.CallResult.Error);
-            Assert.True(sendRecord.CallResult.Bloom.IsEmpty);
-            Assert.InRange(sendRecord.CallResult.Gas, 0UL, 300_000UL);
-            Assert.Single(sendRecord.CallResult.Events);
+            Assert.Equal(ResponseCode.InvalidSolidityAddress, tex.Status);
+            Assert.StartsWith("Contract call failed, status: InvalidSolidityAddress", tex.Message);
 
-            // Now check the emitted Event, Confirm that the contract thought it sent hbars
-            var emittedEvent = sendRecord.CallResult.Events[0];
-            Assert.Equal(fxContract.ContractRecord.Contract, emittedEvent.Contract);
-            Assert.False(emittedEvent.Bloom.IsEmpty);
-            Assert.Single(emittedEvent.Topic);
-            Assert.Equal("9277a4302be4a765ae8585e09a9306bd55da10e20e59ed4f611a04ba606fece8", Hex.FromBytes(emittedEvent.Topic[0]));
-            var (address, amount) = emittedEvent.Data.As<Address, long>();
-            Assert.Equal(fxAccount1.Record.Address, address);  // Account matches deleted account
-            Assert.Equal(fxContract.ContractParams.InitialBalance, amount);  // Amount matches previous balance in contract.
-
-            // Confirm that the balance on the contract is now zero.
+            // Confirm that the balance on the contract has not changed.
             var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
@@ -174,7 +156,7 @@ namespace Hashgraph.Test.Contract
                 FunctionName = "get_balance"
             });
             Assert.NotNull(contractBalanceAfter);
-            Assert.Equal(0, contractBalanceAfter.CallResult.Result.As<long>());
+            Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceAfter.CallResult.Result.As<long>());
 
             // Double Check: try to get info on the deleted account, 
             // but this will fail because the account is already deleted.
@@ -189,9 +171,9 @@ namespace Hashgraph.Test.Contract
             var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount2.Record.Address);
             Assert.Equal(ResponseCode.Success, deleteContractRecord.Status);
 
-            // Check the balance of account number 2, did the hbars go there?
+            // Check the balance of account number 2, the hBars should be there.
             var info2After = await fxAccount2.Client.GetAccountInfoAsync(fxAccount2.Record.Address);
-            Assert.Equal(info2Before.Balance, info2After.Balance); // NOPE, where did they go!
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance + info2Before.Balance, info2After.Balance);
         }
     }
 }

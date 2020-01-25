@@ -30,9 +30,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<AccountReceipt> UpdateAccountAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> UpdateAccountAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateAccountImplementationAsync<AccountReceipt>(updateParameters, configure);
+            return UpdateAccountImplementationAsync<TransactionReceipt>(updateParameters, configure);
         }
         /// <summary>
         /// Updates the changeable properties of a hedera network account.
@@ -56,9 +56,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<AccountRecord> UpdateAccountWithRecordAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
+        public Task<TransactionRecord> UpdateAccountWithRecordAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateAccountImplementationAsync<AccountRecord>(updateParameters, configure);
+            return UpdateAccountImplementationAsync<TransactionRecord>(updateParameters, configure);
         }
         /// <summary>
         /// Internal implementation of the update account functionality.
@@ -110,16 +110,14 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to update account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is AccountRecord arec)
+            if (result is TransactionRecord arec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, arec);
-                arec.Address = Protobuf.FromAccountID(receipt.AccountID);
             }
-            else if (result is AccountReceipt arcpt)
+            else if (result is TransactionReceipt arcpt)
             {
                 Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
-                arcpt.Address = Protobuf.FromAccountID(receipt.AccountID);
             }
             return result;
 

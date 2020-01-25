@@ -5,7 +5,7 @@ namespace Hashgraph
     /// <summary>
     /// Receipt produced from creating a new contract.
     /// </summary>
-    public sealed class ContractReceipt : TransactionReceipt
+    public sealed class CreateContractReceipt : TransactionReceipt
     {
         /// <summary>
         /// The newly created or associated contract instance address.
