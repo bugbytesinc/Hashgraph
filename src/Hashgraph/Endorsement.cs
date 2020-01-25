@@ -60,7 +60,6 @@ namespace Hashgraph
                         return ((PublicKey)_data).Export(KeyBlobFormat.PkixPublicKey);
                     case KeyType.RSA3072:
                     case KeyType.ECDSA384:
-                    case KeyType.ContractID:
                         return (ReadOnlyMemory<byte>)_data;
                     default:
                         return new byte[0];
@@ -134,7 +133,6 @@ namespace Hashgraph
                     break;
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
-                case KeyType.ContractID:
                     _data = publicKey;
                     break;
                 default:
@@ -183,7 +181,6 @@ namespace Hashgraph
                 case KeyType.Ed25519:
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
-                case KeyType.ContractID:
                     return Equals(_data, other._data);
                 case KeyType.List:
                     if (RequiredCount == other.RequiredCount)
@@ -251,7 +248,6 @@ namespace Hashgraph
                     return $"Endorsement:{Type}:{((PublicKey)_data).GetHashCode().ToString()}".GetHashCode();
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
-                case KeyType.ContractID:
                     return $"Endorsement:{Type}:{BitConverter.ToString(((ReadOnlyMemory<byte>)_data).ToArray())}".GetHashCode();
                 case KeyType.List:
                     return $"Endorsement:{Type}:{string.Join(':', ((Endorsement[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode();

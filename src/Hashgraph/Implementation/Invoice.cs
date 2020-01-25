@@ -38,9 +38,6 @@ namespace Hashgraph.Implementation
                 case KeyType.RSA3072:
                     pair.RSA3072 = value;
                     break;
-                case KeyType.ContractID:
-                    pair.Contract = value;
-                    break;
             }
             _signatures[key] = pair;
         }

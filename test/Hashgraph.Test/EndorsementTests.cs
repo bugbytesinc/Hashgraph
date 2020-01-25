@@ -184,28 +184,6 @@ namespace Hashgraph.Tests
             Assert.Equal(0U, endorsement.RequiredCount);
             Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
         }
-        [Fact(DisplayName = "Endorsements: Creating ContractID Type produces ContractID type")]
-        public void CanCreateContractIDType()
-        {
-            var (publicKey1, _) = Generator.KeyPair();
-
-            var endorsement = new Endorsement(KeyType.ContractID, publicKey1);
-            Assert.Equal(KeyType.ContractID, endorsement.Type);
-            Assert.Empty(endorsement.List);
-            Assert.Equal(0U, endorsement.RequiredCount);
-            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
-        }
-        [Fact(DisplayName = "Endorsements: Creating 1 of 1 List produces 1 of 1 List type")]
-        public void CanCreateOneOfOneList()
-        {
-            var (publicKey1, _) = Generator.KeyPair();
-            var endorsement = new Endorsement(KeyType.ContractID, publicKey1);
-            var list = new Endorsement(endorsement);
-            Assert.Equal(KeyType.List, list.Type);
-            Assert.Equal(1U, list.RequiredCount);
-            Assert.Single(list.List);
-            Assert.Empty(list.PublicKey.ToArray());
-        }
         [Fact(DisplayName = "Endorsements: Creating n of m List produces n of m List type")]
         public void CanCreateNofMList()
         {

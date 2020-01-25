@@ -29,10 +29,6 @@
         /// </summary>
         ECDSA384 = 3,
         /// <summary>
-        /// Smart Contract ID (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
-        /// </summary>
-        ContractID = 4,
-        /// <summary>
         /// A list of keys, for endorsements it may represent an n-to-m list, 
         /// for signatores its simply a bag of keys that will sign the transaction.
         /// </summary>
