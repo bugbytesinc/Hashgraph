@@ -289,5 +289,81 @@ namespace Hashgraph.Test.Contract
             var info2After = await fxAccount2.Client.GetAccountInfoAsync(fxAccount2.Record.Address);
             Assert.Equal((ulong)fxContract.ContractParams.InitialBalance + info2Before.Balance, info2After.Balance); // NOPE!
         }
+        [Fact(DisplayName = "Payable Contract: Can Send Funds to External Payable Default Function Raises Contract's Account Balance")]
+        public async Task SendFundsToPayableContractWithExternalPayableRaisesContractBalance()
+        {
+            await using var fx = await PayableContract.CreateAsync(_network);
+
+            ulong initialBalance = (ulong) fx.ContractParams.InitialBalance;
+            var apiBalanceBefore = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            var infoBalanceBefore = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+            var callBalanceBefore = (ulong) (await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_balance"
+            })).CallResult.Result.As<long>();
+            Assert.Equal(initialBalance, apiBalanceBefore);
+            Assert.Equal(initialBalance, infoBalanceBefore);
+            Assert.Equal(initialBalance, callBalanceBefore);
+
+            var extraFunds = Generator.Integer(500, 1000);
+            var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                PayableAmount = extraFunds
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+
+            ulong finalBalance = (ulong)fx.ContractParams.InitialBalance + (ulong) extraFunds;
+            var apiBalanceAfter = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            var infoBalanceAfter = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+            var callBalanceAfter = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_balance"
+            })).CallResult.Result.As<long>();
+            Assert.Equal(finalBalance, apiBalanceAfter);
+            Assert.Equal(finalBalance, infoBalanceAfter);
+            Assert.Equal(finalBalance, callBalanceAfter);
+        }
+
+        [Fact(DisplayName = "Payable Contract: Transfer Funds to External Payable Default Function Raises Contract's Account Balance")]
+        public async Task TransferFundsToPayableContractWithExternalPayableRaisesContractBalance()
+        {
+            await using var fx = await PayableContract.CreateAsync(_network);
+
+            ulong initialBalance = (ulong)fx.ContractParams.InitialBalance;
+            var apiBalanceBefore = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            var infoBalanceBefore = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+            var callBalanceBefore = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_balance"
+            })).CallResult.Result.As<long>();
+            Assert.Equal(initialBalance, apiBalanceBefore);
+            Assert.Equal(initialBalance, infoBalanceBefore);
+            Assert.Equal(initialBalance, callBalanceBefore);
+            
+            var extraFunds = Generator.Integer(500, 1000);
+            var record = await fx.Client.TransferAsync(_network.Payer, fx.ContractRecord.Contract, extraFunds);
+            Assert.Equal(ResponseCode.Success, record.Status);
+
+            ulong finalBalance = (ulong)fx.ContractParams.InitialBalance + (ulong)extraFunds;
+            var apiBalanceAfter = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            var infoBalanceAfter = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+            var callBalanceAfter = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_balance"
+            })).CallResult.Result.As<long>();
+            Assert.Equal(finalBalance, apiBalanceAfter);
+            Assert.Equal(finalBalance, infoBalanceAfter);
+            Assert.Equal(finalBalance, callBalanceAfter);
+        }
     }
 }

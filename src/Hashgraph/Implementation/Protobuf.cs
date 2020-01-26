@@ -80,6 +80,21 @@ namespace Hashgraph.Implementation
             return new Address(contract.ShardNum, contract.RealmNum, contract.ContractNum);
         }
 
+        internal static TopicID ToTopicID(Address address)
+        {
+            return new TopicID
+            {
+                ShardNum = address.ShardNum,
+                RealmNum = address.RealmNum,
+                TopicNum = address.AccountNum
+            };
+        }
+
+        internal static Address FromTopicID(TopicID Topic)
+        {
+            return new Address(Topic.ShardNum, Topic.RealmNum, Topic.TopicNum);
+        }
+
         internal static Duration ToDuration(TimeSpan timespan)
         {
             return new Duration
@@ -194,6 +209,22 @@ namespace Hashgraph.Implementation
                 Deleted = fileInfo.Deleted
             };
         }
+
+        internal static TopicInfo FromTopicInfo(ConsensusTopicInfo topicInfo)
+        {
+            return new TopicInfo
+            {
+                Memo = topicInfo.Memo,
+                RunningHash = topicInfo.RunningHash.ToArray(),
+                SequenceNumber = topicInfo.SequenceNumber,
+                Expiration = FromTimestamp(topicInfo.ExpirationTime),
+                Administrator = topicInfo.AdminKey == null ? null : FromPublicKey(topicInfo.AdminKey),
+                Participant = topicInfo.SubmitKey == null ? null : FromPublicKey(topicInfo.SubmitKey),
+                AutoRenewPeriod = FromDuration(topicInfo.AutoRenewPeriod),
+                RenewAccount = topicInfo.AutoRenewAccount == null ? null : FromAccountID(topicInfo.AutoRenewAccount)
+            };
+        }
+
         internal static ReadOnlyDictionary<Address, long> FromTransferList(TransferList transferList)
         {
             var results = new Dictionary<Address, long>();

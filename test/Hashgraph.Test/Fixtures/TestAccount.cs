@@ -13,18 +13,19 @@ namespace Hashgraph.Test.Fixtures
         public NetworkCredentials Network;
         public Client Client;
 
-        public static async Task<TestAccount> CreateAsync(NetworkCredentials networkCredentials)
+        public static async Task<TestAccount> CreateAsync(NetworkCredentials networkCredentials, Action<TestAccount> customize = null)
         {
             var fx = new TestAccount();
             fx.Network = networkCredentials;
             fx.Network.Output?.WriteLine("STARTING SETUP: Test Account Instance");
             (fx.PublicKey, fx.PrivateKey) = Generator.KeyPair();
+            fx.Client = networkCredentials.NewClient();
             fx.CreateParams = new CreateAccountParams
             {
                 Endorsement = fx.PublicKey,
                 InitialBalance = (ulong)Generator.Integer(10, 20)
             };
-            fx.Client = networkCredentials.NewClient();
+            customize?.Invoke(fx);
             fx.Record = await fx.Client.CreateAccountWithRecordAsync(fx.CreateParams, ctx =>
              {
                  ctx.Memo = "Test Account Instance: Creating Test Account on Network";

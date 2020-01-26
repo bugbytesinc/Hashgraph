@@ -67,6 +67,29 @@ namespace Hashgraph
             }
         }
         /// <summary>
+        /// A special designation of an endorsement key that can't be created.
+        /// It represents an "empty" list of keys, which the network will 
+        /// intrepret as "clear all keys" from this setting (typically the value
+        /// null is intepreted as "make no change").  In this way, it is possible
+        /// to change a topic from mutable (which has an Administrator endorsment)
+        /// to imutable (having no Administrator endorsment).
+        /// </summary>
+        public static Endorsement None { get; private set; } = new Endorsement();
+        /// <summary>
+        /// Internal Constructor representing the "Empty List" version of an
+        /// endorsment.  This is a special construct that is used by the network
+        /// to represent "removing" keys from an "Administrator" key list.  For
+        /// example, turning a mutable contract into an imutable contract.  One
+        /// should never create an empty key list so this is why the constructor
+        /// for this type is set to private and exposed on the Imutable property.
+        /// </summary>
+        private Endorsement()
+        {
+            Type = KeyType.List;
+            _data = new Endorsement[0];
+            RequiredCount = 0;
+        }
+        /// <summary>
         /// Convenience constructor creating an Ed25519 public key
         /// endorsement.  This is the most common key format for the network.
         /// </summary>

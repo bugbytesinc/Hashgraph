@@ -118,5 +118,16 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.ReceiptNotFound, tex.Status);
             Assert.StartsWith("Network failed to return a transaction receipt", tex.Message);
         }
+        [Fact(DisplayName = "Get Account Balance: Can not get balance of Topic")]
+        public async Task CanCreateATopicAsync()
+        {
+            await using var fx = await TestTopic.CreateAsync(_network);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await fx.Client.GetAccountBalanceAsync(fx.Record.Topic);
+            });
+            Assert.Equal(ResponseCode.InvalidAccountId, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: InvalidAccountId", pex.Message);
+        }
     }
 }

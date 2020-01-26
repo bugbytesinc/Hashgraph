@@ -305,9 +305,7 @@ namespace Hashgraph
         {
             var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
-            var signatories = signatory is null ?
-                Transactions.GatherSignatories(context) :
-                Transactions.GatherSignatories(context, signatory);
+            var signatories = Transactions.GatherSignatories(context, signatory);
             var transfers = Transactions.CreateCryptoTransferList(transferList);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Transfer Crypto");

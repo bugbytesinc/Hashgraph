@@ -21,6 +21,26 @@ namespace Hashgraph
         /// </summary>
         public long AccountNum { get; private set; }
         /// <summary>
+        /// A special designation of an account that can't be created.
+        /// It represents the absence of a valid account.  The network will
+        /// intrepret as "no account" when applied to change parameters.
+        /// (typically the value null is intepreted as "make no change").  
+        /// In this way, it is possible to remove a auto-renew account
+        /// from a topic.
+        /// </summary>
+        public static Address None { get; private set; } = new Address();
+        /// <summary>
+        /// Internal Constructor representing the "None" version of an
+        /// address.  This is a special construct that is used by the network
+        /// to represent "removing" auto-renew address from a topic.
+        /// </summary>
+        private Address()
+        {
+            ShardNum = 0;
+            RealmNum = 0;
+            AccountNum = 0;
+        }
+        /// <summary>
         /// Public Constructor, an <code>Address</code> is immutable after creation.
         /// </summary>
         /// <param name="shardNum">

@@ -308,5 +308,19 @@ namespace Hashgraph.Test.Crypto
             Assert.NotNull(record.NextExchangeRate);
             Assert.InRange(record.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
         }
+        [Fact(DisplayName = "Transfer: Transfer to a Topic Raises Error.")]
+        public async Task TransferToATopicRaisesError()
+        {
+            var fx1 = await TestAccount.CreateAsync(_network);
+            var fx2 = await TestTopic.CreateAsync(_network);
+            var payer = _network.Payer;
+            var transferAmount = (long)Generator.Integer(1, (int)fx1.CreateParams.InitialBalance);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fx1.Client.TransferAsync(fx1.Record.Address, fx2.Record.Topic, transferAmount);
+            });
+            Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Status);
+            Assert.StartsWith("Unable to execute crypto transfer, status: AccountIdDoesNotExist", tex.Message);
+        }
     }
 }
