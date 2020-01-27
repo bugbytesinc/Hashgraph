@@ -297,6 +297,18 @@ namespace Hashgraph.Implementation
                 Expiration = FromTimestamp(rate.ExpirationTime)
             };
         }
+        internal static Hashgraph.Extensions.FeeSchedule? FromFeeSchedule(Proto.FeeSchedule schedule)
+        {
+            if (schedule == null)
+            {
+                return null;
+            }
+            return new Hashgraph.Extensions.FeeSchedule()
+            {
+                Expires = FromTimestamp(schedule.ExpiryTime),
+                Data = schedule.TransactionFeeSchedule.ToDictionary(fee => fee.HederaFunctionality.ToString(), fee => JsonFormatter.Default.Format(fee.FeeData))
+            };
+        }
         internal static NodeInfo[] FromNodeAddressBook(NodeAddressBook book)
         {
             return book.NodeAddress.Select(a => new NodeInfo
