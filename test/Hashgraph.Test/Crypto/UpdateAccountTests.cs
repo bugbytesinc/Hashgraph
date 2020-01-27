@@ -111,7 +111,8 @@ namespace Hashgraph.Test.Crypto
             {
                 InitialBalance = 1,
                 Endorsement = publicKey,
-                RequireReceiveSignature = originalValue
+                RequireReceiveSignature = originalValue,
+                Signatory = originalValue ? new Signatory(privateKey) : null   // When True, you need to include signature on create
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
