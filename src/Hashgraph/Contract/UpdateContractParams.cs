@@ -11,7 +11,7 @@ namespace Hashgraph
     /// appropriately signed as described by the original
     /// <see cref="CreateContractParams.Administrator"/> endorsement in order
     /// to make changes.  If there is no administrator endorsement specified,
-    /// the contract is imutable and cannot be changes.
+    /// the contract is imutable and cannot be changed.
     /// </summary>
     public sealed class UpdateContractParams
     {

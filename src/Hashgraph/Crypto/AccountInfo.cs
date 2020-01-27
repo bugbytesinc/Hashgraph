@@ -71,5 +71,11 @@ namespace Hashgraph
         /// account will be deleted.
         /// </summary>
         public TimeSpan AutoRenewPeriod { get; internal set; }
+        /// <summary>
+        /// The account expiration time, at which it will attempt
+        /// to renew if sufficient funds remain in the account.
+        /// </summary>
+        public DateTime Expiration { get; internal set; }
+
     }
 }

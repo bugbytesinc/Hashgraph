@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hashgraph", "src\Hashgraph\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hashgraph.Test", "test\Hashgraph.Test\Hashgraph.Test.csproj", "{B15808B7-09DE-4048-9573-A682946FBA5D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hashgraph.Web", "examples\Hashgraph.Web\Hashgraph.Web.csproj", "{D363030E-C62B-43C5-BA06-3A198D88C05F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

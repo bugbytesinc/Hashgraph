@@ -36,6 +36,10 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
             Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
+
+            // Ensure matches API vesion.
+            var apiBalance = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, apiBalance);
         }
         [Fact(DisplayName = "Payable Contract: Can Get Contract Balance from Call (Local Call)")]
         public async Task CanGetContractBalanceFromLocalCall()
@@ -54,6 +58,14 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(result.Gas, 0UL, 30_000UL);
             Assert.Empty(result.Events);
             Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
+
+            // Ensure matches API vesion.
+            var apiBalance = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, apiBalance);
+
+            // Ensure matches Info version
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds")]
         public async Task CanCallContractMethodSendingFunds()
@@ -144,6 +156,14 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(fxContract.ContractParams.InitialBalance, 1, int.MaxValue);
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
 
+            // Ensure matches API vesion.
+            var apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
+
+            // Ensure matches Info version
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, info.Balance);
+
             // Call the contract, sending to the address of the now deleted account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -167,6 +187,15 @@ namespace Hashgraph.Test.Contract
             });
             Assert.NotNull(contractBalanceAfter);
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceAfter.CallResult.Result.As<long>());
+
+            // Ensure matches API vesion.
+            apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
+
+            // Ensure matches Info version
+            info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, info.Balance);
+
         }
         [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds to Non Existent Account Raises Error")]
         public async Task SendFundsToInvalidAccountRaisesError()
@@ -211,6 +240,10 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(fxContract.ContractParams.InitialBalance, 1, int.MaxValue);
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
 
+            // Ensure matches API vesion.
+            var apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
+
             // Call the contract, sending to the address of the now deleted account
             // Call the contract, sending to the address of the now deleted account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -236,6 +269,10 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(contractBalanceAfter);
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceAfter.CallResult.Result.As<long>());
 
+            // Ensure matches API vesion.
+            apiBalance = await fxContract.Client.GetContractBalanceAsync(fxContract.ContractRecord.Contract);
+            Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, apiBalance);
+
             // Try to get info on the deleted account, but this will fail because the
             // account is already deleted.
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -251,6 +288,82 @@ namespace Hashgraph.Test.Contract
             // Check the balance of account number 2, the hBars should be there?
             var info2After = await fxAccount2.Client.GetAccountInfoAsync(fxAccount2.Record.Address);
             Assert.Equal((ulong)fxContract.ContractParams.InitialBalance + info2Before.Balance, info2After.Balance); // NOPE!
+        }
+        [Fact(DisplayName = "Payable Contract: Can Send Funds to External Payable Default Function Raises Contract's Account Balance")]
+        public async Task SendFundsToPayableContractWithExternalPayableRaisesContractBalance()
+        {
+            await using var fx = await PayableContract.CreateAsync(_network);
+
+            ulong initialBalance = (ulong) fx.ContractParams.InitialBalance;
+            var apiBalanceBefore = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            var infoBalanceBefore = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+            var callBalanceBefore = (ulong) (await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_balance"
+            })).CallResult.Result.As<long>();
+            Assert.Equal(initialBalance, apiBalanceBefore);
+            Assert.Equal(initialBalance, infoBalanceBefore);
+            Assert.Equal(initialBalance, callBalanceBefore);
+
+            var extraFunds = Generator.Integer(500, 1000);
+            var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                PayableAmount = extraFunds
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+
+            ulong finalBalance = (ulong)fx.ContractParams.InitialBalance + (ulong) extraFunds;
+            var apiBalanceAfter = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            var infoBalanceAfter = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+            var callBalanceAfter = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_balance"
+            })).CallResult.Result.As<long>();
+            Assert.Equal(finalBalance, apiBalanceAfter);
+            Assert.Equal(finalBalance, infoBalanceAfter);
+            Assert.Equal(finalBalance, callBalanceAfter);
+        }
+
+        [Fact(DisplayName = "Payable Contract: Transfer Funds to External Payable Default Function Raises Contract's Account Balance")]
+        public async Task TransferFundsToPayableContractWithExternalPayableRaisesContractBalance()
+        {
+            await using var fx = await PayableContract.CreateAsync(_network);
+
+            ulong initialBalance = (ulong)fx.ContractParams.InitialBalance;
+            var apiBalanceBefore = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            var infoBalanceBefore = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+            var callBalanceBefore = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_balance"
+            })).CallResult.Result.As<long>();
+            Assert.Equal(initialBalance, apiBalanceBefore);
+            Assert.Equal(initialBalance, infoBalanceBefore);
+            Assert.Equal(initialBalance, callBalanceBefore);
+            
+            var extraFunds = Generator.Integer(500, 1000);
+            var record = await fx.Client.TransferAsync(_network.Payer, fx.ContractRecord.Contract, extraFunds);
+            Assert.Equal(ResponseCode.Success, record.Status);
+
+            ulong finalBalance = (ulong)fx.ContractParams.InitialBalance + (ulong)extraFunds;
+            var apiBalanceAfter = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+            var infoBalanceAfter = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+            var callBalanceAfter = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = await _network.TinybarsFromGas(400),
+                FunctionName = "get_balance"
+            })).CallResult.Result.As<long>();
+            Assert.Equal(finalBalance, apiBalanceAfter);
+            Assert.Equal(finalBalance, infoBalanceAfter);
+            Assert.Equal(finalBalance, callBalanceAfter);
         }
     }
 }

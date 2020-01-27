@@ -12,9 +12,9 @@
 
 steps:
 - task: DotNetCoreInstaller@0
-  displayName: 'Ensure .Net Core 3'  
+  displayName: 'Ensure .Net Core 3.1'  
   inputs:
-    version: '3.0.100' # Need .net core 3 or greater to support protobuf
+    version: '3.1.100'
 
 - task: DotNetCoreCLI@2
   displayName: Restore Dependencies  

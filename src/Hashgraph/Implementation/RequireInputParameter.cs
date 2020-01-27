@@ -28,6 +28,22 @@ namespace Hashgraph.Implementation
             }
             return contract;
         }
+        internal static Address Topic(Address topic)
+        {
+            if (topic is null)
+            {
+                throw new ArgumentNullException(nameof(topic), "Topic Address is missing. Please check that it is not null.");
+            }
+            return topic;
+        }
+        internal static ReadOnlyMemory<byte> Message(ReadOnlyMemory<byte> message)
+        {
+            if (message.IsEmpty)
+            {
+                throw new ArgumentOutOfRangeException(nameof(message), "Topic Message can not be empty.");
+            }
+            return message;
+        }
         internal static Address AddressToDelete(Address addressToDelete)
         {
             if (addressToDelete is null)
@@ -35,6 +51,14 @@ namespace Hashgraph.Implementation
                 throw new ArgumentNullException(nameof(addressToDelete), "Address to Delete is missing. Please check that it is not null.");
             }
             return addressToDelete;
+        }
+        internal static Address TopicToDelete(Address topicToDelete)
+        {
+            if (topicToDelete is null)
+            {
+                throw new ArgumentNullException(nameof(topicToDelete), "Topic to Delete is missing. Please check that it is not null.");
+            }
+            return topicToDelete;
         }
         internal static Address File(Address file)
         {
@@ -140,6 +164,7 @@ namespace Hashgraph.Implementation
             if (updateParameters.Endorsement is null &&
                 updateParameters.SendThresholdCreateRecord is null &&
                 updateParameters.ReceiveThresholdCreateRecord is null &&
+                updateParameters.RequireReceiveSignature is null &&
                 updateParameters.Expiration is null &&
                 updateParameters.AutoRenewPeriod is null &&
                 updateParameters.Proxy is null)
@@ -166,6 +191,29 @@ namespace Hashgraph.Implementation
                     updateParameters.Memo is null)
                 {
                     throw new ArgumentException("The Contract Updates contains no update properties, it is blank.", nameof(updateParameters));
+                }
+                return updateParameters;
+            }
+        }
+
+        internal static UpdateTopicParams UpdateParameters(UpdateTopicParams updateParameters)
+        {
+            {
+                if (updateParameters is null)
+                {
+                    throw new ArgumentNullException(nameof(updateParameters), "Topic Update Parameters argument is missing. Please check that it is not null.");
+                }
+                if (updateParameters.Topic is null)
+                {
+                    throw new ArgumentNullException(nameof(updateParameters.Topic), "Topic address is missing. Please check that it is not null.");
+                }
+                if (updateParameters.Memo is null &&
+                    updateParameters.Administrator is null &&
+                    updateParameters.Participant is null &&
+                    updateParameters.RenewPeriod is null &&
+                    updateParameters.RenewAccount is null)
+                {
+                    throw new ArgumentException("The Topic Updates contain no update properties, it is blank.", nameof(updateParameters));
                 }
                 return updateParameters;
             }
@@ -289,6 +337,26 @@ namespace Hashgraph.Implementation
             if (createParameters.File is null)
             {
                 throw new ArgumentNullException(nameof(createParameters.File), "The File Address containing the contract is missing, it cannot be null.");
+            }
+            return createParameters;
+        }
+        internal static CreateTopicParams CreateParameters(CreateTopicParams createParameters)
+        {
+            if (createParameters is null)
+            {
+                throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
+            }
+            if(createParameters.Memo is null)
+            {
+                throw new ArgumentNullException(nameof(createParameters.Memo), "Memo can not be null.");
+            }
+            if (!(createParameters.RenewAccount is null) && createParameters.Administrator is null)
+            {
+                throw new ArgumentNullException(nameof(createParameters.Administrator), "The Administrator endorssement must not be null if RenewAccount is specified.");
+            }
+            if (createParameters.RenewPeriod.Ticks < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.RenewPeriod), "The renew period must be greater than zero, and typically less than or equal to 90 days.");
             }
             return createParameters;
         }

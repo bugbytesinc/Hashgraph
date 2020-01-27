@@ -80,6 +80,21 @@ namespace Hashgraph.Implementation
             return new Address(contract.ShardNum, contract.RealmNum, contract.ContractNum);
         }
 
+        internal static TopicID ToTopicID(Address address)
+        {
+            return new TopicID
+            {
+                ShardNum = address.ShardNum,
+                RealmNum = address.RealmNum,
+                TopicNum = address.AccountNum
+            };
+        }
+
+        internal static Address FromTopicID(TopicID Topic)
+        {
+            return new Address(Topic.ShardNum, Topic.RealmNum, Topic.TopicNum);
+        }
+
         internal static Duration ToDuration(TimeSpan timespan)
         {
             return new Duration
@@ -115,7 +130,6 @@ namespace Hashgraph.Implementation
                 case KeyType.Ed25519: return new Key { Ed25519 = ByteString.CopyFrom(((NSec.Cryptography.PublicKey)endorsement._data).Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray()) };
                 case KeyType.RSA3072: return new Key { RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
                 case KeyType.ECDSA384: return new Key { ECDSA384 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
-                case KeyType.ContractID: return new Key { ContractID = ContractID.Parser.ParseFrom((byte[])endorsement._data) };
                 case KeyType.List:
                     return new Key
                     {
@@ -132,12 +146,18 @@ namespace Hashgraph.Implementation
         {
             switch (key.KeyCase)
             {
-                case Key.KeyOneofCase.ContractID: return new Endorsement(KeyType.ContractID, key.ContractID.ToByteArray());
                 case Key.KeyOneofCase.Ed25519: return new Endorsement(KeyType.Ed25519, new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
                 case Key.KeyOneofCase.RSA3072: return new Endorsement(KeyType.RSA3072, key.RSA3072.ToByteArray());
                 case Key.KeyOneofCase.ECDSA384: return new Endorsement(KeyType.ECDSA384, key.ECDSA384.ToByteArray());
-                case Key.KeyOneofCase.ThresholdKey: return new Endorsement(key.ThresholdKey.Threshold, FromPublicKeyList(key.ThresholdKey.Keys));
-                case Key.KeyOneofCase.KeyList: return new Endorsement(FromPublicKeyList(key.KeyList));
+                case Key.KeyOneofCase.ThresholdKey:
+                    return key.ThresholdKey.Keys.Keys.Count == 0 ?
+                        Endorsement.None :
+                        new Endorsement(key.ThresholdKey.Threshold, FromPublicKeyList(key.ThresholdKey.Keys));
+                case Key.KeyOneofCase.KeyList:
+                    return
+                        key.KeyList.Keys.Count == 0 ?
+                        Endorsement.None :
+                        new Endorsement(FromPublicKeyList(key.KeyList));
             }
             throw new InvalidOperationException($"Unknown Key Type {key.KeyCase}.  Do we have a network/library version mismatch?");
         }
@@ -165,7 +185,8 @@ namespace Hashgraph.Implementation
                 SendThresholdCreateRecord = accountInfo.GenerateSendRecordThreshold,
                 ReceiveThresholdCreateRecord = accountInfo.GenerateReceiveRecordThreshold,
                 ReceiveSignatureRequired = accountInfo.ReceiverSigRequired,
-                AutoRenewPeriod = FromDuration(accountInfo.AutoRenewPeriod)
+                AutoRenewPeriod = FromDuration(accountInfo.AutoRenewPeriod),
+                Expiration = FromTimestamp(accountInfo.ExpirationTime)
             };
         }
         internal static ContractInfo FromContractInfo(ContractGetInfoResponse.Types.ContractInfo contractInfo)
@@ -179,7 +200,8 @@ namespace Hashgraph.Implementation
                 Expiration = FromTimestamp(contractInfo.ExpirationTime),
                 RenewPeriod = FromDuration(contractInfo.AutoRenewPeriod),
                 Size = contractInfo.Storage,
-                Memo = contractInfo.Memo
+                Memo = contractInfo.Memo,
+                Balance = contractInfo.Balance
             };
         }
 
@@ -194,6 +216,22 @@ namespace Hashgraph.Implementation
                 Deleted = fileInfo.Deleted
             };
         }
+
+        internal static TopicInfo FromTopicInfo(ConsensusTopicInfo topicInfo)
+        {
+            return new TopicInfo
+            {
+                Memo = topicInfo.Memo,
+                RunningHash = topicInfo.RunningHash.ToArray(),
+                SequenceNumber = topicInfo.SequenceNumber,
+                Expiration = FromTimestamp(topicInfo.ExpirationTime),
+                Administrator = topicInfo.AdminKey == null ? null : FromPublicKey(topicInfo.AdminKey),
+                Participant = topicInfo.SubmitKey == null ? null : FromPublicKey(topicInfo.SubmitKey),
+                AutoRenewPeriod = FromDuration(topicInfo.AutoRenewPeriod),
+                RenewAccount = topicInfo.AutoRenewAccount == null ? null : FromAccountID(topicInfo.AutoRenewAccount)
+            };
+        }
+
         internal static ReadOnlyDictionary<Address, long> FromTransferList(TransferList transferList)
         {
             var results = new Dictionary<Address, long>();

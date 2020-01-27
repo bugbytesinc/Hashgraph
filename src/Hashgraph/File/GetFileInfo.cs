@@ -37,14 +37,14 @@ namespace Hashgraph
                     FileID = Protobuf.ToFileId(file)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
             long cost = (long)response.FileGetInfo.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.FileGetInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get File Info", transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
+                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
             return Protobuf.FromFileInfo(response.FileGetInfo.FileInfo);
 
@@ -54,9 +54,9 @@ namespace Hashgraph
                 return async (Query query) => (await client.getFileInfoAsync(query));
             }
 
-            static ResponseCodeEnum getResponseCode(Response response)
+            static ResponseHeader? getResponseHeader(Response response)
             {
-                return response.FileGetInfo?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.FileGetInfo?.Header;
             }
         }
     }

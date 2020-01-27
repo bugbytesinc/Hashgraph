@@ -436,6 +436,15 @@ namespace Hashgraph
         /// </summary>
         [Description("MAX_CONTRACT_STORAGE_EXCEEDED")] MaxContractStorageExceeded = 106,
         /// <summary>
+        /// Transfer Account should not be same as Account to be deleted
+        /// </summary>
+        [Description("TRANSFER_ACCOUNT_SAME_AS_DELETE_ACCOUNT")] TransferAccountSameAsDeleteAccount = 107,
+        [Description("TOTAL_LEDGER_BALANCE_INVALID")] TotalLedgerBalanceInvalid = 108,
+        /// <summary>
+        /// The expiration date/time on a smart contract may not be reduced
+        /// </summary>
+        [Description("EXPIRATION_REDUCTION_NOT_ALLOWED")] ExpirationReductionNotAllowed = 110,
+        /// <summary>
         ///Gas exceeded currently allowable gas limit per transaction
         /// </summary>
         [Description("MAX_GAS_LIMIT_EXCEEDED")] MaxGasLimitExceeded = 111,
@@ -443,5 +452,33 @@ namespace Hashgraph
         /// File size exceeded the currently allowable limit
         /// </summary>
         [Description("MAX_FILE_SIZE_EXCEEDED")] MaxFileSizeExceeded = 112,
+        /// <summary>
+        /// The Topic ID specified is not in the system.
+        /// </summary>
+        [Description("INVALID_TOPIC_ID")] InvalidTopicId = 150,
+        [Description("INVALID_ADMIN_KEY")] InvalidAdminKey = 155,
+        [Description("INVALID_SUBMIT_KEY")] InvalidSubmitKey = 156,
+        /// <summary>
+        /// An attempted operation was not authorized (ie - a deleteTopic for a topic with no adminKey).
+        /// </summary>
+        [Description("UNAUTHORIZED")] Unauthorized = 157,
+        /// <summary>
+        /// A ConsensusService message is empty.
+        /// </summary>
+        [Description("INVALID_TOPIC_MESSAGE")] InvalidTopicMessage = 158,
+        /// <summary>
+        /// The autoRenewAccount specified is not a valid, active account.
+        /// </summary>
+        [Description("INVALID_AUTORENEW_ACCOUNT")] InvalidAutorenewAccount = 159,
+        /// <summary>
+        /// An adminKey was not specified on the topic, so there must not be an autoRenewAccount.
+        /// </summary>
+        [Description("AUTORENEW_ACCOUNT_NOT_ALLOWED")] AutorenewAccountNotAllowed = 160,
+        /// <summary>
+        /// The topic has expired, was not automatically renewed, and is in a 7 day grace period before the topic will be
+        /// deleted unrecoverably. This error response code will not be returned until autoRenew functionality is supported
+        /// by HAPI.
+        /// </summary>
+        [Description("TOPIC_EXPIRED")] TopicExpired = 162,
     }
 }

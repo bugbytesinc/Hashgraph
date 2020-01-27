@@ -39,14 +39,14 @@ namespace Hashgraph
                     ContractID = Protobuf.ToContractID(contract)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
             long cost = (long)response.ContractGetRecordsResponse.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.ContractGetRecords.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Contract Records", transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
+                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
             return response.ContractGetRecordsResponse.Records.Select(record =>
             {
@@ -61,9 +61,9 @@ namespace Hashgraph
                 return async (Query query) => (await client.getTxRecordByContractIDAsync(query));
             }
 
-            static ResponseCodeEnum getResponseCode(Response response)
+            static ResponseHeader? getResponseHeader(Response response)
             {
-                return response.ContractGetRecordsResponse?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.ContractGetRecordsResponse?.Header;
             }
         }
     }

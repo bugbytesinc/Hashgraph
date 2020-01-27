@@ -52,5 +52,10 @@ namespace Hashgraph
         /// The memo associated with the contract instance.
         /// </summary>
         public string Memo { get; internal set; }
+        /// <summary>
+        /// Contract's Account Balance in Tinybars
+        /// </summary>
+        public ulong Balance { get; internal set; }
+
     }
 }

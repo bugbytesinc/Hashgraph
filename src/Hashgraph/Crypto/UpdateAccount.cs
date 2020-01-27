@@ -85,6 +85,10 @@ namespace Hashgraph
             {
                 updateAccountBody.ReceiveRecordThresholdWrapper = updateParameters.ReceiveThresholdCreateRecord.Value;
             }
+            if (updateParameters.RequireReceiveSignature.HasValue)
+            {
+                updateAccountBody.ReceiverSigRequiredWrapper = updateParameters.RequireReceiveSignature.Value;
+            }
             if (updateParameters.AutoRenewPeriod.HasValue)
             {
                 updateAccountBody.AutoRenewPeriod = Protobuf.ToDuration(updateParameters.AutoRenewPeriod.Value);
@@ -103,7 +107,7 @@ namespace Hashgraph
             transactionBody.CryptoUpdateAccount = updateAccountBody;
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, precheck.NodeTransactionPrecheckCode);
+            ValidateResult.PreCheck(transactionId, precheck);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {

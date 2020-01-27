@@ -31,7 +31,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(result.Bloom.IsEmpty);
             Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(result.Events);
-            Assert.Equal("Hello, world!", result.Result.As<string>()); ;
+            Assert.Equal("Hello, world!", result.Result.As<string>());
         }
         [Fact(DisplayName = "Query Contract: Can call Contract that Keeps State")]
         public async Task CanCreateAContractWithStateAsync()
