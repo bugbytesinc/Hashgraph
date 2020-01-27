@@ -252,5 +252,37 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(newValue, updatedInfo.SendThresholdCreateRecord);
         }
+        [Fact(DisplayName = "Update Account: Empty Endorsement is Allowed")]
+        public async Task EmptyEndorsementIsAllowed()
+        {
+            var originalKeyPair = Generator.KeyPair();
+            await using var client = _network.NewClient();
+            var createResult = await client.CreateAccountAsync(new CreateAccountParams
+            {
+                InitialBalance = 10,
+                Endorsement = originalKeyPair.publicKey
+            });
+            Assert.Equal(ResponseCode.Success, createResult.Status);
+
+            var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(new Endorsement(originalKeyPair.publicKey), originalInfo.Endorsement);
+
+            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Address = createResult.Address,
+                Endorsement = Endorsement.None,
+                Signatory = new Signatory(originalKeyPair.privateKey)
+            });
+            Assert.Equal(ResponseCode.Success, updateResult.Status);
+
+            var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(Endorsement.None, updatedInfo.Endorsement);
+
+            var receipt = await client.TransferAsync(createResult.Address, _network.Payer, 5);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var newBalance = await client.GetAccountBalanceAsync(createResult.Address);
+            Assert.Equal(5ul, newBalance);
+        }
     }
 }

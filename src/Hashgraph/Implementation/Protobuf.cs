@@ -149,8 +149,15 @@ namespace Hashgraph.Implementation
                 case Key.KeyOneofCase.Ed25519: return new Endorsement(KeyType.Ed25519, new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
                 case Key.KeyOneofCase.RSA3072: return new Endorsement(KeyType.RSA3072, key.RSA3072.ToByteArray());
                 case Key.KeyOneofCase.ECDSA384: return new Endorsement(KeyType.ECDSA384, key.ECDSA384.ToByteArray());
-                case Key.KeyOneofCase.ThresholdKey: return new Endorsement(key.ThresholdKey.Threshold, FromPublicKeyList(key.ThresholdKey.Keys));
-                case Key.KeyOneofCase.KeyList: return new Endorsement(FromPublicKeyList(key.KeyList));
+                case Key.KeyOneofCase.ThresholdKey:
+                    return key.ThresholdKey.Keys.Keys.Count == 0 ?
+                        Endorsement.None :
+                        new Endorsement(key.ThresholdKey.Threshold, FromPublicKeyList(key.ThresholdKey.Keys));
+                case Key.KeyOneofCase.KeyList:
+                    return
+                        key.KeyList.Keys.Count == 0 ?
+                        Endorsement.None :
+                        new Endorsement(FromPublicKeyList(key.KeyList));
             }
             throw new InvalidOperationException($"Unknown Key Type {key.KeyCase}.  Do we have a network/library version mismatch?");
         }
