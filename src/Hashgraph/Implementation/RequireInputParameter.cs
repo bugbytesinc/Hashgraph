@@ -164,6 +164,7 @@ namespace Hashgraph.Implementation
             if (updateParameters.Endorsement is null &&
                 updateParameters.SendThresholdCreateRecord is null &&
                 updateParameters.ReceiveThresholdCreateRecord is null &&
+                updateParameters.RequireReceiveSignature is null &&
                 updateParameters.Expiration is null &&
                 updateParameters.AutoRenewPeriod is null &&
                 updateParameters.Proxy is null)

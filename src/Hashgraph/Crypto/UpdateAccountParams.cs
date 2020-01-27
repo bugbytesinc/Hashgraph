@@ -58,6 +58,11 @@ namespace Hashgraph
         /// </summary>
         public ulong? ReceiveThresholdCreateRecord { get; set; }
         /// <summary>
+        /// If set to True, the account must sign any transaction 
+        /// transferring crypto into account.
+        /// </summary>
+        public bool? RequireReceiveSignature { get; set; }
+        /// <summary>
         /// The new expiration date for this account, it will be ignored
         /// if it is equal to or before the current expiration date value
         /// for this account.

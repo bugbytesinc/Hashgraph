@@ -101,6 +101,35 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(newValue, updatedInfo.ReceiveThresholdCreateRecord);
         }
+        [Fact(DisplayName = "Update Account: Can Update Require Receive Signature")]
+        public async Task CanUpdateRequireReceiveSignature()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();
+            var originalValue = Generator.Integer(0, 1) == 1;
+            await using var client = _network.NewClient();
+            var createResult = await client.CreateAccountAsync(new CreateAccountParams
+            {
+                InitialBalance = 1,
+                Endorsement = publicKey,
+                RequireReceiveSignature = originalValue
+            });
+            Assert.Equal(ResponseCode.Success, createResult.Status);
+
+            var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(originalValue, originalInfo.ReceiveSignatureRequired);
+
+            var newValue = !originalValue;
+            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Address = createResult.Address,
+                Signatory = privateKey,
+                RequireReceiveSignature = newValue
+            });
+            Assert.Equal(ResponseCode.Success, updateResult.Status);
+
+            var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(newValue, updatedInfo.ReceiveSignatureRequired);
+        }
         [Fact(DisplayName = "Update Account: Can't Update Auto Renew Period to other than 7890000 seconds")]
         public async Task CanUpdateAutoRenewPeriod()
         {

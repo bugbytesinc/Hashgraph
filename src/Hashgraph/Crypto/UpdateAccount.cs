@@ -85,6 +85,10 @@ namespace Hashgraph
             {
                 updateAccountBody.ReceiveRecordThresholdWrapper = updateParameters.ReceiveThresholdCreateRecord.Value;
             }
+            if (updateParameters.RequireReceiveSignature.HasValue)
+            {
+                updateAccountBody.ReceiverSigRequiredWrapper = updateParameters.RequireReceiveSignature.Value;
+            }
             if (updateParameters.AutoRenewPeriod.HasValue)
             {
                 updateAccountBody.AutoRenewPeriod = Protobuf.ToDuration(updateParameters.AutoRenewPeriod.Value);
