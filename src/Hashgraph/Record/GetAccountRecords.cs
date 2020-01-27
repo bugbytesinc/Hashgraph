@@ -40,19 +40,19 @@ namespace Hashgraph
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
             long cost = (long)response.CryptoGetAccountRecords.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.CryptoGetAccountRecords.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Account Records", transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 // TESTNET 2020-01-23 Wait for Next Release to Put Back
                 //ValidateResult.PreCheck(transactionId, getResponseCode(response));
                 // TESTNET 2020-01-23 Temp Work Around
-                if(response.CryptoGetAccountRecords == null)
+                if (response.CryptoGetAccountRecords == null)
                 {
-                    throw new TransactionException("Unable to retrieve transaction records.", Protobuf.FromTransactionId(transactionId), (ResponseCode)getResponseCode(response));
+                    throw new TransactionException("Unable to retrieve transaction records.", Protobuf.FromTransactionId(transactionId), ResponseCode.Unknown);
                 }
                 // TESTNET 2020-01-23 End Temp Workaround
             }
@@ -69,9 +69,9 @@ namespace Hashgraph
                 return async (Query query) => (await client.getAccountRecordsAsync(query));
             }
 
-            static ResponseCodeEnum getResponseCode(Response response)
+            static ResponseHeader? getResponseHeader(Response response)
             {
-                return response.CryptoGetAccountRecords?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.CryptoGetAccountRecords?.Header;
             }
         }
     }

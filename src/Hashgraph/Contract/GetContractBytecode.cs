@@ -44,14 +44,14 @@ namespace Hashgraph
                     ContractID = Protobuf.ToContractID(contract)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
             long cost = (long)response.ContractGetBytecodeResponse.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.ContractGetBytecode.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Contract Bytecode", transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
+                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
             return response.ContractGetBytecodeResponse.Bytecode.ToByteArray();
 
@@ -61,9 +61,9 @@ namespace Hashgraph
                 return async (Query query) => (await client.ContractGetBytecodeAsync(query));
             }
 
-            static ResponseCodeEnum getResponseCode(Response response)
+            static ResponseHeader? getResponseHeader(Response response)
             {
-                return response.ContractGetBytecodeResponse?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.ContractGetBytecodeResponse?.Header;
             }
         }
     }

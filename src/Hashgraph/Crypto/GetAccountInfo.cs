@@ -37,14 +37,14 @@ namespace Hashgraph
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
             long cost = (long)response.CryptoGetInfo.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.CryptoGetInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Account Info", transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
+                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
             return Protobuf.FromAccountInfo(response.CryptoGetInfo.AccountInfo);
 
@@ -54,9 +54,9 @@ namespace Hashgraph
                 return async (Query query) => (await client.getAccountInfoAsync(query));
             }
 
-            static ResponseCodeEnum getResponseCode(Response response)
+            static ResponseHeader? getResponseHeader(Response response)
             {
-                return response.CryptoGetInfo?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.CryptoGetInfo?.Header;
             }
         }
     }

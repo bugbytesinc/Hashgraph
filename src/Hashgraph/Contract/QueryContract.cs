@@ -46,14 +46,14 @@ namespace Hashgraph
                     MaxResultSize = queryParameters.MaxAllowedReturnSize
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
             long cost = (long)response.ContractCallLocal.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.ContractCallLocal.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost + queryParameters.ReturnValueCharge, "Query Contract Local Call", transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
+                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
             return Protobuf.FromContractCallResult(response.ContractCallLocal.FunctionResult);
 
@@ -63,9 +63,9 @@ namespace Hashgraph
                 return async (Query query) => (await client.contractCallLocalMethodAsync(query));
             }
 
-            static ResponseCodeEnum getResponseCode(Response response)
+            static ResponseHeader? getResponseHeader(Response response)
             {
-                return response.ContractCallLocal?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.ContractCallLocal?.Header;
             }
         }
     }

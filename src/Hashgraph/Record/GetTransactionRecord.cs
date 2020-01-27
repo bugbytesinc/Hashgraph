@@ -76,13 +76,13 @@ namespace Hashgraph
                     TransactionID = transactionRecordId
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
             long cost = (long)response.TransactionGetRecord.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.TransactionGetRecord.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Transaction Record", transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 // TESTNET 2020-01-23 Wait for Next Release to Put Back
                 //var responseCode = getResponseCode(response);
                 //if (responseCode != ResponseCodeEnum.Ok)
@@ -92,7 +92,7 @@ namespace Hashgraph
                 // TESTNET 2020-01-23 Temp Work Around
                 if (response.TransactionGetRecord.TransactionRecord == null)
                 {
-                    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), (ResponseCode)getResponseCode(response));
+                    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), ResponseCode.Unknown);
                 }
                 // TESTNET 2020-01-23 End Temp Workaround
             }
@@ -104,9 +104,9 @@ namespace Hashgraph
                 return async (Query query) => { return await client.getTxRecordByTxIDAsync(query); };
             }
 
-            static ResponseCodeEnum getResponseCode(Response response)
+            static ResponseHeader? getResponseHeader(Response response)
             {
-                return response.TransactionGetRecord?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.TransactionGetRecord?.Header;
             }
         }
     }

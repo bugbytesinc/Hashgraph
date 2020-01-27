@@ -24,9 +24,9 @@ namespace Hashgraph
             {
                 signatories.Add(contextSignatory);
             }
-            foreach(var extraSignatory in extraSignatories)
+            foreach (var extraSignatory in extraSignatories)
             {
-                if(!(extraSignatory is null))
+                if (!(extraSignatory is null))
                 {
                     signatories.Add(extraSignatory);
                 }
@@ -130,21 +130,32 @@ namespace Hashgraph
             await signatory.SignAsync(invoice);
             return invoice.GetSignedTransaction();
         }
-        internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+        internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
         {
             var answer = await ExecuteNetworkRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
-            var code = getResponseCode(answer);
+            var code = getResponseHeader(answer)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (code != ResponseCodeEnum.Ok)
             {
-                throw new PrecheckException($"Transaction Failed Pre-Check: {code}", new TxId(), (ResponseCode)code);
+                throw new PrecheckException($"Transaction Failed Pre-Check: {code}", new TxId(), (ResponseCode)code, 0);
             }
             return answer;
 
             bool shouldRetryRequest(TResponse response)
             {
-                return ResponseCodeEnum.Busy == getResponseCode(response);
+                return ResponseCodeEnum.Busy == getResponseHeader(response)?.NodeTransactionPrecheckCode;
             }
         }
+
+        internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
+        {
+            return ExecuteSignedRequestWithRetryAsync(context, request, instantiateRequestMethod, getResponseCode);
+
+            ResponseCodeEnum getResponseCode(TResponse response)
+            {
+                return getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+            }
+        }
+
         internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {
             var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
@@ -205,7 +216,7 @@ namespace Hashgraph
                 var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ChannelState.Connecting ?
                     $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
                     $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
-                throw new PrecheckException(message, new TxId(), ResponseCode.Unknown, rpcex);
+                throw new PrecheckException(message, new TxId(), ResponseCode.Unknown, 0, rpcex);
             }
         }
 

@@ -180,5 +180,48 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(emptyAddress, updatedInfo.Proxy);
         }
+        [Fact(DisplayName = "Update Account: Update with Insufficient Funds Returns Required Fee")]
+        public async Task UpdateWithInsufficientFundsReturnsRequiredFee()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();
+            var originalValue = (ulong)Generator.Integer(500, 1000);
+            await using var client = _network.NewClient();
+            var createResult = await client.CreateAccountAsync(new CreateAccountParams
+            {
+                InitialBalance = 1,
+                Endorsement = publicKey,
+                Signatory = privateKey,
+                SendThresholdCreateRecord = originalValue
+            });
+            Assert.Equal(ResponseCode.Success, createResult.Status);
+
+            var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(originalValue, originalInfo.SendThresholdCreateRecord);
+
+            var newValue = originalValue + (ulong)Generator.Integer(500, 1000);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () => {
+                await client.UpdateAccountAsync(new UpdateAccountParams
+                {
+                    Address = createResult.Address,
+                    Signatory = privateKey,
+                    SendThresholdCreateRecord = newValue,                    
+                }, ctx => {
+                    ctx.FeeLimit = 1;
+                });
+            });
+            Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
+            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Address = createResult.Address,
+                Signatory = privateKey,
+                SendThresholdCreateRecord = newValue
+            },ctx=> {
+                ctx.FeeLimit = (long) pex.RequiredFee;
+            });
+            Assert.Equal(ResponseCode.Success, updateResult.Status);
+
+            var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(newValue, updatedInfo.SendThresholdCreateRecord);
+        }
     }
 }

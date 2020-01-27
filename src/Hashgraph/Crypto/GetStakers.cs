@@ -43,14 +43,14 @@ namespace Hashgraph
                     AccountID = Protobuf.ToAccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
+            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
             long cost = (long)response.CryptoGetProxyStakers.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.CryptoGetProxyStakers.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Proxy Stakers", transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseCode);
-                ValidateResult.PreCheck(transactionId, getResponseCode(response));
+                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
+                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
             return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => Protobuf.FromAccountID(ps.AccountID), ps => ps.Amount);
 
@@ -60,9 +60,9 @@ namespace Hashgraph
                 return async (Query query) => (await client.getStakersByAccountIDAsync(query));
             }
 
-            static ResponseCodeEnum getResponseCode(Response response)
+            static ResponseHeader? getResponseHeader(Response response)
             {
-                return response.CryptoGetProxyStakers?.Header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                return response.CryptoGetProxyStakers?.Header;
             }
         }
     }
