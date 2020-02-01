@@ -47,14 +47,11 @@ namespace Hashgraph
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.CryptoGetAccountRecords.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Account Records", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                // TESTNET 2020-01-23 Wait for Next Release to Put Back
-                //ValidateResult.PreCheck(transactionId, getResponseCode(response));
-                // TESTNET 2020-01-23 Temp Work Around
-                if (response.CryptoGetAccountRecords == null)
+                var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                if (precheckCode != ResponseCodeEnum.Ok)                
                 {
-                    throw new TransactionException("Unable to retrieve transaction records.", Protobuf.FromTransactionId(transactionId), ResponseCode.Unknown);
+                    throw new TransactionException("Unable to retrieve transaction records.", Protobuf.FromTransactionId(transactionId), (ResponseCode) precheckCode );
                 }
-                // TESTNET 2020-01-23 End Temp Workaround
             }
             return response.CryptoGetAccountRecords.Records.Select(record =>
             {

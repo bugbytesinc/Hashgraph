@@ -83,18 +83,11 @@ namespace Hashgraph
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.TransactionGetRecord.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Transaction Record", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                // TESTNET 2020-01-23 Wait for Next Release to Put Back
-                //var responseCode = getResponseCode(response);
-                //if (responseCode != ResponseCodeEnum.Ok)
-                //{
-                //    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), (ResponseCode)responseCode);
-                //}
-                // TESTNET 2020-01-23 Temp Work Around
-                if (response.TransactionGetRecord.TransactionRecord == null)
+                var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                if (precheckCode != ResponseCodeEnum.Ok)
                 {
-                    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), ResponseCode.Unknown);
+                    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), (ResponseCode) precheckCode);
                 }
-                // TESTNET 2020-01-23 End Temp Workaround
             }
             return response.TransactionGetRecord.TransactionRecord;
 
