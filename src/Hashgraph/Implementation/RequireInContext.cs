@@ -10,7 +10,7 @@ namespace Hashgraph.Implementation
     /// </summary>
     internal static class RequireInContext
     {
-        internal static Address Payer(ContextStack context)
+        internal static Address Payer(GossipContextStack context)
         {
             var payer = context.Payer;
             if (payer is null)
@@ -19,7 +19,8 @@ namespace Hashgraph.Implementation
             }
             return payer;
         }
-        internal static Signatory Signatory(ContextStack context)
+
+        internal static Signatory Signatory(GossipContextStack context)
         {
             var signatory = context.Signatory;
             if (signatory is null)
@@ -28,7 +29,7 @@ namespace Hashgraph.Implementation
             }
             return signatory;
         }
-        internal static Gateway Gateway(ContextStack context)
+        internal static Gateway Gateway(GossipContextStack context)
         {
             var gateway = context.Gateway;
             if (gateway is null)
@@ -37,8 +38,17 @@ namespace Hashgraph.Implementation
             }
             return gateway;
         }
+        internal static string Url(MirrorContextStack context)
+        {
+            var url = context.Url;
+            if (url is null)
+            {
+                throw new InvalidOperationException("The Mirror Node Urul has not been configured. Please check that 'Url' is set in the Mirror context.");
+            }
+            return url;
+        }
 
-        internal static long QueryFee(ContextStack context, long requiredFee)
+        internal static long QueryFee(GossipContextStack context, long requiredFee)
         {
             var feeLimit = context.FeeLimit;
             if (feeLimit < requiredFee)

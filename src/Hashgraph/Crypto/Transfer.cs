@@ -3,7 +3,6 @@ using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -303,7 +302,7 @@ namespace Hashgraph
         /// </summary>
         private async Task<TResult> TransferImplementationAsync<TResult>((Address address, long amount)[] transferList, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transfers = Transactions.CreateCryptoTransferList(transferList);

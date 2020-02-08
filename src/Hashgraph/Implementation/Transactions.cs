@@ -16,7 +16,7 @@ namespace Hashgraph
     /// </summary>
     internal static class Transactions
     {
-        internal static Signatory GatherSignatories(ContextStack context, params Signatory?[] extraSignatories)
+        internal static Signatory GatherSignatories(GossipContextStack context, params Signatory?[] extraSignatories)
         {
             var signatories = new List<Signatory>(1 + extraSignatories.Length);
             var contextSignatory = context.Signatory;
@@ -35,7 +35,7 @@ namespace Hashgraph
                 signatories[0] :
                 new Signatory(signatories.ToArray());
         }
-        internal static TransactionID GetOrCreateTransactionID(ContextStack context)
+        internal static TransactionID GetOrCreateTransactionID(GossipContextStack context)
         {
             var preExistingTransaction = context.Transaction;
             if (preExistingTransaction is null)
@@ -84,7 +84,7 @@ namespace Hashgraph
             }
             return transfers;
         }
-        internal static TransactionBody CreateTransactionBody(ContextStack context, TransactionID transactionId, string defaultMemo)
+        internal static TransactionBody CreateTransactionBody(GossipContextStack context, TransactionID transactionId, string defaultMemo)
         {
             return new TransactionBody
             {
@@ -103,7 +103,7 @@ namespace Hashgraph
                 ResponseType = ResponseType.CostAnswer
             };
         }
-        internal static async Task<QueryHeader> CreateAndSignQueryHeaderAsync(ContextStack context, long queryFee, string defaultMemo, TransactionID transactionId)
+        internal static async Task<QueryHeader> CreateAndSignQueryHeaderAsync(GossipContextStack context, long queryFee, string defaultMemo, TransactionID transactionId)
         {
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
@@ -130,7 +130,7 @@ namespace Hashgraph
             await signatory.SignAsync(invoice);
             return invoice.GetSignedTransaction();
         }
-        internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
+        internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
         {
             var answer = await ExecuteNetworkRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
             var code = getResponseHeader(answer)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
@@ -146,7 +146,7 @@ namespace Hashgraph
             }
         }
 
-        internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
+        internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
         {
             return ExecuteSignedRequestWithRetryAsync(context, request, instantiateRequestMethod, getResponseCode);
 
@@ -156,7 +156,7 @@ namespace Hashgraph
             }
         }
 
-        internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+        internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {
             var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
             var startingInstant = trackTimeDrift ? Epoch.UniqueClockNanos() : 0;
@@ -175,7 +175,7 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
-        internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(ContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
+        internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
         {
             try
             {
@@ -220,7 +220,7 @@ namespace Hashgraph
             }
         }
 
-        private static Action<IMessage> InstantiateOnSendingRequestHandler(ContextStack context)
+        private static Action<IMessage> InstantiateOnSendingRequestHandler(GossipContextStack context)
         {
             var handlers = context.GetAll<Action<IMessage>>(nameof(context.OnSendingRequest)).Where(h => h != null).ToArray();
             if (handlers.Length > 0)
@@ -243,7 +243,7 @@ namespace Hashgraph
             {
             }
         }
-        private static Action<int, IMessage> InstantiateOnResponseReceivedHandler(ContextStack context)
+        private static Action<int, IMessage> InstantiateOnResponseReceivedHandler(GossipContextStack context)
         {
             var handlers = context.GetAll<Action<int, IMessage>>(nameof(context.OnResponseReceived)).Where(h => h != null).ToArray();
             if (handlers.Length > 0)

@@ -60,7 +60,7 @@ namespace Hashgraph
         private async Task<TResult> CreateTopicImplementationAsync<TResult>(CreateTopicParams createParameters, Action<IContext>? configure) where TResult : new()
         {
             createParameters = RequireInputParameter.CreateParameters(createParameters);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);

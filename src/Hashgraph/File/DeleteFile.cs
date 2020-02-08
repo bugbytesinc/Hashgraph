@@ -118,7 +118,7 @@ namespace Hashgraph
         public async Task<TResult> DeleteFileImplementationAsync<TResult>(Address fileToDelete, Signatory? signatory, Action<IContext>? configure = null) where TResult : new()
         {
             fileToDelete = RequireInputParameter.FileToDelete(fileToDelete);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, signatory);

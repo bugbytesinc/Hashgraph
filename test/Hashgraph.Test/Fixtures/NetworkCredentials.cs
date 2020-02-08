@@ -22,6 +22,8 @@ namespace Hashgraph.Test.Fixtures
         public long AccountShard { get { return getAsInt("account:shard"); } }
         public long AccountRealm { get { return getAsInt("account:realm"); } }
         public long AccountNumber { get { return getAsInt("account:number"); } }
+        public string MirrorAddress { get { return _configuration["mirror:address"]; } }
+        public int MirrorPort { get { return getAsInt("mirror:port"); } }
         public ReadOnlyMemory<byte> PrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
         public ReadOnlyMemory<byte> PublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
         public Address Payer { get { return new Address(AccountShard, AccountRealm, AccountNumber); } }
@@ -47,6 +49,14 @@ namespace Hashgraph.Test.Fixtures
                 ctx.OnSendingRequest = OutputSendingRequest;
                 ctx.OnResponseReceived = OutputReceivResponse;
                 ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
+            });
+        }
+        public MirrorClient NewMirror()
+        {
+            return new MirrorClient(ctx =>
+            {
+                ctx.Url = $"{MirrorAddress}:{MirrorPort}";
+                ctx.OnSendingRequest = OutputSendingRequest;
             });
         }
         public async Task<long> TinybarsFromGas(double usd)
@@ -92,6 +102,10 @@ namespace Hashgraph.Test.Fixtures
                         Output.WriteLine($"{DateTime.UtcNow}  QX PYMT  {JsonFormatter.Default.Format(transactionBody)}");
                         Output.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(message)}");
                     }
+                }
+                else if (message is Com.Hedera.Mirror.Api.Proto.ConsensusTopicQuery)
+                {
+                    Output.WriteLine($"{DateTime.UtcNow}  MR-QRY → {JsonFormatter.Default.Format(message)}");
                 }
                 else
                 {

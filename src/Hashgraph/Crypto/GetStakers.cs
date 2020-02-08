@@ -34,7 +34,7 @@ namespace Hashgraph
         internal async Task<Dictionary<Address, long>> GetStakers(Address address, Action<IContext>? configure = null)
         {
             address = RequireInputParameter.Address(address);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 CryptoGetProxyStakers = new CryptoGetStakersQuery

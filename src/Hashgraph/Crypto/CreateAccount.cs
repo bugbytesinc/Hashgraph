@@ -67,7 +67,7 @@ namespace Hashgraph
         private async Task<TResult> CreateAccountImplementationAsync<TResult>(CreateAccountParams createParameters, Action<IContext>? configure) where TResult : new()
         {
             var publicKey = RequireInputParameter.KeysFromEndorsements(createParameters);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, createParameters.Signatory);

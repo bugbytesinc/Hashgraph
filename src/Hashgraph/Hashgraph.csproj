@@ -35,7 +35,10 @@
   </ItemGroup>  
 
   <ItemGroup>
-    <Protobuf Include="..\..\reference\hedera-protobuf\src\main\proto\*.proto" LinkBase="Hedera" GrpcServices="Client">
+    <Protobuf Include="..\..\reference\hedera-protobuf\src\main\proto\*.proto" GrpcServices="Client">
+      <Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\reference\hedera-mirror\proto\ConsensusService-Mirror.proto" GrpcServices="Client" >
       <Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Protobuf>
   </ItemGroup>

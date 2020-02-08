@@ -41,6 +41,32 @@ namespace Hashgraph.Tests
             using var client = new TcpClient();
             client.Connect(_networkCredentials.NetworkAddress, _networkCredentials.NetworkPort);
         }
+
+        [Fact(DisplayName = "Test Prerequisites: Mirror Address Exists and Resolves to IP Address")]
+        public void MirrorkAddressExists()
+        {
+            Assert.NotNull(_networkCredentials.MirrorAddress);
+            var ip = Dns.GetHostAddresses(_networkCredentials.MirrorAddress);
+            Assert.True(ip.Length > 0, "Unable to resolve Mirror Address to live IP Address");
+        }
+
+        [Fact(DisplayName = "Test Prerequisites: Mirror Port Exists")]
+        public void MirrorPortExists()
+        {
+            Assert.True(_networkCredentials.MirrorPort > 0, "Mirror Port Number should be greater than zero.");
+        }
+
+        [Fact(DisplayName = "Test Prerequisites: Mirror Node is Reachable on Configured Port")]
+        public void MirrorIsReachable()
+        {
+            using var client = new TcpClient();
+            client.Connect(_networkCredentials.MirrorAddress, _networkCredentials.MirrorPort);
+        }
+
+
+
+
+
         [Fact(DisplayName = "Test Prerequisites: Server Realm is Non-Negative")]
         public void ServerRealmIsNonNegative()
         {

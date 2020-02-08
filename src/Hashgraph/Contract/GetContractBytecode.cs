@@ -35,7 +35,7 @@ namespace Hashgraph
         internal async Task<ReadOnlyMemory<byte>> GetContractBytecodeAsync(Address contract, Action<IContext>? configure = null)
         {
             contract = RequireInputParameter.Contract(contract);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 ContractGetBytecode = new ContractGetBytecodeQuery

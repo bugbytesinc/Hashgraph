@@ -30,7 +30,7 @@ namespace Hashgraph
         public async Task<TransactionRecord[]> GetContractRecordsAsync(Address contract, Action<IContext>? configure = null)
         {
             contract = RequireInputParameter.Contract(contract);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 ContractGetRecords = new ContractGetRecordsQuery

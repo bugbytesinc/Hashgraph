@@ -11,7 +11,7 @@ namespace Hashgraph
         public async Task<TransactionReceipt> GetReceiptAsync(TxId transaction, Action<IContext>? configure = null)
         {
             transaction = RequireInputParameter.Transaction(transaction);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var transactionId = Protobuf.ToTransactionID(transaction);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
@@ -26,7 +26,7 @@ namespace Hashgraph
         /// Internal Helper function to retrieve receipt record provided by 
         /// the network following network consensus regarding a query or transaction.
         /// </summary>
-        private async Task<Proto.TransactionReceipt> GetReceiptAsync(ContextStack context, TransactionID transactionId)
+        private async Task<Proto.TransactionReceipt> GetReceiptAsync(GossipContextStack context, TransactionID transactionId)
         {
             var query = new Query
             {

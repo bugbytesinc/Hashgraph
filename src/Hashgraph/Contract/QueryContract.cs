@@ -34,7 +34,7 @@ namespace Hashgraph
         public async Task<ContractCallResult> QueryContractAsync(QueryContractParams queryParameters, Action<IContext>? configure = null)
         {
             queryParameters = RequireInputParameter.QueryParameters(queryParameters);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 ContractCallLocal = new ContractCallLocalQuery

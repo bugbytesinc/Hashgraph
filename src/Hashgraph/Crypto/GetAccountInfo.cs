@@ -28,7 +28,7 @@ namespace Hashgraph
         public async Task<AccountInfo> GetAccountInfoAsync(Address address, Action<IContext>? configure = null)
         {
             address = RequireInputParameter.Address(address);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 CryptoGetInfo = new CryptoGetInfoQuery

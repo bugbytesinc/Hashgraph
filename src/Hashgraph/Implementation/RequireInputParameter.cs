@@ -198,25 +198,23 @@ namespace Hashgraph.Implementation
 
         internal static UpdateTopicParams UpdateParameters(UpdateTopicParams updateParameters)
         {
+            if (updateParameters is null)
             {
-                if (updateParameters is null)
-                {
-                    throw new ArgumentNullException(nameof(updateParameters), "Topic Update Parameters argument is missing. Please check that it is not null.");
-                }
-                if (updateParameters.Topic is null)
-                {
-                    throw new ArgumentNullException(nameof(updateParameters.Topic), "Topic address is missing. Please check that it is not null.");
-                }
-                if (updateParameters.Memo is null &&
-                    updateParameters.Administrator is null &&
-                    updateParameters.Participant is null &&
-                    updateParameters.RenewPeriod is null &&
-                    updateParameters.RenewAccount is null)
-                {
-                    throw new ArgumentException("The Topic Updates contain no update properties, it is blank.", nameof(updateParameters));
-                }
-                return updateParameters;
+                throw new ArgumentNullException(nameof(updateParameters), "Topic Update Parameters argument is missing. Please check that it is not null.");
             }
+            if (updateParameters.Topic is null)
+            {
+                throw new ArgumentNullException(nameof(updateParameters.Topic), "Topic address is missing. Please check that it is not null.");
+            }
+            if (updateParameters.Memo is null &&
+                updateParameters.Administrator is null &&
+                updateParameters.Participant is null &&
+                updateParameters.RenewPeriod is null &&
+                updateParameters.RenewAccount is null)
+            {
+                throw new ArgumentException("The Topic Updates contain no update properties, it is blank.", nameof(updateParameters));
+            }
+            return updateParameters;
         }
         internal static long AcountNumber(long accountNum)
         {
@@ -359,6 +357,29 @@ namespace Hashgraph.Implementation
                 throw new ArgumentOutOfRangeException(nameof(createParameters.RenewPeriod), "The renew period must be greater than zero, and typically less than or equal to 90 days.");
             }
             return createParameters;
+        }
+        internal static SubscribeTopicParams SubscribeParameters(SubscribeTopicParams subscribeParameters)
+        {
+            if (subscribeParameters is null)
+            {
+                throw new ArgumentNullException(nameof(subscribeParameters), "Topic Subscribe Parameters argument is missing. Please check that it is not null.");
+            }
+            if (subscribeParameters.Topic is null)
+            {
+                throw new ArgumentNullException(nameof(subscribeParameters.Topic), "Topic address is missing. Please check that it is not null.");
+            }
+            if (subscribeParameters.MessageWriter is null)
+            {
+                throw new ArgumentNullException(nameof(subscribeParameters.MessageWriter), "The destination channel writer missing. Please check that it is not null.");
+            }
+            if(subscribeParameters.Starting.HasValue && subscribeParameters.Ending.HasValue)
+            {
+                if(subscribeParameters.Ending.Value < subscribeParameters.Starting.Value)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(subscribeParameters.Ending), "The ending filter date is less than the starting filter date, no records can be returned.");
+                }
+            }
+            return subscribeParameters;
         }
         internal static CallContractParams CallContractParameters(CallContractParams callParameters)
         {
