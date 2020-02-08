@@ -46,6 +46,8 @@ steps:
     'account:number': $(test:account:number)
     'account:publicKey': $(test:account:publicKey)
     'account:privateKey': $(test:account:privateKey)
+    'mirror:address': $(test:mirror:address)
+    'mirror:port': $(test:mirror:port)
 
 - task: DotNetCoreCLI@2
   displayName: Create NuGet Packages  
