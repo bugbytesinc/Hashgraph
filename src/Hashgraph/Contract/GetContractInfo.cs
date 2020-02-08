@@ -28,7 +28,7 @@ namespace Hashgraph
         public async Task<ContractInfo> GetContractInfoAsync(Address contract, Action<IContext>? configure = null)
         {
             contract = RequireInputParameter.Contract(contract);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 ContractGetInfo = new ContractGetInfoQuery

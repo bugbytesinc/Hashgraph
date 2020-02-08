@@ -6,6 +6,8 @@
 #  test:network:address:           Test Network DNS name, for example 'testnet.hedera.com'
 #  test:network:port:              Test Network port number
 #  test:server:number:             Network Node Address Number receiving Network Requests (assumes Realm = 0, Shard = 0)
+#  test:mirror:address:            Mirror Node DNS name, for example 'testnet.mirrornode.hedera.com'
+#  test:mirror:port:               Mirror Node port number
 #  test:account:number:            Address number of the account making requests (assumes Realm = 0, Shard = 0)
 #  test:account:publicKey:         Public Key of test account making requests of the network, encoded in Hex (last 32 bytes)
 #  test:account:privateKey:        Private Key of test account making requests of the network, encoded in Hex

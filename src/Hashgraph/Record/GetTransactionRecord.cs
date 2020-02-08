@@ -29,7 +29,7 @@ namespace Hashgraph
         public async Task<TransactionRecord> GetTransactionRecordAsync(TxId transaction, Action<IContext>? configure = null)
         {
             transaction = RequireInputParameter.Transaction(transaction);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var transactionId = Protobuf.ToTransactionID(transaction);
             // For the public version of this method, we do not know
             // if the transaction in question has come to consensus so
@@ -66,7 +66,7 @@ namespace Hashgraph
         /// Internal Helper function to retrieve the transaction record provided 
         /// by the network following network consensus regarding a query or transaction.
         /// </summary>
-        private async Task<Proto.TransactionRecord> GetTransactionRecordAsync(ContextStack context, TransactionID transactionRecordId)
+        private async Task<Proto.TransactionRecord> GetTransactionRecordAsync(GossipContextStack context, TransactionID transactionRecordId)
         {
             var query = new Query
             {
@@ -86,7 +86,7 @@ namespace Hashgraph
                 var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
                 if (precheckCode != ResponseCodeEnum.Ok)
                 {
-                    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), (ResponseCode) precheckCode);
+                    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), (ResponseCode)precheckCode);
                 }
             }
             return response.TransactionGetRecord.TransactionRecord;

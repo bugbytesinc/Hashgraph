@@ -61,7 +61,7 @@ namespace Hashgraph
         public async Task<TResult> AppendFileImplementationAsync<TResult>(AppendFileParams appendParameters, Action<IContext>? configure = null) where TResult : new()
         {
             appendParameters = RequireInputParameter.AppendParameters(appendParameters);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, appendParameters.Signatory);

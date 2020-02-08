@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Com.Hedera.Mirror.Api.Proto;
+using Google.Protobuf;
 using Hashgraph.Extensions;
 using Proto;
 using System;
@@ -231,7 +232,17 @@ namespace Hashgraph.Implementation
                 RenewAccount = topicInfo.AutoRenewAccount == null ? null : FromAccountID(topicInfo.AutoRenewAccount)
             };
         }
-
+        internal static TopicMessage FromConsensusTopicResponse(Address topic, ConsensusTopicResponse response)
+        {
+            return new TopicMessage
+            {
+                Topic = topic,
+                Concensus = FromTimestamp(response.ConsensusTimestamp),
+                Messsage = response.Message.ToByteArray(),
+                RunningHash = response.RunningHash.ToByteArray(),
+                SequenceNumber = response.SequenceNumber
+            };
+        }
         internal static ReadOnlyDictionary<Address, long> FromTransferList(TransferList transferList)
         {
             var results = new Dictionary<Address, long>();

@@ -12,7 +12,10 @@ namespace Hashgraph
         /// <returns></returns>
         public TxId CreateNewTxId(Action<IContext>? configure = null)
         {
-            return Protobuf.FromTransactionId(Transactions.GetOrCreateTransactionID(CreateChildContext(configure)));
+            var context = CreateChildContext(configure);
+            var result = Protobuf.FromTransactionId(Transactions.GetOrCreateTransactionID(context));
+            _ = context.DisposeAsync();
+            return result;
         }
     }
 }

@@ -130,7 +130,7 @@ namespace Hashgraph
         {
             topic = RequireInputParameter.Topic(topic);
             message = RequireInputParameter.Message(message);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, signatory);

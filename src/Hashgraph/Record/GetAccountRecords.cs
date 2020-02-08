@@ -31,7 +31,7 @@ namespace Hashgraph
         public async Task<TransactionRecord[]> GetAccountRecordsAsync(Address address, Action<IContext>? configure = null)
         {
             address = RequireInputParameter.Address(address);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 CryptoGetAccountRecords = new CryptoGetAccountRecordsQuery
@@ -48,9 +48,9 @@ namespace Hashgraph
                 query.CryptoGetAccountRecords.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Account Records", transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-                if (precheckCode != ResponseCodeEnum.Ok)                
+                if (precheckCode != ResponseCodeEnum.Ok)
                 {
-                    throw new TransactionException("Unable to retrieve transaction records.", Protobuf.FromTransactionId(transactionId), (ResponseCode) precheckCode );
+                    throw new TransactionException("Unable to retrieve transaction records.", Protobuf.FromTransactionId(transactionId), (ResponseCode)precheckCode);
                 }
             }
             return response.CryptoGetAccountRecords.Records.Select(record =>

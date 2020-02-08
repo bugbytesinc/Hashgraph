@@ -28,7 +28,7 @@ namespace Hashgraph
         public async Task<TopicInfo> GetTopicInfoAsync(Address topic, Action<IContext>? configure = null)
         {
             topic = RequireInputParameter.Topic(topic);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 ConsensusGetTopicInfo = new ConsensusGetTopicInfoQuery

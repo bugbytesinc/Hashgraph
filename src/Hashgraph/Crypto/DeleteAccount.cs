@@ -76,7 +76,7 @@ namespace Hashgraph
         {
             addressToDelete = RequireInputParameter.AddressToDelete(addressToDelete);
             transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, signatory);

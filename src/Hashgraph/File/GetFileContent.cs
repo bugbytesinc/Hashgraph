@@ -30,7 +30,7 @@ namespace Hashgraph
         public async Task<ReadOnlyMemory<byte>> GetFileContentAsync(Address file, Action<IContext>? configure = null)
         {
             file = RequireInputParameter.File(file);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 FileGetContents = new FileGetContentsQuery

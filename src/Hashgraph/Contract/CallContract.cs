@@ -70,7 +70,7 @@ namespace Hashgraph
         private async Task<TResult> CallContractImplementationAsync<TResult>(CallContractParams callParmeters, Action<IContext>? configure) where TResult : new()
         {
             callParmeters = RequireInputParameter.CallContractParameters(callParmeters);
-            var context = CreateChildContext(configure);
+            await using var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, callParmeters.Signatory);
