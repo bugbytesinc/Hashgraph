@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Hashgraph.Implementation
@@ -123,14 +124,14 @@ namespace Hashgraph.Implementation
         private void addRef()
         {
             _parent?.addRef();
-            _refCount += 1;
+            Interlocked.Increment(ref _refCount);
         }
         private async ValueTask removeRef()
         {
-            _refCount -= 1;
+            var count = Interlocked.Decrement(ref _refCount);            
             if (_parent == null)
             {
-                if(_refCount == 0 )
+                if(count == 0 )
                 {
                     await Task.WhenAll(_channels.Values.Select(channel => channel.ShutdownAsync()).ToArray());
                     _channels.Clear();
