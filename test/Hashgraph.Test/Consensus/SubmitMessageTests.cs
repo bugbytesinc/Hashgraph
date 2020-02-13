@@ -163,7 +163,7 @@ namespace Hashgraph.Test.Topic
                 Assert.False(record.RunningHash.IsEmpty);
                 Assert.False(record.Hash.IsEmpty);
                 Assert.NotNull(record.Concensus);
-                Assert.Equal("Submit Message", record.Memo);
+                Assert.Empty(record.Memo);
                 Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
                 Assert.Equal(_network.Payer, record.Id.Address);
             }

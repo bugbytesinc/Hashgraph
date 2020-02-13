@@ -84,7 +84,7 @@ namespace Hashgraph
             }
             return transfers;
         }
-        internal static TransactionBody CreateTransactionBody(GossipContextStack context, TransactionID transactionId, string defaultMemo)
+        internal static TransactionBody CreateTransactionBody(GossipContextStack context, TransactionID transactionId)
         {
             return new TransactionBody
             {
@@ -92,7 +92,7 @@ namespace Hashgraph
                 NodeAccountID = Protobuf.ToAccountID(RequireInContext.Gateway(context)),
                 TransactionFee = (ulong)context.FeeLimit,
                 TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
-                Memo = context.Memo ?? defaultMemo ?? "",
+                Memo = context.Memo ?? ""
             };
         }
         internal static QueryHeader CreateAskCostHeader()
@@ -103,7 +103,7 @@ namespace Hashgraph
                 ResponseType = ResponseType.CostAnswer
             };
         }
-        internal static async Task<QueryHeader> CreateAndSignQueryHeaderAsync(GossipContextStack context, long queryFee, string defaultMemo, TransactionID transactionId)
+        internal static async Task<QueryHeader> CreateAndSignQueryHeaderAsync(GossipContextStack context, long queryFee, TransactionID transactionId)
         {
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
@@ -115,7 +115,7 @@ namespace Hashgraph
                 NodeAccountID = Protobuf.ToAccountID(gateway),
                 TransactionFee = (ulong)context.FeeLimit,
                 TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
-                Memo = context.Memo ?? defaultMemo ?? "",
+                Memo = context.Memo ?? ""
             };
             var transfers = CreateCryptoTransferList((payer, -fee), (gateway, fee));
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };

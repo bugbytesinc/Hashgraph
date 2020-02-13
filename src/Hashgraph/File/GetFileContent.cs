@@ -44,7 +44,7 @@ namespace Hashgraph
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.FileGetContents.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get File Contents", transactionId);
+                query.FileGetContents.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }

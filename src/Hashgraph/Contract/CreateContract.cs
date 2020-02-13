@@ -69,7 +69,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Contract");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ContractCreateInstance = new ContractCreateTransactionBody
             {
                 FileID = Protobuf.ToFileId(createParameters.File),
@@ -78,7 +78,7 @@ namespace Hashgraph
                 InitialBalance = createParameters.InitialBalance,
                 AutoRenewPeriod = Protobuf.ToDuration(createParameters.RenewPeriod),
                 ConstructorParameters = ByteString.CopyFrom(Abi.EncodeArguments(createParameters.Arguments).ToArray()),
-                Memo = context.Memo ?? "Create Contract"
+                Memo = context.Memo ?? ""
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

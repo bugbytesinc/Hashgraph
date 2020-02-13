@@ -103,7 +103,7 @@ namespace Hashgraph
             }
             var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update Account");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.CryptoUpdateAccount = updateAccountBody;
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

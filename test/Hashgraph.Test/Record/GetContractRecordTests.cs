@@ -53,7 +53,7 @@ namespace Hashgraph.Test.Record
             {
                 Assert.Equal(ResponseCode.Success, record.Status);
                 Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
-                Assert.Equal("Call Contract", record.Memo);
+                Assert.Empty(record.Memo);
                 Assert.NotNull(record.Concensus);
                 Assert.False(record.Hash.IsEmpty);
             }

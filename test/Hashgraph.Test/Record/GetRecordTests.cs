@@ -30,7 +30,7 @@ namespace Hashgraph.Test.Record
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
-            Assert.Equal("Transfer Crypto", record.Memo);
+            Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
         }
@@ -75,7 +75,7 @@ namespace Hashgraph.Test.Record
             Assert.Equal(ResponseCode.ContractRevertExecuted, record.Status);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
-            Assert.Equal("Call Contract", record.Memo);
+            Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         }
     }

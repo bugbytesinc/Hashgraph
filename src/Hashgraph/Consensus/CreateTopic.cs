@@ -65,7 +65,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Consensus Topic");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ConsensusCreateTopic = new ConsensusCreateTopicTransactionBody
             {
                 Memo = createParameters.Memo,

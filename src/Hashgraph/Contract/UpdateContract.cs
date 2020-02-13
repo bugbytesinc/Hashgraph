@@ -95,7 +95,7 @@ namespace Hashgraph
                 updateContractBody.Memo = updateParameters.Memo;
             }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update Contract");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ContractUpdateInstance = updateContractBody;
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

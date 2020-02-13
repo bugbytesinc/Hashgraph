@@ -72,7 +72,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create Account");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
             {
                 Key = publicKey,

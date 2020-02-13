@@ -71,7 +71,7 @@ namespace Hashgraph
                 Contents = ByteString.CopyFrom(appendParameters.Contents.ToArray())
             };
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Append File Content");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.FileAppend = appendFileBody;
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

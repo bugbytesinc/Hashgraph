@@ -71,7 +71,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Delete Topic");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ConsensusDeleteTopic = new ConsensusDeleteTopicTransactionBody
             {
                 TopicID = Protobuf.ToTopicID(topicToDelete)

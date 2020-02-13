@@ -307,7 +307,7 @@ namespace Hashgraph
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transfers = Transactions.CreateCryptoTransferList(transferList);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Transfer Crypto");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

@@ -42,7 +42,7 @@ namespace Hashgraph
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.ConsensusGetTopicInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, "Get Topic Info", transactionId);
+                query.ConsensusGetTopicInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }

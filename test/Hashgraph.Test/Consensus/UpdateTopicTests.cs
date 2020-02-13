@@ -85,7 +85,7 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
-            Assert.Equal("Update Topic", record.Memo);
+            Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
 

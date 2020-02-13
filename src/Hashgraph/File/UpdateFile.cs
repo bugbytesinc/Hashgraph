@@ -81,7 +81,7 @@ namespace Hashgraph
                 updateFileBody.Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
             }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update File");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.FileUpdate = updateFileBody;
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

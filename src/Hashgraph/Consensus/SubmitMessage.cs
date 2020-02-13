@@ -135,7 +135,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Submit Message");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ConsensusSubmitMessage = new ConsensusSubmitMessageTransactionBody
             {
                 TopicID = Protobuf.ToTopicID(topic),
@@ -152,7 +152,7 @@ namespace Hashgraph
             var result = new TResult();
             if (result is SubmitMessageRecord rec)
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);                
+                var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, rec);
                 rec.RunningHash = receipt.TopicRunningHash?.ToByteArray();
                 rec.SequenceNumber = receipt.TopicSequenceNumber;

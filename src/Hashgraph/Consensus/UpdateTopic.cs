@@ -95,7 +95,7 @@ namespace Hashgraph
                 updateTopicBody.AutoRenewAccount = Protobuf.ToAccountID(updateParameters.RenewAccount);
             }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Update Topic");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ConsensusUpdateTopic = updateTopicBody;
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

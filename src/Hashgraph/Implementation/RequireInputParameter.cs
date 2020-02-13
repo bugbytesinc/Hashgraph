@@ -344,7 +344,7 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
             }
-            if(createParameters.Memo is null)
+            if (createParameters.Memo is null)
             {
                 throw new ArgumentNullException(nameof(createParameters.Memo), "Memo can not be null.");
             }
@@ -372,9 +372,9 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(subscribeParameters.MessageWriter), "The destination channel writer missing. Please check that it is not null.");
             }
-            if(subscribeParameters.Starting.HasValue && subscribeParameters.Ending.HasValue)
+            if (subscribeParameters.Starting.HasValue && subscribeParameters.Ending.HasValue)
             {
-                if(subscribeParameters.Ending.Value < subscribeParameters.Starting.Value)
+                if (subscribeParameters.Ending.Value < subscribeParameters.Starting.Value)
                 {
                     throw new ArgumentOutOfRangeException(nameof(subscribeParameters.Ending), "The ending filter date is less than the starting filter date, no records can be returned.");
                 }

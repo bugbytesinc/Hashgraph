@@ -68,7 +68,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Create File");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.FileCreate = new FileCreateTransactionBody
             {
                 ExpirationTime = Protobuf.ToTimestamp(createParameters.Expiration),

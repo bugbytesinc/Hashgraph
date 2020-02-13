@@ -80,7 +80,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Delete Contract");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ContractDeleteInstance = new ContractDeleteTransactionBody
             {
                 ContractID = Protobuf.ToContractID(contractToDelete),

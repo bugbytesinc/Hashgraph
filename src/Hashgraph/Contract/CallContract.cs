@@ -75,7 +75,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, callParmeters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId, "Call Contract");
+            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ContractCall = new ContractCallTransactionBody
             {
                 ContractID = Protobuf.ToContractID(callParmeters.Contract),

@@ -24,7 +24,7 @@ namespace Hashgraph.Test.Contract
                 Contract = fx.ContractRecord.Contract,
                 Gas = await _network.TinybarsFromGas(400),
                 FunctionName = "get_balance"
-            });
+            }, ctx => ctx.Memo = "Call Contract");
             Assert.NotNull(record);
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
@@ -77,7 +77,7 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = await _network.TinybarsFromGas(600),
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fx2.Record.Address }
             });
@@ -85,7 +85,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
-            Assert.Equal("Call Contract", record.Memo);
+            Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Empty(record.CallResult.Error);
             Assert.True(record.CallResult.Bloom.IsEmpty);
@@ -115,10 +115,10 @@ namespace Hashgraph.Test.Contract
             record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = await _network.TinybarsFromGas(600),
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fx2.Record.Address }
-            });
+            }, ctx => ctx.Memo = "Call Contract");
             Assert.NotNull(record);
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
@@ -149,7 +149,7 @@ namespace Hashgraph.Test.Contract
             var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = await _network.TinybarsFromGas(600),
                 FunctionName = "get_balance"
             });
             Assert.NotNull(contractBalanceBefore);
@@ -170,7 +170,7 @@ namespace Hashgraph.Test.Contract
                 await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fxContract.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(400),
+                    Gas = await _network.TinybarsFromGas(600),
                     FunctionName = "send_to",
                     FunctionArgs = new[] { fxAccount.Record.Address }
                 });
@@ -207,7 +207,7 @@ namespace Hashgraph.Test.Contract
                 await fx.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(1500),
+                    Gas = await _network.TinybarsFromGas(3000),
                     FunctionName = "send_to",
                     FunctionArgs = new[] { new Address(0, 0, long.MaxValue) }
                 });
@@ -233,7 +233,7 @@ namespace Hashgraph.Test.Contract
             var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = await _network.TinybarsFromGas(600),
                 FunctionName = "get_balance"
             });
             Assert.NotNull(contractBalanceBefore);
@@ -251,7 +251,7 @@ namespace Hashgraph.Test.Contract
                 await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fxContract.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(400),
+                    Gas = await _network.TinybarsFromGas(600),
                     FunctionName = "send_to",
                     FunctionArgs = new[] { fxAccount1.Record.Address }
                 });
@@ -294,10 +294,10 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await PayableContract.CreateAsync(_network);
 
-            ulong initialBalance = (ulong) fx.ContractParams.InitialBalance;
+            ulong initialBalance = (ulong)fx.ContractParams.InitialBalance;
             var apiBalanceBefore = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
             var infoBalanceBefore = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
-            var callBalanceBefore = (ulong) (await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            var callBalanceBefore = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
                 Gas = await _network.TinybarsFromGas(400),
@@ -316,7 +316,7 @@ namespace Hashgraph.Test.Contract
             });
             Assert.Equal(ResponseCode.Success, record.Status);
 
-            ulong finalBalance = (ulong)fx.ContractParams.InitialBalance + (ulong) extraFunds;
+            ulong finalBalance = (ulong)fx.ContractParams.InitialBalance + (ulong)extraFunds;
             var apiBalanceAfter = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
             var infoBalanceAfter = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
             var callBalanceAfter = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
@@ -347,7 +347,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(initialBalance, apiBalanceBefore);
             Assert.Equal(initialBalance, infoBalanceBefore);
             Assert.Equal(initialBalance, callBalanceBefore);
-            
+
             var extraFunds = Generator.Integer(500, 1000);
             var record = await fx.Client.TransferAsync(_network.Payer, fx.ContractRecord.Contract, extraFunds);
             Assert.Equal(ResponseCode.Success, record.Status);

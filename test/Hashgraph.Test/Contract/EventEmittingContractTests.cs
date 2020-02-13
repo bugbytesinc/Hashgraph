@@ -29,7 +29,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
-            Assert.Equal("Call Contract", record.Memo);
+            Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Empty(record.CallResult.Error);
             Assert.True(record.CallResult.Bloom.IsEmpty);
@@ -66,7 +66,7 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = await _network.TinybarsFromGas(600),
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fx2.Record.Address }
             });
@@ -74,7 +74,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
-            Assert.Equal("Call Contract", record.Memo);
+            Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Empty(record.CallResult.Error);
             Assert.True(record.CallResult.Bloom.IsEmpty);
@@ -140,7 +140,7 @@ namespace Hashgraph.Test.Contract
                 await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fxContract.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(400),
+                    Gas = await _network.TinybarsFromGas(600),
                     FunctionName = "send_to",
                     FunctionArgs = new[] { fxAccount1.Record.Address }
                 });

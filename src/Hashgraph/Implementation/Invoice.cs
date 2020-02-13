@@ -43,7 +43,7 @@ namespace Hashgraph.Implementation
         }
         internal Transaction GetSignedTransaction()
         {
-            if(_signatures.Count == 0)
+            if (_signatures.Count == 0)
             {
                 throw new InvalidOperationException("A transaction or query requires at least one signature, sometimes more.  None were found, did you forget to assign a Signatory to the context, transaction or query?");
             }
@@ -51,7 +51,7 @@ namespace Hashgraph.Implementation
             foreach (var signature in _signatures.Values)
             {
                 signatures.SigPair.Add(signature);
-            }            
+            }
             return new Transaction
             {
                 BodyBytes = ByteString.CopyFrom(_txBytes.Span),

@@ -51,7 +51,7 @@ namespace Hashgraph
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.ContractCallLocal.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost + queryParameters.ReturnValueCharge, "Query Contract Local Call", transactionId);
+                query.ContractCallLocal.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost + queryParameters.ReturnValueCharge, transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }

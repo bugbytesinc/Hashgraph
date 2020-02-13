@@ -48,15 +48,15 @@ namespace Hashgraph.Test.Record
             //[Fact(DisplayName = "Account Records: Can get inbound transfers above specified threshold.")]
             async Task GetTransactionRecordsForRecentTransfersInAboveThreshold()
             {
-                await using var fx = await TestAccount.CreateAsync(_network);
+                await using var fx = await TestAccount.CreateAsync(_network, fixture => fixture.CreateParams.InitialBalance = 1);
                 await fx.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
                 {
                     Address = fx.Record.Address,
                     Signatory = fx.PrivateKey,
                     ReceiveThresholdCreateRecord = 100
                 });
-                var record1 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(10, 90));
-                var record2 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(101, 200));
+                var record1 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(1, 2));
+                var record2 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(101, 102));
                 var record3 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(200, 300));
                 var record4 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(300, 400));
                 var record5 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(400, 500));
