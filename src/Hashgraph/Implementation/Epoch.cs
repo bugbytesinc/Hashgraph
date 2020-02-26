@@ -20,16 +20,16 @@ namespace Hashgraph.Implementation
         {
             for (int i = 0; i < 1000; i++)
             {
-                var previousValue = Interlocked.Read(ref _previousNano);
                 var nanos = (DateTime.UtcNow - EPOCH).Ticks * NanosPerTick;
-                if (nanos > previousValue)
+                var previousValue = Interlocked.Read(ref _previousNano);
+                if (nanos <= previousValue)
                 {
-                    if(previousValue == Interlocked.CompareExchange(ref _previousNano, nanos, previousValue))
-                    {
-                        return nanos;
-                    }
+                    nanos = previousValue + 1;
                 }
-                Thread.Yield();
+                if (previousValue == Interlocked.CompareExchange(ref _previousNano, nanos, previousValue))
+                {
+                    return nanos;
+                }
             }
             throw new InvalidOperationException("Unable to retrieve a unique timestamp for a transaction, is my processor overloaded?");
         }

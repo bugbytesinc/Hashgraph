@@ -65,7 +65,7 @@ namespace Hashgraph.Test.Contract
                     Gas = await _network.TinybarsFromGas(400),
                     FunctionName = "set_message",
                     FunctionArgs = new object[] { newMessage },
-                    ReturnValueCharge = 700
+                    ReturnValueCharge = 900
                 });
             });
             Assert.Equal(ResponseCode.LocalCallModificationException, pex.Status);
