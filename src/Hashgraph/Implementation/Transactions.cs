@@ -179,13 +179,14 @@ namespace Hashgraph
         {
             try
             {
+                var retryCount = 0;
                 var maxRetries = context.RetryCount;
                 var retryDelay = context.RetryDelay;
                 var callOnSendingHandlers = InstantiateOnSendingRequestHandler(context);
                 var callOnResponseReceivedHandlers = InstantiateOnResponseReceivedHandler(context);
                 var sendRequest = instantiateRequestMethod(context.GetChannel());
                 callOnSendingHandlers(request);
-                for (var retryCount = 0; retryCount < maxRetries; retryCount++)
+                for (; retryCount < maxRetries; retryCount++)
                 {
                     try
                     {
@@ -203,12 +204,66 @@ namespace Hashgraph
                             $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
                             $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
                         callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
+
+                        // If this was a transaction, it may have actully successfully been processed, in which case 
+                        // the receipt will already be in the system.  Check to see if it is there.
+                        if (request is Transaction transaction)
+                        {
+                            await Task.Delay(retryDelay * retryCount);
+                            var receiptResponse = await CheckForReceipt(transaction);
+                            callOnResponseReceivedHandlers(retryCount, receiptResponse);
+                            if (receiptResponse.NodeTransactionPrecheckCode != ResponseCodeEnum.ReceiptNotFound &&
+                                receiptResponse is TResponse tenativeResponse &&
+                                !shouldRetryRequest(tenativeResponse))
+                            {
+                                return tenativeResponse;
+                            }
+                        }
                     }
                     await Task.Delay(retryDelay * (retryCount + 1));
                 }
                 var finalResponse = await sendRequest(request);
                 callOnResponseReceivedHandlers(maxRetries, finalResponse);
                 return finalResponse;
+
+                async Task<TransactionResponse> CheckForReceipt(Transaction transaction)
+                {
+                    // In the case we submitted a transaction, the receipt may actually
+                    // be in the system.  Unpacking the transaction is not necessarily efficient,
+                    // however we are here due to edge case error condition due to poor network 
+                    // performance or grpc connection issues already.
+                    if (transaction != null)
+                    {
+                        var transactionBody = TransactionBody.Parser.ParseFrom(transaction.BodyBytes);
+                        var transactionId = transactionBody.TransactionID;
+                        var query = new Query
+                        {
+                            TransactionGetReceipt = new TransactionGetReceiptQuery
+                            {
+                                TransactionID = transactionId
+                            }
+                        };
+                        for (; retryCount < maxRetries; retryCount++)
+                        {
+                            try
+                            {
+                                var client = new CryptoService.CryptoServiceClient(context.GetChannel());
+                                var receipt = await client.getTransactionReceiptsAsync(query);
+                                return new TransactionResponse { NodeTransactionPrecheckCode = receipt.TransactionGetReceipt.Header.NodeTransactionPrecheckCode };
+                            }
+                            catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable)
+                            {
+                                var channel = context.GetChannel();
+                                var message = channel.State == ChannelState.Connecting ?
+                                    $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
+                                    $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
+                                callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
+                            }
+                            await Task.Delay(retryDelay * (retryCount + 1));
+                        }
+                    }
+                    return new TransactionResponse { NodeTransactionPrecheckCode = ResponseCodeEnum.Unknown };
+                }
             }
             catch (RpcException rpcex)
             {
