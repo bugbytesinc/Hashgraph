@@ -80,37 +80,45 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(1ul, fx.Record.SequenceNumber);
             Assert.False(fx.Record.RunningHash.IsEmpty);
 
-            await Task.Delay(5000); // give the beta net time to sync
+            await Task.Delay(7000); // give the beta net time to sync
 
             TopicMessage topicMessage = null;
             using var ctx = new CancellationTokenSource();
             await using var mirror = _network.NewMirror();
-            var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
+            try
             {
-                Topic = fx.TestTopic.Record.Topic,
-                Starting = DateTime.UtcNow.AddHours(-1),
-                MessageWriter = new TopicMessageWriterAdapter(m =>
+                var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
                 {
-                    topicMessage = m;
-                    ctx.Cancel();
-                }),
-                CancellationToken = ctx.Token
-            });
+                    Topic = fx.TestTopic.Record.Topic,
+                    Starting = DateTime.UtcNow.AddHours(-1),
+                    MessageWriter = new TopicMessageWriterAdapter(m =>
+                    {
+                        topicMessage = m;
+                        ctx.Cancel();
+                    }),
+                    CancellationToken = ctx.Token
+                });
 
-            ctx.CancelAfter(5000);
+                ctx.CancelAfter(5000);
 
-            await subscribeTask;
+                await subscribeTask;
 
-            if (topicMessage == null)
-            {
-                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                if (topicMessage == null)
+                {
+                    _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                }
+                else
+                {
+                    Assert.Equal(fx.TestTopic.Record.Topic, topicMessage.Topic);
+                    Assert.Equal(1ul, topicMessage.SequenceNumber);
+                    Assert.Equal(fx.Record.RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
+                    Assert.Equal(fx.Message.ToArray(), topicMessage.Messsage.ToArray());
+                }
             }
-            else
+            catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
             {
-                Assert.Equal(fx.TestTopic.Record.Topic, topicMessage.Topic);
-                Assert.Equal(1ul, topicMessage.SequenceNumber);
-                Assert.Equal(fx.Record.RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
-                Assert.Equal(fx.Message.ToArray(), topicMessage.Messsage.ToArray());
+                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RECEIVE TOPIC CREATE IN ALLOWED TIME");
+                return;
             }
         }
         [Fact(DisplayName = "Subscribe Topic: Can Capture Topic Test Message from Stream")]
@@ -209,7 +217,7 @@ namespace Hashgraph.Test.Topic
             {
                 await mirror.SubscribeTopicAsync(new SubscribeTopicParams
                 {
-                    Topic = new Address(0,1,100),
+                    Topic = new Address(0, 1, 100),
                     MessageWriter = capture,
                     CancellationToken = new CancellationTokenSource(2500).Token
                 });
