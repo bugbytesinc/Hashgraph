@@ -63,13 +63,25 @@ namespace Hashgraph
             {
                 await ProcessResultStream(subscribeParameters.Topic);
             }
-            catch (RpcException ex)
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {
                 // Cancelled is an expected closing condition, not an error
-                if (ex.StatusCode != StatusCode.Cancelled)
-                {
-                    throw new MirrorException($"Stream Terminated: {ex.StatusCode}", ex);
-                }
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
+            {
+                throw new MirrorException($"The topic with the specified address does not exist.", MirrorExceptionCode.TopicNotFound, ex);
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument)
+            {
+                throw new MirrorException($"The address exists, but is not a topic.", MirrorExceptionCode.InvalidTopicAddress, ex);
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.Unavailable)
+            {
+                throw new MirrorException($"The Mirror node is not avaliable at this time.", MirrorExceptionCode.Unavailable, ex);
+            }
+            catch (RpcException ex) 
+            {
+                throw new MirrorException($"Stream Terminated with Error: {ex.StatusCode}", MirrorExceptionCode.CommunicationError, ex);
             }
             finally
             {

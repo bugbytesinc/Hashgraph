@@ -182,18 +182,40 @@ namespace Hashgraph.Test.Topic
             Assert.StartsWith("Topic address is missing. Please check that it is not null.", ane.Message);
             Assert.Empty(capture.CapturedList);
         }
-        [Fact(DisplayName = "Subscribe Topic: Invalid Topic DOES NOT RAISE Error")]
+        [Fact(DisplayName = "Subscribe Topic: Invalid Topic Raises Error")]
         public async Task InvalidTopicIdRaisesError()
         {
             await using var mirror = _network.NewMirror();
             var capture = new TopicMessageCapture(1);
-
-            await mirror.SubscribeTopicAsync(new SubscribeTopicParams
+            var mex = await Assert.ThrowsAsync<MirrorException>(async () =>
             {
-                Topic = _network.Payer,
-                MessageWriter = capture,
-                CancellationToken = new CancellationTokenSource(2500).Token
+                await mirror.SubscribeTopicAsync(new SubscribeTopicParams
+                {
+                    Topic = _network.Payer,
+                    MessageWriter = capture,
+                    CancellationToken = new CancellationTokenSource(2500).Token
+                });
             });
+            Assert.Equal(MirrorExceptionCode.InvalidTopicAddress, mex.Code);
+            Assert.StartsWith("The address exists, but is not a topic.", mex.Message);
+            Assert.Empty(capture.CapturedList);
+        }
+        [Fact(DisplayName = "Subscribe Topic: Non-Existant ID Raises Error")]
+        public async Task NonExistantTopicIdRaisesError()
+        {
+            await using var mirror = _network.NewMirror();
+            var capture = new TopicMessageCapture(1);
+            var me = await Assert.ThrowsAsync<MirrorException>(async () =>
+            {
+                await mirror.SubscribeTopicAsync(new SubscribeTopicParams
+                {
+                    Topic = new Address(0,1,100),
+                    MessageWriter = capture,
+                    CancellationToken = new CancellationTokenSource(2500).Token
+                });
+            });
+            Assert.Equal(MirrorExceptionCode.TopicNotFound, me.Code);
+            Assert.StartsWith("The topic with the specified address does not exist.", me.Message);
             Assert.Empty(capture.CapturedList);
         }
         [Fact(DisplayName = "Subscribe Topic: Invalid Filter Configuration Raises Error")]
