@@ -258,28 +258,36 @@ namespace Hashgraph.Test.Topic
             await fx.TestTopic.Client.SubmitMessageAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey);
             await fx.TestTopic.Client.SubmitMessageAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey);
 
-            await Task.Delay(5000); // give the beta net time to sync
+            await Task.Delay(8000); // give the beta net time to sync
 
             var capture = new TopicMessageCapture(10);
             await using var mirror = _network.NewMirror();
             using var cts = new CancellationTokenSource();
-            var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
+            try
             {
-                Topic = fx.TestTopic.Record.Topic,
-                Starting = DateTime.UtcNow.AddHours(-1),
-                MessageWriter = capture,
-                CancellationToken = cts.Token,
-                MaxCount = 2
-            });
-            cts.CancelAfter(5000);
-            await subscribeTask;
-            if (capture.CapturedList.Count == 0)
-            {
-                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
+                {
+                    Topic = fx.TestTopic.Record.Topic,
+                    Starting = DateTime.UtcNow.AddHours(-1),
+                    MessageWriter = capture,
+                    CancellationToken = cts.Token,
+                    MaxCount = 2
+                });
+                cts.CancelAfter(5000);
+                await subscribeTask;
+                if (capture.CapturedList.Count == 0)
+                {
+                    _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                }
+                else
+                {
+                    Assert.Equal(2, capture.CapturedList.Count);
+                }
             }
-            else
+            catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
             {
-                Assert.Equal(2, capture.CapturedList.Count);
+                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RECEIVE TOPIC CREATE IN ALLOWED TIME");
+                return;
             }
         }
     }
