@@ -20,56 +20,64 @@ namespace Hashgraph.Test.Topic
         [Fact(DisplayName = "Subscribe Topic: Can Create and Fetch Topic Message from Stream")]
         public async Task CanSubscribeToATopicAsync()
         {
-            await using var fx = await TestTopic.CreateAsync(_network);
-            var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
-
-            var receipt = await fx.Client.SubmitMessageAsync(fx.Record.Topic, message, fx.ParticipantPrivateKey);
-            Assert.Equal(ResponseCode.Success, receipt.Status);
-            Assert.Equal(1ul, receipt.SequenceNumber);
-            Assert.False(receipt.RunningHash.IsEmpty);
-
-            await Task.Delay(5000); // give the beta net time to sync
-
-            TopicMessage topicMessage = null;
-            using var ctx = new CancellationTokenSource();
-            await using var mirror = _network.NewMirror();
-            var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
+            try
             {
-                Topic = fx.Record.Topic,
-                Starting = DateTime.UtcNow.AddHours(-1),
-                MessageWriter = new TopicMessageWriterAdapter(m =>
+                await using var fx = await TestTopic.CreateAsync(_network);
+                var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
+
+                var receipt = await fx.Client.SubmitMessageAsync(fx.Record.Topic, message, fx.ParticipantPrivateKey);
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+                Assert.Equal(1ul, receipt.SequenceNumber);
+                Assert.False(receipt.RunningHash.IsEmpty);
+
+                await Task.Delay(5000); // give the beta net time to sync
+
+                TopicMessage topicMessage = null;
+                using var ctx = new CancellationTokenSource();
+                await using var mirror = _network.NewMirror();
+                var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
                 {
-                    topicMessage = m;
-                    ctx.Cancel();
-                }),
-                CancellationToken = ctx.Token
-            });
+                    Topic = fx.Record.Topic,
+                    Starting = DateTime.UtcNow.AddHours(-1),
+                    MessageWriter = new TopicMessageWriterAdapter(m =>
+                    {
+                        topicMessage = m;
+                        ctx.Cancel();
+                    }),
+                    CancellationToken = ctx.Token
+                });
 
-            ctx.CancelAfter(5000);
+                ctx.CancelAfter(5000);
 
-            await subscribeTask;
+                await subscribeTask;
 
-            if (topicMessage == null)
-            {
-                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                if (topicMessage == null)
+                {
+                    _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                }
+                else
+                {
+                    Assert.Equal(fx.Record.Topic, topicMessage.Topic);
+                    Assert.Equal(1ul, topicMessage.SequenceNumber);
+                    Assert.Equal(receipt.RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
+                    Assert.Equal(message, topicMessage.Messsage.ToArray());
+                }
+
+                var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
+                Assert.Equal(fx.Memo, info.Memo);
+                Assert.NotEqual(receipt.RunningHash.ToArray(), info.RunningHash);
+                Assert.Equal(1UL, info.SequenceNumber);
+                Assert.True(info.Expiration > DateTime.MinValue);
+                Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
+                Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
+                Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+                Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
             }
-            else
+            catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
             {
-                Assert.Equal(fx.Record.Topic, topicMessage.Topic);
-                Assert.Equal(1ul, topicMessage.SequenceNumber);
-                Assert.Equal(receipt.RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
-                Assert.Equal(message, topicMessage.Messsage.ToArray());
+                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RECEIVE TOPIC CREATE IN ALLOWED TIME");
+                return;
             }
-
-            var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
-            Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(receipt.RunningHash.ToArray(), info.RunningHash);
-            Assert.Equal(1UL, info.SequenceNumber);
-            Assert.True(info.Expiration > DateTime.MinValue);
-            Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
-            Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
-            Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
-            Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
         }
         [Fact(DisplayName = "Subscribe Topic: Can Create and Fetch Topic Test Message from Stream")]
         public async Task CanSubscribeToATestTopic()
