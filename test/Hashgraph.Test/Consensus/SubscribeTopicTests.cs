@@ -132,37 +132,45 @@ namespace Hashgraph.Test.Topic
         [Fact(DisplayName = "Subscribe Topic: Can Capture Topic Test Message from Stream")]
         public async Task CanCaptureATestTopic()
         {
-            await using var fx = await TestTopicMessage.CreateAsync(_network);
-
-            Assert.Equal(ResponseCode.Success, fx.Record.Status);
-            Assert.Equal(1ul, fx.Record.SequenceNumber);
-            Assert.False(fx.Record.RunningHash.IsEmpty);
-
-            await Task.Delay(5000); // give the beta net time to sync
-
-            var capture = new TopicMessageCapture(1);
-            await using var mirror = _network.NewMirror();
-            using var cts = new CancellationTokenSource();
-            var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
+            try
             {
-                Topic = fx.TestTopic.Record.Topic,
-                Starting = DateTime.UtcNow.AddHours(-1),
-                MessageWriter = capture,
-                CancellationToken = cts.Token
-            });
-            cts.CancelAfter(500);
-            await subscribeTask;
-            if (capture.CapturedList.Count == 0)
-            {
-                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                await using var fx = await TestTopicMessage.CreateAsync(_network);
+
+                Assert.Equal(ResponseCode.Success, fx.Record.Status);
+                Assert.Equal(1ul, fx.Record.SequenceNumber);
+                Assert.False(fx.Record.RunningHash.IsEmpty);
+
+                await Task.Delay(5000); // give the beta net time to sync
+
+                var capture = new TopicMessageCapture(1);
+                await using var mirror = _network.NewMirror();
+                using var cts = new CancellationTokenSource();
+                var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
+                {
+                    Topic = fx.TestTopic.Record.Topic,
+                    Starting = DateTime.UtcNow.AddHours(-1),
+                    MessageWriter = capture,
+                    CancellationToken = cts.Token
+                });
+                cts.CancelAfter(500);
+                await subscribeTask;
+                if (capture.CapturedList.Count == 0)
+                {
+                    _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                }
+                else
+                {
+                    var message = capture.CapturedList[0];
+                    Assert.Equal(fx.TestTopic.Record.Topic, message.Topic);
+                    Assert.Equal(1ul, message.SequenceNumber);
+                    Assert.Equal(fx.Record.RunningHash.ToArray(), message.RunningHash.ToArray());
+                    Assert.Equal(fx.Message.ToArray(), message.Messsage.ToArray());
+                }
             }
-            else
+            catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
             {
-                var message = capture.CapturedList[0];
-                Assert.Equal(fx.TestTopic.Record.Topic, message.Topic);
-                Assert.Equal(1ul, message.SequenceNumber);
-                Assert.Equal(fx.Record.RunningHash.ToArray(), message.RunningHash.ToArray());
-                Assert.Equal(fx.Message.ToArray(), message.Messsage.ToArray());
+                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RECEIVE TOPIC CREATE IN ALLOWED TIME");
+                return;
             }
         }
         [Fact(DisplayName = "Subscribe Topic: Missing Channel Writer Raises Error")]
