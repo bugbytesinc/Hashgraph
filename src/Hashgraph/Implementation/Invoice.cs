@@ -39,7 +39,17 @@ namespace Hashgraph.Implementation
                     pair.RSA3072 = value;
                     break;
             }
-            _signatures[key] = pair;
+            if(_signatures.TryGetValue(key, out Proto.SignaturePair? existing))
+            {
+                if( !pair.Equals(existing))
+                {
+                    throw new ArgumentException("Signature with Duplicate Prefix Identifier was provided, but did not have an Identical Signature.");
+                }
+            }
+            else
+            {
+                _signatures.Add(key, pair);
+            }            
         }
         internal Transaction GetSignedTransaction()
         {

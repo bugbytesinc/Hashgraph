@@ -1,7 +1,9 @@
 ﻿using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
+using NSec.Cryptography;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -336,16 +338,16 @@ namespace Hashgraph.Test.Crypto
             });
             Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", pex.Message);
             Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
-            Assert.True( pex.RequiredFee > 0);
+            Assert.True(pex.RequiredFee > 0);
 
             var receipt = await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
             {
-                ctx.FeeLimit = (long) pex.RequiredFee;
+                ctx.FeeLimit = (long)pex.RequiredFee;
             });
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             var balance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
-            Assert.Equal(fx.CreateParams.InitialBalance - (ulong) transferAmount, balance);
+            Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, balance);
         }
         [Fact(DisplayName = "Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception")]
         public async Task InsufficientFeeExceptionIncludesRequiredFeeForRecord()
@@ -371,6 +373,93 @@ namespace Hashgraph.Test.Crypto
 
             var balance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, balance);
+        }
+        [Fact(DisplayName = "Transfer: Consistent Duplicated Signature Succeeds")]
+        public async Task AllowsDuplicateSignature()
+        {
+            await using var client = _network.NewClient();
+            var payerKey = Keys.ImportPrivateEd25519KeyFromBytes(_network.PrivateKey);
+            var publicPrefix = payerKey.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray();
+
+            // Define Signing Method producing a duplicate signature
+            Task CustomSigner(IInvoice invoice)
+            {
+                var goodSignature1 = SignatureAlgorithm.Ed25519.Sign(payerKey, invoice.TxBytes.Span);
+                var goodSignature2 = SignatureAlgorithm.Ed25519.Sign(payerKey, invoice.TxBytes.Span);
+                invoice.AddSignature(KeyType.Ed25519, publicPrefix, goodSignature1);
+                invoice.AddSignature(KeyType.Ed25519, publicPrefix, goodSignature2);
+                return Task.CompletedTask;
+            }
+            var record = await client.TransferWithRecordAsync(_network.Payer, _network.Gateway, 100, ctx =>
+            {
+                ctx.Signatory = new Signatory(CustomSigner);
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+        }
+        [Fact(DisplayName = "Transfer: Inconsistent Duplicated Signature Raises Error")]
+        public async Task InconsistentDuplicateSignatureRaisesError()
+        {
+            await using var client = _network.NewClient();
+            var fakeKey1 = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport });
+            var fakeKey2 = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport });
+            var goodKey = Keys.ImportPrivateEd25519KeyFromBytes(_network.PrivateKey);
+            var publicPrefix = goodKey.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray();
+
+            // Define Defective Signing Method Bad Signature Last
+            Task CustomSigner(IInvoice invoice)
+            {
+                var goodSignature = SignatureAlgorithm.Ed25519.Sign(goodKey, invoice.TxBytes.Span);
+                var badSignature = SignatureAlgorithm.Ed25519.Sign(fakeKey1, invoice.TxBytes.Span);
+                invoice.AddSignature(KeyType.Ed25519, publicPrefix, goodSignature);
+                invoice.AddSignature(KeyType.Ed25519, publicPrefix, badSignature);
+                return Task.CompletedTask;
+            }
+            var aex1 = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await client.TransferWithRecordAsync(_network.Payer, _network.Gateway, 100, ctx =>
+                {
+                    ctx.Signatory = new Signatory(CustomSigner);
+                });
+            });
+            Assert.StartsWith("Signature with Duplicate Prefix Identifier was provided, but did not have an Identical Signature.", aex1.Message);
+
+            // Define Defective Signing Method Bad Signature First
+            Task CustomSignerReverse(IInvoice invoice)
+            {
+                var goodSignature = SignatureAlgorithm.Ed25519.Sign(goodKey, invoice.TxBytes.Span);
+                var badSignature = SignatureAlgorithm.Ed25519.Sign(fakeKey1, invoice.TxBytes.Span);
+                invoice.AddSignature(KeyType.Ed25519, publicPrefix, badSignature);
+                invoice.AddSignature(KeyType.Ed25519, publicPrefix, goodSignature);
+                return Task.CompletedTask;
+            }
+            var aex2 = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await client.TransferWithRecordAsync(_network.Payer, _network.Gateway, 100, ctx =>
+                {
+                    ctx.Signatory = new Signatory(CustomSignerReverse);
+                });
+            });
+            Assert.StartsWith("Signature with Duplicate Prefix Identifier was provided, but did not have an Identical Signature.", aex2.Message);
+
+            // Define Defective Signing Method Bad Two Bad Signatures
+            Task CustomSignerBothBad(IInvoice invoice)
+            {
+                var badSignature1 = SignatureAlgorithm.Ed25519.Sign(fakeKey1, invoice.TxBytes.Span);
+                var badSignature2 = SignatureAlgorithm.Ed25519.Sign(fakeKey2, invoice.TxBytes.Span);
+                invoice.AddSignature(KeyType.Ed25519, publicPrefix, badSignature2);
+                invoice.AddSignature(KeyType.Ed25519, publicPrefix, badSignature1);
+                return Task.CompletedTask;
+            }
+            // Inconsistent Key state should be checked before signatures are validated,
+            // expecting an Argument exception and not a PreCheck exception.
+            var aex3 = await Assert.ThrowsAsync<ArgumentException>(async () =>
+            {
+                await client.TransferWithRecordAsync(_network.Payer, _network.Gateway, 100, ctx =>
+                {
+                    ctx.Signatory = new Signatory(CustomSignerBothBad);
+                });
+            });
+            Assert.StartsWith("Signature with Duplicate Prefix Identifier was provided, but did not have an Identical Signature.", aex3.Message);
         }
     }
 }
