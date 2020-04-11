@@ -59,8 +59,12 @@ namespace Hashgraph.Test.Fixtures
                 ctx.OnSendingRequest = OutputSendingRequest;
             });
         }
-        public async Task<long> TinybarsFromGas(double usd)
+        public async Task<long> TinybarsFromGas(double agu)
         {
+            // agu = Arbitrary Gas Unit - we really have no idea, some 'relative' unit of work.
+            // agc = Arbitrary Gas Constant - Well, we know this is not linear with the exchange rate so we have to keep changing it.
+            // Change the agc when the gas price goes up/down whatever.
+            long agc = 200;
             if (_exchangeRate == null)
             {
                 await using (var client = NewClient())
@@ -69,7 +73,7 @@ namespace Hashgraph.Test.Fixtures
                 }
             }
             // This is not necessarily correct, but hopefully stable.
-            return ((long)(usd * 100 * _exchangeRate.HBarEquivalent)) / (_exchangeRate.USDCentEquivalent);
+            return ((long)(agu * agc * _exchangeRate.HBarEquivalent)) / (_exchangeRate.USDCentEquivalent);
         }
         private int getAsInt(string key)
         {
