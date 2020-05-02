@@ -248,6 +248,30 @@ namespace Hashgraph.Implementation
             }
             return url;
         }
+        internal static int MajorNumber(int major)
+        {
+            if (major < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(major), "Major Version Number cannot be negative.");
+            }
+            return major;
+        }
+        internal static int MinorNumber(int minor)
+        {
+            if (minor < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(minor), "Minor Version Number cannot be negative.");
+            }
+            return minor;
+        }
+        internal static int PatchNumber(int patch)
+        {
+            if (patch < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(patch), "Patch Version Number cannot be negative.");
+            }
+            return patch;
+        }
         internal static Endorsement[] Endorsements(Endorsement[] endorsements)
         {
             if (endorsements is null)
@@ -266,6 +290,18 @@ namespace Hashgraph.Implementation
                 }
             }
             return endorsements;
+        }
+        internal static Endorsement Endorsement(Endorsement endorsement)
+        {
+            if (endorsement is null)
+            {
+                throw new ArgumentNullException(nameof(endorsement), "Endorsement must not be null.");
+            }
+            else if(Hashgraph.Endorsement.None.Equals(endorsement))
+            {
+                throw new ArgumentOutOfRangeException(nameof(endorsement), "Endorsement must not be empty.");
+            }
+            return endorsement;
         }
         internal static uint RequiredCount(uint requiredCount, int maxCount)
         {

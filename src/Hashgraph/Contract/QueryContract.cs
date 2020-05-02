@@ -55,7 +55,7 @@ namespace Hashgraph
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
-            return Protobuf.FromContractCallResult(response.ContractCallLocal.FunctionResult);
+            return Protobuf.FromContractFunctionResult(response.ContractCallLocal.FunctionResult);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

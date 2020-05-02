@@ -35,6 +35,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
+            Assert.Empty(record.CallResult.CreatedContracts);
             Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
         }
         [Fact(DisplayName = "Event Emitting Contract: Can Get Contract Balance from Call (Local Call)")]
@@ -54,6 +55,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(result.Bloom.IsEmpty);
             Assert.InRange(result.Gas, 0UL, 400UL);
             Assert.Empty(result.Events);
+            Assert.Empty(result.CreatedContracts);
             Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
         }
         [Fact(DisplayName = "Event Emitting Contract: Can Call Contract that Sends Funds, Emitting Event")]
@@ -80,6 +82,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 300_000UL);
             Assert.Single(record.CallResult.Events);
+            Assert.Empty(record.CallResult.CreatedContracts);
 
             // Now check the emitted Event
             var result = record.CallResult.Events[0];
@@ -87,6 +90,8 @@ namespace Hashgraph.Test.Contract
             Assert.False(result.Bloom.IsEmpty);
             Assert.Single(result.Topic);
             Assert.Equal("9277a4302be4a765ae8585e09a9306bd55da10e20e59ed4f611a04ba606fece8", Hex.FromBytes(result.Topic[0]));
+
+            Assert.Empty(record.CallResult.CreatedContracts);
 
             var (address, amount) = result.Data.As<Address, long>();
             Assert.Equal(fx2.Record.Address, address);

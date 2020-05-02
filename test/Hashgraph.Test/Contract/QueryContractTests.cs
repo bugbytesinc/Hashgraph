@@ -32,6 +32,7 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(result.Events);
             Assert.Equal("Hello, world!", result.Result.As<string>());
+            Assert.Empty(result.CreatedContracts);
         }
         [Fact(DisplayName = "Query Contract: Can call Contract that Keeps State")]
         public async Task CanCreateAContractWithStateAsync()
@@ -50,6 +51,7 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(result.Events);
             Assert.Equal(fx.ContractParams.Arguments[0] as string, result.Result.As<string>());
+            Assert.Empty(result.CreatedContracts);
         }
         [Fact(DisplayName = "Query Contract: Call Contract that sets State fails.")]
         public async Task CanCreateAContractAndSetStateAsync()

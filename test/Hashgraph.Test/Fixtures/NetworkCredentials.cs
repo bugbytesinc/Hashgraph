@@ -153,8 +153,8 @@ namespace Hashgraph.Test.Fixtures
                 case Query.QueryOneofCase.CryptoGetInfo:
                     payment = query.CryptoGetInfo?.Header?.Payment;
                     break;
-                case Query.QueryOneofCase.CryptoGetClaim:
-                    payment = query.CryptoGetClaim?.Header?.Payment;
+                case Query.QueryOneofCase.CryptoGetLiveHash:
+                    payment = query.CryptoGetLiveHash?.Header?.Payment;
                     break;
                 case Query.QueryOneofCase.CryptoGetProxyStakers:
                     payment = query.CryptoGetProxyStakers?.Header?.Payment;

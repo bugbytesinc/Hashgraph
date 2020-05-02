@@ -35,6 +35,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
+            Assert.Empty(record.CallResult.CreatedContracts);
             Assert.Equal("Hello, world!", record.CallResult.Result.As<string>()); ;
         }
         [Fact(DisplayName = "Call Contract: Can Call Contract that keeps State")]
@@ -98,6 +99,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(setRecord.CallResult.Bloom.IsEmpty);
             Assert.InRange(setRecord.CallResult.Gas, 0UL, 50_000UL);
             Assert.Empty(setRecord.CallResult.Events);
+            Assert.Empty(setRecord.CallResult.CreatedContracts);
 
             var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
@@ -115,6 +117,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(getRecord.CallResult.Bloom.IsEmpty);
             Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(getRecord.CallResult.Events);
+            Assert.Empty(getRecord.CallResult.CreatedContracts);
             Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
             Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         }
@@ -150,6 +153,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(getRecord.CallResult.Bloom.IsEmpty);
             Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(getRecord.CallResult.Events);
+            Assert.Empty(getRecord.CallResult.CreatedContracts);
             Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
             Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         }

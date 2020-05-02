@@ -16,6 +16,12 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyMemory<byte> RunningHash { get; internal set; }
         /// <summary>
+        /// The version of the layout of message and metadata 
+        /// producing the bytes sent to the SHA-384 algorithm 
+        /// generating the running hash digest.
+        /// </summary>
+        public ulong RunningHashVersion { get; internal set; }
+        /// <summary>
         /// The sequence number of this message submission.
         /// </summary>
         public ulong SequenceNumber { get; internal set; }

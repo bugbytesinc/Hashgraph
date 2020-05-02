@@ -28,6 +28,11 @@ namespace Hashgraph
         /// Log events returned by the function.
         /// </summary>
         public ContractEvent[] Events { get; internal set; }
+        /// <summary>
+        /// Addresses of any contracts created as a side effect of
+        /// this contract call.
+        /// </summary>
+        public Address[] CreatedContracts { get; internal set; }
     }
     /// <summary>
     /// Represents the log events returned by a contract function call.

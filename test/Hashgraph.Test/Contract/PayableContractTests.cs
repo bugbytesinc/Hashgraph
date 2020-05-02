@@ -35,6 +35,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
+            Assert.Empty(record.CallResult.CreatedContracts);
             Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
 
             // Ensure matches API vesion.
@@ -58,6 +59,7 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(result.Gas, 0UL, 30_000UL);
             Assert.Empty(result.Events);
             Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
+            Assert.Empty(result.CreatedContracts);
 
             // Ensure matches API vesion.
             var apiBalance = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
@@ -91,6 +93,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
+            Assert.Empty(record.CallResult.CreatedContracts);
 
             var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
@@ -129,6 +132,7 @@ namespace Hashgraph.Test.Contract
             Assert.True(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
+            Assert.Empty(record.CallResult.CreatedContracts);
 
             var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
             Assert.Equal((ulong)(fx.ContractParams.InitialBalance + extraFunds), infoAfter.Balance - infoBefore.Balance);

@@ -1,5 +1,7 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized. Consider declaring as nullable.
 
+using System;
+
 namespace Hashgraph.Extensions
 {
     /// <summary>
@@ -8,6 +10,10 @@ namespace Hashgraph.Extensions
     /// </summary>
     public class NodeInfo
     {
+        /// <summary>
+        /// Identifier of the node (non-sequential)
+        /// </summary>
+        public long Id { get; internal set; }
         /// <summary>
         /// The ip address of the Node with separator & octets
         /// </summary>
@@ -24,5 +30,13 @@ namespace Hashgraph.Extensions
         /// The RSA public key of the node.
         /// </summary>
         public string RsaPublicKey { get; internal set; }
+        /// <summary>
+        /// The crypto account associated with this node.
+        /// </summary>
+        public Address Address { get; internal set; }
+        /// <summary>
+        /// Hash of the X509 certificate for gRPC traffict to this node.
+        /// </summary>
+        public ReadOnlyMemory<byte> CertificateHash { get; internal set; }
     }
 }

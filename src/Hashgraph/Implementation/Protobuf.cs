@@ -280,7 +280,7 @@ namespace Hashgraph.Implementation
                 result.NextExchangeRate = FromExchangeRate(record.Receipt.ExchangeRate.NextRate);
             }
         }
-        internal static ContractCallResult FromContractCallResult(ContractFunctionResult contractFunctionResult)
+        internal static ContractCallResult FromContractFunctionResult(ContractFunctionResult contractFunctionResult)
         {
             return new ContractCallResult
             {
@@ -293,8 +293,9 @@ namespace Hashgraph.Implementation
                     Contract = FromContractID(log.ContractID),
                     Bloom = log.Bloom.ToArray(),
                     Topic = log.Topic.Select(bs => new ReadOnlyMemory<byte>(bs.ToArray())).ToArray(),
-                    Data = new ContractCallResultData(log.Data.ToArray())
-                }).ToArray() ?? new ContractEvent[0]
+                    Data = new ContractCallResultData(log.Data.ToArray()),
+                }).ToArray() ?? new ContractEvent[0],
+                CreatedContracts = contractFunctionResult.CreatedContractIDs?.Select(id => FromContractID(id)).ToArray() ?? new Address[0]
             };
         }
         internal static ExchangeRate? FromExchangeRate(Proto.ExchangeRate rate)
@@ -324,11 +325,27 @@ namespace Hashgraph.Implementation
         {
             return book.NodeAddress.Select(a => new NodeInfo
             {
+                Id = a.NodeId,
                 IpAddress = a.IpAddress.ToStringUtf8(),
                 Port = a.Portno,
                 Memo = a.Memo.ToStringUtf8(),
-                RsaPublicKey = a.RSAPubKey
+                RsaPublicKey = a.RSAPubKey,
+                Address = a.NodeAccountId == null ? Address.None : FromAccountID(a.NodeAccountId),
+                CertificateHash = new ReadOnlyMemory<byte>(a.NodeCertHash.ToArray())
             }).ToArray();
+        }
+        internal static VersionInfo FromNetworkVersionInfo(NetworkGetVersionInfoResponse networkGetVersionInfo)
+        {
+            return new VersionInfo
+            {
+                ApiProtobufVersion = FromSemanticVersion(networkGetVersionInfo.HapiProtoVersion),
+                HederaServicesVersion = FromSemanticVersion(networkGetVersionInfo.HederaServicesVersion)
+            };
+        }
+
+        private static SemanticVersion FromSemanticVersion(Proto.SemanticVersion semanticVersion)
+        {
+            return semanticVersion != null ? new SemanticVersion(semanticVersion.Major, semanticVersion.Minor, semanticVersion.Patch) : SemanticVersion.None;
         }
     }
 }

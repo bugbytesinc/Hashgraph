@@ -220,41 +220,41 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_SIGNATURE_COUNT_MISMATCHING_KEY")] InvalidSignatureCountMismatchingKey = 52,
         /// <summary>
-        /// the claim body is empty
+        /// the livehash body is empty
         /// </summary>
-        [Description("EMPTY_CLAIM_BODY")] EmptyClaimBody = 53,
+        [Description("EMPTY_LIVE_HASH_BODY")] EmptyLiveHashBody = 53,
         /// <summary>
-        ///the hash for the claim is empty
+        /// the livehash data is missing
         /// </summary>
-        [Description("EMPTY_CLAIM_HASH")] EmptyClaimHash = 54,
+        [Description("EMPTY_LIVE_HASH")] EmptyLiveHash = 54,
         /// <summary>
-        /// the key list is empty
+        /// the keys for a livehash are missing
         /// </summary>
-        [Description("EMPTY_CLAIM_KEYS")] EmptyClaimKeys = 55,
+        [Description("EMPTY_LIVE_HASH_KEYS")] EmptyLiveHashKeys = 55,
         /// <summary>
-        /// the size of the claim hash is not 48 bytes
+        /// the livehash data is not the output of a SHA-384 digest
         /// </summary>
-        [Description("INVALID_CLAIM_HASH_SIZE")] InvalidClaimHashSize = 56,
+        [Description("INVALID_LIVE_HASH_SIZE")] InvalidLiveHashSize = 56,
         /// <summary>
         /// the query body is empty
         /// </summary>
         [Description("EMPTY_QUERY_BODY")] EmptyQueryBody = 57,
         /// <summary>
-        /// the crypto claim query is empty
+        /// the crypto livehash query is empty
         /// </summary>
-        [Description("EMPTY_CLAIM_QUERY")] EmptyClaimQuery = 58,
+        [Description("EMPTY_LIVE_HASH_QUERY")] EmptyLiveHashQuery = 58,
         /// <summary>
-        /// the crypto claim doesn't exists in the file system. It expired or was never persisted.
+        /// the livehash is not present
         /// </summary>
-        [Description("CLAIM_NOT_FOUND")] ClaimNotFound = 59,
+        [Description("LIVE_HASH_NOT_FOUND")] LiveHashNotFound = 59,
         /// <summary>
         /// the account id passed has not yet been created.
         /// </summary>
         [Description("ACCOUNT_ID_DOES_NOT_EXIST")] AccountIdDoesNotExist = 60,
         /// <summary>
-        /// the claim hash already exists
+        /// the livehash already exists for a given account
         /// </summary>
-        [Description("CLAIM_ALREADY_EXISTS")] ClaimAlreadyExists = 61,
+        [Description("LIVE_HASH_ALREADY_EXISTS")] LiveHashAlreadyExists = 61,
         /// <summary>
         /// File WACL keys are invalid
         /// </summary>

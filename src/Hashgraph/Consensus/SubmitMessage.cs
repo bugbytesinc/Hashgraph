@@ -155,12 +155,14 @@ namespace Hashgraph
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 Protobuf.FillRecordProperties(record, rec);
                 rec.RunningHash = receipt.TopicRunningHash?.ToByteArray();
+                rec.RunningHashVersion = receipt.TopicRunningHashVersion;
                 rec.SequenceNumber = receipt.TopicSequenceNumber;
             }
             else if (result is SubmitMessageReceipt rcpt)
             {
                 Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
                 rcpt.RunningHash = receipt.TopicRunningHash?.ToByteArray();
+                rcpt.RunningHashVersion = receipt.TopicRunningHashVersion;
                 rcpt.SequenceNumber = receipt.TopicSequenceNumber;
             }
             return result;

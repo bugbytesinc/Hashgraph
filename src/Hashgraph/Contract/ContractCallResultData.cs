@@ -18,6 +18,16 @@ namespace Hashgraph
             _data = data;
         }
         /// <summary>
+        /// The size in bytes of the data (in ABI format) returned from the function call.
+        /// </summary>
+        public int Size
+        {
+            get
+            {
+                return _data.Length;
+            }
+        }
+        /// <summary>
         /// Retrieves the first value returned from the contract cast to the 
         /// desired native type.
         /// </summary>

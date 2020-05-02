@@ -11,5 +11,9 @@ namespace Hashgraph
         /// The newly created contract instance address.
         /// </summary>
         public Address Contract { get; internal set; }
+        /// <summary>
+        /// The results returned from the contract create call.
+        /// </summary>
+        public ContractCallResult CallResult { get; internal set; }
     }
 }
