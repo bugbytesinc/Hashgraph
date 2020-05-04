@@ -23,7 +23,7 @@ namespace Hashgraph.Test.Crypto
             {
                 await CanGetInfoForNetworkAsync();
             });
-            Assert.Equal(ResponseCode.Unknown, pex.Status);
+            Assert.Equal(ResponseCode.RpcError, pex.Status);
 
             //[Fact(DisplayName = "Get Version Info: Can Get Info for Network")]
             /*public*/

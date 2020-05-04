@@ -7,6 +7,7 @@ namespace Hashgraph
     /// </summary>
     public enum ResponseCode
     {
+        [Description("RPC_ERROR")] RpcError = -1,
         /// <summary>
         /// The transaction passed the precheck validations.
         /// </summary>

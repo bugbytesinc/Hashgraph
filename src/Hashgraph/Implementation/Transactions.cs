@@ -271,7 +271,7 @@ namespace Hashgraph
                 var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ChannelState.Connecting ?
                     $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
                     $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
-                throw new PrecheckException(message, new TxId(), ResponseCode.Unknown, 0, rpcex);
+                throw new PrecheckException(message, new TxId(), ResponseCode.RpcError, 0, rpcex);
             }
         }
 
