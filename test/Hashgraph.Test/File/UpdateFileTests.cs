@@ -150,26 +150,20 @@ namespace Hashgraph.Test.File
             var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
             Assert.Equal(newContents, retrievedContents.ToArray());
 
-            // Should Fail if try to Delete with new Private Key One
-            tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await test.Client.DeleteFileWithRecordAsync(test.Record.File, newPrivateKey1);
-            });
-            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
-            Assert.StartsWith("Unable to delete file, status: InvalidSignature", tex.Message);
-
-            // Still Need Both Signatures to Delete
-            var deleteResult = await test.Client.DeleteFileWithRecordAsync(test.Record.File, new Signatory(newPrivateKey1, newPrivateKey2));
+            // Only one key in the list is required to delete the file.
+            var deleteResult = await test.Client.DeleteFileWithRecordAsync(test.Record.File, new Signatory(newPrivateKey1));
             Assert.NotNull(deleteResult);
             Assert.Equal(ResponseCode.Success, deleteResult.Status);
 
             // Confirm File is Deleted
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await test.Client.GetFileInfoAsync(test.Record.File);
-            });
-            Assert.Equal(ResponseCode.FileDeleted, pex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: FileDeleted", pex.Message);
+            info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(0, info.Size);
+            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { newPublicKey1, newPublicKey2 }, info.Endorsements);
+            Assert.True(info.Deleted);
+
         }
 
         [Fact(DisplayName = "File Update: Can Update File after Rotating Keys using One of Many List")]
@@ -238,12 +232,13 @@ namespace Hashgraph.Test.File
             Assert.Equal(ResponseCode.Success, deleteResult.Status);
 
             // Confirm File is Deleted
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await test.Client.GetFileInfoAsync(test.Record.File);
-            });
-            Assert.Equal(ResponseCode.FileDeleted, pex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: FileDeleted", pex.Message);
+            info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(0, info.Size);
+            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
+            Assert.True(info.Deleted);
         }
     }
 }

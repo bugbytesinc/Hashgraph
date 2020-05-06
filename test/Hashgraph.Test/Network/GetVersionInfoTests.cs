@@ -23,7 +23,7 @@ namespace Hashgraph.Test.Crypto
             {
                 await CanGetInfoForNetworkAsync();
             });
-            Assert.Equal(ResponseCode.RpcError, pex.Status);
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
 
             //[Fact(DisplayName = "Get Version Info: Can Get Info for Network")]
             /*public*/
@@ -41,7 +41,7 @@ namespace Hashgraph.Test.Crypto
             var pex = await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(async () =>
             {
                 await GetInfoWithoutPayingSignatureThrowsException();
-            });            
+            });
 
             //[Fact(DisplayName = "Get Version Info: Getting Version Info without paying signature fails.")]
             /*public*/

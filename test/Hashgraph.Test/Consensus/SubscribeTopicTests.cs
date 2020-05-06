@@ -29,7 +29,7 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(ResponseCode.Success, receipt.Status);
                 Assert.Equal(1ul, receipt.SequenceNumber);
                 Assert.False(receipt.RunningHash.IsEmpty);
-                Assert.Equal(0ul, receipt.RunningHashVersion);
+                Assert.Equal(2ul, receipt.RunningHashVersion);
 
                 await Task.Delay(5000); // give the beta net time to sync
 
@@ -61,14 +61,14 @@ namespace Hashgraph.Test.Topic
                     Assert.Equal(fx.Record.Topic, topicMessage.Topic);
                     Assert.Equal(1ul, topicMessage.SequenceNumber);
                     Assert.Equal(receipt.RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
-                    Assert.Equal(0ul, receipt.RunningHashVersion);
+                    Assert.Equal(2ul, receipt.RunningHashVersion);
                     Assert.Equal(message, topicMessage.Messsage.ToArray());
                 }
 
                 var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
                 Assert.Equal(fx.Memo, info.Memo);
                 Assert.NotEqual(receipt.RunningHash.ToArray(), info.RunningHash);
-                Assert.Equal(0UL, receipt.RunningHashVersion);
+                Assert.Equal(2UL, receipt.RunningHashVersion);
                 Assert.Equal(1UL, info.SequenceNumber);
                 Assert.True(info.Expiration > DateTime.MinValue);
                 Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);

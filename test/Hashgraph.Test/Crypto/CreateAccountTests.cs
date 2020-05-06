@@ -155,25 +155,20 @@ namespace Hashgraph.Test.Crypto
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(_network.Gateway, info.Proxy);
         }
-        [Fact(DisplayName = "Create Account: Empty Endorsement is Allowed")]
-        public async Task EmptyEndorsementIsAllowed()
+        [Fact(DisplayName = "Create Account: Empty Endorsement is Not Allowed")]
+        public async Task EmptyEndorsementIsNotAllowed()
         {
             await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                InitialBalance = 10,
-                Endorsement = Endorsement.None
+                await client.CreateAccountAsync(new CreateAccountParams
+                {
+                    InitialBalance = 10,
+                    Endorsement = Endorsement.None
+                });
             });
-            Assert.Equal(ResponseCode.Success, createResult.Status);
-
-            var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(Endorsement.None, info.Endorsement);
-
-            var receipt = await client.TransferAsync(createResult.Address, _network.Payer, 5);
-            Assert.Equal(ResponseCode.Success, receipt.Status);
-
-            var newBalance = await client.GetAccountBalanceAsync(createResult.Address);
-            Assert.Equal(5ul, newBalance);
+            Assert.Equal(ResponseCode.KeyRequired, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: KeyRequired", pex.Message);
         }
     }
 }
