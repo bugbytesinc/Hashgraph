@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿using Google.Protobuf;
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace Hashgraph.Test.Extensions
             var book = await client.GetAddressBookAsync();
             Assert.NotNull(book);
             Assert.NotEmpty(book);
+            Assert.Equal(book.Length, book.ToDictionary(n => n.Id).Count);
         }
         [Fact(DisplayName = "Address Book: Can Find Current Gateway RSA Key in Address Book")]
         public async Task CanGetCurrentGatewayRsaFromAddressBook()
@@ -34,12 +36,21 @@ namespace Hashgraph.Test.Extensions
             Assert.NotNull(node);
             Assert.NotNull(node.RsaPublicKey);
             // NOT IMPLEMENTED YET ON TESTNET
-            Assert.Equal(0, node.Id);
             Assert.Empty(node.IpAddress);
             Assert.Equal(0, node.Port);
             Assert.Equal(0, node.CertificateHash.Length);
             //Assert.Equal(_network.Gateway, node.Address);
             Assert.Equal(Address.None, node.Address);
+        }
+        [Fact(DisplayName = "Address Book: Can Get Address Book Manually")]
+        public async Task CanGetAddressBookManually()
+        {
+            var client = _network.NewClient();
+            var file = await client.GetFileContentAsync(AddressBookExtension.ADDRESS_BOOK_FILE_ADDRESS);
+            var book = Proto.NodeAddressBook.Parser.ParseFrom(file.ToArray());
+            Assert.NotNull(book);
+            var json = JsonFormatter.Default.Format(book);
+            _network.Output?.WriteLine(json);
         }
     }
 }
