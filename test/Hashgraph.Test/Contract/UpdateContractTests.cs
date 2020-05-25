@@ -302,7 +302,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await TestFile.CreateAsync(_network);
             var invalidContractAddress = fx.Record.File;
-            await fx.Client.DeleteFileAsync(invalidContractAddress, fx.Signatory);
+            await fx.Client.DeleteFileAsync(invalidContractAddress, fx.CreateParams.Signatory);
 
             var newMemo = Generator.Code(50);
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>

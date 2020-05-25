@@ -22,13 +22,13 @@ namespace Hashgraph.Test.File
             await using var test = await TestFile.CreateAsync(_network);
 
             var appendedContent = Encoding.Unicode.GetBytes(Generator.Code(50));
-            var concatinatedContent = test.Contents.Concat(appendedContent).ToArray();
+            var concatinatedContent = test.CreateParams.Contents.ToArray().Concat(appendedContent).ToArray();
 
             var appendRecord = await test.Client.AppendFileWithRecordAsync(new AppendFileParams
             {
                 File = test.Record.File,
                 Contents = appendedContent,
-                Signatory = test.Signatory
+                Signatory = test.CreateParams.Signatory
             });
             Assert.Equal(ResponseCode.Success, appendRecord.Status);
 
@@ -45,11 +45,11 @@ namespace Hashgraph.Test.File
             await test.Client.UpdateFileAsync(new UpdateFileParams { 
                 File = test.Record.File,
                 Endorsements = new[] { new Endorsement(publicKey) },
-                Signatory = new Signatory(privateKey,test.Signatory)
+                Signatory = new Signatory(privateKey,test.CreateParams.Signatory)
             });
 
             var appendedContent = Encoding.Unicode.GetBytes(Generator.Code(50));
-            var concatinatedContent = test.Contents.Concat(appendedContent).ToArray();
+            var concatinatedContent = test.CreateParams.Contents.ToArray().Concat(appendedContent).ToArray();
 
             var appendRecord = await test.Client.AppendFileWithRecordAsync(new AppendFileParams
             {
@@ -68,7 +68,7 @@ namespace Hashgraph.Test.File
             await using var test = await TestFile.CreateAsync(_network);
             var appendedContent = Encoding.Unicode.GetBytes(Generator.Code(50));
 
-            var deleteRecord = await test.Client.DeleteFileAsync(test.Record.File, test.Signatory);
+            var deleteRecord = await test.Client.DeleteFileAsync(test.Record.File, test.CreateParams.Signatory);
             Assert.Equal(ResponseCode.Success, deleteRecord.Status);
 
             var exception = await Assert.ThrowsAnyAsync<TransactionException>(async () =>
@@ -77,7 +77,7 @@ namespace Hashgraph.Test.File
                 {
                     File = test.Record.File,
                     Contents = appendedContent,
-                    Signatory = test.Signatory
+                    Signatory = test.CreateParams.Signatory
                 });
             });
             Assert.StartsWith("Unable to append to file, status: FileDeleted", exception.Message);

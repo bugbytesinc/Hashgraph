@@ -8,34 +8,31 @@ namespace Hashgraph.Test.Fixtures
 {
     public class TestFile : IAsyncDisposable
     {
-        public byte[] Contents;
         public ReadOnlyMemory<byte> PublicKey;
         public ReadOnlyMemory<byte> PrivateKey;
-        public DateTime Expiration;
-        public Address Payer;
-        public Signatory Signatory;
+        public CreateFileParams CreateParams;
+        public Address Payer;        
         public Client Client;
         public FileRecord Record;
         public NetworkCredentials Network;
 
-        public static async Task<TestFile> CreateAsync(NetworkCredentials networkCredentials)
+        public static async Task<TestFile> CreateAsync(NetworkCredentials networkCredentials, Action<TestFile> customize = null)
         {
             var test = new TestFile();
             test.Network = networkCredentials;
             test.Network.Output?.WriteLine("STARTING SETUP: Test File Instance");
-            test.Contents = Encoding.Unicode.GetBytes("Hello From .NET" + Generator.Code(50)).Take(48).ToArray();
             (test.PublicKey, test.PrivateKey) = Generator.KeyPair();
-            test.Expiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddSeconds(7890000));
             test.Payer = networkCredentials.Payer;
-            test.Signatory = test.PrivateKey;
             test.Client = networkCredentials.NewClient();
-            test.Record = await test.Client.CreateFileWithRecordAsync(new CreateFileParams
+            test.CreateParams = new CreateFileParams
             {
-                Expiration = test.Expiration,
+                Expiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddSeconds(7890000)),
                 Endorsements = new Endorsement[] { test.PublicKey },
-                Contents = test.Contents,
-                Signatory = test.Signatory
-            }, ctx =>
+                Contents = Encoding.Unicode.GetBytes("Hello From .NET" + Generator.Code(50)).Take(48).ToArray(),
+                Signatory = test.PrivateKey
+            };
+            customize?.Invoke(test);
+            test.Record = await test.Client.CreateFileWithRecordAsync(test.CreateParams, ctx =>
             {
                 ctx.Memo = "TestFileInstance Setup: Creating Test File on Network";
             });

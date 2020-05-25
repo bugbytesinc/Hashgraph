@@ -32,8 +32,8 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
-            Assert.Equal(test.Contents.Length, info.Size);
-            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { newPublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
         }
@@ -48,7 +48,7 @@ namespace Hashgraph.Test.File
             {
                 File = test.Record.File,
                 Contents = newContents,
-                Signatory = test.Signatory
+                Signatory = test.CreateParams.Signatory
             });
             Assert.Equal(ResponseCode.Success, updateRecord.Status);
 
@@ -60,7 +60,7 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var deleteResult = await test.Client.DeleteFileAsync(test.Record.File, test.Signatory);
+            var deleteResult = await test.Client.DeleteFileAsync(test.Record.File, test.CreateParams.Signatory);
             Assert.Equal(ResponseCode.Success, deleteResult.Status);
 
             var exception = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -69,7 +69,7 @@ namespace Hashgraph.Test.File
                 {
                     File = test.Record.File,
                     Contents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50)),
-                    Signatory = test.Signatory
+                    Signatory = test.CreateParams.Signatory
                 });
             });
             Assert.StartsWith("Unable to update file, status: FileDeleted", exception.Message);
@@ -92,8 +92,8 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
-            Assert.Equal(test.Contents.Length, info.Size);
-            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { newPublicKey1, newPublicKey2 }, info.Endorsements);
             Assert.False(info.Deleted);
 
@@ -106,7 +106,7 @@ namespace Hashgraph.Test.File
                 {
                     File = test.Record.File,
                     Contents = newContents,
-                    Signatory = test.Signatory
+                    Signatory = test.CreateParams.Signatory
                 });
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
@@ -160,7 +160,7 @@ namespace Hashgraph.Test.File
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
             Assert.Equal(0, info.Size);
-            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { newPublicKey1, newPublicKey2 }, info.Endorsements);
             Assert.True(info.Deleted);
 
@@ -185,8 +185,8 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
-            Assert.Equal(test.Contents.Length, info.Size);
-            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
             Assert.False(info.Deleted);
 
@@ -236,7 +236,7 @@ namespace Hashgraph.Test.File
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
             Assert.Equal(0, info.Size);
-            Assert.Equal(test.Expiration, info.Expiration);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
             Assert.True(info.Deleted);
         }

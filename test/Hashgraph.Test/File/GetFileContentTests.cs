@@ -20,7 +20,7 @@ namespace Hashgraph.Test.File
             await using var test = await TestFile.CreateAsync(_network);
 
             var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
-            Assert.Equal(test.Contents, retrievedContents.ToArray());
+            Assert.Equal(test.CreateParams.Contents.ToArray(), retrievedContents.ToArray());
         }
         [Fact(DisplayName = "File Content: Get File Content Requires a Fee")]
         public async Task RequiresAFee()

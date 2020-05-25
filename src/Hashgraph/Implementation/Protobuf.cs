@@ -213,7 +213,7 @@ namespace Hashgraph.Implementation
                 File = FromFileID(fileInfo.FileID),
                 Size = fileInfo.Size,
                 Expiration = FromTimestamp(fileInfo.ExpirationTime),
-                Endorsements = FromPublicKeyList(fileInfo.Keys),
+                Endorsements = fileInfo.Keys != null ? FromPublicKeyList(fileInfo.Keys) : Array.Empty<Endorsement>(),
                 Deleted = fileInfo.Deleted
             };
         }
