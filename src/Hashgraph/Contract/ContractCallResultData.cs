@@ -28,6 +28,16 @@ namespace Hashgraph
             }
         }
         /// <summary>
+        /// A Readonly copy of the data in raw ABI format.
+        /// </summary>
+        public ReadOnlyMemory<byte> Data
+        {
+            get
+            {
+                return _data;
+            }
+        }
+        /// <summary>
         /// Retrieves the first value returned from the contract cast to the 
         /// desired native type.
         /// </summary>

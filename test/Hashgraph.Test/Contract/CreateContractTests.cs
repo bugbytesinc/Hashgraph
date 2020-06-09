@@ -124,6 +124,7 @@ namespace Hashgraph.Test.Contract
             Assert.Empty(fx.ContractRecord.CallResult.Events);
             Assert.Empty(fx.ContractRecord.CallResult.CreatedContracts);
             Assert.Equal(0, fx.ContractRecord.CallResult.Result.Size);
+            Assert.True(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
         }
         [Fact(DisplayName = "Create Contract: Random Constructor Data when not needed is ignored.")]
         public async Task CanCreateContractWithUnneededConstructorData()
@@ -145,6 +146,7 @@ namespace Hashgraph.Test.Contract
             Assert.Empty(fx.ContractRecord.CallResult.Events);
             Assert.Empty(fx.ContractRecord.CallResult.CreatedContracts);
             Assert.Equal(0, fx.ContractRecord.CallResult.Result.Size);
+            Assert.True(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
         }
         [Fact(DisplayName = "Create Contract: Can create without returning record.")]
         public async Task CanCreateContractWithoutReturningRecordData()
@@ -173,6 +175,7 @@ namespace Hashgraph.Test.Contract
             Assert.Empty(fx.ContractRecord.CallResult.Events);
             Assert.Empty(fx.ContractRecord.CallResult.CreatedContracts);
             Assert.Equal(0, fx.ContractRecord.CallResult.Result.Size);
+            Assert.True(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
         }
 
         [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]
