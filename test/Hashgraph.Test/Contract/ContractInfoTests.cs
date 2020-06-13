@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Implementation;
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -60,6 +61,28 @@ namespace Hashgraph.Test.Contract
             });
             Assert.Equal(ResponseCode.InvalidContractId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);
+        }
+        [Fact(DisplayName = "Contract Info: Can Get Imutable Stateful Contract Info")]
+        public async Task CanGetImutableStatefulContractInfo()
+        {
+            await using var fx = await StatefulContract.CreateAsync(_network, f =>
+            {
+                f.ContractParams.Administrator = null;
+            });
+
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);  // Assume for now they are equal
+            Assert.NotNull(info.SmartContractId);
+            // Immutable Contracts list their "contract" key as the administrator Key.
+            Assert.Equal(KeyType.Contract, info.Administrator.Type);
+            Assert.Equal(Abi.EncodeAddressPart(info.Contract).ToArray(), info.Administrator.PublicKey.ToArray());
+            Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
+            Assert.StartsWith("Stateful Contract Create: Instantiating Stateful Instance", info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
     }
 }

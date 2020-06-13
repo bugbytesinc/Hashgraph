@@ -181,11 +181,12 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]
         public async Task CreateWithoutRequiredContractParamsThrowsError()
         {
-            await using var fx = await StatefulContract.SetupAsync(_network);
-            fx.ContractParams.Arguments = null;
             var ex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fx.Client.CreateContractAsync(fx.ContractParams);
+                await StatefulContract.CreateAsync(_network, async fx => {
+                    fx.ContractParams.Arguments = null;
+                    await fx.Client.CreateContractAsync(fx.ContractParams);
+                });                
             });
             Assert.StartsWith("Unable to create contract, status: ContractRevertExecuted", ex.Message);
             Assert.Equal(ResponseCode.ContractRevertExecuted, ex.Status);

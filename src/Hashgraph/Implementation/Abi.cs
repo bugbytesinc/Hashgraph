@@ -120,9 +120,9 @@ namespace Hashgraph.Implementation
         }
         private static ReadOnlyMemory<byte> EncodeStringPart(object value)
         {
-            #nullable disable
+#nullable disable
             return EncodeByteArrayPart(Encoding.UTF8.GetBytes(Convert.ToString(value)));
-            #nullable enable
+#nullable enable
         }
         private static object DecodeStringPart(ReadOnlyMemory<byte> arg)
         {
@@ -206,7 +206,9 @@ namespace Hashgraph.Implementation
         {
             return ReadInt256(arg.Slice(0, 32)) > 0;
         }
-        private static ReadOnlyMemory<byte> EncodeAddressPart(object value)
+        // Note this is internal to provide support to the 
+        // "Contract" type of Endorsment.
+        internal static ReadOnlyMemory<byte> EncodeAddressPart(object value)
         {
             // For 20 bytes total (aka uint160)
             // byte 0 to 3 are shard
@@ -238,7 +240,9 @@ namespace Hashgraph.Implementation
             }
             throw new ArgumentException("Argument was not an address.", nameof(value));
         }
-        private static object DecodeAddressPart(ReadOnlyMemory<byte> arg)
+        // Note this is internal to provide support to the 
+        // "Contract" type of Endorsment.
+        internal static object DecodeAddressPart(ReadOnlyMemory<byte> arg)
         {
             // See EncodeAddressPart for packing notes
             var shardAsBytes = arg.Slice(12, 4).ToArray();
@@ -310,13 +314,13 @@ namespace Hashgraph.Implementation
         }
         private static TypeMapping GetMapping(Type type)
         {
-            #nullable disable
+#nullable disable
             if (_typeMap.TryGetValue(type, out TypeMapping mapping))
             {
                 return mapping;
             }
             throw new InvalidOperationException($"Encoding of type {type.Name} is not currently supported.");
-            #nullable enable
+#nullable enable
         }
         private static readonly Dictionary<Type, TypeMapping> _typeMap;
         static Abi()

@@ -154,7 +154,7 @@ namespace Hashgraph.Test.Contract
         public async Task CanUpdateContractBytecode()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
-            await using var fx2 = await StatefulContract.SetupAsync(_network);
+            await using var fx2 = await StatefulContract.CreateAsync(_network);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
                 Contract = fx.ContractRecord.Contract,

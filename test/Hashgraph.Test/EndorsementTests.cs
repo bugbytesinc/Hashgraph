@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Implementation;
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;
 using Xunit;
@@ -162,6 +163,18 @@ namespace Hashgraph.Tests
             Assert.Equal(0U, endorsement.RequiredCount);
             Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
         }
+        [Fact(DisplayName = "Endorsements: Creating Contract Type produces Contract type")]
+        public void CanCreateContractType()
+        {
+            var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
+            var bytes = Abi.EncodeAddressPart(contract);            
+
+            var endorsement = new Endorsement(KeyType.Contract, bytes);
+            Assert.Equal(KeyType.Contract, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(bytes.ToArray(), endorsement.PublicKey.ToArray());
+        }
         [Fact(DisplayName = "Endorsements: Creating RSA3072 Type produces RSA3072 type")]
         public void CanCreateRSA3072Type()
         {
@@ -273,6 +286,59 @@ namespace Hashgraph.Tests
             });
             Assert.Equal("type", exception.ParamName);
             Assert.StartsWith("Only endorsements representing a single key are supported with this constructor, please use the list constructor instead.", exception.Message);
+        }
+        [Fact(DisplayName = "Endorsements: Equivalent Contract Types are Considered Equal")]
+        public void EquivalentContractEndorsementsAreConsideredEqual()
+        {
+            var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
+            var bytes = Abi.EncodeAddressPart(contract);
+
+            var endorsement1 = new Endorsement(KeyType.Contract,bytes);
+            var endorsement2 = new Endorsement(KeyType.Contract, bytes);
+            Assert.Equal(endorsement1, endorsement2);
+            Assert.True(endorsement1 == endorsement2);
+            Assert.False(endorsement1 != endorsement2);
+
+            object asObject1 = endorsement1;
+            object asObject2 = endorsement2;
+            Assert.Equal(asObject1, asObject2);
+            Assert.True(endorsement1.Equals(asObject2));
+            Assert.True(asObject1.Equals(endorsement2));
+        }
+        [Fact(DisplayName = "Endorsements: Disimilar Contract Types are Considered Equal")]
+        public void DisimilarContractEndorsementsAreConsideredNotEqual()
+        {
+            var contract1 = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
+            var contract2 = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(20001, 50000));
+
+            var bytes1 = Abi.EncodeAddressPart(contract1);
+            var bytes2 = Abi.EncodeAddressPart(contract2);
+
+            var endorsement1 = new Endorsement(KeyType.Contract, bytes1);
+            var endorsement2 = new Endorsement(KeyType.Contract, bytes2);
+            Assert.NotEqual(endorsement1, endorsement2);
+            Assert.False(endorsement1 == endorsement2);
+            Assert.True(endorsement1 != endorsement2);
+
+            object asObject1 = endorsement1;
+            object asObject2 = endorsement2;
+            Assert.NotEqual(asObject1, asObject2);
+            Assert.False(endorsement1.Equals(asObject2));
+            Assert.False(asObject1.Equals(endorsement2));
+        }
+        [Fact(DisplayName = "Endorsements: Contract Protobuf Plublic Key can Create Contract Type")]
+        public void CanCreateContractEndorsmentFromProtobufContractKeyType()
+        {
+            var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
+            var contractID = Protobuf.ToContractID(contract);
+            var key = new Proto.Key { ContractID = contractID };
+            var endorsement = Protobuf.FromPublicKey(key);
+            var decoded = Abi.DecodeAddressPart(endorsement.PublicKey);
+
+            Assert.Equal(KeyType.Contract, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(contract, decoded);
         }
     }
 }

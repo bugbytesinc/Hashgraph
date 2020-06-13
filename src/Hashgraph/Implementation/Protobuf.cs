@@ -131,6 +131,7 @@ namespace Hashgraph.Implementation
                 case KeyType.Ed25519: return new Key { Ed25519 = ByteString.CopyFrom(((NSec.Cryptography.PublicKey)endorsement._data).Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray()) };
                 case KeyType.RSA3072: return new Key { RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
                 case KeyType.ECDSA384: return new Key { ECDSA384 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray()) };
+                case KeyType.Contract: return new Key { ContractID = ToContractID((Address)Abi.DecodeAddressPart((ReadOnlyMemory<byte>)endorsement._data)) };
                 case KeyType.List:
                     return new Key
                     {
@@ -150,6 +151,7 @@ namespace Hashgraph.Implementation
                 case Key.KeyOneofCase.Ed25519: return new Endorsement(KeyType.Ed25519, new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(key.Ed25519.ToByteArray()).ToArray()));
                 case Key.KeyOneofCase.RSA3072: return new Endorsement(KeyType.RSA3072, key.RSA3072.ToByteArray());
                 case Key.KeyOneofCase.ECDSA384: return new Endorsement(KeyType.ECDSA384, key.ECDSA384.ToByteArray());
+                case Key.KeyOneofCase.ContractID: return new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(FromContractID(key.ContractID)));
                 case Key.KeyOneofCase.ThresholdKey:
                     return key.ThresholdKey.Keys.Keys.Count == 0 ?
                         Endorsement.None :

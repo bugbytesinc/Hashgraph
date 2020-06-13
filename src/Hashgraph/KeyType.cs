@@ -29,6 +29,11 @@
         /// </summary>
         ECDSA384 = 3,
         /// <summary>
+        /// Correlates to a Smart Contract Instance, sometimes produced by the 
+        /// network identifying smart contracts that are immutable.
+        /// </summary>
+        Contract = 4,
+        /// <summary>
         /// A list of keys, for endorsements it may represent an n-to-m list, 
         /// for signatores its simply a bag of keys that will sign the transaction.
         /// </summary>
