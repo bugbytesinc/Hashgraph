@@ -17,7 +17,7 @@ namespace Hashgraph.Implementation
         ReadOnlyMemory<byte> IInvoice.TxBytes { get { return _txBytes; } }
         internal Invoice(TransactionBody transactionBody)
         {
-            _txId = Protobuf.FromTransactionId(transactionBody.TransactionID);
+            _txId = transactionBody.TransactionID.ToTxId();
             _memo = transactionBody.Memo;
             _txBytes = transactionBody.ToByteArray();
             _signatures = new Dictionary<ByteString, SignaturePair>();

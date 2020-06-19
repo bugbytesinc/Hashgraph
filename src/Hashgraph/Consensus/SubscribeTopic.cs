@@ -41,16 +41,16 @@ namespace Hashgraph
             RequireInContext.Url(context);
             var query = new ConsensusTopicQuery()
             {
-                TopicID = Protobuf.ToTopicID(subscribeParameters.Topic),
+                TopicID = new Proto.TopicID(subscribeParameters.Topic),
                 Limit = subscribeParameters.MaxCount
             };
             if (subscribeParameters.Starting.HasValue)
             {
-                query.ConsensusStartTime = Protobuf.ToTimestamp(subscribeParameters.Starting.Value);
+                query.ConsensusStartTime = new Proto.Timestamp(subscribeParameters.Starting.Value);
             }
             if (subscribeParameters.Ending.HasValue)
             {
-                query.ConsensusEndTime = Protobuf.ToTimestamp(subscribeParameters.Ending.Value);
+                query.ConsensusEndTime = new Proto.Timestamp(subscribeParameters.Ending.Value);
             }
             var service = new ConsensusService.ConsensusServiceClient(context.GetChannel());
             using var cancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(subscribeParameters.CancellationToken);
@@ -79,7 +79,7 @@ namespace Hashgraph
             {
                 throw new MirrorException($"The Mirror node is not avaliable at this time.", MirrorExceptionCode.Unavailable, ex);
             }
-            catch (RpcException ex) 
+            catch (RpcException ex)
             {
                 throw new MirrorException($"Stream Terminated with Error: {ex.StatusCode}", MirrorExceptionCode.CommunicationError, ex);
             }
@@ -93,9 +93,9 @@ namespace Hashgraph
 
             async Task ProcessResultStream(Address topic)
             {
-                while (await stream.MoveNext<ConsensusTopicResponse>())
+                while (await stream.MoveNext())
                 {
-                    var message = Protobuf.FromConsensusTopicResponse(topic, stream.Current);
+                    var message = stream.Current.ToTopicMessage(topic);
                     if (!writer.TryWrite(message))
                     {
                         while (await writer.WaitToWriteAsync())

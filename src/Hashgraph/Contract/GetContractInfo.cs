@@ -34,7 +34,7 @@ namespace Hashgraph
                 ContractGetInfo = new ContractGetInfoQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    ContractID = Protobuf.ToContractID(contract)
+                    ContractID = new ContractID(contract)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
@@ -46,7 +46,7 @@ namespace Hashgraph
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
-            return Protobuf.FromContractInfo(response.ContractGetInfo.ContractInfo);
+            return response.ContractGetInfo.ContractInfo.ToContractInfo();
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

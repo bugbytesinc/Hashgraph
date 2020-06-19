@@ -25,11 +25,11 @@ namespace Hashgraph
         {
             get
             {
-                switch (Type)
+                return Type switch
                 {
-                    case KeyType.List: return (Endorsement[])((Endorsement[])_data).Clone();
-                    default: return new Endorsement[0];
-                }
+                    KeyType.List => (Endorsement[])((Endorsement[])_data).Clone(),
+                    _ => Array.Empty<Endorsement>(),
+                };
             }
         }
         /// <summary>
@@ -191,7 +191,7 @@ namespace Hashgraph
         /// True if public key layout and requirements are equivalent to the 
         /// other <code>Endorsement</code> object.
         /// </returns>
-        public bool Equals(Endorsement other)
+        public bool Equals(Endorsement? other)
         {
             if (other is null)
             {
@@ -271,7 +271,7 @@ namespace Hashgraph
             switch (Type)
             {
                 case KeyType.Ed25519:
-                    return $"Endorsement:{Type}:{((PublicKey)_data).GetHashCode().ToString()}".GetHashCode();
+                    return $"Endorsement:{Type}:{((PublicKey)_data).GetHashCode()}".GetHashCode();
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
                 case KeyType.Contract:

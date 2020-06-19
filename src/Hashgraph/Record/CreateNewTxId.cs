@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using System;
+﻿using System;
 
 namespace Hashgraph
 {
@@ -13,7 +12,7 @@ namespace Hashgraph
         public TxId CreateNewTxId(Action<IContext>? configure = null)
         {
             var context = CreateChildContext(configure);
-            var result = Protobuf.FromTransactionId(Transactions.GetOrCreateTransactionID(context));
+            var result = Transactions.GetOrCreateTransactionID(context).ToTxId();
             _ = context.DisposeAsync();
             return result;
         }

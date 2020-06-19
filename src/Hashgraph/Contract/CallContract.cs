@@ -78,7 +78,7 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ContractCall = new ContractCallTransactionBody
             {
-                ContractID = Protobuf.ToContractID(callParmeters.Contract),
+                ContractID = new ContractID(callParmeters.Contract),
                 Gas = callParmeters.Gas,
                 Amount = callParmeters.PayableAmount,
                 FunctionParameters = Abi.EncodeFunctionWithArguments(callParmeters.FunctionName, callParmeters.FunctionArgs).ToByteString()
@@ -89,18 +89,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Contract call failed, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Contract call failed, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
             if (result is CallContractRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, rec);
-                rec.CallResult = Protobuf.FromContractFunctionResult(record.ContractCallResult);
+                record.FillProperties(rec);
             }
             else if (result is TransactionReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

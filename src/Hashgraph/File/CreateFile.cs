@@ -71,8 +71,8 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.FileCreate = new FileCreateTransactionBody
             {
-                ExpirationTime = Protobuf.ToTimestamp(createParameters.Expiration),
-                Keys = Protobuf.ToPublicKeyList(createParameters.Endorsements),
+                ExpirationTime = new Timestamp(createParameters.Expiration),
+                Keys = new KeyList(createParameters.Endorsements),
                 Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
@@ -81,19 +81,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to create file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
             if (result is FileRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, rec);
-                rec.File = Protobuf.FromFileID(receipt.FileID);
+                record.FillProperties(rec);
             }
             else if (result is FileReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-                rcpt.File = Protobuf.FromFileID(receipt.FileID);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

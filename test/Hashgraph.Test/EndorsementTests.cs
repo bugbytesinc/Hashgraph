@@ -167,7 +167,7 @@ namespace Hashgraph.Tests
         public void CanCreateContractType()
         {
             var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
-            var bytes = Abi.EncodeAddressPart(contract);            
+            var bytes = Abi.EncodeAddressPart(contract);
 
             var endorsement = new Endorsement(KeyType.Contract, bytes);
             Assert.Equal(KeyType.Contract, endorsement.Type);
@@ -293,7 +293,7 @@ namespace Hashgraph.Tests
             var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
             var bytes = Abi.EncodeAddressPart(contract);
 
-            var endorsement1 = new Endorsement(KeyType.Contract,bytes);
+            var endorsement1 = new Endorsement(KeyType.Contract, bytes);
             var endorsement2 = new Endorsement(KeyType.Contract, bytes);
             Assert.Equal(endorsement1, endorsement2);
             Assert.True(endorsement1 == endorsement2);
@@ -330,9 +330,9 @@ namespace Hashgraph.Tests
         public void CanCreateContractEndorsmentFromProtobufContractKeyType()
         {
             var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
-            var contractID = Protobuf.ToContractID(contract);
+            var contractID = new Proto.ContractID(contract);
             var key = new Proto.Key { ContractID = contractID };
-            var endorsement = Protobuf.FromPublicKey(key);
+            var endorsement = key.ToEndorsement();
             var decoded = Abi.DecodeAddressPart(endorsement.PublicKey);
 
             Assert.Equal(KeyType.Contract, endorsement.Type);

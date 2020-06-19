@@ -1,5 +1,8 @@
 ﻿#pragma warning disable CS8653
 #pragma warning disable CS8600 
+#pragma warning disable CS8601 
+#pragma warning disable CS8603
+#pragma warning disable IDE1006
 using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
@@ -65,7 +68,7 @@ namespace Hashgraph.Implementation
             return _channels.GetOrAdd(GetChannelUrl(), ConstructNewChannel);
         }
         public ValueTask DisposeAsync()
-        {            
+        {
             // Note: there still may be internal stacked references to this
             // object, it does not actually release resources unless it is root.
             // This all comes down to maintaining a map of urls to open grpc
@@ -81,9 +84,9 @@ namespace Hashgraph.Implementation
             {
                 if (ctx._map.TryGetValue(name, out object asObject))
                 {
-                    if (asObject is T)
+                    if (asObject is T t)
                     {
-                        value = (T)asObject;
+                        value = t;
                     }
                     else
                     {
@@ -99,9 +102,9 @@ namespace Hashgraph.Implementation
         {
             for (ContextStack<TContext>? ctx = this; ctx != null; ctx = ctx._parent)
             {
-                if (ctx._map.TryGetValue(name, out object? asObject) && asObject is T)
+                if (ctx._map.TryGetValue(name, out object? asObject) && asObject is T t)
                 {
-                    yield return (T)asObject;
+                    yield return t;
                 }
             }
         }
@@ -128,15 +131,15 @@ namespace Hashgraph.Implementation
         }
         private async ValueTask removeRef()
         {
-            var count = Interlocked.Decrement(ref _refCount);            
+            var count = Interlocked.Decrement(ref _refCount);
             if (_parent == null)
             {
-                if(count == 0 )
+                if (count == 0)
                 {
                     await Task.WhenAll(_channels.Values.Select(channel => channel.ShutdownAsync()).ToArray());
                     _channels.Clear();
                 }
-            } 
+            }
             else
             {
                 await _parent.removeRef();

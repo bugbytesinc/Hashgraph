@@ -80,8 +80,8 @@ namespace Hashgraph
                 SendRecordThreshold = createParameters.SendThresholdCreateRecord,
                 ReceiveRecordThreshold = createParameters.ReceiveThresholdCreateRecord,
                 ReceiverSigRequired = createParameters.RequireReceiveSignature,
-                AutoRenewPeriod = Protobuf.ToDuration(createParameters.AutoRenewPeriod),
-                ProxyAccountID = createParameters.Proxy is null ? null : Protobuf.ToAccountID(createParameters.Proxy),
+                AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod),
+                ProxyAccountID = createParameters.Proxy is null ? null : new AccountID(createParameters.Proxy),
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
@@ -89,19 +89,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to create account, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is CreateAccountRecord arec)
+            if (result is CreateAccountRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, arec);
-                arec.Address = Protobuf.FromAccountID(receipt.AccountID);
+                record.FillProperties(rec);
             }
-            else if (result is CreateAccountReceipt arcpt)
+            else if (result is CreateAccountReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
-                arcpt.Address = Protobuf.FromAccountID(receipt.AccountID);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

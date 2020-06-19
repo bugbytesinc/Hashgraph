@@ -47,7 +47,7 @@ namespace Hashgraph
         /// True if the equivalents and expiration are identical to the 
         /// other <code>ExchangeRate</code> object.
         /// </returns>
-        public bool Equals(ExchangeRate other)
+        public bool Equals(ExchangeRate? other)
         {
             if (other is null)
             {

@@ -43,7 +43,7 @@ namespace Hashgraph
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
-            return Protobuf.FromNetworkVersionInfo(response.NetworkGetVersionInfo);
+            return response.NetworkGetVersionInfo.ToVersionInfo();
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

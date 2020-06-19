@@ -297,7 +297,7 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(endorsement), "Endorsement must not be null.");
             }
-            else if(Hashgraph.Endorsement.None.Equals(endorsement))
+            else if (Hashgraph.Endorsement.None.Equals(endorsement))
             {
                 throw new ArgumentOutOfRangeException(nameof(endorsement), "Endorsement must not be empty.");
             }
@@ -348,7 +348,7 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters), "The Endorsement for the account is missing, it is required.");
             }
-            return Protobuf.ToPublicKey(createParameters.Endorsement);
+            return new Proto.Key(createParameters.Endorsement);
         }
         internal static CreateFileParams CreateParameters(CreateFileParams createParameters)
         {

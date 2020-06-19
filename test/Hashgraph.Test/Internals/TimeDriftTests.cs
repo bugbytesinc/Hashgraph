@@ -22,11 +22,13 @@ namespace Hashgraph.Test.Internals
             await using var client = _network.NewClient();
             var account = _network.Payer;
             var startInstant = Epoch.UniqueClockNanos();
-            var info = await client.GetAccountInfoAsync(account, ctx => {
-                ctx.Transaction = Protobuf.FromTransactionId(new Proto.TransactionID {
-                    AccountID = Protobuf.ToAccountID(_network.Payer),
-                    TransactionValidStart = Protobuf.ToTimestamp(DateTime.UtcNow.AddSeconds(6))
-                });
+            var info = await client.GetAccountInfoAsync(account, ctx =>
+            {
+                ctx.Transaction = new Proto.TransactionID
+                {
+                    AccountID = new Proto.AccountID(_network.Payer),
+                    TransactionValidStart = new Proto.Timestamp(DateTime.UtcNow.AddSeconds(6))
+                }.ToTxId();
             });
             var duration = Epoch.UniqueClockNanos() - startInstant;
             Assert.InRange(duration, 4_000_000_000L, 240_000_000_000L);
@@ -37,7 +39,7 @@ namespace Hashgraph.Test.Internals
             await using var client = _network.NewClient();
             var startInstant = Epoch.UniqueClockNanos();
             Epoch.AddToClockDrift(-5_000_000_000);
-            var info = await client.GetAccountBalanceAsync(_network.Payer, ctx => ctx.AdjustForLocalClockDrift = true);            
+            var info = await client.GetAccountBalanceAsync(_network.Payer, ctx => ctx.AdjustForLocalClockDrift = true);
             var duration = Epoch.UniqueClockNanos() - startInstant;
             Assert.InRange(duration, 4, 240_000_000_000L);
         }

@@ -12,15 +12,13 @@ namespace Hashgraph
         {
             transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
-            var transactionId = Protobuf.ToTransactionID(transaction);
+            var transactionId = new TransactionID(transaction);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to retreive receipt, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to retreive receipt, status: {receipt.Status}", transaction, (ResponseCode)receipt.Status);
             }
-            var result = new TransactionReceipt();
-            Protobuf.FillReceiptProperties(transactionId, receipt, result);
-            return result;
+            return receipt.ToTransactionReceipt(transactionId);
         }
         /// <summary>
         /// Internal Helper function to retrieve receipt record provided by 
@@ -42,20 +40,20 @@ namespace Hashgraph
                 case ResponseCodeEnum.Ok:
                     break;
                 case ResponseCodeEnum.Busy:
-                    throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", Protobuf.FromTransactionId(transactionId), (ResponseCode)responseCode);
+                    throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.ToTxId(), (ResponseCode)responseCode);
                 case ResponseCodeEnum.Unknown:
                 case ResponseCodeEnum.ReceiptNotFound:
-                    throw new TransactionException($"Network failed to return a transaction receipt, Status Code Returned: {responseCode}", Protobuf.FromTransactionId(transactionId), (ResponseCode)responseCode);
+                    throw new TransactionException($"Network failed to return a transaction receipt, Status Code Returned: {responseCode}", transactionId.ToTxId(), (ResponseCode)responseCode);
             }
             var status = response.TransactionGetReceipt.Receipt.Status;
             switch (status)
             {
                 case ResponseCodeEnum.Unknown:
-                    throw new ConsensusException("Network failed to reach concensus within the configured retry time window, It is possible the network may still reach concensus for this transaction.", Protobuf.FromTransactionId(transactionId), (ResponseCode)status);
+                    throw new ConsensusException("Network failed to reach concensus within the configured retry time window, It is possible the network may still reach concensus for this transaction.", transactionId.ToTxId(), (ResponseCode)status);
                 case ResponseCodeEnum.TransactionExpired:
-                    throw new ConsensusException("Network failed to reach concensus before transaction request expired.", Protobuf.FromTransactionId(transactionId), (ResponseCode)status);
+                    throw new ConsensusException("Network failed to reach concensus before transaction request expired.", transactionId.ToTxId(), (ResponseCode)status);
                 case ResponseCodeEnum.RecordNotFound:
-                    throw new ConsensusException("Network failed to find a receipt for given transaction.", Protobuf.FromTransactionId(transactionId), (ResponseCode)status);
+                    throw new ConsensusException("Network failed to find a receipt for given transaction.", transactionId.ToTxId(), (ResponseCode)status);
                 default:
                     return response.TransactionGetReceipt.Receipt;
             }

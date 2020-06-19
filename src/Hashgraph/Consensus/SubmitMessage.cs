@@ -138,7 +138,7 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ConsensusSubmitMessage = new ConsensusSubmitMessageTransactionBody
             {
-                TopicID = Protobuf.ToTopicID(topic),
+                TopicID = new TopicID(topic),
                 Message = ByteString.CopyFrom(message.Span)
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
@@ -147,23 +147,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Submit Message failed, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Submit Message failed, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
             if (result is SubmitMessageRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, rec);
-                rec.RunningHash = receipt.TopicRunningHash?.ToByteArray();
-                rec.RunningHashVersion = receipt.TopicRunningHashVersion;
-                rec.SequenceNumber = receipt.TopicSequenceNumber;
+                record.FillProperties(rec);
             }
             else if (result is SubmitMessageReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-                rcpt.RunningHash = receipt.TopicRunningHash?.ToByteArray();
-                rcpt.RunningHashVersion = receipt.TopicRunningHashVersion;
-                rcpt.SequenceNumber = receipt.TopicSequenceNumber;
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

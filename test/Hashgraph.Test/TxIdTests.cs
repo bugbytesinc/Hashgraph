@@ -1,19 +1,18 @@
 ﻿using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
-using Proto;
 using System;
 using Xunit;
 
 namespace Hashgraph.Tests
 {
     public class TxIdTests
-    {        
+    {
         [Fact(DisplayName = "TxId: Equivalent TxIds are considered Equal")]
         public void EquivalentTxIdAreConsideredEqual()
         {
             var transactionId = Generator.TransactionID();
-            var txId1 = Protobuf.FromTransactionId(transactionId);
-            var txId2 = Protobuf.FromTransactionId(transactionId);
+            var txId1 = transactionId.ToTxId();
+            var txId2 = transactionId.ToTxId();
             Assert.Equal(txId1, txId2);
             Assert.True(txId1 == txId2);
             Assert.False(txId1 != txId2);
@@ -22,9 +21,9 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "TxId: Disimilar TxIdes are not considered Equal")]
         public void DisimilarTxIdesAreNotConsideredEqual()
         {
-            var txId1 = Protobuf.FromTransactionId(Generator.TransactionID());
-            var txId2 = Protobuf.FromTransactionId(Generator.TransactionID());
-            Assert.NotEqual(txId1,txId2);
+            var txId1 = Generator.TransactionID().ToTxId();
+            var txId2 = Generator.TransactionID().ToTxId();
+            Assert.NotEqual(txId1, txId2);
             Assert.False(txId1 == txId2);
             Assert.True(txId1 != txId2);
             Assert.NotEqual(txId1.GetHashCode(), txId2.GetHashCode());
@@ -33,21 +32,21 @@ namespace Hashgraph.Tests
         public void ExposesAccountValue()
         {
             var transactionId = Generator.TransactionID();
-            var txId = Protobuf.FromTransactionId(transactionId);
-            Assert.Equal(txId.Address, Protobuf.FromAccountID(transactionId.AccountID));
+            var txId = transactionId.ToTxId();
+            Assert.Equal(txId.Address, transactionId.AccountID.ToAddress());
         }
         [Fact(DisplayName = "TxId: Exposes Valid Start Seconds")]
         public void ExposesValidStartSeconds()
         {
             var transactionId = Generator.TransactionID();
-            var txId = Protobuf.FromTransactionId(transactionId);
+            var txId = transactionId.ToTxId();
             Assert.Equal(txId.ValidStartSeconds, transactionId.TransactionValidStart.Seconds);
         }
         [Fact(DisplayName = "TxId: Exposes VBalid Start Nanoseconds")]
         public void ExposesValidStartNano()
         {
             var transactionId = Generator.TransactionID();
-            var txId = Protobuf.FromTransactionId(transactionId);
+            var txId = transactionId.ToTxId();
             Assert.Equal(txId.ValidStartNanos, transactionId.TransactionValidStart.Nanos);
         }
         [Fact(DisplayName = "TxId: Empty Transaction exposes all zeros")]

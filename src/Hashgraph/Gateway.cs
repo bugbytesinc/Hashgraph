@@ -73,7 +73,7 @@ namespace Hashgraph
         /// True if the Shard, Realm, Account Number and Url are identical to the 
         /// other <code>Gateway</code> object.
         /// </returns>
-        public bool Equals(Gateway other)
+        public bool Equals(Gateway? other)
         {
             if (other is null)
             {

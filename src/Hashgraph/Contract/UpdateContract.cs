@@ -72,23 +72,23 @@ namespace Hashgraph
             var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var updateContractBody = new ContractUpdateTransactionBody
             {
-                ContractID = Protobuf.ToContractID(updateParameters.Contract)
+                ContractID = new ContractID(updateParameters.Contract)
             };
             if (updateParameters.Expiration.HasValue)
             {
-                updateContractBody.ExpirationTime = Protobuf.ToTimestamp(updateParameters.Expiration.Value);
+                updateContractBody.ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
             }
             if (!(updateParameters.Administrator is null))
             {
-                updateContractBody.AdminKey = Protobuf.ToPublicKey(updateParameters.Administrator);
+                updateContractBody.AdminKey = new Key(updateParameters.Administrator);
             }
             if (updateParameters.RenewPeriod.HasValue)
             {
-                updateContractBody.AutoRenewPeriod = Protobuf.ToDuration(updateParameters.RenewPeriod.Value);
+                updateContractBody.AutoRenewPeriod = new Duration(updateParameters.RenewPeriod.Value);
             }
             if (!(updateParameters.File is null))
             {
-                updateContractBody.FileID = Protobuf.ToFileId(updateParameters.File);
+                updateContractBody.FileID = new FileID(updateParameters.File);
             }
             if (!string.IsNullOrWhiteSpace(updateParameters.Memo))
             {
@@ -103,17 +103,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to update Contract, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to update Contract, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is TransactionRecord arec)
+            if (result is TransactionRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, arec);
+                record.FillProperties(rec);
             }
-            else if (result is TransactionReceipt arcpt)
+            else if (result is TransactionReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

@@ -67,7 +67,7 @@ namespace Hashgraph
             var signatory = Transactions.GatherSignatories(context, appendParameters.Signatory);
             var appendFileBody = new FileAppendTransactionBody
             {
-                FileID = Protobuf.ToFileId(appendParameters.File),
+                FileID = new FileID(appendParameters.File),
                 Contents = ByteString.CopyFrom(appendParameters.Contents.ToArray())
             };
             var transactionId = Transactions.GetOrCreateTransactionID(context);
@@ -79,17 +79,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to append to file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to append to file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
             if (result is TransactionRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, rec);
+                record.FillProperties(rec);
             }
             else if (result is TransactionReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

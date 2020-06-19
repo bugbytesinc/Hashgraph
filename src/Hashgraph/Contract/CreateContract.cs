@@ -72,11 +72,11 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ContractCreateInstance = new ContractCreateTransactionBody
             {
-                FileID = Protobuf.ToFileId(createParameters.File),
-                AdminKey = createParameters.Administrator is null ? null : Protobuf.ToPublicKey(createParameters.Administrator),
+                FileID = new FileID(createParameters.File),
+                AdminKey = createParameters.Administrator is null ? null : new Key(createParameters.Administrator),
                 Gas = createParameters.Gas,
                 InitialBalance = createParameters.InitialBalance,
-                AutoRenewPeriod = Protobuf.ToDuration(createParameters.RenewPeriod),
+                AutoRenewPeriod = new Duration(createParameters.RenewPeriod),
                 ConstructorParameters = ByteString.CopyFrom(Abi.EncodeArguments(createParameters.Arguments).ToArray()),
                 Memo = context.Memo ?? ""
             };
@@ -86,20 +86,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create contract, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to create contract, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
             if (result is CreateContractRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, rec);
-                rec.Contract = Protobuf.FromContractID(receipt.ContractID);
-                rec.CallResult = Protobuf.FromContractFunctionResult(record.ContractCreateResult);
+                record.FillProperties(rec);
             }
             else if (result is CreateContractReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-                rcpt.Contract = Protobuf.FromContractID(receipt.ContractID);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

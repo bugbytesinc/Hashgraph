@@ -36,7 +36,7 @@ namespace Hashgraph.Extensions
         {
             var file = await client.GetFileContentAsync(ADDRESS_BOOK_FILE_ADDRESS, configure);
             var book = Proto.NodeAddressBook.Parser.ParseFrom(file.ToArray());
-            return Protobuf.FromNodeAddressBook(book);
+            return book.ToNodeInfoArray();
         }
     }
 }

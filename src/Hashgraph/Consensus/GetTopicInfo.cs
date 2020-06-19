@@ -34,7 +34,7 @@ namespace Hashgraph
                 ConsensusGetTopicInfo = new ConsensusGetTopicInfoQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    TopicID = Protobuf.ToTopicID(topic)
+                    TopicID = new TopicID(topic)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
@@ -46,7 +46,7 @@ namespace Hashgraph
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
-            return Protobuf.FromTopicInfo(response.ConsensusGetTopicInfo.TopicInfo);
+            return response.ConsensusGetTopicInfo.TopicInfo.ToTopicInfo();
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

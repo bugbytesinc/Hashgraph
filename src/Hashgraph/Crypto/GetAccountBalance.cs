@@ -34,7 +34,7 @@ namespace Hashgraph
                 CryptogetAccountBalance = new CryptoGetAccountBalanceQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    AccountID = Protobuf.ToAccountID(address)
+                    AccountID = new AccountID(address)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);

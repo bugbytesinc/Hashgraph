@@ -36,7 +36,7 @@ namespace Hashgraph.Extensions
         {
             var file = await client.GetFileContentAsync(EXCHANGE_RATE_FILE_ADDRESS, configure);
             var set = Proto.ExchangeRateSet.Parser.ParseFrom(file.ToArray());
-            return new ExchangeRates(Protobuf.FromExchangeRate(set.CurrentRate), Protobuf.FromExchangeRate(set.NextRate));
+            return new ExchangeRates(set.CurrentRate?.ToExchangeRate(), set.NextRate?.ToExchangeRate());
         }
     }
 }

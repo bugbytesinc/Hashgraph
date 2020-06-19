@@ -70,11 +70,11 @@ namespace Hashgraph
             var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var updateFileBody = new FileUpdateTransactionBody
             {
-                FileID = Protobuf.ToFileId(updateParameters.File)
+                FileID = new FileID(updateParameters.File)
             };
             if (!(updateParameters.Endorsements is null))
             {
-                updateFileBody.Keys = Protobuf.ToPublicKeyList(updateParameters.Endorsements);
+                updateFileBody.Keys = new KeyList(updateParameters.Endorsements);
             }
             if (updateParameters.Contents.HasValue)
             {
@@ -89,17 +89,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to update file, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to update file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
             if (result is TransactionRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, rec);
+                record.FillProperties(rec);
             }
             else if (result is TransactionReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

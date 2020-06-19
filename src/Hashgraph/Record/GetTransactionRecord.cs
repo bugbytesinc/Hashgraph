@@ -30,7 +30,7 @@ namespace Hashgraph
         {
             transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
-            var transactionId = Protobuf.ToTransactionID(transaction);
+            var transactionId = new TransactionID(transaction);
             // For the public version of this method, we do not know
             // if the transaction in question has come to consensus so
             // we need to get the receipt first (and wait if necessary).
@@ -45,9 +45,7 @@ namespace Hashgraph
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
             var record = await GetTransactionRecordAsync(context, transactionId);
-            var result = new TransactionRecord();
-            Protobuf.FillRecordProperties(record, result);
-            return result;
+            return record.ToTransactionRecord();
 
             static Func<Query, Task<Response>> getServerMethod(Channel channel)
             {
@@ -86,7 +84,7 @@ namespace Hashgraph
                 var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
                 if (precheckCode != ResponseCodeEnum.Ok)
                 {
-                    throw new TransactionException("Unable to retrieve transaction record.", Protobuf.FromTransactionId(transactionRecordId), (ResponseCode)precheckCode);
+                    throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.ToTxId(), (ResponseCode)precheckCode);
                 }
             }
             return response.TransactionGetRecord.TransactionRecord;

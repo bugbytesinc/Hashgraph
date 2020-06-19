@@ -205,7 +205,7 @@ namespace Hashgraph
         /// True if public key layout and requirements are equivalent to the 
         /// other <code>Signatory</code> object.
         /// </returns>
-        public bool Equals(Signatory other)
+        public bool Equals(Signatory? other)
         {
             if (other is null)
             {
@@ -284,7 +284,7 @@ namespace Hashgraph
             switch (_type)
             {
                 case Type.Ed25519:
-                    return $"Signatory:{_type}:{((PublicKey)_data).GetHashCode().ToString()}".GetHashCode();
+                    return $"Signatory:{_type}:{((PublicKey)_data).GetHashCode()}".GetHashCode();
                 case Type.RSA3072:  // Will need more work
                 case Type.ECDSA384: // Will need more work
                     return $"Signatory:{_type}:{_data}".GetHashCode();

@@ -68,7 +68,7 @@ namespace Hashgraph
         /// True if the  Shard, Realm and Account Number are identical to the 
         /// other <code>Address</code> object.
         /// </returns>
-        public bool Equals(Address other)
+        public bool Equals(Address? other)
         {
             if (other is null)
             {

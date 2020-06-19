@@ -74,7 +74,7 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ConsensusDeleteTopic = new ConsensusDeleteTopicTransactionBody
             {
-                TopicID = Protobuf.ToTopicID(topicToDelete)
+                TopicID = new TopicID(topicToDelete)
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
@@ -82,11 +82,9 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to Delete Topic, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to Delete Topic, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
-            var result = new TransactionReceipt();
-            Protobuf.FillReceiptProperties(transactionId, receipt, result);
-            return result;
+            return receipt.FillProperties(transactionId, new TransactionReceipt());
 
             static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {

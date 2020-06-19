@@ -93,7 +93,7 @@ namespace Hashgraph
         /// True if the id is identical to the 
         /// other <code>TxId</code> object.
         /// </returns>
-        public bool Equals(TxId other)
+        public bool Equals(TxId? other)
         {
             if (other is null)
             {

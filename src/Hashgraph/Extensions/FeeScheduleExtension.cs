@@ -1,5 +1,4 @@
 ﻿#pragma warning disable CS8604
-using Hashgraph.Implementation;
 using System;
 using System.Threading.Tasks;
 
@@ -35,7 +34,7 @@ namespace Hashgraph.Extensions
         {
             var file = await client.GetFileContentAsync(FEE_SCHEDULE_FILE_ADDRESS, configure);
             var set = Proto.CurrentAndNextFeeSchedule.Parser.ParseFrom(file.ToArray());
-            return new FeeSchedules(Protobuf.FromFeeSchedule(set.CurrentFeeSchedule), Protobuf.FromFeeSchedule(set.NextFeeSchedule));
+            return new FeeSchedules(set.CurrentFeeSchedule?.ToFeeSchedule(), set.NextFeeSchedule?.ToFeeSchedule());
         }
     }
 }

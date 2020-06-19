@@ -40,7 +40,7 @@ namespace Hashgraph
                 CryptoGetProxyStakers = new CryptoGetStakersQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    AccountID = Protobuf.ToAccountID(address)
+                    AccountID = new AccountID(address)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
@@ -52,7 +52,7 @@ namespace Hashgraph
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
-            return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => Protobuf.FromAccountID(ps.AccountID), ps => ps.Amount);
+            return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => ps.AccountID.ToAddress(), ps => ps.Amount);
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

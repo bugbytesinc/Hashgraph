@@ -69,10 +69,10 @@ namespace Hashgraph
             transactionBody.ConsensusCreateTopic = new ConsensusCreateTopicTransactionBody
             {
                 Memo = createParameters.Memo,
-                AdminKey = createParameters.Administrator is null ? null : Protobuf.ToPublicKey(createParameters.Administrator),
-                SubmitKey = createParameters.Participant is null ? null : Protobuf.ToPublicKey(createParameters.Participant),
-                AutoRenewPeriod = Protobuf.ToDuration(createParameters.RenewPeriod),
-                AutoRenewAccount = createParameters.RenewAccount is null ? null : Protobuf.ToAccountID(createParameters.RenewAccount)
+                AdminKey = createParameters.Administrator is null ? null : new Key(createParameters.Administrator),
+                SubmitKey = createParameters.Participant is null ? null : new Key(createParameters.Participant),
+                AutoRenewPeriod = new Duration(createParameters.RenewPeriod),
+                AutoRenewAccount = createParameters.RenewAccount is null ? null : new AccountID(createParameters.RenewAccount)
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
@@ -80,19 +80,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to create Consensus Topic, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to create Consensus Topic, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
             if (result is CreateTopicRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, rec);
-                rec.Topic = Protobuf.FromTopicID(receipt.TopicID);
+                record.FillProperties(rec);
             }
             else if (result is CreateTopicReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, rcpt);
-                rcpt.Topic = Protobuf.FromTopicID(receipt.TopicID);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

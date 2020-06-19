@@ -43,7 +43,7 @@ namespace Hashgraph
                 var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(context.AdjustForLocalClockDrift);
                 return new TransactionID
                 {
-                    AccountID = Protobuf.ToAccountID(RequireInContext.Payer(context)),
+                    AccountID = new AccountID(RequireInContext.Payer(context)),
                     TransactionValidStart = new Proto.Timestamp
                     {
                         Seconds = seconds,
@@ -53,7 +53,7 @@ namespace Hashgraph
             }
             else
             {
-                return Protobuf.ToTransactionID(preExistingTransaction);
+                return new TransactionID(preExistingTransaction);
             }
         }
         internal static TransferList CreateCryptoTransferList(params (Address address, long amount)[] list)
@@ -77,7 +77,7 @@ namespace Hashgraph
                 {
                     transfers.AccountAmounts.Add(new AccountAmount
                     {
-                        AccountID = Protobuf.ToAccountID(transfer.Key),
+                        AccountID = new AccountID(transfer.Key),
                         Amount = transfer.Value
                     });
                 }
@@ -89,9 +89,9 @@ namespace Hashgraph
             return new TransactionBody
             {
                 TransactionID = transactionId,
-                NodeAccountID = Protobuf.ToAccountID(RequireInContext.Gateway(context)),
+                NodeAccountID = new AccountID(RequireInContext.Gateway(context)),
                 TransactionFee = (ulong)context.FeeLimit,
-                TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
+                TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
                 Memo = context.Memo ?? ""
             };
         }
@@ -112,9 +112,9 @@ namespace Hashgraph
             TransactionBody transactionBody = new TransactionBody
             {
                 TransactionID = transactionId,
-                NodeAccountID = Protobuf.ToAccountID(gateway),
+                NodeAccountID = new AccountID(gateway),
                 TransactionFee = (ulong)context.FeeLimit,
-                TransactionValidDuration = Protobuf.ToDuration(context.TransactionDuration),
+                TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
                 Memo = context.Memo ?? ""
             };
             var transfers = CreateCryptoTransferList((payer, -fee), (gateway, fee));

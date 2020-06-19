@@ -69,7 +69,7 @@ namespace Hashgraph
         /// True if the  Major, Minor and Patch values are identical to the 
         /// other <code>SemanticVersion</code> object.
         /// </returns>
-        public bool Equals(SemanticVersion other)
+        public bool Equals(SemanticVersion? other)
         {
             if (other is null)
             {

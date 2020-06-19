@@ -37,7 +37,7 @@ namespace Hashgraph
                 CryptoGetAccountRecords = new CryptoGetAccountRecordsQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    AccountID = Protobuf.ToAccountID(address)
+                    AccountID = new AccountID(address)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
@@ -50,15 +50,10 @@ namespace Hashgraph
                 var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
                 if (precheckCode != ResponseCodeEnum.Ok)
                 {
-                    throw new TransactionException("Unable to retrieve transaction records.", Protobuf.FromTransactionId(transactionId), (ResponseCode)precheckCode);
+                    throw new TransactionException("Unable to retrieve transaction records.", transactionId.ToTxId(), (ResponseCode)precheckCode);
                 }
             }
-            return response.CryptoGetAccountRecords.Records.Select(record =>
-            {
-                var result = new TransactionRecord();
-                Protobuf.FillRecordProperties(record, result);
-                return result;
-            }).ToArray();
+            return response.CryptoGetAccountRecords.Records.Select(record => record.ToTransactionRecord()).ToArray();
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

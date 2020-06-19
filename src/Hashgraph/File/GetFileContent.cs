@@ -36,7 +36,7 @@ namespace Hashgraph
                 FileGetContents = new FileGetContentsQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    FileID = Protobuf.ToFileId(file)
+                    FileID = new FileID(file)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);

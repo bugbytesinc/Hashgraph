@@ -84,8 +84,8 @@ namespace Hashgraph
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.CryptoDelete = new CryptoDeleteTransactionBody
             {
-                DeleteAccountID = Protobuf.ToAccountID(addressToDelete),
-                TransferAccountID = Protobuf.ToAccountID(transferToAddress)
+                DeleteAccountID = new AccountID(addressToDelete),
+                TransferAccountID = new AccountID(transferToAddress)
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
@@ -93,11 +93,9 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to delete account, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to delete account, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
-            var result = new TransactionReceipt();
-            Protobuf.FillReceiptProperties(transactionId, receipt, result);
-            return result;
+            return receipt.FillProperties(transactionId, new TransactionReceipt());
 
             static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {

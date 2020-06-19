@@ -72,7 +72,7 @@ namespace Hashgraph
             var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var updateTopicBody = new ConsensusUpdateTopicTransactionBody
             {
-                TopicID = Protobuf.ToTopicID(updateParameters.Topic)
+                TopicID = new TopicID(updateParameters.Topic)
             };
             if (updateParameters.Memo != null)
             {
@@ -80,19 +80,19 @@ namespace Hashgraph
             }
             if (!(updateParameters.Administrator is null))
             {
-                updateTopicBody.AdminKey = Protobuf.ToPublicKey(updateParameters.Administrator);
+                updateTopicBody.AdminKey = new Key(updateParameters.Administrator);
             }
             if (!(updateParameters.Participant is null))
             {
-                updateTopicBody.SubmitKey = Protobuf.ToPublicKey(updateParameters.Participant);
+                updateTopicBody.SubmitKey = new Key(updateParameters.Participant);
             }
             if (updateParameters.RenewPeriod.HasValue)
             {
-                updateTopicBody.AutoRenewPeriod = Protobuf.ToDuration(updateParameters.RenewPeriod.Value);
+                updateTopicBody.AutoRenewPeriod = new Duration(updateParameters.RenewPeriod.Value);
             }
             if (!(updateParameters.RenewAccount is null))
             {
-                updateTopicBody.AutoRenewAccount = Protobuf.ToAccountID(updateParameters.RenewAccount);
+                updateTopicBody.AutoRenewAccount = new AccountID(updateParameters.RenewAccount);
             }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
@@ -103,17 +103,17 @@ namespace Hashgraph
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Unable to update Topic, status: {receipt.Status}", Protobuf.FromTransactionId(transactionId), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Unable to update Topic, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is TransactionRecord arec)
+            if (result is TransactionRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
-                Protobuf.FillRecordProperties(record, arec);
+                record.FillProperties(rec);
             }
-            else if (result is TransactionReceipt arcpt)
+            else if (result is TransactionReceipt rcpt)
             {
-                Protobuf.FillReceiptProperties(transactionId, receipt, arcpt);
+                receipt.FillProperties(transactionId, rcpt);
             }
             return result;
 

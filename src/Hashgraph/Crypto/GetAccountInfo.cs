@@ -34,7 +34,7 @@ namespace Hashgraph
                 CryptoGetInfo = new CryptoGetInfoQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    AccountID = Protobuf.ToAccountID(address)
+                    AccountID = new AccountID(address)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
@@ -46,7 +46,7 @@ namespace Hashgraph
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
-            return Protobuf.FromAccountInfo(response.CryptoGetInfo.AccountInfo);
+            return response.CryptoGetInfo.AccountInfo.ToAccountInfo();
 
             static Func<Query, Task<Response>> getRequestMethod(Channel channel)
             {

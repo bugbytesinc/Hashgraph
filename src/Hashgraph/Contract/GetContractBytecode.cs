@@ -41,7 +41,7 @@ namespace Hashgraph
                 ContractGetBytecode = new ContractGetBytecodeQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    ContractID = Protobuf.ToContractID(contract)
+                    ContractID = new ContractID(contract)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
