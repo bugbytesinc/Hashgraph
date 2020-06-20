@@ -59,15 +59,15 @@ namespace Hashgraph
         internal static TransferList CreateCryptoTransferList(params (Address address, long amount)[] list)
         {
             var netRequests = new Dictionary<Address, long>();
-            foreach (var transfer in list)
+            foreach (var (address, amount) in list)
             {
-                if (netRequests.TryGetValue(transfer.address, out long value))
+                if (netRequests.TryGetValue(address, out long value))
                 {
-                    netRequests[transfer.address] = value + transfer.amount;
+                    netRequests[address] = value + amount;
                 }
                 else
                 {
-                    netRequests[transfer.address] = transfer.amount;
+                    netRequests[address] = amount;
                 }
             }
             var transfers = new TransferList();
@@ -197,7 +197,7 @@ namespace Hashgraph
                             return tenativeResponse;
                         }
                     }
-                    catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable)
+                    catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable || rpcex.StatusCode == StatusCode.Unknown)
                     {
                         var channel = context.GetChannel();
                         var message = channel.State == ChannelState.Connecting ?
