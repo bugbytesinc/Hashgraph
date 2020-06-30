@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Hashgraph;
 using Hashgraph.Implementation;
+using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.Linq;
 
@@ -13,7 +14,7 @@ namespace Proto
             switch (endorsement.Type)
             {
                 case KeyType.Ed25519:
-                    Ed25519 = ByteString.CopyFrom(((NSec.Cryptography.PublicKey)endorsement._data).Export(NSec.Cryptography.KeyBlobFormat.PkixPublicKey).TakeLast(32).ToArray());
+                    Ed25519 = ByteString.CopyFrom(((Ed25519PublicKeyParameters)endorsement._data).GetEncoded());
                     break;
                 case KeyType.RSA3072:
                     RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray());
@@ -37,23 +38,16 @@ namespace Proto
         }
         internal Endorsement ToEndorsement()
         {
-            switch (KeyCase)
+            return KeyCase switch
             {
-                case KeyOneofCase.Ed25519: return new Endorsement(KeyType.Ed25519, new ReadOnlyMemory<byte>(Keys.publicKeyPrefix.Concat(Ed25519.ToByteArray()).ToArray()));
-                case KeyOneofCase.RSA3072: return new Endorsement(KeyType.RSA3072, RSA3072.ToByteArray());
-                case KeyOneofCase.ECDSA384: return new Endorsement(KeyType.ECDSA384, ECDSA384.ToByteArray());
-                case KeyOneofCase.ContractID: return new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(ContractID.ToAddress()));
-                case KeyOneofCase.ThresholdKey:
-                    return ThresholdKey.Keys.Keys.Count == 0 ?
-                        Endorsement.None :
-                        new Endorsement(ThresholdKey.Threshold, ThresholdKey.Keys.ToEndorsements());
-                case KeyOneofCase.KeyList:
-                    return
-                        KeyList.Keys.Count == 0 ?
-                        Endorsement.None :
-                        new Endorsement(KeyList.ToEndorsements());
-            }
-            throw new InvalidOperationException($"Unknown Key Type {KeyCase}.  Do we have a network/library version mismatch?");
+                KeyOneofCase.Ed25519 => new Endorsement(KeyType.Ed25519, new ReadOnlyMemory<byte>(Ed25519Util.publicKeyPrefix.Concat(Ed25519.ToByteArray()).ToArray())),
+                KeyOneofCase.RSA3072 => new Endorsement(KeyType.RSA3072, RSA3072.ToByteArray()),
+                KeyOneofCase.ECDSA384 => new Endorsement(KeyType.ECDSA384, ECDSA384.ToByteArray()),
+                KeyOneofCase.ContractID => new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(ContractID.ToAddress())),
+                KeyOneofCase.ThresholdKey => ThresholdKey.Keys.Keys.Count == 0 ? Endorsement.None : new Endorsement(ThresholdKey.Threshold, ThresholdKey.Keys.ToEndorsements()),
+                KeyOneofCase.KeyList => KeyList.Keys.Count == 0 ? Endorsement.None : new Endorsement(KeyList.ToEndorsements()),
+                _ => throw new InvalidOperationException($"Unknown Key Type {KeyCase}.  Do we have a network/library version mismatch?"),
+            };
         }
     }
 }

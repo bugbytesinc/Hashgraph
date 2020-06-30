@@ -1,5 +1,5 @@
 ﻿using Hashgraph.Implementation;
-using NSec.Cryptography;
+using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.Linq;
 
@@ -57,7 +57,7 @@ namespace Hashgraph
                 switch (Type)
                 {
                     case KeyType.Ed25519:
-                        return ((PublicKey)_data).Export(KeyBlobFormat.PkixPublicKey);
+                        return Ed25519Util.ToBytes((Ed25519PublicKeyParameters)_data);
                     case KeyType.RSA3072:
                     case KeyType.ECDSA384:
                     case KeyType.Contract:
@@ -153,7 +153,7 @@ namespace Hashgraph
             switch (type)
             {
                 case KeyType.Ed25519:
-                    _data = Keys.ImportPublicEd25519KeyFromBytes(publicKey);
+                    _data = Ed25519Util.PublicKeyParamsFromBytes(publicKey);
                     break;
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
@@ -204,6 +204,7 @@ namespace Hashgraph
             switch (Type)
             {
                 case KeyType.Ed25519:
+                    return ((Ed25519PublicKeyParameters)_data).GetEncoded().SequenceEqual(((Ed25519PublicKeyParameters)(other._data)).GetEncoded());
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
                 case KeyType.Contract:
@@ -271,7 +272,7 @@ namespace Hashgraph
             switch (Type)
             {
                 case KeyType.Ed25519:
-                    return $"Endorsement:{Type}:{((PublicKey)_data).GetHashCode()}".GetHashCode();
+                    return $"Endorsement:{Type}:{((Ed25519PublicKeyParameters)_data).GetHashCode()}".GetHashCode();
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
                 case KeyType.Contract:

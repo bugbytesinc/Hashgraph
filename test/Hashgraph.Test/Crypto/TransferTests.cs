@@ -378,7 +378,7 @@ namespace Hashgraph.Test.Crypto
         public async Task AllowsDuplicateSignature()
         {
             await using var client = _network.NewClient();
-            var payerKey = Keys.ImportPrivateEd25519KeyFromBytes(_network.PrivateKey);
+            var payerKey = TestKeys.ImportPrivateEd25519KeyFromBytes(_network.PrivateKey);
             var publicPrefix = payerKey.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray();
 
             // Define Signing Method producing a duplicate signature
@@ -402,7 +402,7 @@ namespace Hashgraph.Test.Crypto
             await using var client = _network.NewClient();
             var fakeKey1 = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport });
             var fakeKey2 = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport });
-            var goodKey = Keys.ImportPrivateEd25519KeyFromBytes(_network.PrivateKey);
+            var goodKey = TestKeys.ImportPrivateEd25519KeyFromBytes(_network.PrivateKey);
             var publicPrefix = goodKey.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray();
 
             // Define Defective Signing Method Bad Signature Last

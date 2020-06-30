@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Implementation;
-using NSec.Cryptography;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Signers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -133,7 +134,7 @@ namespace Hashgraph
             {
                 case KeyType.Ed25519:
                     _type = Type.Ed25519;
-                    _data = Keys.ImportPrivateEd25519KeyFromBytes(privateKey);
+                    _data = Ed25519Util.PrivateKeyParamsFromBytes(privateKey);
                     break;
                 case KeyType.List:
                     throw new ArgumentOutOfRangeException(nameof(type), "Only signatories representing a single key are supported with this constructor, please use the list constructor instead.");
@@ -218,7 +219,7 @@ namespace Hashgraph
             switch (_type)
             {
                 case Type.Ed25519:
-                    return Equals(((Key)_data).PublicKey, ((Key)other._data).PublicKey);
+                    return ((Ed25519PrivateKeyParameters)_data).GetEncoded().SequenceEqual(((Ed25519PrivateKeyParameters)other._data).GetEncoded());
                 case Type.RSA3072:  // Will need more work
                 case Type.ECDSA384: // Will need more work
                     return Equals(_data, other._data);
@@ -284,7 +285,7 @@ namespace Hashgraph
             switch (_type)
             {
                 case Type.Ed25519:
-                    return $"Signatory:{_type}:{((PublicKey)_data).GetHashCode()}".GetHashCode();
+                    return $"Signatory:{_type}:{((Ed25519PrivateKeyParameters)_data).GetHashCode()}".GetHashCode();
                 case Type.RSA3072:  // Will need more work
                 case Type.ECDSA384: // Will need more work
                     return $"Signatory:{_type}:{_data}".GetHashCode();
@@ -365,11 +366,15 @@ namespace Hashgraph
             switch (_type)
             {
                 case Type.Ed25519:
-                    var ed25519Key = (Key)_data;
+                    var privateKey = (Ed25519PrivateKeyParameters)_data;
+                    var ed25519Signer = new Ed25519Signer();
+                    ed25519Signer.Init(true, privateKey);
+                    ed25519Signer.BlockUpdate(invoice.TxBytes.ToArray(), 0, invoice.TxBytes.Length);
                     invoice.AddSignature(
                         KeyType.Ed25519,
-                        ed25519Key.PublicKey.Export(KeyBlobFormat.PkixPublicKey).TakeLast(32).Take(6).ToArray(),
-                        SignatureAlgorithm.Ed25519.Sign(ed25519Key, invoice.TxBytes.Span));
+                        privateKey.GeneratePublicKey().GetEncoded()[..6],
+                        ed25519Signer.GenerateSignature());
+                    ed25519Signer.Reset();
                     break;
                 case Type.List:
                     foreach (ISignatory signer in (Signatory[])_data)

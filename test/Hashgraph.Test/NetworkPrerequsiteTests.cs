@@ -1,4 +1,8 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Implementation;
+using Hashgraph.Test.Fixtures;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Utilities;
+using Org.BouncyCastle.Crypto.Parameters;
 using System.Net;
 using System.Net.Sockets;
 using Xunit;
@@ -62,11 +66,6 @@ namespace Hashgraph.Tests
             using var client = new TcpClient();
             client.Connect(_networkCredentials.MirrorAddress, _networkCredentials.MirrorPort);
         }
-
-
-
-
-
         [Fact(DisplayName = "Test Prerequisites: Server Realm is Non-Negative")]
         public void ServerRealmIsNonNegative()
         {
@@ -106,6 +105,14 @@ namespace Hashgraph.Tests
         public void AccountAccountPublicKeyIsNotEmpty()
         {
             Assert.False(_networkCredentials.PublicKey.IsEmpty);
+        }
+        [Fact(DisplayName = "Test Prerequisites: Test Account Public and Private Keys Match")]
+        public void PublicAndPrivateKeysMatch()
+        {
+            var privateKey = Ed25519Util.PrivateKeyParamsFromBytes(_networkCredentials.PrivateKey);
+            var generatedPublicKey = privateKey.GeneratePublicKey();
+            var publicKey = Ed25519Util.PublicKeyParamsFromBytes(_networkCredentials.PublicKey);
+            Assert.Equal(generatedPublicKey.GetEncoded(), publicKey.GetEncoded());
         }
     }
 }

@@ -143,8 +143,8 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Signatories: Only Reference Equal Callbacks are considered Equal")]
         public void CallbackSignatoriesAreOnlyReferenceEqual()
         {
-            Func<IInvoice, Task> callback1 = ctx => { return Task.FromResult(0); };
-            Func<IInvoice, Task> callback2 = ctx => { return Task.FromResult(0); };
+            static Task callback1(IInvoice ctx) { return Task.FromResult(0); }
+            static Task callback2(IInvoice ctx) { return Task.FromResult(0); }
 
             var signatory1 = new Signatory(callback1);
             var signatory2 = new Signatory(callback2);
