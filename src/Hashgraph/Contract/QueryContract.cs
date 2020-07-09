@@ -31,6 +31,10 @@ namespace Hashgraph
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
+        /// <exception cref="ContractException">If the request was accepted by the network but the cotnract failed for
+        /// some reason.  Contains additional information returned from the contract virual machine.  Only thrown if
+        /// the <see cref="QueryContractParams.ThrowOnFail"/> is set to <code>true</code>, the default, otherwise
+        /// the method returns a <see cref="ContractCallResult"/> with the same information.</exception>
         public async Task<ContractCallResult> QueryContractAsync(QueryContractParams queryParameters, Action<IContext>? configure = null)
         {
             queryParameters = RequireInputParameter.QueryParameters(queryParameters);
@@ -53,7 +57,24 @@ namespace Hashgraph
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.ContractCallLocal.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost + queryParameters.ReturnValueCharge, transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
+                var header = getResponseHeader(response);
+                if (header == null)
+                {
+                    throw new PrecheckException($"Transaction Failed to Produce a Response.", transactionId.ToTxId(), ResponseCode.Unknown, 0);
+                }
+                if(response.ContractCallLocal?.FunctionResult == null)
+                {
+                    throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", transactionId.ToTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
+                }
+                if (queryParameters.ThrowOnFail && header.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
+                {
+                    throw new ContractException(
+                        $"Contract Query Failed with Code: {header.NodeTransactionPrecheckCode}",
+                        transactionId.ToTxId(),
+                        (ResponseCode)header.NodeTransactionPrecheckCode,
+                        header.Cost,
+                        response.ContractCallLocal.FunctionResult.ToContractCallResult());
+                }
             }
             return response.ContractCallLocal.FunctionResult.ToContractCallResult();
 

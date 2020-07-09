@@ -38,5 +38,14 @@ namespace Hashgraph
         /// it will fail.
         /// </summary>
         public long MaxAllowedReturnSize { get; set; } = 256;
+        /// <summary>
+        /// Throw a <see cref="ContractException"/> exception if the query
+        /// call returns a code other than success.  Default is true to maintain
+        /// backwards compatibility.  If set to false, the 
+        /// <see cref="ContractCallResult"/> will be returned without an exception.
+        /// The exception returned also includes the contract call result.
+        /// Default is <code>true</code>.
+        /// </summary>
+        public bool ThrowOnFail { get; set; } = true;
     }
 }
