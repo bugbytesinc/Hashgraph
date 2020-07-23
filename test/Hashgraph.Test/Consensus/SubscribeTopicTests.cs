@@ -63,6 +63,7 @@ namespace Hashgraph.Test.Topic
                     Assert.Equal(receipt.RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
                     Assert.Equal(2ul, receipt.RunningHashVersion);
                     Assert.Equal(message, topicMessage.Messsage.ToArray());
+                    Assert.Null(topicMessage.SegmentInfo);
                 }
 
                 var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
@@ -124,6 +125,7 @@ namespace Hashgraph.Test.Topic
                     Assert.Equal(1ul, topicMessage.SequenceNumber);
                     Assert.Equal(fx.Record.RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
                     Assert.Equal(fx.Message.ToArray(), topicMessage.Messsage.ToArray());
+                    Assert.Null(topicMessage.SegmentInfo);
                 }
             }
             catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
@@ -168,6 +170,7 @@ namespace Hashgraph.Test.Topic
                     Assert.Equal(1ul, message.SequenceNumber);
                     Assert.Equal(fx.Record.RunningHash.ToArray(), message.RunningHash.ToArray());
                     Assert.Equal(fx.Message.ToArray(), message.Messsage.ToArray());
+                    Assert.Null(message.SegmentInfo);
                 }
             }
             catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)

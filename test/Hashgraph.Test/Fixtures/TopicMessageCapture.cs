@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -30,7 +32,7 @@ namespace Hashgraph.Test.Fixtures
                         if (reader.TryRead(out TopicMessage message))
                         {
                             _list.Add(message);
-                            if (_list.Count == _limit - 1)
+                            if (_list.Count == _limit)
                             {
                                 writer.TryComplete();
                                 return;
@@ -54,6 +56,22 @@ namespace Hashgraph.Test.Fixtures
         public static implicit operator ChannelWriter<TopicMessage>(TopicMessageCapture adapter)
         {
             return adapter.MessageWriter;
+        }
+
+        public static async Task<TopicMessage[]> CaptureOrTimeoutAsync(MirrorClient mirror, Address topic, int expectedCount, int timeoutInMiliseconds)
+        {
+            using var cts = new CancellationTokenSource();
+            var capture = new TopicMessageCapture(expectedCount);
+            var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
+            {
+                Topic = topic,
+                Starting = DateTime.UtcNow.AddHours(-1),
+                MessageWriter = capture,
+                CancellationToken = cts.Token
+            });
+            cts.CancelAfter(timeoutInMiliseconds);
+            await subscribeTask;
+            return capture.CapturedList.ToArray();
         }
     }
 }

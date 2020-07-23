@@ -126,7 +126,7 @@ namespace Hashgraph.Test.Topic
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fx.Client.SubmitMessageAsync(Address.None, message);
+                await fx.Client.SubmitMessageAsync(fx.Record.Topic, message);
             });
             Assert.Equal(ResponseCode.InvalidTopicId, tex.Status);
             Assert.StartsWith("Submit Message failed, status: InvalidTopicId", tex.Message);

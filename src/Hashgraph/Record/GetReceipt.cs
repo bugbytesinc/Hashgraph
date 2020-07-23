@@ -24,7 +24,7 @@ namespace Hashgraph
         /// Internal Helper function to retrieve receipt record provided by 
         /// the network following network consensus regarding a query or transaction.
         /// </summary>
-        private async Task<Proto.TransactionReceipt> GetReceiptAsync(GossipContextStack context, TransactionID transactionId)
+        private static async Task<Proto.TransactionReceipt> GetReceiptAsync(GossipContextStack context, TransactionID transactionId)
         {
             var query = new Query
             {

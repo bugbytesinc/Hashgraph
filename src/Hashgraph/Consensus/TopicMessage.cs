@@ -30,5 +30,12 @@ namespace Hashgraph
         /// The sequence number of this message submission.
         /// </summary>
         public ulong SequenceNumber { get; internal set; }
+        /// <summary>
+        /// Optional metadata that may be attached to an
+        /// Segmented HCS message identifying the index
+        /// of the segment and which parent message this
+        /// segment correlates with.
+        /// </summary>
+        public MessageSegmentInfo? SegmentInfo { get; internal set; }
     }
 }

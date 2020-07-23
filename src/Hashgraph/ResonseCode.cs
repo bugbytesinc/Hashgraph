@@ -7,6 +7,9 @@ namespace Hashgraph
     /// </summary>
     public enum ResponseCode
     {
+        /// <summary>
+        /// A RPC Error occurred preventing the transaction from being submitted to the network.
+        /// </summary>
         [Description("RPC_ERROR")] RpcError = -1,
         /// <summary>
         /// The transaction passed the precheck validations.
@@ -481,5 +484,13 @@ namespace Hashgraph
         /// by HAPI.
         /// </summary>
         [Description("TOPIC_EXPIRED")] TopicExpired = 162,
+        /// <summary>
+        /// chunk number must be from 1 to total (chunks) inclusive.
+        /// </summary>
+        [Description("INVALID_CHUNK_NUMBER")] InvalidChunkNumber = 163,
+        /// <summary>
+        /// For every chunk, the payer account that is part of initialTransactionID must match the Payer Account of this transaction. The entire initialTransactionID should match the transactionID of the first chunk, but this is not checked or enforced by Hedera except when the chunk number is 1.
+        /// </summary>
+        [Description("INVALID_CHUNK_TRANSACTION_ID")] InvalidChunkTransactionId = 164,
     }
 }

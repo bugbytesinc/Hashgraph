@@ -1,4 +1,6 @@
-﻿namespace Com.Hedera.Mirror.Api.Proto
+﻿using Proto;
+
+namespace Com.Hedera.Mirror.Api.Proto
 {
     public sealed partial class ConsensusTopicResponse
     {
@@ -10,7 +12,8 @@
                 Concensus = ConsensusTimestamp.ToDateTime(),
                 Messsage = Message.ToByteArray(),
                 RunningHash = RunningHash.ToByteArray(),
-                SequenceNumber = SequenceNumber
+                SequenceNumber = SequenceNumber,
+                SegmentInfo = ChunkInfo?.ToMessageSegmentInfo()
             };
         }
     }
