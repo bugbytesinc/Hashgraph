@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Hashgraph - .NET Client Library for Hedera Hashgraph | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Hashgraph - .NET Client Library for Hedera Hashgraph | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="what-is-hashgraph">What is Hashgraph?</h1>
+
+<p>Hashgraph provides access to the <a href="https://www.hedera.com/">Hedera Hashgraph</a> Network for the .NET platform.  It manages the communication details with participating <a href="https://docs.hedera.com/guides/mainnet/mainnet-nodes">network nodes</a> and provides an efficient set asynchronous interface methods for consumption by .NET programs.</p>
+<p>Hashgraph is built with <a href="https://docs.microsoft.com/en-us/dotnet/core/introduction">.NET Core</a> Version 3.x</p>
+<h2 id="how-do-i-install-it">How do I Install It?</h2>
+<p>Hashgraph is published in <a href="https://www.nuget.org/packages/Hashgraph/">NuGet</a>.  You can install it with your favorite NugGet client, for example from the command line:</p>
+<pre><code class="lang-sh">dotnet add package Hashgraph
+</code></pre>
+<p>The library references a minimum of dependencies.  It relies on .NET’s native <a href="https://docs.microsoft.com/en-us/aspnet/core/grpc/">gRPC</a> libraries to access Hedera’s network and utilizes the cryptographic services provided by the <a href="http://www.bouncycastle.org/">Bouncy Castle Project</a>.</p>
+<h2 id="what-does-hello-world-for-this-library-look-like">What does 'Hello World' for this Library Look like?</h2>
+<p>The most simple thing one can ask of the Hedera network is the Balance of an Account.  Here is an example console program:</p>
+<pre><code class="lang-csharp">class Program
+{
+    static async Task Main(string[] args)
+    {                                                 // For Example:
+        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
+        var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
+        var queryAccountNo = long.Parse(args[2]);     //   2300 (account 0.0.2300)
+        try
+        {
+            await using var client = new Client(ctx =&gt;
+            {
+                ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
+            });
+            var account = new Address(0, 0, queryAccountNo);
+            var balance = await client.GetAccountBalanceAsync(account);
+            Console.WriteLine($&quot;Account Balance for {account.AccountNum} is {balance:#,#} tinybars.&quot;);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+            Console.Error.WriteLine(ex.StackTrace);
+        }
+    }
+}
+</code></pre>
+<p>Hashgraph provides access to the Hedera network via the <a class="xref" href="../api/Hashgraph.Client.html"><code>Client</code></a> object.  The <a class="xref" href="../api/Hashgraph.Client.html"><code>Client</code></a> object orchestrates the request construction and communication with the hedera network.   During creation, it requires a small amount of configuration.  At a minimum to retrieve an account balance, the client must be configured with a <a class="xref" href="../api/Hashgraph.Gateway.html"><code>Gateway</code></a>.  The <a class="xref" href="../api/Hashgraph.Gateway.html"><code>Gateway</code></a> object represents the internet network address and account for the node processing requests.  The <a class="xref" href="../api/Hashgraph.Address.html"><code>Address</code></a> is the identifier of the account to be queried.</p>
+<h2 id="how-do-i-learn-more">How do I learn more?</h2>
+<ul>
+<li><p><a href="crypto/balance.html">Examples</a>:  If you prefer to start with code you can copy then modify, we are working up simple examples for the major ways to interact with the network. So far we have examples for the following:</p>
+<ul>
+<li>Crypto Transactions
+<ul>
+<li><a href="crypto/balance.html">Get Account Balance</a></li>
+<li><a href="crypto/transfer.html">Transfer Crypto</a></li>
+<li><a href="crypto/info.html">Get Account Info</a></li>
+<li><a href="crypto/create.html">Create New Account</a></li>
+</ul>
+</li>
+<li>File Manipulation
+<ul>
+<li><a href="file/getfilecontent.html">Get File Content</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a href="../api/Hashgraph.html">API Documentation</a>: We have API Documentation generated from the source code itself.  This is useful if you are looking for a low-level understanding of the moving pieces.</p>
+</li>
+</ul>
+<p>Our documentation is a work in progress and will be adding to it and improving over time as bandwidth permits.</p>
+<h2 id="is-this-project-open-source">Is this project Open Source?</h2>
+<p>Yes, this is an open source project released under the <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/LICENSE">Apache 2.0 License</a>, the source code can be found at <a href="https://github.com/bugbytesinc/hashgraph">https://github.com/bugbytesinc/hashgraph</a>.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/docs/tutorials/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

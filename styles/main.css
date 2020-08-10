@@ -1,0 +1,16 @@
+nav.navbar-inverse {
+    background-color: #943AB4;
+}
+
+.navbar-inverse .navbar-nav>li>a, .navbar-inverse .navbar-text {
+    color: white;
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.active>a:focus, .navbar-inverse .navbar-nav>.active>a:hover {
+    color: yellow;
+    background-color: #943AB4;
+}
+
+.navbar-header {
+    overflow-y: hidden;
+}

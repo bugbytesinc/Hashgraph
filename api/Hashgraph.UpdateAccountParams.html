@@ -1,0 +1,476 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class UpdateAccountParams
+   | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class UpdateAccountParams
+   | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.UpdateAccountParams">
+  
+  
+  <h1 id="Hashgraph_UpdateAccountParams" data-uid="Hashgraph.UpdateAccountParams" class="text-break">Class UpdateAccountParams
+  </h1>
+  <div class="markdown level0 summary"><p>Represents the properties on an account that can be changed.
+Any property set to <pre><code>null</code></pre> on this object when submitted to the
+<a class="xref" href="Hashgraph.Client.html#Hashgraph_Client_UpdateAccountAsync_Hashgraph_UpdateAccountParams_System_Action_Hashgraph_IContext__">UpdateAccountAsync(UpdateAccountParams, Action&lt;IContext&gt;)</a>
+method will be left unchanged by the system.  Certain additional condidions
+apply to certain propertites such as the signing key are described below.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">UpdateAccountParams</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
+  <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
+  <h5 id="Hashgraph_UpdateAccountParams_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class UpdateAccountParams</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_Address.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.Address%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L18">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_Address_" data-uid="Hashgraph.UpdateAccountParams.Address*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_Address" data-uid="Hashgraph.UpdateAccountParams.Address">Address</h4>
+  <div class="markdown level1 summary"><p>The network address of account to update.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address Address { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_AutoRenewPeriod.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.AutoRenewPeriod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L78">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_AutoRenewPeriod_" data-uid="Hashgraph.UpdateAccountParams.AutoRenewPeriod*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_AutoRenewPeriod" data-uid="Hashgraph.UpdateAccountParams.AutoRenewPeriod">AutoRenewPeriod</h4>
+  <div class="markdown level1 summary"><p>Incremental period for auto-renewal of the account. If
+account does not have sufficient funds to renew at the
+expiration time, it will be renewed for a period of time
+the remaining funds can support.  If no funds remain, the
+account will be deleted.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TimeSpan? AutoRenewPeriod { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_Endorsement.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.Endorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L45">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_Endorsement_" data-uid="Hashgraph.UpdateAccountParams.Endorsement*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_Endorsement" data-uid="Hashgraph.UpdateAccountParams.Endorsement">Endorsement</h4>
+  <div class="markdown level1 summary"><p>Replace this Account's current key signing rquirements with new signing
+requirements.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement Endorsement { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_UpdateAccountParams_Endorsement_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>For this request to be accepted by the network, both the current private
+key(s) for this account and the new private key(s) must sign the transaction.<br>
+The existing key must sign for security and the new key must sign as a
+safeguard to avoid accidentally changing the key to an invalid value.<br>
+Either the <a class="xref" href="Hashgraph.IContext.html#Hashgraph_IContext_Payer">Payer</a> account or
+<a class="xref" href="Hashgraph.UpdateAccountParams.html#Hashgraph_UpdateAccountParams_Address">Address</a> may carry the new private key
+for signing to meet this requirement.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_Expiration.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.Expiration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L70">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_Expiration_" data-uid="Hashgraph.UpdateAccountParams.Expiration*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_Expiration" data-uid="Hashgraph.UpdateAccountParams.Expiration">Expiration</h4>
+  <div class="markdown level1 summary"><p>The new expiration date for this account, it will be ignored
+if it is equal to or before the current expiration date value
+for this account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DateTime? Expiration { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_Proxy.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.Proxy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L85">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_Proxy_" data-uid="Hashgraph.UpdateAccountParams.Proxy*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_Proxy" data-uid="Hashgraph.UpdateAccountParams.Proxy">Proxy</h4>
+  <div class="markdown level1 summary"><p>The account to which the created account will proxy its stake to.
+If invalid, or is the account that is not a node, or the
+node does not accept proxy staking; then this account is automatically
+proxy staked to a node chosen by the network without earning payments.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address Proxy { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_ReceiveThresholdCreateRecord.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.ReceiveThresholdCreateRecord%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L59">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_ReceiveThresholdCreateRecord_" data-uid="Hashgraph.UpdateAccountParams.ReceiveThresholdCreateRecord*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_ReceiveThresholdCreateRecord" data-uid="Hashgraph.UpdateAccountParams.ReceiveThresholdCreateRecord">ReceiveThresholdCreateRecord</h4>
+  <div class="markdown level1 summary"><p>Threshold in tinybars at which deposits larger than
+this value will automatically trigger the creation of a
+record for the transaction.  This account will be charged
+for the record creation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ulong? ReceiveThresholdCreateRecord { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_RequireReceiveSignature.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.RequireReceiveSignature%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L64">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_RequireReceiveSignature_" data-uid="Hashgraph.UpdateAccountParams.RequireReceiveSignature*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_RequireReceiveSignature" data-uid="Hashgraph.UpdateAccountParams.RequireReceiveSignature">RequireReceiveSignature</h4>
+  <div class="markdown level1 summary"><p>If set to True, the account must sign any transaction
+transferring crypto into account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool? RequireReceiveSignature { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_SendThresholdCreateRecord.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.SendThresholdCreateRecord%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L52">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_SendThresholdCreateRecord_" data-uid="Hashgraph.UpdateAccountParams.SendThresholdCreateRecord*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_SendThresholdCreateRecord" data-uid="Hashgraph.UpdateAccountParams.SendThresholdCreateRecord">SendThresholdCreateRecord</h4>
+  <div class="markdown level1 summary"><p>Threshold in tinybars at which withdraws larger than
+this value will automatically trigger the creation of a record
+for the transaction. This account will be charged for the
+record creation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ulong? SendThresholdCreateRecord { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L32">View Source</a>
+  </span>
+  <a id="Hashgraph_UpdateAccountParams_Signatory_" data-uid="Hashgraph.UpdateAccountParams.Signatory*"></a>
+  <h4 id="Hashgraph_UpdateAccountParams_Signatory" data-uid="Hashgraph.UpdateAccountParams.Signatory">Signatory</h4>
+  <div class="markdown level1 summary"><p>Any additional signing keys required to validate the transaction
+that are not already specified in the client object's context.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Signatory Signatory { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_UpdateAccountParams_Signatory_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Keys/callbacks added here will be combined with those already
+identified in the client object's context when signing this
+transaction to change the state of this account.  They will
+not be asked to sign transactions to retrieve the record
+if the &quot;WithRecord&quot; form of the method call is made.  The
+client will rely on the Signatory from the context to sign
+the transaction requesting the record.</p>
+</div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L13" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

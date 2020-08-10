@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Create New Account | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Create New Account | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../../images/favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="create-new-account">Create New Account</h1>
+
+<p>All accounts within the Hedera network can create new accounts.  To create a new account, the existing account holder must provide to the hedera network a public key matching a private key that will secure the funds held by the new account.  The holder of the new account must protect this private key, losing control of this private key will result in a loss of control of the created account.  The creating account holder must also decide on how much crypto to provide to the account for its initial balance.  The network will generate the “account id” in the form of 0.0.x (shard.realm.number).  This is the identifier for the newly created account (unlike other systems where the public key is the identifier).</p>
+<h2 id="example">Example</h2>
+<p>The first step in this process is to create a Hashgraph <a class="xref" href="../../api/Hashgraph.Client.html"><code>Client</code></a> object.  The <a class="xref" href="../../api/Hashgraph.Client.html"><code>Client</code></a> object orchestrates the request construction and communication with the hedera network. It requires a small amount of configuration when created.  At a minimum to create the new account, the client must be configured with a <a class="xref" href="../../api/Hashgraph.Gateway.html"><code>Gateway</code></a> and <a class="xref" href="../../api/Hashgraph.IContext.html#Hashgraph_IContext_Payer"><code>Payer</code></a>. The <a class="xref" href="../../api/Hashgraph.Gateway.html"><code>Gateway</code></a> object represents the internet network address and account for the node processing the transaction request, and the <a class="xref" href="../../api/Hashgraph.IContext.html#Hashgraph_IContext_Payer"><code>Payer</code></a> Account identifies the account that will sign and pay for the transaction.  The <a class="xref" href="../../api/Hashgraph.IContext.html#Hashgraph_IContext_Payer"><code>Payer</code></a> consists of two things: an <a class="xref" href="../../api/Hashgraph.Address.html"><code>Address</code></a> identifying the account paying transaction fees (which includes the value of the account’s initial balance); and a <a class="xref" href="../../api/Hashgraph.Signatory.html"><code>Signatory</code></a> holding the signing key associated with the Payer account.</p>
+<p>The next step is to create a <a class="xref" href="../../api/Hashgraph.CreateContractParams.html"><code>CreateAccountParams</code></a> object; it holds the details of the create request.  The two most important properties to set on this object are the <a class="xref" href="../../api/Hashgraph.CreateAccountParams.html#Hashgraph_CreateAccountParams_Endorsement"><code>Endorsement</code></a> and <a class="xref" href="../../api/Hashgraph.CreateAccountParams.html#Hashgraph_CreateAccountParams_InitialBalance"><code>InitialBalance</code></a> properties.  In the simplest case, the endorsement is a single Ed25519 public key (discussed above).  The value of the initial balance will be drawn from the payer account and placed into the newly created account.  The default values for the remaining properties need not be altered.</p>
+<p>Finally, to create the Hedera Account, invoke the client’s <a class="xref" href="../../api/Hashgraph.Client.html#Hashgraph_Client_CreateAccountAsync_Hashgraph_CreateAccountParams_System_Action_Hashgraph_IContext__"><code>CreateAccountAsync</code></a> method to submit the request to the network.  The method returns a <a class="xref" href="../../api/Hashgraph.CreateAccountReceipt.html"><code>CreateAccountReceipt</code></a> containing a property, <a class="xref" href="../../api/Hashgraph.Address.html"><code>Address</code></a>, identifying the newly created account.   The following code example illustrates a small program performing these actions:</p>
+<pre><code class="lang-csharp">class Program
+{
+    static async Task Main(string[] args)
+    {                                                 // For Example:
+        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
+        var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
+        var payerAccountNo = long.Parse(args[2]);     //   20 (account 0.0.20)
+        var payerPrivateKey = Hex.ToBytes(args[3]);   //   302e0201... (48 byte Ed25519 private in hex)
+        var newPublicKey = Hex.ToBytes(args[4]);      //   302a3005... (44 byte Ed25519 public in hex)
+        var initialBalance = ulong.Parse(args[5]);    //   100_000_000 (1ℏ initial balance)
+        try
+        {
+            await using var client = new Client(ctx =&gt;
+            {
+                ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
+                ctx.Payer = new Address(0, 0, payerAccountNo);
+                ctx.Signatory = new Signatory(payerPrivateKey);
+            });
+            var createParams = new CreateAccountParams
+            {
+                Endorsement = new Endorsement(newPublicKey),
+                InitialBalance = initialBalance
+            };
+            var account = await client.CreateAccountAsync(createParams);
+            var address = account.Address;
+            Console.WriteLine(
+                $&quot;New Account ID: {address.ShardNum}.{address.RealmNum}.{address.AccountNum}&quot;);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+            Console.Error.WriteLine(ex.StackTrace);
+        }
+    }
+}
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/docs/tutorials/crypto/create.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

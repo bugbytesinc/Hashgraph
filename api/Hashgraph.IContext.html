@@ -1,0 +1,629 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Interface IContext
+   | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Interface IContext
+   | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.IContext">
+  
+  
+  <h1 id="Hashgraph_IContext" data-uid="Hashgraph.IContext" class="text-break">Interface IContext
+  </h1>
+  <div class="markdown level0 summary"><p>A <a class="xref" href="Hashgraph.Client.html">Client</a> instance’s configuration.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
+  <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
+  <h5 id="Hashgraph_IContext_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public interface IContext</code></pre>
+  </div>
+  <h5 id="Hashgraph_IContext_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This interface exposes the current configuration context for a
+<a class="xref" href="Hashgraph.Client.html">Client</a> instance.  When accessed thru a
+<a class="xref" href="Hashgraph.Client.html#Hashgraph_Client_Configure_System_Action_Hashgraph_IContext__">Configure(Action&lt;IContext&gt;)</a>,
+<a class="xref" href="Hashgraph.Client.html#Hashgraph_Client_Clone_System_Action_Hashgraph_IContext__">Clone(Action&lt;IContext&gt;)</a> or one of the
+network request methods, calling code can interrogate the
+object for configuration details and update as necessary.<br>
+Typically, the bare minimum that must be configured in a
+context in order to access the network are values for
+the Node <a class="xref" href="Hashgraph.IContext.html#Hashgraph_IContext_Gateway">Gateway</a> and
+<a class="xref" href="Hashgraph.IContext.html#Hashgraph_IContext_Payer">Payer</a> Account.  The other default
+values are typically suitable for most interactions with
+the network.</p>
+</div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_AdjustForLocalClockDrift.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.AdjustForLocalClockDrift%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L88">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_AdjustForLocalClockDrift_" data-uid="Hashgraph.IContext.AdjustForLocalClockDrift*"></a>
+  <h4 id="Hashgraph_IContext_AdjustForLocalClockDrift" data-uid="Hashgraph.IContext.AdjustForLocalClockDrift">AdjustForLocalClockDrift</h4>
+  <div class="markdown level1 summary"><p>If set to <pre><code>true</code></pre> the library client will automatically
+scan for <a class="xref" href="Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTransactionStart">InvalidTransactionStart</a> responses
+from the server and adjust the automatic generation of transaction
+IDs as appropriate to compensate for local clock drift from the
+network server's clock.  This can help reduce the wait time for
+acceptance of transactions if the local clock deviates from the
+network time by too wide a margin.  It is only recommended to
+enable this setting if you are having performance problems related
+to clock drift an are unable to resolve at the environment level.
+The default for this value is <pre><code>false</code></pre>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool AdjustForLocalClockDrift { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_FeeLimit.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.FeeLimit%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L65">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_FeeLimit_" data-uid="Hashgraph.IContext.FeeLimit*"></a>
+  <h4 id="Hashgraph_IContext_FeeLimit" data-uid="Hashgraph.IContext.FeeLimit">FeeLimit</h4>
+  <div class="markdown level1 summary"><p>The maximum fee the payer is willing to pay for a transaction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">long FeeLimit { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_Gateway.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.Gateway%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L29">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_Gateway_" data-uid="Hashgraph.IContext.Gateway*"></a>
+  <h4 id="Hashgraph_IContext_Gateway" data-uid="Hashgraph.IContext.Gateway">Gateway</h4>
+  <div class="markdown level1 summary"><p>Network Address and Node Account address for gaining
+access to the Hedera Network.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Gateway Gateway { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Gateway.html">Gateway</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_Memo.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.Memo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L75">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_Memo_" data-uid="Hashgraph.IContext.Memo*"></a>
+  <h4 id="Hashgraph_IContext_Memo" data-uid="Hashgraph.IContext.Memo">Memo</h4>
+  <div class="markdown level1 summary"><p>The default memo associated with transactions set to the network.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">string Memo { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_OnResponseReceived.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.OnResponseReceived%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L129">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_OnResponseReceived_" data-uid="Hashgraph.IContext.OnResponseReceived*"></a>
+  <h4 id="Hashgraph_IContext_OnResponseReceived" data-uid="Hashgraph.IContext.OnResponseReceived">OnResponseReceived</h4>
+  <div class="markdown level1 summary"><p>Called by the library just after receiving a response from the
+server and before processing that response.  The information
+includes a retry number, the response from the first send
+being 0.  Subsequent numbers indicate responses from resends
+of the same transaction, typically in response to a BUSY response
+from the server or in the cases where there is some time drift
+between the server and the client system.  This information
+can be useful for logging and troubleshooting efforts.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Action&lt;int, IMessage&gt; OnResponseReceived { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <span class="xref">Google.Protobuf.IMessage</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_OnSendingRequest.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.OnSendingRequest%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L118">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_OnSendingRequest_" data-uid="Hashgraph.IContext.OnSendingRequest*"></a>
+  <h4 id="Hashgraph_IContext_OnSendingRequest" data-uid="Hashgraph.IContext.OnSendingRequest">OnSendingRequest</h4>
+  <div class="markdown level1 summary"><p>Called by the library just before the serialized protobuf
+is sent to the Hedera Network.  This is the only exposure
+the library provides to the underlying protobuf implementation
+(although they are publicly available in the library).<br>
+This method can be useful for logging and tracking purposes.
+It could also be used in advanced scenarios to modify the
+protobuf message just before sending.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Action&lt;IMessage&gt; OnSendingRequest { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<span class="xref">Google.Protobuf.IMessage</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_Payer.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.Payer%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L35">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_Payer_" data-uid="Hashgraph.IContext.Payer*"></a>
+  <h4 id="Hashgraph_IContext_Payer" data-uid="Hashgraph.IContext.Payer">Payer</h4>
+  <div class="markdown level1 summary"><p>The address of the account that pays for transactions
+submitted to the network, otherwise known as the
+&quot;Operator&quot;.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Address Payer { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_RetryCount.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.RetryCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L95">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_RetryCount_" data-uid="Hashgraph.IContext.RetryCount*"></a>
+  <h4 id="Hashgraph_IContext_RetryCount" data-uid="Hashgraph.IContext.RetryCount">RetryCount</h4>
+  <div class="markdown level1 summary"><p>The number of times the client software should retry sending a
+transaction to the network after the initial request failed
+with the server returning BUSY or invalid due to client/server
+time drift, or waiting for a “fast” receipt to return consensus.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int RetryCount { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_RetryDelay.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.RetryDelay%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L102">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_RetryDelay_" data-uid="Hashgraph.IContext.RetryDelay*"></a>
+  <h4 id="Hashgraph_IContext_RetryDelay" data-uid="Hashgraph.IContext.RetryDelay">RetryDelay</h4>
+  <div class="markdown level1 summary"><p>The timespan to wait between retry attempts.  Each retry attempt
+adds the same additional amount of delay between retries.  The
+second attempt will wait twice the delay, the third attempt
+will wait three times the delay and so on.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">TimeSpan RetryDelay { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L61">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_Signatory_" data-uid="Hashgraph.IContext.Signatory*"></a>
+  <h4 id="Hashgraph_IContext_Signatory" data-uid="Hashgraph.IContext.Signatory">Signatory</h4>
+  <div class="markdown level1 summary"><p>The private key, keys or signing callback method that
+are needed to sign the transaction.  At a minimum, this
+typically includes the Payer's signing key, but can also
+include other signatories such as those required when
+creating files and contracts.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Signatory Signatory { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_IContext_Signatory_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Every key added into this context will sign every
+transaction made by the owning client object.  This
+includes the &quot;second&quot; transaction required to obtain
+a record from the network when the &quot;WithRecord&quot; form
+of method calls are invoked.  It is important to note
+that many of the API calls have additional opportunities
+to identify specific signatories for various transactions.
+It is not necessary to add all the keys on this context
+for say, a key rotation on an account; especially if the
+&quot;WithRecord&quot; form is invoked.  It is recommended to place
+only the keys associated with the Payer account in this
+property.  Not doing so may result in extraneous unecessary
+signatures being sent with transactions.  If this happens
+the transaction cost goes up due to the larger transaction
+size, waisting crypto due to unecessary signature processing
+fees.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_Transaction.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.Transaction%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L108">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_Transaction_" data-uid="Hashgraph.IContext.Transaction*"></a>
+  <h4 id="Hashgraph_IContext_Transaction" data-uid="Hashgraph.IContext.Transaction">Transaction</h4>
+  <div class="markdown level1 summary"><p>Override the automatic generation of a transaction ID and use
+the given Transaction ID.  Can be useful for submitting the
+same transaction to multiple client/gateways.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">TxId Transaction { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.TxId.html">TxId</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_TransactionDuration.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.TransactionDuration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L71">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_TransactionDuration_" data-uid="Hashgraph.IContext.TransactionDuration*"></a>
+  <h4 id="Hashgraph_IContext_TransactionDuration" data-uid="Hashgraph.IContext.TransactionDuration">TransactionDuration</h4>
+  <div class="markdown level1 summary"><p>The maximum amount of time the client is willing to wait for
+consensus for a transaction, after which the submitted
+transaction is invalid.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">TimeSpan TransactionDuration { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext_Reset_System_String_.md&amp;value=---%0Auid%3A%20Hashgraph.IContext.Reset(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L145">View Source</a>
+  </span>
+  <a id="Hashgraph_IContext_Reset_" data-uid="Hashgraph.IContext.Reset*"></a>
+  <h4 id="Hashgraph_IContext_Reset_System_String_" data-uid="Hashgraph.IContext.Reset(System.String)">Reset(String)</h4>
+  <div class="markdown level1 summary"><p>Clears a property on the context.  This is the only way to clear
+a property value on the context so that a parent value can be
+used instead.  Setting a value to <pre><code>null</code></pre> does not
+clear the value, it sets it to <pre><code>null</code></pre> for the
+current context and child contexts.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Reset(string name)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">name</span></td>
+        <td><p>The name of the property to reset, must be one of the public
+properties of the <pre><code>IContext</code></pre>.  We suggest using
+the <pre><code>nameof()</code></pre> operator to ensure type safety.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p>when an invalid <pre><code>name</code></pre> is provided.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_IContext.md&amp;value=---%0Auid%3A%20Hashgraph.IContext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/IContext.cs/#L23" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

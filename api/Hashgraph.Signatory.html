@@ -1,0 +1,658 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Signatory
+   | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Signatory
+   | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.Signatory">
+  
+  
+  <h1 id="Hashgraph_Signatory" data-uid="Hashgraph.Signatory" class="text-break">Class Signatory
+  </h1>
+  <div class="markdown level0 summary"><p>Represents a keyholder or group of keyholders that
+can sign a transaction for crypto transfer to support
+file creation, contract creation and execution or pay
+for consensus services among other network tasks.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">Signatory</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.Signatory.html">Signatory</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
+  <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
+  <h5 id="Hashgraph_Signatory_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class Signatory : ISignatory, IEquatable&lt;Signatory&gt;</code></pre>
+  </div>
+  <h5 id="Hashgraph_Signatory_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>A <pre><code>Signatory</code></pre> is presently created with a pre-existing
+Ed25519 private key or a callback action having the
+information necessary to sucessfully sign the transaction
+as described by its matching <a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a>
+requrements.  RSA-3072, ECDSA and <pre><code>Contract</code></pre> signatures
+are not natively supported thru the <pre><code>Signatory</code></pre> at this
+time but can be achieved thru the callback functionality.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory__ctor_Hashgraph_Signatory___.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.%23ctor(Hashgraph.Signatory%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L107">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory__ctor_" data-uid="Hashgraph.Signatory.#ctor*"></a>
+  <h4 id="Hashgraph_Signatory__ctor_Hashgraph_Signatory___" data-uid="Hashgraph.Signatory.#ctor(Hashgraph.Signatory[])">Signatory(Signatory[])</h4>
+  <div class="markdown level1 summary"><p>Create a signatory that is a combination of a number of other
+signatories.  When this signatory is called to sign a transaction
+it will in turn ask all the child signatories in turn to sign the
+given transaction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Signatory(params Signatory[] Signatories)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a>[]</td>
+        <td><span class="parametername">Signatories</span></td>
+        <td><p>One or more signatories that when combined can form a
+multi key signature for the transaction.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory__ctor_System_Func_Hashgraph_IInvoice_System_Threading_Tasks_Task__.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.%23ctor(System.Func%7BHashgraph.IInvoice%2CSystem.Threading.Tasks.Task%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L167">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory__ctor_" data-uid="Hashgraph.Signatory.#ctor*"></a>
+  <h4 id="Hashgraph_Signatory__ctor_System_Func_Hashgraph_IInvoice_System_Threading_Tasks_Task__" data-uid="Hashgraph.Signatory.#ctor(System.Func{Hashgraph.IInvoice,System.Threading.Tasks.Task})">Signatory(Func&lt;IInvoice, Task&gt;)</h4>
+  <div class="markdown level1 summary"><p>Create a Signatory invoking the given async callback function
+when asked to sign a transaction.  The <pre><code>Signatory</code></pre>
+will pass an instance of an <a class="xref" href="Hashgraph.IInvoice.html">IInvoice</a> containing
+details of the transaction to sign when needed.  The callback
+function may add as many signatures as necessary to properly
+sign the  transaction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Signatory(Func&lt;IInvoice, Task&gt; signingCallback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="Hashgraph.IInvoice.html">IInvoice</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>&gt;</td>
+        <td><span class="parametername">signingCallback</span></td>
+        <td><p>An async callback method that is invoked when the library
+asks this Signatory to sign a transaction.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_Signatory__ctor_System_Func_Hashgraph_IInvoice_System_Threading_Tasks_Task___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Note:  For a single transaction this method MAY BE CALLED TWICE
+in the event the library is being asked to retrieve a record as
+a part of the request.  This is because retrieving a record of
+a transaction requires a separate payment.  So, if this Signatory
+is directly attached to the root <a class="xref" href="Hashgraph.IContext.html">IContext</a> it will
+be used to sign the request to retrieve the record (since this
+will typically represent the <a class="xref" href="Hashgraph.IContext.html#Hashgraph_IContext_Payer">Payer</a>'s
+signature for the transaction).</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory__ctor_System_ReadOnlyMemory_System_Byte__.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.%23ctor(System.ReadOnlyMemory%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L96">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory__ctor_" data-uid="Hashgraph.Signatory.#ctor*"></a>
+  <h4 id="Hashgraph_Signatory__ctor_System_ReadOnlyMemory_System_Byte__" data-uid="Hashgraph.Signatory.#ctor(System.ReadOnlyMemory{System.Byte})">Signatory(ReadOnlyMemory&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Create a signatory with a private Ed25519 key.  When transactions
+are signed, this signatory will automatically sign the transaction
+with this private key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Signatory(ReadOnlyMemory&lt;byte&gt; privateKey)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">privateKey</span></td>
+        <td><p>Bytes representing an Ed25519 private key signing transactions.<br>
+It is expected to be 48 bytes in length, prefixed with</p>
+<pre><code>0x302e020100300506032b6570</code></pre>.
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory_Equals_Hashgraph_Signatory_.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.Equals(Hashgraph.Signatory)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L209">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory_Equals_" data-uid="Hashgraph.Signatory.Equals*"></a>
+  <h4 id="Hashgraph_Signatory_Equals_Hashgraph_Signatory_" data-uid="Hashgraph.Signatory.Equals(Hashgraph.Signatory)">Equals(Signatory)</h4>
+  <div class="markdown level1 summary"><p>Equality implementation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(Signatory other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>The other <pre><code>Signatory</code></pre> object to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>True if public key layout and requirements are equivalent to the
+other <pre><code>Signatory</code></pre> object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory_Equals_System_Object_.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L259">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory_Equals_" data-uid="Hashgraph.Signatory.Equals*"></a>
+  <h4 id="Hashgraph_Signatory_Equals_System_Object_" data-uid="Hashgraph.Signatory.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"><p>Equality implementation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The other <pre><code>Signatory</code></pre> object to compare (if it is
+an <pre><code>Signatory</code></pre>).</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>If the other object is an Signatory, then <pre><code>True</code></pre>
+if key requirements are identical to the other</p>
+<pre><code>Signatories</code></pre> object, otherwise 
+<pre><code>False</code></pre>.
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory_GetHashCode.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L283">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory_GetHashCode_" data-uid="Hashgraph.Signatory.GetHashCode*"></a>
+  <h4 id="Hashgraph_Signatory_GetHashCode" data-uid="Hashgraph.Signatory.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Equality implementation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>A unique hash of the contents of this <pre><code>Signatory</code></pre>
+object.  Only consistent within the current instance of
+the application process.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a></div>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory_op_Equality_Hashgraph_Signatory_Hashgraph_Signatory_.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.op_Equality(Hashgraph.Signatory%2CHashgraph.Signatory)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L312">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory_op_Equality_" data-uid="Hashgraph.Signatory.op_Equality*"></a>
+  <h4 id="Hashgraph_Signatory_op_Equality_Hashgraph_Signatory_Hashgraph_Signatory_" data-uid="Hashgraph.Signatory.op_Equality(Hashgraph.Signatory,Hashgraph.Signatory)">Equality(Signatory, Signatory)</h4>
+  <div class="markdown level1 summary"><p>Equals implementation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(Signatory left, Signatory right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td><span class="parametername">left</span></td>
+        <td><p>Left hand <pre><code>Signatory</code></pre> argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>Right hand <pre><code>Signatory</code></pre> argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>True if Key requirements are identical
+within each <pre><code>Signatory</code></pre> objects.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory_op_Implicit_System_Func_Hashgraph_IInvoice_System_Threading_Tasks_Task___Hashgraph_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.op_Implicit(System.Func%7BHashgraph.IInvoice%2CSystem.Threading.Tasks.Task%7D)~Hashgraph.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L195">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory_op_Implicit_" data-uid="Hashgraph.Signatory.op_Implicit*"></a>
+  <h4 id="Hashgraph_Signatory_op_Implicit_System_Func_Hashgraph_IInvoice_System_Threading_Tasks_Task___Hashgraph_Signatory" data-uid="Hashgraph.Signatory.op_Implicit(System.Func{Hashgraph.IInvoice,System.Threading.Tasks.Task})~Hashgraph.Signatory">Implicit(Func&lt;IInvoice, Task&gt; to Signatory)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Signatory(Func&lt;IInvoice, Task&gt; signingCallback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="Hashgraph.IInvoice.html">IInvoice</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>&gt;</td>
+        <td><span class="parametername">signingCallback</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory_op_Implicit_System_ReadOnlyMemory_System_Byte___Hashgraph_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.op_Implicit(System.ReadOnlyMemory%7BSystem.Byte%7D)~Hashgraph.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L181">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory_op_Implicit_" data-uid="Hashgraph.Signatory.op_Implicit*"></a>
+  <h4 id="Hashgraph_Signatory_op_Implicit_System_ReadOnlyMemory_System_Byte___Hashgraph_Signatory" data-uid="Hashgraph.Signatory.op_Implicit(System.ReadOnlyMemory{System.Byte})~Hashgraph.Signatory">Implicit(ReadOnlyMemory&lt;Byte&gt; to Signatory)</h4>
+  <div class="markdown level1 summary"><p>Convenience implict cast for creating a <pre><code>Signatory</code></pre>
+directly from an Ed25519 private key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Signatory(ReadOnlyMemory&lt;byte&gt; privateKey)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">privateKey</span></td>
+        <td><p>Bytes representing an Ed25519 private key signing transactions.<br>
+It is expected to be 48 bytes in length, prefixed with</p>
+<pre><code>0x302e020100300506032b6570</code></pre>.
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory_op_Inequality_Hashgraph_Signatory_Hashgraph_Signatory_.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory.op_Inequality(Hashgraph.Signatory%2CHashgraph.Signatory)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L334">View Source</a>
+  </span>
+  <a id="Hashgraph_Signatory_op_Inequality_" data-uid="Hashgraph.Signatory.op_Inequality*"></a>
+  <h4 id="Hashgraph_Signatory_op_Inequality_Hashgraph_Signatory_Hashgraph_Signatory_" data-uid="Hashgraph.Signatory.op_Inequality(Hashgraph.Signatory,Hashgraph.Signatory)">Inequality(Signatory, Signatory)</h4>
+  <div class="markdown level1 summary"><p>Not equals implementation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(Signatory left, Signatory right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td><span class="parametername">left</span></td>
+        <td><p>Left hand <pre><code>Signatory</code></pre> argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>Right hand <pre><code>Signatory</code></pre> argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><pre><code>False</code></pre> if the Key requirements are identical 
+<p>within each <pre><code>Signatory</code></pre> object.</p>
+<pre><code>True</code></pre> if they are not identical.
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Signatory.cs/#L25" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

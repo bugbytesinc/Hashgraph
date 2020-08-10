@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Get Account Info | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Get Account Info | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../../images/favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="get-account-info">Get Account Info</h1>
+
+<p>In preparation for querying detailed information about an account, the first step is to create a Hashgraph <a class="xref" href="../../api/Hashgraph.Client.html"><code>Client</code></a> object.  The <a class="xref" href="../../api/Hashgraph.Client.html"><code>Client</code></a> object orchestrates the request construction and communication with the hedera network. It requires a small amount of configuration when created. At a minimum to retrieve the information, the client must be configured with a <a class="xref" href="../../api/Hashgraph.Gateway.html"><code>Gateway</code></a> and <a class="xref" href="../../api/Hashgraph.IContext.html#Hashgraph_IContext_Payer"><code>Payer</code></a>. The <a class="xref" href="../../api/Hashgraph.Gateway.html"><code>Gateway</code></a> object represents the internet network address and account for the node processing requests and the <a class="xref" href="../../api/Hashgraph.IContext.html#Hashgraph_IContext_Payer"><code>Payer</code></a> Account represents the account that will sign and pay for the query.  The <a class="xref" href="../../api/Hashgraph.IContext.html#Hashgraph_IContext_Payer"><code>Payer</code></a> consists of two things: and <a class="xref" href="../../api/Hashgraph.Address.html"><code>Address</code></a> identifying the account paying transaction fees for the request; and a <a class="xref" href="../../api/Hashgraph.Signatory.html"><code>Signatory</code></a> holding the signing key associated with the <a class="xref" href="../../api/Hashgraph.IContext.html#Hashgraph_IContext_Payer"><code>Payer</code></a> account.  Retrieving information about an account is not free, the network requires a nominal payment of a few <a href="https://help.hedera.com/hc/en-us/articles/360000674317-What-are-the-official-HBAR-cryptocurrency-denominations-"><em>tinybars</em></a> from the paying account to process the request.  After creating and configuring the client object, the <a class="xref" href="../../api/Hashgraph.Client.html#Hashgraph_Client_GetAccountInfoAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__"><code>GetAccountInfoAsync</code></a> method submits the request to the network and returns an <a class="xref" href="../../api/Hashgraph.AccountInfo.html"><code>AccountInfo</code></a> object describing the details of the account, including its balance in <a href="https://help.hedera.com/hc/en-us/articles/360000674317-What-are-the-official-HBAR-cryptocurrency-denominations-"><em>tinybars</em></a>.  The following code example illustrates a small program performing these actions:</p>
+<pre><code class="lang-csharp">class Program
+{
+    static async Task Main(string[] args)
+    {                                                 // For Example:
+        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
+        var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
+        var payerAccountNo = long.Parse(args[2]);     //   20 (account 0.0.20)
+        var payerPrivateKey = Hex.ToBytes(args[3]);   //   302e0201... (48 byte Ed25519 private in hex)
+        var queryAccountNo = long.Parse(args[4]);     //   2300 (account 0.0.2300)
+        try
+        {
+            await using var client = new Client(ctx =&gt;
+            {
+                ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
+                ctx.Payer = new Address(0, 0, payerAccountNo);
+                ctx.Signatory = new Signatory(payerPrivateKey);
+            });
+            var account = new Address(0, 0, queryAccountNo);
+            var info = await client.GetAccountInfoAsync(account);
+            Console.WriteLine($&quot;Account:               0.0.{info.Address.AccountNum}&quot;);
+            Console.WriteLine($&quot;Smart Contract ID:     {info.SmartContractId}&quot;);
+            Console.WriteLine($&quot;Proxy Address:         0.0.{info.Proxy.AccountNum}&quot;);
+            Console.WriteLine($&quot;Balance:               {info.Balance:#,#} tb&quot;);
+            Console.WriteLine($&quot;Send Record Thrshld:   {info.SendThresholdCreateRecord:#,#} tb&quot;);
+            Console.WriteLine($&quot;Rec. Record Thrshld:   {info.ReceiveThresholdCreateRecord:#,#} tb&quot;);
+            Console.WriteLine($&quot;Receive Sig. Required: {info.ReceiveSignatureRequired}&quot;);
+            Console.WriteLine($&quot;Auto-Renewal Period:   {info.AutoRenewPeriod}&quot;);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+            Console.Error.WriteLine(ex.StackTrace);
+        }
+    }
+}
+</code></pre>
+<p>One should note that to create a <a class="xref" href="../../api/Hashgraph.Signatory.html"><code>Signatory</code></a> associated with the payer account, one does need to have access to the account’s private key(s) to sign the transaction authorizing payment to the network query request.  For the account being queried, only the address number need be known.</p>
+<p>While outside the scope of this example, it is possible to create a signatory that invokes an external method to sign the transaction instead; this is useful for scenarios where the private key is held outside of the system using this library.  Thru this mechanism it is possible for the library to <em>never</em> see a private signing key.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/docs/tutorials/crypto/info.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

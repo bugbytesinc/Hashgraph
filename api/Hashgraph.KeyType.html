@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Enum KeyType
+   | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Enum KeyType
+   | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.KeyType">
+  
+  
+  <h1 id="Hashgraph_KeyType" data-uid="Hashgraph.KeyType" class="text-break">Enum KeyType
+  </h1>
+  <div class="markdown level0 summary"><p>Identifies the type of <a class="xref" href="Hashgraph.Signatory.html">Signatory</a> or
+<a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a>.  Typically these objects
+a represent a public key or a list of child keys.
+For endorsments a list type can represent an n of m
+number of child keys that must sign to validat a
+transaction.  For signatories, the list
+type represents simply a collection of keys, all of
+which sill sign a given transaction.
+Presently this library natively supports individual
+key types of Ed25519, for signing with other
+keys, the <a class="xref" href="Hashgraph.Signatory.html">Signatory</a> should use
+the callback form.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
+  <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
+  <h5 id="Hashgraph_KeyType_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public enum KeyType</code></pre>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    <thead>
+    <tbody>
+      <tr>
+        <td id="Hashgraph_KeyType_Contract">Contract</td>
+        <td><p>Correlates to a Smart Contract Instance, sometimes produced by the
+network identifying smart contracts that are immutable.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_KeyType_ECDSA384">ECDSA384</td>
+        <td><p>ECDSA with the p-384 curve (Stored as a <see cref="!:ReadOnlyMemory&lt;Byte>"></see>).</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_KeyType_Ed25519">Ed25519</td>
+        <td><p>Ed25519 Public Key (Stored as a <see cref="!:NSec.Cryptography.PublicKey"></see>).</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_KeyType_List">List</td>
+        <td><p>A list of keys, for endorsements it may represent an n-to-m list,
+for signatores its simply a bag of keys that will sign the transaction.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_KeyType_RSA3072">RSA3072</td>
+        <td><p>RSA-3072 Public Key (Stored as a <see cref="!:ReadOnlyMemory&lt;Byte>"></see>).</p>
+</td>
+      </tr>
+    </tbody>
+  </thead></thead></table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_KeyType.md&amp;value=---%0Auid%3A%20Hashgraph.KeyType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/KeyType.cs/#L17" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

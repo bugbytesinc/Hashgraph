@@ -1,0 +1,437 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class MirrorClient
+   | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class MirrorClient
+   | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.2.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.MirrorClient">
+  
+  
+  <h1 id="Hashgraph_MirrorClient" data-uid="Hashgraph.MirrorClient" class="text-break">Class MirrorClient
+  </h1>
+  <div class="markdown level0 summary"><p>Hedera Network Client</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">MirrorClient</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
+  <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
+  <h5 id="Hashgraph_MirrorClient_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class MirrorClient : IAsyncDisposable</code></pre>
+  </div>
+  <h5 id="Hashgraph_MirrorClient_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This component facilitates interaction with the Hedera Mirror Network.<br>
+It manages the communication channels with the mirror network and
+serialization of requests and responses.  This library generally
+shields the client code from directly interacting with the
+underlying protobuf communication layer but does provide hooks
+allowing advanced low-level manipulation of messages if necessary.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MirrorClient__ctor_System_Action_Hashgraph_IMirrorContext__.md&amp;value=---%0Auid%3A%20Hashgraph.MirrorClient.%23ctor(System.Action%7BHashgraph.IMirrorContext%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/MirrorClient.cs/#L46">View Source</a>
+  </span>
+  <a id="Hashgraph_MirrorClient__ctor_" data-uid="Hashgraph.MirrorClient.#ctor*"></a>
+  <h4 id="Hashgraph_MirrorClient__ctor_System_Action_Hashgraph_IMirrorContext__" data-uid="Hashgraph.MirrorClient.#ctor(System.Action{Hashgraph.IMirrorContext})">MirrorClient(Action&lt;IMirrorContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a new instance of an Hedera Mirror Network Client.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MirrorClient(Action&lt;IMirrorContext&gt; configure = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>Optional configuration method that can set the location of the network node
+accessing the network and how transaction fees shall be paid for.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_MirrorClient__ctor_System_Action_Hashgraph_IMirrorContext___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Creating a new instance of a <pre><code>Mirror</code></pre> initializes a new instance
+of a client.  It will have a separate cache of GRPC channels to the network
+and will maintain a separate configuration from other clients.  The constructor
+takes an optional callback method that configures the details on how the
+client should connect to the network configuraable details.  See the
+<a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a> documentation for configuration details.</p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MirrorClient_Clone_System_Action_Hashgraph_IMirrorContext__.md&amp;value=---%0Auid%3A%20Hashgraph.MirrorClient.Clone(System.Action%7BHashgraph.IMirrorContext%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/MirrorClient.cs/#L105">View Source</a>
+  </span>
+  <a id="Hashgraph_MirrorClient_Clone_" data-uid="Hashgraph.MirrorClient.Clone*"></a>
+  <h4 id="Hashgraph_MirrorClient_Clone_System_Action_Hashgraph_IMirrorContext__" data-uid="Hashgraph.MirrorClient.Clone(System.Action{Hashgraph.IMirrorContext})">Clone(Action&lt;IMirrorContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a new instance of the mirror client having a shared base configuration with its
+parent.  Changes to the parent’s configuration will reflect in this instances
+configuration while changes in this instances configuration will not be reflected
+in the parent configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MirrorClient Clone(Action&lt;IMirrorContext&gt; configure = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>The callback method receiving the <a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a> object providing
+the configuration details of this client instance.  Values can be retrieved
+and set within the context of the method invocation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.MirrorClient.html">MirrorClient</a></td>
+        <td><p>A new instance of a client object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MirrorClient_Configure_System_Action_Hashgraph_IMirrorContext__.md&amp;value=---%0Auid%3A%20Hashgraph.MirrorClient.Configure(System.Action%7BHashgraph.IMirrorContext%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/MirrorClient.cs/#L83">View Source</a>
+  </span>
+  <a id="Hashgraph_MirrorClient_Configure_" data-uid="Hashgraph.MirrorClient.Configure*"></a>
+  <h4 id="Hashgraph_MirrorClient_Configure_System_Action_Hashgraph_IMirrorContext__" data-uid="Hashgraph.MirrorClient.Configure(System.Action{Hashgraph.IMirrorContext})">Configure(Action&lt;IMirrorContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Updates the configuration of this instance of a mirror client thru
+implementation of the supplied <a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a> callback method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Configure(Action&lt;IMirrorContext&gt; configure)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>The callback method receiving the <a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a> object providing
+the configuration details of this client instance.  Values can be retrieved
+and set within the context of the method invocation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MirrorClient_DisposeAsync.md&amp;value=---%0Auid%3A%20Hashgraph.MirrorClient.DisposeAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/MirrorClient.cs/#L131">View Source</a>
+  </span>
+  <a id="Hashgraph_MirrorClient_DisposeAsync_" data-uid="Hashgraph.MirrorClient.DisposeAsync*"></a>
+  <h4 id="Hashgraph_MirrorClient_DisposeAsync" data-uid="Hashgraph.MirrorClient.DisposeAsync">DisposeAsync()</h4>
+  <div class="markdown level1 summary"><p>.NET Asynchronous dispose method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>An Async Task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_MirrorClient_DisposeAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Closes any GRPC channels solely owned by this <pre><code>Mirror</code></pre> instance.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MirrorClient_SubscribeTopicAsync_Hashgraph_SubscribeTopicParams_System_Action_Hashgraph_IMirrorContext__.md&amp;value=---%0Auid%3A%20Hashgraph.MirrorClient.SubscribeTopicAsync(Hashgraph.SubscribeTopicParams%2CSystem.Action%7BHashgraph.IMirrorContext%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/SubscribeTopic.cs/#L37">View Source</a>
+  </span>
+  <a id="Hashgraph_MirrorClient_SubscribeTopicAsync_" data-uid="Hashgraph.MirrorClient.SubscribeTopicAsync*"></a>
+  <h4 id="Hashgraph_MirrorClient_SubscribeTopicAsync_Hashgraph_SubscribeTopicParams_System_Action_Hashgraph_IMirrorContext__" data-uid="Hashgraph.MirrorClient.SubscribeTopicAsync(Hashgraph.SubscribeTopicParams,System.Action{Hashgraph.IMirrorContext})">SubscribeTopicAsync(SubscribeTopicParams, Action&lt;IMirrorContext&gt;)</h4>
+  <div class="markdown level1 summary"><p>Subscribes to a Topic Stream from a mirror node, placing the
+topic messages returned meeting the query criteria into the
+provided .net Channel.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task SubscribeTopicAsync(SubscribeTopicParams subscribeParameters, Action&lt;IMirrorContext&gt; configure = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.SubscribeTopicParams.html">SubscribeTopicParams</a></td>
+        <td><span class="parametername">subscribeParameters</span></td>
+        <td><p>The details of the query, including the id of the topic, time
+constraint filters and the .net channel receiving the messages
+as they are returned from the server.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;<a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a>&gt;</td>
+        <td><span class="parametername">configure</span></td>
+        <td><p>Optional callback method providing an opportunity to modify the
+execution configuration for just this method call.  It is executed
+prior to submitting the request to the mirror node.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>Returns only after one of the four conditions ocurr: the output channel is
+completed by calling code; the cancelation token provided in the params is
+signaled; the maximum number of topic messages was returned as configured in
+the params; or if the mirror stream faults during streaming, in which case a
+<a class="xref" href="Hashgraph.MirrorException.html">MirrorException</a> is thrown.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p>If required arguments are missing.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>If required context configuration is missing or a parameter is invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="Hashgraph.MirrorException.html">MirrorException</a></td>
+        <td><p>If the mirror node stream faulted during request processing or upon submission.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable">System.IAsyncDisposable</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MirrorClient.md&amp;value=---%0Auid%3A%20Hashgraph.MirrorClient%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/MirrorClient.cs/#L20" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,130 @@
+h1 {
+  margin-top: 50px;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.buttons-unit {
+  margin-top: 60px;
+  text-align: center;
+}
+
+p {
+  text-align: initial;
+}
+
+.buttons-unit .button {
+  font-size: 24px;
+  color: #fff;
+  background: #aa61c5;
+}
+
+.buttons-unit .button:hover,
+.buttons-unit .button:focus {
+  color: #6e0f91;;
+  background: white;
+}
+
+.buttons-unit .button:active {
+  background: #A27865;
+}
+
+.hero {
+  color: white;
+  background-color: #943AB4;
+  height: 350px;
+  margin-top: 50px;
+  padding-top: 50px;
+  font-weight: 300;
+  text-align: center;
+  background-image: url(../images/thin-logo.svg);
+  background-position: left;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.hero strong {
+  color: #e7e7e7;
+}
+
+.hero strong {
+  font-weight: 400;
+}
+
+.hero .text {
+  font-size: 64px;
+  text-align: center;
+}
+
+.hero .minitext {
+  font-size: 24px;
+  text-align: center;
+  font-family: Candara;
+}
+
+.hero .button {
+  border-radius: 4px;
+  padding: 8px 16px;
+  margin: 0 12px;
+  box-shadow: 1px 3px 3px rgba(0, 0, 0, 0.3);
+}
+
+i.consensus-service {
+  display: inline-block;
+  width: 125px;
+  height: 125px;
+  background-image: url(../images/consensus.png);
+  background-size: contain;
+}
+
+i.crypto-service {
+  display: inline-block;
+  width: 125px;
+  height: 125px;
+  background-image: url(../images/crypto.png);
+  background-size: contain;
+}
+
+i.file-service {
+  display: inline-block;
+  width: 125px;
+  height: 125px;
+  background-image: url(../images/file.png);
+  background-size: contain;
+}
+
+i.contract-service {
+  display: inline-block;
+  width: 125px;
+  height: 125px;
+  background-image: url(../images/contract.png);
+  background-size: contain;
+}
+
+.glyphicon {
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+@media only screen and (max-width: 1080px) {
+  .hero .wrap {
+    padding-left: 300px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .hero {
+    height: 500px;
+    margin-top: 0px;
+    background-image: none;
+  }
+
+  .hero .button {
+    display: block;
+    margin: 12px;
+  }
+
+  .hero .wrap {
+    padding-left: 0;
+  }
+}
