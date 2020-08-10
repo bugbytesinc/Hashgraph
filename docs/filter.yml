@@ -1,0 +1,6 @@
+apiRules:
+- exclude:
+    uidRegex: ^Com\.Hedera\.
+- exclude:
+    uidRegex: ^Proto\.
+        

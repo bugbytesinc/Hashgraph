@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Hashgraph.Doc</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="docfx.console" Version="2.56.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>  
+
+  <ItemGroup>
+      <!-- extends watching group to include *.js files -->
+      <Watch Include="**\*.md;**\*.yml" Exclude="obj\**\*;bin\**\*" />
+      <Watch Include="..\src\Hashgraph\**\*.cs" Exclude="obj\**\*;bin\**\*" />
+      <Watch Include="images\**" />
+      <Watch Include="styles\**" />
+  </ItemGroup>
+
+</Project>

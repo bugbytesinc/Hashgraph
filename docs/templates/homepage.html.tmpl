@@ -1,0 +1,18 @@
+{{!include(/^styles/.*/)}}
+{{!include(/^fonts/.*/)}}
+{{!include(favicon.ico)}}
+{{!include(logo.svg)}}
+<!DOCTYPE html>
+<html>
+  {{>partials/head}}
+  <link rel="stylesheet" href="{{_rel}}styles/homepage.css">
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        {{>partials/navbar}}
+      </header>
+      {{{conceptual}}}
+    </div>
+    {{>partials/scripts}}
+  </body>
+</html>

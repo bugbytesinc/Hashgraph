@@ -1,0 +1,72 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "files": [
+            "**.csproj"
+          ],
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**"
+          ],
+          "src": "../src/Hashgraph"
+        }
+      ],
+      "dest": "obj/temp/apiyml",
+      "disableGitFeatures": false,
+      "disableDefaultFilter": false,
+      "filter": "./filter.yml"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.yml"
+        ],
+        "src": "obj/temp/apiyml",
+        "dest": "api"
+      },
+      {
+        "files": [
+          "**/*.{md,yml}"
+        ],
+        "exclude": [
+          "bin/**",
+          "obj/**",
+          "filter.yml"
+        ]
+    }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**",
+          "styles/**"
+        ]
+      }
+    ],
+    "overwrite": "apispec/*.md",
+    "xrefService": [
+      "https://xref.docs.microsoft.com/query?uid={uid}"
+    ],
+    "postProcessors": [],
+    "globalMetadata": {
+      "_appTitle": "Hashgraph",
+      "_appFooter": "<span>.NET Client Library for Hedera Hashgraph</span>",
+      "_appLogoPath": "images/logo.svg",
+      "_appFaviconPath": "images/favicon.ico"
+    },
+    "dest": "bin/site",
+    "markdownEngineName": "markdig",
+    "template": [
+      "default",
+      "templates"
+    ],
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false
+  }
+}

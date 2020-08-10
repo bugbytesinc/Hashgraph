@@ -1,67 +1,49 @@
-# Hashgraph
-.NET Core Client Library for Hedera Hashgraph
-
-__Please Note__:  This library is very new and as we gain experience interacting with the Hedera Network any commit to this project may cause breaking changes.  Please be patient as we gain the necessary experience to provide a best in class library to access the Hedera Network.  
-
-## Example
-The `Client` object orchestrates the request construction and communication with the hedera network.   It requires a small amount of configuration when created.  At a minimum to retrieve an account balance, the client must be configured with a Gateway.  The `Gateway` object represents the internet network address and account for the node processing requests.  The following code example illustrates retrieving an account balance for an `Address`:
-```csharp
-class Program
-{
-    static async Task Main(string[] args)
-    {                                                 // For Example:
-        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
-        var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
-        var queryAccountNo = long.Parse(args[2]);     //   2300 (account 0.0.2300)
-        try
-        {
-            await using var client = new Client(ctx =>
-            {
-                ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
-            });
-            var account = new Address(0, 0, queryAccountNo);
-            var balance = await client.GetAccountBalanceAsync(account);
-            Console.WriteLine($"Account Balance for {account.AccountNum} is {balance:#,#} tinybars.");
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine(ex.Message);
-            Console.Error.WriteLine(ex.StackTrace);
-        }
-    }
-}
-```
-## Installation
-```
-dotnet add package Hashgraph
-```
-Hashgraph requires .NET Core Version 3.x
-
-## Contributing
-While we are in the process of building the preliminary infrastructure for this project, please direct any feedback, requests or questions to  [Hedera’s Discord](https://discordapp.com/invite/FFb9YFX) .Net SDK channel.
-
-## Cloning
-This project references the [Hedera Protobuf](https://github.com/hashgraph/hedera-protobuf)
-project as a git submodule (currently the vNext Branch).  It is recommended to include ```--recurse-submodules``` options 
-when cloning the repository so that the ```*.proto``` files from the submodule are present
-when building the project:
-```
-$ git clone --recurse-submodules https://github.com/bugbytesinc/Hashgraph.git
-```
-
-## Build Status
-[![Build Status](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20Continuous%20Build?branchName=master)](https://bugbytes.visualstudio.com/Hashgraph/_build/latest?definitionId=27&branchName=master)
-
-## Build Requirements
-This project relies protobuf support found in .net core 3, 
-previous versions of the .net core framework will not work.
-(At the time of this writing we are using version [3.0.100](https://dotnet.microsoft.com/download/dotnet-core/3.0))
-
-Visual Studio is not required to build the library, however the project
-references the [NSec.Cryptography](https://nsec.rocks/) library, which 
-loads the libsodium.dll library which relies upon the VC++ runtime. In
-order to execute tests, the [Microsoft Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
-must be installed on the build agent if Visual Studio is not.
-
-## License
-Hashgraph is licensed under the [Apache 2.0 license](https://licenses.nuget.org/Apache-2.0).
+---
+title: Hashgraph - .NET Client Library for Hedera Hashgraph
+documentType: homepage
+---
+<div class="hero">
+    <div class="wrap">
+        <div class="text"><strong>Hashgraph</strong></div>
+        <div class="minitext">Access the Hedera network with .NET</div>
+        <div class="buttons-unit">
+            <a href="tutorials/index.md" class="button"><i class="glyphicon glyphicon-send"></i>Get Started</a>
+            <a href="https://www.nuget.org/packages/Hashgraph/" class="button"><i class="glyphicon glyphicon-link"></i>Get on Nuget</a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <h1>Supporting All Public Hedera Network Services</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-3 text-center">
+            <i class="consensus-service"></i>
+            <h2>Consensus Service</h2>
+            <p class="lead">Submit Hedera Consensus Services directly to the network including segmented messaging scenarios.  Create and Administer new Consensus Topics.</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <i class="crypto-service"></i>
+            <h2>Cryptocurrency</h2>
+            <p class="lead">Transfer Cryptocurrency between two or more parties supporting in a single transaction, including complex multi-signature scenarios.  Create and Administer Hedera Cryptocurrency Accounts.</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <i class="file-service"></i>
+            <h2>File Service</h2>
+            <p class="lead">Create Files and Append additional Content.  Manage file properties, overwrite and remove files from the network.</p>
+        </div>
+        <div class="col-md-3 text-center">
+            <i class="contract-service"></i>
+            <h2>Smart Contract</h2>
+            <p class="lead">Invoke methods on Smart Contracts, including payable scenarios.  Create and Administer new Contracts.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1 text-center">
+        <section>
+            <h2>Open Source</h2>
+            <p class="lead">Hashgraph is released under the <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/LICENSE">Apache 2.0 License</a>, the source code is available on <a href="https://github.com/bugbytesinc/Hashgraph">GitHub</a>.</p>
+        </section>
+        </div>
+    </div>
+</div>

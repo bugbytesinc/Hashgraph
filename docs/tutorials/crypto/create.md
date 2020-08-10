@@ -1,6 +1,5 @@
 ---
 title: Create New Account
-layout: default
 ---
 
 # Create New Account
@@ -9,11 +8,11 @@ All accounts within the Hedera network can create new accounts.  To create a new
 
 ## Example
 
-The first step in this process is to create a Hashgraph `Client` object.  The Client object orchestrates the request construction and communication with the hedera network. It requires a small amount of configuration when created.  At a minimum to create the new account, the client must be configured with a `Gateway` and Payer. The Gateway object represents the internet network address and account for the node processing the transaction request, and the Payer Account identifies the account that will sign and pay for the transaction.  The Payer consists of two things: an `Address` identifying the account paying transaction fees (which includes the value of the account’s initial balance); and a `Signatory` holding the signing key associated with the Payer account.  
+The first step in this process is to create a Hashgraph [`Client`](xref:Hashgraph.Client) object.  The [`Client`](xref:Hashgraph.Client) object orchestrates the request construction and communication with the hedera network. It requires a small amount of configuration when created.  At a minimum to create the new account, the client must be configured with a [`Gateway`](xref:Hashgraph.Gateway) and [`Payer`](xref:Hashgraph.IContext.Payer). The [`Gateway`](xref:Hashgraph.Gateway) object represents the internet network address and account for the node processing the transaction request, and the [`Payer`](xref:Hashgraph.IContext.Payer) Account identifies the account that will sign and pay for the transaction.  The [`Payer`](xref:Hashgraph.IContext.Payer) consists of two things: an [`Address`](xref:Hashgraph.Address) identifying the account paying transaction fees (which includes the value of the account’s initial balance); and a [`Signatory`](xref:Hashgraph.Signatory) holding the signing key associated with the Payer account.  
 
-The next step is to create a `CreateAccountParams` object; it holds the details of the create request.  The two most important properties to set on this object are the `Endorsement` and `InitialBalance` properties.  In the simplest case, the endorsement is a single Ed25519 public key (discussed above).  The value of the initial balance will be drawn from the payer account and placed into the newly created account.  The default values for the remaining properties need not be altered.
+The next step is to create a [`CreateAccountParams`](xref:Hashgraph.CreateContractParams) object; it holds the details of the create request.  The two most important properties to set on this object are the [`Endorsement`](xref:Hashgraph.CreateAccountParams.Endorsement) and [`InitialBalance`](xref:Hashgraph.CreateAccountParams.InitialBalance) properties.  In the simplest case, the endorsement is a single Ed25519 public key (discussed above).  The value of the initial balance will be drawn from the payer account and placed into the newly created account.  The default values for the remaining properties need not be altered.
 
-Finally, to create the Hedera Account, invoke the client’s `CreateAccountAsync` method to submit the request to the network.  The method returns a `CreateAccountReceipt` containing a property, `Address`, identifying the newly created account.   The following code example illustrates a small program performing these actions:
+Finally, to create the Hedera Account, invoke the client’s [`CreateAccountAsync`](xref:Hashgraph.Client.CreateAccountAsync(Hashgraph.CreateAccountParams,System.Action{Hashgraph.IContext})) method to submit the request to the network.  The method returns a [`CreateAccountReceipt`](xref:Hashgraph.CreateAccountReceipt) containing a property, [`Address`](xref:Hashgraph.Address), identifying the newly created account.   The following code example illustrates a small program performing these actions:
 
 ```csharp
 class Program
