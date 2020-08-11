@@ -11,7 +11,7 @@
     <Description>.NET Client Library for Hedera Hashgraph</Description>
     <Copyright>Copyright 2019 BugBytes, Inc. All Rights Reserved.</Copyright>
     <PackageLicenseFile></PackageLicenseFile>
-    <PackageProjectUrl>https://github.com/bugbytesinc/Hashgraph</PackageProjectUrl>
+    <PackageProjectUrl>https://bugbytesinc.github.io/Hashgraph/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/bugbytesinc/Hashgraph.git</RepositoryUrl>
     <PackageTags>Hedera Hashgraph Protobuf</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
