@@ -62,7 +62,7 @@ namespace Hashgraph.Extensions
         public static async Task<SubmitMessageReceipt[]> SubmitLargeMessageAsync(this Client client, Address topic, ReadOnlyMemory<byte> message, int segmentSize, Signatory? signatory = null, Action<IContext>? configure = null)
         {
             await using var configuredClient = client.Clone(configure);
-            var segmentCount = message.Length / segmentSize + 1;
+            var segmentCount = (message.Length - 1) / segmentSize + 1;
             var receipts = new SubmitMessageReceipt[segmentCount];
             receipts[0] = await configuredClient.SubmitMessageAsync(new SubmitMessageParams
             {

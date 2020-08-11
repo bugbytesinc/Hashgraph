@@ -206,5 +206,200 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(ResponseCode.InsufficientPayerBalance, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InsufficientPayerBalance", pex.Message);
         }
+        [Fact(DisplayName = "Submit Large Message: Can Submit Large Segmented Message with Even Boundary")]
+        public async Task CanSubmitLargeSegmentedMessageWithEvenBoundary()
+        {
+            await using var fx = await TestTopic.CreateAsync(_network);
+            var segmentSize = Generator.Integer(100, 200);
+            var expectedCount = Generator.Integer(3, 10);            
+            var message = Encoding.ASCII.GetBytes(Generator.Code(segmentSize * expectedCount));
+            var receipts = await fx.Client.SubmitLargeMessageAsync(fx.Record.Topic, message, segmentSize, fx.ParticipantPrivateKey);
+            Assert.Equal(expectedCount, receipts.Length);
+            for (int i = 0; i < expectedCount; i++)
+            {
+                var receipt = receipts[i];
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+                Assert.Equal((ulong)(i + 1), receipt.SequenceNumber);
+                Assert.False(receipt.RunningHash.IsEmpty);
+                Assert.Equal(2ul, receipt.RunningHashVersion);
+            }
+
+            var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
+            Assert.Equal(fx.Memo, info.Memo);
+            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.Equal((ulong)expectedCount, info.SequenceNumber);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
+            Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
+            Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+            Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+
+            await Task.Delay(7000); // give the beta net time to sync
+
+            try
+            {
+                await using var mirror = _network.NewMirror();
+                var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, expectedCount, 7000);
+                if (topicMessages.Length == 0)
+                {
+                    _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                }
+                else
+                {
+                    var pointerIndex = 0;
+                    var reconstitutedMessage = new byte[message.Length];
+                    Assert.Equal(expectedCount, topicMessages.Length);
+                    for (int i = 0; i < topicMessages.Length; i++)
+                    {
+                        var topicMessage = topicMessages[i];
+                        Assert.Equal(fx.Record.Topic, topicMessage.Topic);
+                        Assert.Equal((ulong)i + 1, topicMessage.SequenceNumber);
+                        Assert.Equal(receipts[i].RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
+                        Assert.NotNull(topicMessage.SegmentInfo);
+                        Assert.Equal(receipts[0].Id, topicMessage.SegmentInfo.ParentTxId);
+                        Assert.Equal(i + 1, topicMessage.SegmentInfo.Index);
+                        Assert.Equal(expectedCount, topicMessage.SegmentInfo.TotalSegmentCount);
+                        topicMessage.Messsage.ToArray().CopyTo(reconstitutedMessage, pointerIndex);
+                        pointerIndex += topicMessage.Messsage.Length;
+                    }
+                    Assert.Equal(message.ToArray(), reconstitutedMessage);
+                }
+            }
+            catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
+            {
+                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RECEIVE TOPIC CREATE IN ALLOWED TIME");
+                return;
+            }
+        }
+        [Fact(DisplayName = "Submit Large Message: Can Submit Large Segmented Message with Even Boundary")]
+        public async Task CanSubmitLargeSegmentedMessageSmallerThanSegment()
+        {
+            await using var fx = await TestTopic.CreateAsync(_network);
+            var segmentSize = Generator.Integer(100, 200);
+            var expectedCount = 1;
+            var message = Encoding.ASCII.GetBytes(Generator.Code(segmentSize / 2));
+            var receipts = await fx.Client.SubmitLargeMessageAsync(fx.Record.Topic, message, segmentSize, fx.ParticipantPrivateKey);
+            Assert.Equal(expectedCount, receipts.Length);
+            for (int i = 0; i < expectedCount; i++)
+            {
+                var receipt = receipts[i];
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+                Assert.Equal((ulong)(i + 1), receipt.SequenceNumber);
+                Assert.False(receipt.RunningHash.IsEmpty);
+                Assert.Equal(2ul, receipt.RunningHashVersion);
+            }
+
+            var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
+            Assert.Equal(fx.Memo, info.Memo);
+            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.Equal((ulong)expectedCount, info.SequenceNumber);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
+            Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
+            Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+            Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+
+            await Task.Delay(7000); // give the beta net time to sync
+
+            try
+            {
+                await using var mirror = _network.NewMirror();
+                var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, expectedCount, 7000);
+                if (topicMessages.Length == 0)
+                {
+                    _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                }
+                else
+                {
+                    var pointerIndex = 0;
+                    var reconstitutedMessage = new byte[message.Length];
+                    Assert.Equal(expectedCount, topicMessages.Length);
+                    for (int i = 0; i < topicMessages.Length; i++)
+                    {
+                        var topicMessage = topicMessages[i];
+                        Assert.Equal(fx.Record.Topic, topicMessage.Topic);
+                        Assert.Equal((ulong)i + 1, topicMessage.SequenceNumber);
+                        Assert.Equal(receipts[i].RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
+                        Assert.NotNull(topicMessage.SegmentInfo);
+                        Assert.Equal(receipts[0].Id, topicMessage.SegmentInfo.ParentTxId);
+                        Assert.Equal(i + 1, topicMessage.SegmentInfo.Index);
+                        Assert.Equal(expectedCount, topicMessage.SegmentInfo.TotalSegmentCount);
+                        topicMessage.Messsage.ToArray().CopyTo(reconstitutedMessage, pointerIndex);
+                        pointerIndex += topicMessage.Messsage.Length;
+                    }
+                    Assert.Equal(message.ToArray(), reconstitutedMessage);
+                }
+            }
+            catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
+            {
+                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RECEIVE TOPIC CREATE IN ALLOWED TIME");
+                return;
+            }
+        }
+        [Fact(DisplayName = "Submit Large Message: Can Submit Large Segmented Message with Two Segments")]
+        public async Task CanSubmitLargeSegmentedMessageWithTwoSegments()
+        {
+            await using var fx = await TestTopic.CreateAsync(_network);
+            var segmentSize = Generator.Integer(100, 200);
+            var expectedCount = 2;
+            var message = Encoding.ASCII.GetBytes(Generator.Code(3 * segmentSize / 2));
+            var receipts = await fx.Client.SubmitLargeMessageAsync(fx.Record.Topic, message, segmentSize, fx.ParticipantPrivateKey);
+            Assert.Equal(expectedCount, receipts.Length);
+            for (int i = 0; i < expectedCount; i++)
+            {
+                var receipt = receipts[i];
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+                Assert.Equal((ulong)(i + 1), receipt.SequenceNumber);
+                Assert.False(receipt.RunningHash.IsEmpty);
+                Assert.Equal(2ul, receipt.RunningHashVersion);
+            }
+
+            var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
+            Assert.Equal(fx.Memo, info.Memo);
+            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.Equal((ulong)expectedCount, info.SequenceNumber);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
+            Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
+            Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+            Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+
+            await Task.Delay(7000); // give the beta net time to sync
+
+            try
+            {
+                await using var mirror = _network.NewMirror();
+                var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, expectedCount, 7000);
+                if (topicMessages.Length == 0)
+                {
+                    _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
+                }
+                else
+                {
+                    var pointerIndex = 0;
+                    var reconstitutedMessage = new byte[message.Length];
+                    Assert.Equal(expectedCount, topicMessages.Length);
+                    for (int i = 0; i < topicMessages.Length; i++)
+                    {
+                        var topicMessage = topicMessages[i];
+                        Assert.Equal(fx.Record.Topic, topicMessage.Topic);
+                        Assert.Equal((ulong)i + 1, topicMessage.SequenceNumber);
+                        Assert.Equal(receipts[i].RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
+                        Assert.NotNull(topicMessage.SegmentInfo);
+                        Assert.Equal(receipts[0].Id, topicMessage.SegmentInfo.ParentTxId);
+                        Assert.Equal(i + 1, topicMessage.SegmentInfo.Index);
+                        Assert.Equal(expectedCount, topicMessage.SegmentInfo.TotalSegmentCount);
+                        topicMessage.Messsage.ToArray().CopyTo(reconstitutedMessage, pointerIndex);
+                        pointerIndex += topicMessage.Messsage.Length;
+                    }
+                    Assert.Equal(message.ToArray(), reconstitutedMessage);
+                }
+            }
+            catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
+            {
+                _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RECEIVE TOPIC CREATE IN ALLOWED TIME");
+                return;
+            }
+        }
     }
 }
