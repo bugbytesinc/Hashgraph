@@ -33,7 +33,7 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(ResponseCode.Success, receipt.Status);
                 Assert.Equal((ulong)(i + 1), receipt.SequenceNumber);
                 Assert.False(receipt.RunningHash.IsEmpty);
-                Assert.Equal(2ul, receipt.RunningHashVersion);
+                Assert.Equal(3ul, receipt.RunningHashVersion);
             }
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
@@ -171,13 +171,13 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(ResponseCode.Success, receipt.Status);
                 Assert.Equal((ulong)(i + 1), receipt.SequenceNumber);
                 Assert.False(receipt.RunningHash.IsEmpty);
-                Assert.Equal(2ul, receipt.RunningHashVersion);
+                Assert.Equal(3ul, receipt.RunningHashVersion);
 
                 var genericRecord = await fx.Client.GetTransactionRecordAsync(receipt.Id);
                 var messageRecord = Assert.IsType<SubmitMessageRecord>(genericRecord);
                 Assert.Equal(ResponseCode.Success, messageRecord.Status);
                 Assert.Equal((ulong)(i + 1), messageRecord.SequenceNumber);
-                Assert.Equal(2ul, messageRecord.RunningHashVersion);
+                Assert.Equal(3ul, messageRecord.RunningHashVersion);
                 Assert.Equal(receipt.Id, messageRecord.Id);
                 Assert.Equal(receipt.RunningHash.ToArray(), messageRecord.RunningHash.ToArray());
                 Assert.False(messageRecord.Hash.IsEmpty);
@@ -221,7 +221,7 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(ResponseCode.Success, receipt.Status);
                 Assert.Equal((ulong)(i + 1), receipt.SequenceNumber);
                 Assert.False(receipt.RunningHash.IsEmpty);
-                Assert.Equal(2ul, receipt.RunningHashVersion);
+                Assert.Equal(3ul, receipt.RunningHashVersion);
             }
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
@@ -286,7 +286,7 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(ResponseCode.Success, receipt.Status);
                 Assert.Equal((ulong)(i + 1), receipt.SequenceNumber);
                 Assert.False(receipt.RunningHash.IsEmpty);
-                Assert.Equal(2ul, receipt.RunningHashVersion);
+                Assert.Equal(3ul, receipt.RunningHashVersion);
             }
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
@@ -351,7 +351,7 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(ResponseCode.Success, receipt.Status);
                 Assert.Equal((ulong)(i + 1), receipt.SequenceNumber);
                 Assert.False(receipt.RunningHash.IsEmpty);
-                Assert.Equal(2ul, receipt.RunningHashVersion);
+                Assert.Equal(3ul, receipt.RunningHashVersion);
             }
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);

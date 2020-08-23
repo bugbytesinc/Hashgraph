@@ -29,7 +29,7 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(ResponseCode.Success, receipt.Status);
                 Assert.Equal(1ul, receipt.SequenceNumber);
                 Assert.False(receipt.RunningHash.IsEmpty);
-                Assert.Equal(2ul, receipt.RunningHashVersion);
+                Assert.Equal(3ul, receipt.RunningHashVersion);
 
                 await Task.Delay(5000); // give the beta net time to sync
 

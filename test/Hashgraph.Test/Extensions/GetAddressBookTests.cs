@@ -35,12 +35,11 @@ namespace Hashgraph.Test.Extensions
             var node = book.FirstOrDefault(n => n.Memo == nodeId);
             Assert.NotNull(node);
             Assert.NotNull(node.RsaPublicKey);
+            Assert.Equal(_network.Gateway, node.Address);
             // NOT IMPLEMENTED YET ON TESTNET
             Assert.Empty(node.IpAddress);
             Assert.Equal(0, node.Port);
             Assert.Equal(0, node.CertificateHash.Length);
-            //Assert.Equal(_network.Gateway, node.Address);
-            Assert.Equal(Address.None, node.Address);
         }
         [Fact(DisplayName = "Address Book: Can Get Address Book Manually")]
         public async Task CanGetAddressBookManually()

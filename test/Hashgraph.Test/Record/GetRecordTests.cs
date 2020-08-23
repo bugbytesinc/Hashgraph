@@ -45,17 +45,31 @@ namespace Hashgraph.Test.Record
             Assert.Equal("transaction", ane.ParamName);
             Assert.StartsWith("Transaction is missing. Please check that it is not null.", ane.Message);
         }
-        [Fact(DisplayName = "Get Record: Invalid Transaction ID throws error.")]
-        public async Task InvalidTransactionIdThrowsError()
+
+        [Fact(DisplayName = "NETWORK V0.7.0 REGRESSION: Get Record: Invalid Transaction ID throws error.")]
+        public async Task InvalidTransactionIdThrowsErrorNetVersion070Regression()
         {
-            await using var client = _network.NewClient();
-            var txId = new Proto.TransactionID { AccountID = new Proto.AccountID(_network.Payer), TransactionValidStart = new Proto.Timestamp { Seconds = 500, Nanos = 100 } }.ToTxId();
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            // The following unit test used to throw a precheck exception because
+            // the COST_ANSWER would error out if the record did not exist, will
+            // this be restored or is this the new (wasteful) behavior?  For now
+            // mark this test as a regression and we will wait and see if it changes
+            // in the next version.  If not, we will need to look into changing
+            // the behavior of the library in an attempt to not waste client hBars.
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(InvalidTransactionIdThrowsError));
+            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+
+            // [Fact(DisplayName = "Get Record: Invalid Transaction ID throws error.")]
+            async Task InvalidTransactionIdThrowsError()
             {
-                await client.GetTransactionRecordAsync(txId);
-            });
-            Assert.Equal(ResponseCode.RecordNotFound, pex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: RecordNotFound", pex.Message);
+                await using var client = _network.NewClient();
+                var txId = new Proto.TransactionID { AccountID = new Proto.AccountID(_network.Payer), TransactionValidStart = new Proto.Timestamp { Seconds = 500, Nanos = 100 } }.ToTxId();
+                var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+                {
+                    await client.GetTransactionRecordAsync(txId);
+                });
+                Assert.Equal(ResponseCode.RecordNotFound, pex.Status);
+                Assert.StartsWith("Transaction Failed Pre-Check: RecordNotFound", pex.Message);
+            }
         }
         [Fact(DisplayName = "Get Record: Can Get Record for Existing but Failed Transaction")]
         public async Task CanGetRecordForFailedTransaction()

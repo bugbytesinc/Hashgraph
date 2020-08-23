@@ -26,7 +26,7 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(ResponseCode.Success, receipt.Status);
             Assert.Equal(1ul, receipt.SequenceNumber);
             Assert.False(receipt.RunningHash.IsEmpty);
-            Assert.Equal(2ul, receipt.RunningHashVersion);
+            Assert.Equal(3ul, receipt.RunningHashVersion);
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
@@ -51,7 +51,7 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(ResponseCode.Success, receipt.Status);
             Assert.Equal(1ul, receipt.SequenceNumber);
             Assert.False(receipt.RunningHash.IsEmpty);
-            Assert.Equal(2ul, receipt.RunningHashVersion);
+            Assert.Equal(3ul, receipt.RunningHashVersion);
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
@@ -144,7 +144,7 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(ResponseCode.Success, receipt.Status);
                 Assert.Equal((ulong)i + 1, receipt.SequenceNumber);
                 Assert.False(receipt.RunningHash.IsEmpty);
-                Assert.Equal(2ul, receipt.RunningHashVersion);
+                Assert.Equal(3ul, receipt.RunningHashVersion);
             }
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
