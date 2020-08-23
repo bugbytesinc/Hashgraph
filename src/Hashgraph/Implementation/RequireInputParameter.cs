@@ -161,6 +161,10 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(updateParameters.Address), "Account is missing. Please check that it is not null.");
             }
+            if (Hashgraph.Endorsement.None.Equals(updateParameters.Endorsement))
+            {
+                throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsement), "Endorsment can not be 'None', it must contain at least one key requirement.");
+            }
             if (updateParameters.Endorsement is null &&
                 updateParameters.SendThresholdCreateRecord is null &&
                 updateParameters.ReceiveThresholdCreateRecord is null &&
