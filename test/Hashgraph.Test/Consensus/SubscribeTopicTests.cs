@@ -61,7 +61,7 @@ namespace Hashgraph.Test.Topic
                     Assert.Equal(fx.Record.Topic, topicMessage.Topic);
                     Assert.Equal(1ul, topicMessage.SequenceNumber);
                     Assert.Equal(receipt.RunningHash.ToArray(), topicMessage.RunningHash.ToArray());
-                    Assert.Equal(2ul, receipt.RunningHashVersion);
+                    Assert.Equal(3ul, receipt.RunningHashVersion);
                     Assert.Equal(message, topicMessage.Messsage.ToArray());
                     Assert.Null(topicMessage.SegmentInfo);
                 }
@@ -69,7 +69,7 @@ namespace Hashgraph.Test.Topic
                 var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
                 Assert.Equal(fx.Memo, info.Memo);
                 Assert.NotEqual(receipt.RunningHash.ToArray(), info.RunningHash);
-                Assert.Equal(2UL, receipt.RunningHashVersion);
+                Assert.Equal(3UL, receipt.RunningHashVersion);
                 Assert.Equal(1UL, info.SequenceNumber);
                 Assert.True(info.Expiration > DateTime.MinValue);
                 Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
