@@ -37,99 +37,115 @@ namespace Hashgraph.Test.Record
             Assert.NotNull(records);
             Assert.Empty(records);
         }
-        [Fact(DisplayName = "Account Records: NETWORK BUG: Can get inbound transfers above specified threshold, but only if enough crypto to create them.")]
-        public async Task GetTransactionRecordsForRecentTransfersInAboveThreshold()
+        [Fact(DisplayName = "NETWORK V0.7.0 REGRESSION: Account Records: NETWORK BUG: Can get inbound transfers above specified threshold, but only if enough crypto to create them.")]
+        public async Task GetTransactionRecordsForRecentTransfersInAboveThresholdNetworkVersion070Regression()
         {
-            await using var fx = await TestAccount.CreateAsync(_network, fixture => fixture.CreateParams.InitialBalance = 1);
-            await fx.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
-            {
-                Address = fx.Record.Address,
-                Signatory = fx.PrivateKey,
-                ReceiveThresholdCreateRecord = 10
-            });
-            var record1 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, 1);
-            var record2 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, 11);
-            Assert.Equal(13ul, await fx.Client.GetAccountBalanceAsync(fx.Record.Address));
-            var record3 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(200, 300));
-            var record4 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(300, 400));
-            var record5 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(400, 500));
-            var records = await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
+            // Looks like threshold receive has been turned off.
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(GetTransactionRecordsForRecentTransfersInAboveThreshold));
+            Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
 
-            Assert.NotNull(records);
-            Assert.Equal(3, records.Length);
-            Assert.Null(records.FirstOrDefault(r => r.Id == record1.Id));
-            Assert.Null(records.FirstOrDefault(r => r.Id == record2.Id));
-            var copy3 = records.FirstOrDefault(r => r.Id == record3.Id);
-            Assert.NotNull(copy3);
-            Assert.Equal(record3.Status, copy3.Status);
-            Assert.Equal(record3.Hash.ToArray(), copy3.Hash.ToArray());
-            Assert.Equal(record3.Concensus, copy3.Concensus);
-            Assert.Equal(record3.Memo, copy3.Memo);
-            Assert.Equal(record3.Fee, copy3.Fee);
-            var copy4 = records.FirstOrDefault(r => r.Id == record4.Id);
-            Assert.NotNull(copy4);
-            Assert.Equal(record4.Status, copy4.Status);
-            Assert.Equal(record4.Hash.ToArray(), copy4.Hash.ToArray());
-            Assert.Equal(record4.Concensus, copy4.Concensus);
-            Assert.Equal(record4.Memo, copy4.Memo);
-            Assert.Equal(record4.Fee, copy4.Fee);
-            var copy5 = records.FirstOrDefault(r => r.Id == record5.Id);
-            Assert.NotNull(copy5);
-            Assert.Equal(record5.Status, copy5.Status);
-            Assert.Equal(record5.Hash.ToArray(), copy5.Hash.ToArray());
-            Assert.Equal(record5.Concensus, copy5.Concensus);
-            Assert.Equal(record5.Memo, copy5.Memo);
-            Assert.Equal(record5.Fee, copy5.Fee);
-        }
-        [Fact(DisplayName = "Account Records: Can get outbound transfers above specified threshold.")]
-        public async Task GetTransactionRecordsForRecentTransfersOutAboveThreshold()
-        {
-            await using var fx = await TestAccount.CreateAsync(_network);
-            var fromAccount = fx.Record.Address;
-            await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+            //[Fact(DisplayName = "Account Records: NETWORK BUG: Can get inbound transfers above specified threshold, but only if enough crypto to create them.")]
+            async Task GetTransactionRecordsForRecentTransfersInAboveThreshold()
             {
-                Address = fromAccount,
-                Signatory = fx.PrivateKey,
-                SendThresholdCreateRecord = 100
-            });
-            await fx.Client.TransferWithRecordAsync(_network.Payer, fromAccount, 1_000_000);
-            var record1 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(10, 90), fx.PrivateKey);
-            var record2 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(101, 200), fx.PrivateKey);
-            var record3 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(200, 300), fx.PrivateKey);
-            var record4 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(300, 400), fx.PrivateKey);
-            var record5 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(400, 500), fx.PrivateKey);
-            var records = await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
-            Assert.NotNull(records);
-            Assert.Equal(4, records.Length);
-            Assert.Null(records.FirstOrDefault(r => r.Id == record1.Id));
-            var copy2 = records.FirstOrDefault(r => r.Id == record2.Id);
-            Assert.NotNull(copy2);
-            Assert.Equal(record2.Status, copy2.Status);
-            Assert.Equal(record2.Hash.ToArray(), copy2.Hash.ToArray());
-            Assert.Equal(record2.Concensus, copy2.Concensus);
-            Assert.Equal(record2.Memo, copy2.Memo);
-            Assert.Equal(record2.Fee, copy2.Fee);
-            var copy3 = records.FirstOrDefault(r => r.Id == record3.Id);
-            Assert.NotNull(copy3);
-            Assert.Equal(record3.Status, copy3.Status);
-            Assert.Equal(record3.Hash.ToArray(), copy3.Hash.ToArray());
-            Assert.Equal(record3.Concensus, copy3.Concensus);
-            Assert.Equal(record3.Memo, copy3.Memo);
-            Assert.Equal(record3.Fee, copy3.Fee);
-            var copy4 = records.FirstOrDefault(r => r.Id == record4.Id);
-            Assert.NotNull(copy4);
-            Assert.Equal(record4.Status, copy4.Status);
-            Assert.Equal(record4.Hash.ToArray(), copy4.Hash.ToArray());
-            Assert.Equal(record4.Concensus, copy4.Concensus);
-            Assert.Equal(record4.Memo, copy4.Memo);
-            Assert.Equal(record4.Fee, copy4.Fee);
-            var copy5 = records.FirstOrDefault(r => r.Id == record5.Id);
-            Assert.NotNull(copy5);
-            Assert.Equal(record5.Status, copy5.Status);
-            Assert.Equal(record5.Hash.ToArray(), copy5.Hash.ToArray());
-            Assert.Equal(record5.Concensus, copy5.Concensus);
-            Assert.Equal(record5.Memo, copy5.Memo);
-            Assert.Equal(record5.Fee, copy5.Fee);
+                await using var fx = await TestAccount.CreateAsync(_network, fixture => fixture.CreateParams.InitialBalance = 1);
+                await fx.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+                {
+                    Address = fx.Record.Address,
+                    Signatory = fx.PrivateKey,
+                    ReceiveThresholdCreateRecord = 10
+                });
+                var record1 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, 1);
+                var record2 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, 11);
+                Assert.Equal(13ul, await fx.Client.GetAccountBalanceAsync(fx.Record.Address));
+                var record3 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(200, 300));
+                var record4 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(300, 400));
+                var record5 = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, Generator.Integer(400, 500));
+                var records = await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
+
+                Assert.NotNull(records);
+                Assert.Equal(3, records.Length);
+                Assert.Null(records.FirstOrDefault(r => r.Id == record1.Id));
+                Assert.Null(records.FirstOrDefault(r => r.Id == record2.Id));
+                var copy3 = records.FirstOrDefault(r => r.Id == record3.Id);
+                Assert.NotNull(copy3);
+                Assert.Equal(record3.Status, copy3.Status);
+                Assert.Equal(record3.Hash.ToArray(), copy3.Hash.ToArray());
+                Assert.Equal(record3.Concensus, copy3.Concensus);
+                Assert.Equal(record3.Memo, copy3.Memo);
+                Assert.Equal(record3.Fee, copy3.Fee);
+                var copy4 = records.FirstOrDefault(r => r.Id == record4.Id);
+                Assert.NotNull(copy4);
+                Assert.Equal(record4.Status, copy4.Status);
+                Assert.Equal(record4.Hash.ToArray(), copy4.Hash.ToArray());
+                Assert.Equal(record4.Concensus, copy4.Concensus);
+                Assert.Equal(record4.Memo, copy4.Memo);
+                Assert.Equal(record4.Fee, copy4.Fee);
+                var copy5 = records.FirstOrDefault(r => r.Id == record5.Id);
+                Assert.NotNull(copy5);
+                Assert.Equal(record5.Status, copy5.Status);
+                Assert.Equal(record5.Hash.ToArray(), copy5.Hash.ToArray());
+                Assert.Equal(record5.Concensus, copy5.Concensus);
+                Assert.Equal(record5.Memo, copy5.Memo);
+                Assert.Equal(record5.Fee, copy5.Fee);
+            }
+        }
+        [Fact(DisplayName = "NETWORK V0.7.0 REGRESSION: Account Records: Can get outbound transfers above specified threshold.")]
+        public async Task GetTransactionRecordsForRecentTransfersOutAboveThresholdNetworkVersion070Regression()
+        {
+            // Looks like threshold receive has been turned off.
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(GetTransactionRecordsForRecentTransfersOutAboveThreshold));
+            Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
+
+            //[Fact(DisplayName = "Account Records: Can get outbound transfers above specified threshold.")]
+            async Task GetTransactionRecordsForRecentTransfersOutAboveThreshold()
+            {
+                await using var fx = await TestAccount.CreateAsync(_network);
+                var fromAccount = fx.Record.Address;
+                await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+                {
+                    Address = fromAccount,
+                    Signatory = fx.PrivateKey,
+                    SendThresholdCreateRecord = 100
+                });
+                await fx.Client.TransferWithRecordAsync(_network.Payer, fromAccount, 1_000_000);
+                var record1 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(10, 90), fx.PrivateKey);
+                var record2 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(101, 200), fx.PrivateKey);
+                var record3 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(200, 300), fx.PrivateKey);
+                var record4 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(300, 400), fx.PrivateKey);
+                var record5 = await fx.Client.TransferWithRecordAsync(fromAccount, _network.Payer, Generator.Integer(400, 500), fx.PrivateKey);
+                var records = await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
+                Assert.NotNull(records);
+                Assert.Equal(4, records.Length);
+                Assert.Null(records.FirstOrDefault(r => r.Id == record1.Id));
+                var copy2 = records.FirstOrDefault(r => r.Id == record2.Id);
+                Assert.NotNull(copy2);
+                Assert.Equal(record2.Status, copy2.Status);
+                Assert.Equal(record2.Hash.ToArray(), copy2.Hash.ToArray());
+                Assert.Equal(record2.Concensus, copy2.Concensus);
+                Assert.Equal(record2.Memo, copy2.Memo);
+                Assert.Equal(record2.Fee, copy2.Fee);
+                var copy3 = records.FirstOrDefault(r => r.Id == record3.Id);
+                Assert.NotNull(copy3);
+                Assert.Equal(record3.Status, copy3.Status);
+                Assert.Equal(record3.Hash.ToArray(), copy3.Hash.ToArray());
+                Assert.Equal(record3.Concensus, copy3.Concensus);
+                Assert.Equal(record3.Memo, copy3.Memo);
+                Assert.Equal(record3.Fee, copy3.Fee);
+                var copy4 = records.FirstOrDefault(r => r.Id == record4.Id);
+                Assert.NotNull(copy4);
+                Assert.Equal(record4.Status, copy4.Status);
+                Assert.Equal(record4.Hash.ToArray(), copy4.Hash.ToArray());
+                Assert.Equal(record4.Concensus, copy4.Concensus);
+                Assert.Equal(record4.Memo, copy4.Memo);
+                Assert.Equal(record4.Fee, copy4.Fee);
+                var copy5 = records.FirstOrDefault(r => r.Id == record5.Id);
+                Assert.NotNull(copy5);
+                Assert.Equal(record5.Status, copy5.Status);
+                Assert.Equal(record5.Hash.ToArray(), copy5.Hash.ToArray());
+                Assert.Equal(record5.Concensus, copy5.Concensus);
+                Assert.Equal(record5.Memo, copy5.Memo);
+                Assert.Equal(record5.Fee, copy5.Fee);
+            }
         }
 
 
@@ -156,39 +172,47 @@ namespace Hashgraph.Test.Record
             Assert.Equal(ResponseCode.AccountDeleted, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: AccountDeleted", pex.Message);
         }
-        [Fact(DisplayName = "Account Records: Receiving account pays for record generation.")]
-        public async Task ReceivingAccountPaysForRecordGeneration()
+        [Fact(DisplayName = "NETWORK V0.7.0 REGRESSION: Account Records: Receiving account pays for record generation.")]
+        public async Task ReceivingAccountPaysForRecordGenerationNetworkVersion070Regression()
         {
-            await using var fx = await TestAccount.CreateAsync(_network);
-            await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, 10_000_000);
-            await fx.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+            // Regression due to record threshold feature being turned off.
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.SingleException>(ReceivingAccountPaysForRecordGeneration));
+            Assert.StartsWith("The collection was expected", testFailException.Message);
+
+            //[Fact(DisplayName = "Account Records: Receiving account pays for record generation.")]
+            async Task ReceivingAccountPaysForRecordGeneration()
             {
-                Address = fx.Record.Address,
-                Signatory = fx.PrivateKey,
-                ReceiveThresholdCreateRecord = 0
-            });
-            var infoBeforeTransfer = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
-            var payerBalanceBefore = await fx.Client.GetAccountBalanceAsync(_network.Payer);
-            var transferReceipt = await fx.Client.TransferAsync(_network.Payer, fx.Record.Address, 1);
-            var payerBalanceAfter = await fx.Client.GetAccountBalanceAsync(_network.Payer);
-            var transferRecord = await fx.Client.GetTransactionRecordAsync(transferReceipt.Id);
-            var infoAfterTransfer = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
-            var records = await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
+                await using var fx = await TestAccount.CreateAsync(_network);
+                await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, 10_000_000);
+                await fx.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+                {
+                    Address = fx.Record.Address,
+                    Signatory = fx.PrivateKey,
+                    ReceiveThresholdCreateRecord = 0
+                });
+                var infoBeforeTransfer = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+                var payerBalanceBefore = await fx.Client.GetAccountBalanceAsync(_network.Payer);
+                var transferReceipt = await fx.Client.TransferAsync(_network.Payer, fx.Record.Address, 1);
+                var payerBalanceAfter = await fx.Client.GetAccountBalanceAsync(_network.Payer);
+                var transferRecord = await fx.Client.GetTransactionRecordAsync(transferReceipt.Id);
+                var infoAfterTransfer = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+                var records = await fx.Client.GetAccountRecordsAsync(fx.Record.Address);
 
-            Assert.NotNull(records);
-            Assert.Single(records);
-            Assert.Equal(transferRecord.Status, records[0].Status);
-            Assert.Equal(transferRecord.Hash.ToArray(), records[0].Hash.ToArray());
-            Assert.Equal(transferRecord.Concensus, records[0].Concensus);
-            Assert.Equal(transferRecord.Memo, records[0].Memo);
-            Assert.Equal(transferRecord.Fee, records[0].Fee);
+                Assert.NotNull(records);
+                Assert.Single(records);
+                Assert.Equal(transferRecord.Status, records[0].Status);
+                Assert.Equal(transferRecord.Hash.ToArray(), records[0].Hash.ToArray());
+                Assert.Equal(transferRecord.Concensus, records[0].Concensus);
+                Assert.Equal(transferRecord.Memo, records[0].Memo);
+                Assert.Equal(transferRecord.Fee, records[0].Fee);
 
-            // Note: Balance Goes DOWN for vicitim
-            var victimLoss = infoBeforeTransfer.Balance - infoAfterTransfer.Balance;
-            Assert.True(victimLoss > 1);
+                // Note: Balance Goes DOWN for vicitim
+                var victimLoss = infoBeforeTransfer.Balance - infoAfterTransfer.Balance;
+                Assert.True(victimLoss > 1);
 
-            var attackerCost = payerBalanceBefore - payerBalanceAfter;
-            Assert.True(attackerCost > 0);
+                var attackerCost = payerBalanceBefore - payerBalanceAfter;
+                Assert.True(attackerCost > 0);
+            }
         }
     }
 }
