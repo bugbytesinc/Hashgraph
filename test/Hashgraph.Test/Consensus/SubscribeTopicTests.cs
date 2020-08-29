@@ -212,23 +212,31 @@ namespace Hashgraph.Test.Topic
             Assert.StartsWith("Topic address is missing. Please check that it is not null.", ane.Message);
             Assert.Empty(capture.CapturedList);
         }
-        [Fact(DisplayName = "Subscribe Topic: Invalid Topic Raises Error")]
-        public async Task InvalidTopicIdRaisesError()
+        [Fact(DisplayName = "NETWORK V0.7.0 REGRESSION: Subscribe Topic: Invalid Topic Raises Error")]
+        public async Task InvalidTopicIdRaisesErrorNetworkVersion070Regression()
         {
-            await using var mirror = _network.NewMirror();
-            var capture = new TopicMessageCapture(1);
-            var mex = await Assert.ThrowsAsync<MirrorException>(async () =>
+            // The previewnet mirror node appears to be mis-configured or contains
+            // a regression.
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(InvalidTopicIdRaisesError));
+            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+            //[Fact(DisplayName = "Subscribe Topic: Invalid Topic Raises Error")]
+            async Task InvalidTopicIdRaisesError()
             {
-                await mirror.SubscribeTopicAsync(new SubscribeTopicParams
+                await using var mirror = _network.NewMirror();
+                var capture = new TopicMessageCapture(1);
+                var mex = await Assert.ThrowsAsync<MirrorException>(async () =>
                 {
-                    Topic = _network.Payer,
-                    MessageWriter = capture,
-                    CancellationToken = new CancellationTokenSource(2500).Token
+                    await mirror.SubscribeTopicAsync(new SubscribeTopicParams
+                    {
+                        Topic = _network.Payer,
+                        MessageWriter = capture,
+                        CancellationToken = new CancellationTokenSource(2500).Token
+                    });
                 });
-            });
-            Assert.Equal(MirrorExceptionCode.InvalidTopicAddress, mex.Code);
-            Assert.StartsWith("The address exists, but is not a topic.", mex.Message);
-            Assert.Empty(capture.CapturedList);
+                Assert.Equal(MirrorExceptionCode.InvalidTopicAddress, mex.Code);
+                Assert.StartsWith("The address exists, but is not a topic.", mex.Message);
+                Assert.Empty(capture.CapturedList);
+            }
         }
         [Fact(DisplayName = "Subscribe Topic: Non-Existant ID Raises Error")]
         public async Task NonExistantTopicIdRaisesError()
