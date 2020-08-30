@@ -46,7 +46,7 @@ namespace Hashgraph.Test.Topic
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
 
-            await Task.Delay(7000); // give the beta net time to sync
+            await Task.Delay(10000); // give the beta net time to sync
 
             try
             {
@@ -299,7 +299,7 @@ namespace Hashgraph.Test.Topic
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
 
-            await Task.Delay(7000); // give the beta net time to sync
+            await Task.Delay(10000); // give the beta net time to sync
 
             try
             {
@@ -364,7 +364,7 @@ namespace Hashgraph.Test.Topic
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
 
-            await Task.Delay(7000); // give the beta net time to sync
+            await Task.Delay(10000); // give the beta net time to sync
 
             try
             {
