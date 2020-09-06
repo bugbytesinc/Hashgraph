@@ -238,6 +238,66 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
             Assert.StartsWith("Unable to update Contract, status: ModifyingImmutableContract", tex.Message);
         }
+        [Fact(DisplayName = "NETWORK V0.7.0 BUG: Contract Update: Updating contract made immutable raises error.")]
+        public async Task BugWithUpdatingContractMadeImutableRaisesError()
+        {
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(UpdatingContractMadeImutableRaisesError));
+            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+
+            //[Fact(DisplayName = "Contract Update: Updating contract made immutable raises error.")]
+            async Task UpdatingContractMadeImutableRaisesError()
+            {
+                await using var fx = await GreetingContract.CreateAsync(_network);
+                await fx.Client.UpdateContractAsync(new UpdateContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    Administrator = Endorsement.None
+                });
+                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+                {
+                    await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                    {
+                        Contract = fx.ContractRecord.Contract,
+                        Memo = Generator.Code(50)
+                    });
+                });
+                Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
+                Assert.StartsWith("Unable to update Contract, status: ModifyingImmutableContract", tex.Message);
+            }
+        }
+        [Fact(DisplayName = "NETWORK V0.7.0 BUG: Contract Update: Updating contract made immutable (from separate admin key) raises error.")]
+        public async Task BugWithUpdatingContractMadeImutableFromSeparateAdminKeyRaisesError()
+        {
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(UpdatingContractMadeImutableFromSeparateAdminKeyRaisesError));
+            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+
+            //[Fact(DisplayName = "Contract Update: Updating contract made immutable (from separate admin key) raises error.")]
+            async Task UpdatingContractMadeImutableFromSeparateAdminKeyRaisesError()
+            {
+                var (adminPublic, adminPrivate) = Generator.KeyPair();
+                await using var fx = await GreetingContract.SetupAsync(_network);
+                fx.ContractParams.Administrator = adminPublic;
+                fx.ContractParams.Signatory = adminPrivate;
+                await fx.CompleteCreateAsync();
+
+                await fx.Client.UpdateContractAsync(new UpdateContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    Administrator = Endorsement.None,
+                    Signatory = adminPrivate
+                });
+                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+                {
+                    await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                    {
+                        Contract = fx.ContractRecord.Contract,
+                        Memo = Generator.Code(50)
+                    });
+                });
+                Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
+                Assert.StartsWith("Unable to update Contract, status: ModifyingImmutableContract", tex.Message);
+            }
+        }
         [Fact(DisplayName = "Contract Update: Updating an contract without admin key raises error.")]
         public async Task UpdatingContractWithoutAdminKeyRaisesError()
         {
@@ -331,6 +391,42 @@ namespace Hashgraph.Test.Contract
             });
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", tex.Message);
+        }
+        [Fact(DisplayName = "NETWORK V0.7.0 BUG: Contract Update: Anyone Can update contract that is made imutable.")]
+        async Task BugAnyoneCanUpdateContractMadeImutable()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network, ctx =>
+            {
+                ctx.CreateParams.InitialBalance = 100_00_000_000;
+            });
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+
+            var record = await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
+                Administrator = Endorsement.None
+            });
+
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(Endorsement.None, info.Administrator);
+
+            var newMemo = Generator.Code(50);
+            var receipt = await fxAccount.Client.UpdateContractAsync(new UpdateContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
+                Memo = newMemo
+            }, ctx =>
+            {
+                ctx.Payer = fxAccount.Record.Address;
+                ctx.Signatory = fxAccount.PrivateKey;
+            });
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(Endorsement.None, info.Administrator);
+            Assert.Equal(newMemo, info.Memo);
         }
     }
 }

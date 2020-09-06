@@ -35,11 +35,11 @@ namespace Hashgraph
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            var cost = (long)response.CryptogetAccountBalance.Header.Cost;
+            var cost = (long)response.NetworkGetVersionInfo.Header.Cost;
             if (cost > 0)
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.CryptogetAccountBalance.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
+                query.NetworkGetVersionInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
                 response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
