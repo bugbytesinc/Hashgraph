@@ -160,5 +160,126 @@ namespace Hashgraph.Test.Contract
             var infoAfter = await fxAccount.Client.GetAccountInfoAsync(fxAccount.Record.Address);
             Assert.Equal(infoBefore.Balance + (ulong)fxContract.ContractParams.InitialBalance, infoAfter.Balance);
         }
+        [Fact(DisplayName = "Contract Delete: Deleting an Imutable Contract Raises Error")]
+        public async Task DeleteImutableContractRaisesError()
+        {
+            await using var fx = await GreetingContract.CreateAsync(_network);
+            fx.ContractParams.Administrator = null;
+            await fx.CompleteCreateAsync();
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+            });
+            Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
+            Assert.StartsWith("Unable to delete contract, status: ModifyingImmutableContract", tex.Message);
+
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            Assert.NotNull(info);
+        }
+        [Fact(DisplayName = "NETWORK V0.7.0 BUG: Contract Delete: Can not delete contract that is made imutable.")]
+        public async Task BugWithDeleteContractMadeImutableRaisesError()
+        {
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(DeleteContractMadeImutableRaisesError));
+            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+
+            //[Fact(DisplayName = "Contract Delete: Can not delete contract that is made imutable.")]
+            async Task DeleteContractMadeImutableRaisesError()
+            {
+                await using var fx = await GreetingContract.CreateAsync(_network);
+
+                var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    Administrator = Endorsement.None
+                });
+
+                var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+                Assert.NotNull(info);
+                Assert.Equal(Endorsement.None, info.Administrator);
+
+                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+                {
+                    await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+                });
+                Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
+                Assert.StartsWith("Unable to delete contract, status: ModifyingImmutableContract", tex.Message);
+
+                info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+                Assert.NotNull(info);
+                Assert.Equal(Endorsement.None, info.Administrator);
+            }
+        }
+        [Fact(DisplayName = "NETWORK V0.7.0 BUG: Contract Delete: Can delete contract that is made imutable (separate admin key).")]
+        public async Task BugWithDeleteContractMadeImutableFromSeparateAdminKeyRaisesError()
+        {
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(DeleteContractMadeImutableFromSeparateAdminKeyRaisesError));
+            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+
+            //[Fact(DisplayName = "Contract Delete: Can not delete contract that is made imutable (separate admin key).")]
+            async Task DeleteContractMadeImutableFromSeparateAdminKeyRaisesError()
+            {
+                var (adminPublic, adminPrivate) = Generator.KeyPair();
+                await using var fx = await GreetingContract.SetupAsync(_network);
+                fx.ContractParams.Administrator = adminPublic;
+                fx.ContractParams.Signatory = adminPrivate;
+                await fx.CompleteCreateAsync();
+
+                var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    Administrator = Endorsement.None,
+                    Signatory = adminPrivate
+                });
+
+                var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+                Assert.NotNull(info);
+                Assert.Equal(Endorsement.None, info.Administrator);
+
+                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+                {
+                    await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+                });
+                Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
+                Assert.StartsWith("Unable to delete contract, status: ModifyingImmutableContract", tex.Message);
+
+                info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+                Assert.NotNull(info);
+                Assert.Equal(Endorsement.None, info.Administrator);
+            }
+        }
+        [Fact(DisplayName = "NETWORK V0.7.0 BUG: Contract Delete: Anyone Can delete contract that is made imutable.")]
+        async Task BugAnyoneCanDeleteContractMadeImutable()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network, ctx => {
+                ctx.CreateParams.InitialBalance = 100_00_000_000;
+            });
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+
+            var record = await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+            {
+                Contract = fxContract.ContractRecord.Contract,
+                Administrator = Endorsement.None
+            });
+
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(Endorsement.None, info.Administrator);
+
+            var receipt = await fxAccount.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount.Record.Address, ctx => {
+                ctx.Payer = fxAccount.Record.Address;
+                ctx.Signatory = fxAccount.PrivateKey;
+            });
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            });
+            Assert.Equal(ResponseCode.ContractDeleted, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: ContractDeleted", pex.Message);
+        }
     }
 }
+
+
