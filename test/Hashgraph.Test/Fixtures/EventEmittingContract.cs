@@ -95,5 +95,9 @@ namespace Hashgraph.Test.Fixtures
             await Client.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED Event Emit Contract Instance");
         }
+        public static implicit operator Address(EventEmittingContract fxContract)
+        {
+            return fxContract.ContractRecord.Contract;
+        }
     }
 }

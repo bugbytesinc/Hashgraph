@@ -96,7 +96,7 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_SOLIDITY_ID")] InvalidSolidityId = 20,
         /// <summary>
-        /// Transaction hasn't yet reached consensus, or has already expired
+        /// The responding node has submitted the transaction to the network. Its final status is still unknown.
         /// </summary>
         [Description("UNKNOWN")] Unknown = 21,
         /// <summary>
@@ -288,7 +288,7 @@ namespace Hashgraph
         /// </summary>
         [Description("KEY_PREFIX_MISMATCH")] KeyPrefixMismatch = 68,
         /// <summary>
-        /// transaction not created by platform due to either large backlog or message size exceeded transactionMaxBytes
+        /// transaction not created by platform due to large backlog
         /// </summary>
         [Description("PLATFORM_TRANSACTION_NOT_CREATED")] PlatformTransactionNotCreated = 69,
         /// <summary>
@@ -356,11 +356,11 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_INITIAL_BALANCE")] InvalidInitialBalance = 85,
         /// <summary>
-        /// attempt to set negative receive record threshold
+        /// [Deprecated]. attempt to set negative receive record threshold
         /// </summary>
         [Description("INVALID_RECEIVE_RECORD_THRESHOLD")] InvalidReceiveRecordThreshold = 86,
         /// <summary>
-        /// attempt to set negative send record threshold
+        /// [Deprecated]. attempt to set negative send record threshold
         /// </summary>
         [Description("INVALID_SEND_RECORD_THRESHOLD")] InvalidSendRecordThreshold = 87,
         /// <summary>
@@ -463,7 +463,7 @@ namespace Hashgraph
         [Description("INVALID_ADMIN_KEY")] InvalidAdminKey = 155,
         [Description("INVALID_SUBMIT_KEY")] InvalidSubmitKey = 156,
         /// <summary>
-        /// An attempted operation was not authorized (ie - a deleteTopic for a topic with no adminKey).
+        /// An attempted operation was not authorized (ie - a deleteTopic for a topic with no adminKey, a tokenUpdate or tokenDelete for token with no adminKey).
         /// </summary>
         [Description("UNAUTHORIZED")] Unauthorized = 157,
         /// <summary>
@@ -492,5 +492,32 @@ namespace Hashgraph
         /// For every chunk, the payer account that is part of initialTransactionID must match the Payer Account of this transaction. The entire initialTransactionID should match the transactionID of the first chunk, but this is not checked or enforced by Hedera except when the chunk number is 1.
         /// </summary>
         [Description("INVALID_CHUNK_TRANSACTION_ID")] InvalidChunkTransactionId = 164,
+        [Description("ACCOUNT_FROZEN_FOR_TOKEN")] AccountFrozenForToken = 165,
+        [Description("TOKENS_PER_ACCOUNT_LIMIT_EXCEEDED")] TokensPerAccountLimitExceeded = 166,
+        [Description("INVALID_TOKEN_ID")] InvalidTokenId = 167,
+        [Description("INVALID_TOKEN_DIVISIBILITY")] InvalidTokenDivisibility = 168,
+        [Description("INVALID_TOKEN_FLOAT")] InvalidTokenFloat = 169,
+        [Description("INVALID_TREASURY_ACCOUNT_FOR_TOKEN")] InvalidTreasuryAccountForToken = 170,
+        [Description("INVALID_TOKEN_SYMBOL")] InvalidTokenSymbol = 171,
+        [Description("TOKEN_HAS_NO_FREEZE_KEY")] TokenHasNoFreezeKey = 172,
+        [Description("TRANSFERS_NOT_ZERO_SUM_FOR_TOKEN")] TransfersNotZeroSumForToken = 173,
+        [Description("MISSING_TOKEN_SYMBOL")] MissingTokenSymbol = 174,
+        [Description("TOKEN_SYMBOL_TOO_LONG")] TokenSymbolTooLong = 175,
+        [Description("TOKEN_SYMBOL_ALREADY_IN_USE")] TokenSymbolAlreadyInUse = 176,
+        [Description("INVALID_TOKEN_REF")] InvalidTokenRef = 177,
+        [Description("ACCOUNT_KYC_NOT_GRANTED_FOR_TOKEN")] AccountKycNotGrantedForToken = 178,
+        [Description("TOKEN_HAS_NO_KYC_KEY")] TokenHasNoKycKey = 179,
+        [Description("INSUFFICIENT_TOKEN_BALANCE")] InsufficientTokenBalance = 180,
+        [Description("TOKEN_WAS_DELETED")] TokenWasDeleted = 181,
+        [Description("TOKEN_HAS_NO_SUPPLY_KEY")] TokenHasNoSupplyKey = 182,
+        [Description("TOKEN_HAS_NO_WIPE_KEY")] TokenHasNoWipeKey = 183,
+        [Description("INVALID_TOKEN_MINT_AMOUNT")] InvalidTokenMintAmount = 184,
+        [Description("INVALID_TOKEN_BURN_AMOUNT")] InvalidTokenBurnAmount = 185,
+        [Description("ACCOUNT_HAS_NO_TOKEN_RELATIONSHIP")] AccountHasNoTokenRelationship = 186,
+        [Description("CANNOT_WIPE_TOKEN_TREASURY_ACCOUNT")] CannotWipeTokenTreasuryAccount = 187,
+        [Description("INVALID_KYC_KEY")] InvalidKycKey = 188,
+        [Description("INVALID_WIPE_KEY")] InvalidWipeKey = 189,
+        [Description("INVALID_FREEZE_KEY")] InvalidFreezeKey = 190,
+        [Description("INVALID_SUPPLY_KEY")] InvalidSupplyKey = 191,
     }
 }

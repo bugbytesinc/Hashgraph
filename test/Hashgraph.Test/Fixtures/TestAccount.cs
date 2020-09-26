@@ -52,5 +52,15 @@ namespace Hashgraph.Test.Fixtures
             await Client.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED: Test Account Instance");
         }
+
+        public static implicit operator Address(TestAccount fxAccount)
+        {
+            return fxAccount.Record.Address;
+        }
+
+        public static implicit operator Signatory(TestAccount fxAccount)
+        {
+            return new Signatory(fxAccount.PrivateKey);
+        }
     }
 }

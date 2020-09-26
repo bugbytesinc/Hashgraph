@@ -84,6 +84,56 @@ namespace Hashgraph
             }
             return transfers;
         }
+        internal static TokenTransfers CreateTokenTransfers(Address fromAccount, Address toAccount, TokenIdentifier token, long amount)
+        {
+            var transfers = new TokenTransfers();
+            transfers.Transfers.Add(new Proto.TokenTransfer
+            {
+                Token = new TokenRef(token),
+                Account = new AccountID(fromAccount),
+                Amount = -amount
+            });
+            transfers.Transfers.Add(new Proto.TokenTransfer
+            {
+                Token = new TokenRef(token),
+                Account = new AccountID(toAccount),
+                Amount = amount
+            });
+            return transfers;
+        }
+
+        internal static TokenTransfers CreateTokenTransfers(IEnumerable<TokenTransfer> list)
+        {
+            var tokenTransfers = new TokenTransfers();
+            foreach (var tokenGroup in list.GroupBy(txfer => txfer.Token))
+            {
+                var netTransfers = new Dictionary<Address, long>();
+                foreach (var tokenTransfer in tokenGroup)
+                {
+                    if (netTransfers.TryGetValue(tokenTransfer.Address, out long value))
+                    {
+                        netTransfers[tokenTransfer.Address] = value + tokenTransfer.Amount;
+                    }
+                    else
+                    {
+                        netTransfers[tokenTransfer.Address] = tokenTransfer.Amount;
+                    }
+                }
+                foreach (var netTransfer in netTransfers)
+                {
+                    if (netTransfer.Value != 0)
+                    {
+                        tokenTransfers.Transfers.Add(new Proto.TokenTransfer
+                        {
+                            Token = new TokenRef(tokenGroup.Key),
+                            Account = new AccountID(netTransfer.Key),
+                            Amount = netTransfer.Value
+                        });
+                    }
+                }
+            }
+            return tokenTransfers;
+        }
         internal static TransactionBody CreateTransactionBody(GossipContextStack context, TransactionID transactionId)
         {
             return new TransactionBody

@@ -173,7 +173,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferAsync(Dictionary<Address, long> transfers, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> TransferAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Action<IContext>? configure = null)
         {
             return TransferImplementationAsync<TransactionReceipt>(transfers, null, configure);
         }
@@ -205,7 +205,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferAsync(Dictionary<Address, long> transfers, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> TransferAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Signatory signatory, Action<IContext>? configure = null)
         {
             return TransferImplementationAsync<TransactionReceipt>(transfers, signatory, configure);
         }
@@ -237,7 +237,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferWithRecordAsync(Dictionary<Address, long> transfers, Action<IContext>? configure = null)
+        public Task<TransactionRecord> TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Action<IContext>? configure = null)
         {
             return TransferImplementationAsync<TransactionRecord>(transfers, null, configure);
         }
@@ -269,7 +269,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferWithRecordAsync(Dictionary<Address, long> transfers, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionRecord> TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Signatory signatory, Action<IContext>? configure = null)
         {
             return TransferImplementationAsync<TransactionRecord>(transfers, signatory, configure);
         }
@@ -291,9 +291,9 @@ namespace Hashgraph
         /// Returns either a receipt or record or throws
         /// an exception.
         /// </summary>
-        private async Task<TResult> TransferImplementationAsync<TResult>(Dictionary<Address, long> transfers, Signatory? signatory, Action<IContext>? configure = null) where TResult : new()
+        private async Task<TResult> TransferImplementationAsync<TResult>(IEnumerable<KeyValuePair<Address, long>> transfers, Signatory? signatory, Action<IContext>? configure = null) where TResult : new()
         {
-            var transferList = RequireInputParameter.TransferList(transfers);
+            var transferList = RequireInputParameter.CryptoTransferList(transfers);
             return await TransferImplementationAsync<TResult>(transferList, signatory, configure);
         }
         /// <summary>

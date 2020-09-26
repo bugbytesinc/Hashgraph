@@ -27,7 +27,7 @@ namespace Hashgraph
         /// Replace this Topics's current administrative key signing rquirements 
         /// with new signing requirements.  To completely remove the administrator
         /// key and make the Topic imutable, use the <see cref="Endorsement.None"/>
-        /// endorsment value.
+        /// endorsement value.
         /// </summary>
         /// <remarks>
         /// For this request to be accepted by the network, both the current private
@@ -40,7 +40,7 @@ namespace Hashgraph
         /// Identify any key requirements for submitting messages to this topic.
         /// If left blank, no changes will be made. To completely remove the 
         /// key requirements and make the Topic open for all to submit, use
-        /// the <see cref="Endorsement.None"/> endorsment value.
+        /// the <see cref="Endorsement.None"/> endorsement value.
         /// </summary>
         public Endorsement? Participant { get; set; }
         /// <summary>

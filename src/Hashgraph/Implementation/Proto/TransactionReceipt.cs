@@ -1,5 +1,7 @@
-﻿using Hashgraph;
-using Hashgraph.Implementation;
+﻿using Google.Protobuf.Collections;
+using Hashgraph;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Proto
 {
@@ -22,6 +24,10 @@ namespace Proto
             else if (ContractID != null)
             {
                 return FillProperties(transactionId, new CreateContractReceipt());
+            }
+            else if (TokenId != null)
+            {
+                return FillProperties(transactionId, new CreateTokenReceipt());
             }
             else if (!TopicRunningHash.IsEmpty)
             {
@@ -64,6 +70,12 @@ namespace Proto
             receipt.File = FileID.ToAddress();
             return receipt;
         }
+        internal CreateTokenReceipt FillProperties(TransactionID transactionId, CreateTokenReceipt receipt)
+        {
+            FillCommonProperties(transactionId, receipt);
+            receipt.Token = TokenId.ToAddress();
+            return receipt;
+        }
         internal Hashgraph.TransactionReceipt FillProperties(TransactionID transactionId, Hashgraph.TransactionReceipt result)
         {
             FillCommonProperties(transactionId, result);
@@ -81,5 +93,30 @@ namespace Proto
             }
         }
 
+    }
+    internal static class TransactionReceiptExtensions
+    {
+        private static ReadOnlyCollection<Hashgraph.TransactionReceipt> EMPTY_RESULT = new List<Hashgraph.TransactionReceipt>().AsReadOnly();
+        internal static ReadOnlyCollection<Hashgraph.TransactionReceipt> ToTransactionReceiptList(this RepeatedField<TransactionReceipt> list, TransactionReceipt first, TransactionID transactionId)
+        {
+            var count = (first != null ? 1 : 0) + (list != null ? list.Count : 0);
+            if (count > 0)
+            {
+                var result = new List<Hashgraph.TransactionReceipt>(count);
+                if (first != null)
+                {
+                    result.Add(first.ToTransactionReceipt(transactionId));
+                }
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var entry in list)
+                    {
+                        result.Add(entry.ToTransactionReceipt(transactionId));
+                    }
+                }
+                return result.AsReadOnly();
+            }
+            return EMPTY_RESULT;
+        }
     }
 }

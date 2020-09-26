@@ -207,7 +207,7 @@ namespace Hashgraph.Implementation
             return ReadInt256(arg.Slice(0, 32)) > 0;
         }
         // Note this is internal to provide support to the 
-        // "Contract" type of Endorsment.
+        // "Contract" type of Endorsement.
         internal static ReadOnlyMemory<byte> EncodeAddressPart(object value)
         {
             // For 20 bytes total (aka uint160)
@@ -241,7 +241,7 @@ namespace Hashgraph.Implementation
             throw new ArgumentException("Argument was not an address.", nameof(value));
         }
         // Note this is internal to provide support to the 
-        // "Contract" type of Endorsment.
+        // "Contract" type of Endorsement.
         internal static object DecodeAddressPart(ReadOnlyMemory<byte> arg)
         {
             // See EncodeAddressPart for packing notes

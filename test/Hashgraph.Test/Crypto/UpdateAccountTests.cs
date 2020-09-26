@@ -42,6 +42,41 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(new Endorsement(updatedKeyPair.publicKey), updatedInfo.Endorsement);
         }
+        [Fact(DisplayName = "Update Account: Can Update Key with Record")]
+        public async Task CanUpdateKeyWithRecord()
+        {
+            var originalKeyPair = Generator.KeyPair();
+            var updatedKeyPair = Generator.KeyPair();
+            await using var client = _network.NewClient();
+            var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
+            {
+                InitialBalance = 1,
+                Endorsement = originalKeyPair.publicKey
+            });
+            Assert.Equal(ResponseCode.Success, createResult.Status);
+
+            var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(new Endorsement(originalKeyPair.publicKey), originalInfo.Endorsement);
+
+            var record = await client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+            {
+                Address = createResult.Address,
+                Endorsement = new Endorsement(updatedKeyPair.publicKey),
+                Signatory = new Signatory(originalKeyPair.privateKey, updatedKeyPair.privateKey)
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+
+            var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(new Endorsement(updatedKeyPair.publicKey), updatedInfo.Endorsement);
+        }
         [Fact(DisplayName = "Update Account: Can Update Send Threshold")]
         public async Task CanUpdateSendTreshold()
         {
@@ -281,7 +316,7 @@ namespace Hashgraph.Test.Crypto
                 });
             });
             Assert.Equal("Endorsement", aoe.ParamName);
-            Assert.StartsWith("Endorsment can not be 'None', it must contain at least one key requirement.", aoe.Message);
+            Assert.StartsWith("Endorsement can not be 'None', it must contain at least one key requirement.", aoe.Message);
 
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(originalInfo.Endorsement, updatedInfo.Endorsement);

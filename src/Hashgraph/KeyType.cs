@@ -4,7 +4,7 @@
     /// Identifies the type of <see cref="Signatory"/> or
     /// <see cref="Endorsement"/>.  Typically these objects
     /// a represent a public key or a list of child keys.
-    /// For endorsments a list type can represent an n of m
+    /// For endorsements a list type can represent an n of m
     /// number of child keys that must sign to validat a
     /// transaction.  For signatories, the list 
     /// type represents simply a collection of keys, all of

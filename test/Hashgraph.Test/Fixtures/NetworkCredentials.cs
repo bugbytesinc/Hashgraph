@@ -3,7 +3,6 @@ using Hashgraph.Extensions;
 using Microsoft.Extensions.Configuration;
 using Proto;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -14,6 +13,11 @@ namespace Hashgraph.Test.Fixtures
     {
         private readonly IConfiguration _configuration;
         private ExchangeRate _exchangeRate = null;
+        private Address _systemAccountAddress = null;
+        private Address _systemDeleteAdminAddress = null;
+        private Address _systemUndeleteAdminAddress = null;
+        private Address _systemFreezeAdminAddress = null;
+
         public string NetworkAddress { get { return _configuration["network:address"]; } }
         public int NetworkPort { get { return getAsInt("network:port"); } }
         public long ServerShard { get { return getAsInt("server:shard"); } }
@@ -177,6 +181,57 @@ namespace Hashgraph.Test.Fixtures
             }
             return payment != null;
         }
+        public async Task<Address> GetSystemAccountAddress()
+        {
+            if(_systemAccountAddress is null)
+            {
+                _systemAccountAddress = await GetSpecialAccount(new Address(0, 0, 50));
+            }
+            return _systemAccountAddress == Address.None ? null : _systemAccountAddress;
+        }
+        public async Task<Address> GetSystemDeleteAdminAddress()
+        {
+            if (_systemDeleteAdminAddress is null)
+            {
+                _systemDeleteAdminAddress = await GetSpecialAccount(new Address(0, 0, 59));
+            }
+            return _systemDeleteAdminAddress == Address.None ? null : _systemDeleteAdminAddress;
+        }
+        public async Task<Address> GetSystemUndeleteAdminAddress()
+        {
+            if (_systemUndeleteAdminAddress is null)
+            {
+                _systemUndeleteAdminAddress = await GetSpecialAccount(new Address(0, 0, 60));
+            }
+            return _systemUndeleteAdminAddress == Address.None ? null : _systemUndeleteAdminAddress;
+        }
+        public async Task<Address> GetSystemFreezeAdminAddress()
+        {
+            if (_systemFreezeAdminAddress is null)
+            {
+                _systemFreezeAdminAddress = await GetSpecialAccount(new Address(0, 0, 58));
+            }
+            return _systemFreezeAdminAddress == Address.None ? null : _systemFreezeAdminAddress;
+        }
+        private async Task<Address> GetSpecialAccount(Address address)
+        {
+            await using var client = NewClient();            
+            try
+            {
+                if (await client.GetAccountBalanceAsync(address) < 30_00_000_000)
+                {
+                    await client.TransferAsync(Payer, address, 40_00_000_000);
+                }
+                await client.GetAccountInfoAsync(address, ctx => ctx.Payer = address);
+            }
+            catch (PrecheckException pex) when (pex.Status == ResponseCode.InvalidSignature)
+            {
+                // We are not configured with the genisis key and have no access to the special account
+                return Address.None;
+            }
+            return address;
+        }
+
         [CollectionDefinition(nameof(NetworkCredentials))]
         public class FixtureCollection : ICollectionFixture<NetworkCredentials>
         {

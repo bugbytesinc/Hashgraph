@@ -38,6 +38,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(createResult.Address.ShardNum, info.Address.ShardNum);
             Assert.Equal(createResult.Address.AccountNum, info.Address.AccountNum);
             Assert.Equal(new Address(0, 0, 0), info.Proxy);
+            Assert.Empty(info.Tokens);
             Assert.False(info.Deleted);
 
             // Move remaining funds back to primary account.

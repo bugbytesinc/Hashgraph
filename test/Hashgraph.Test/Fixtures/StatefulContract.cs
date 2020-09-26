@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Fixtures
             fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
             {
                 ctx.Memo = "Stateful Contract Create: Instantiating Stateful Instance " + Generator.Code(10);
-            });            
+            });
             fx.Network.Output?.WriteLine("SETUP COMPLETED: Stateful Contract Instance Created");
             return fx;
         }
@@ -71,6 +71,10 @@ namespace Hashgraph.Test.Fixtures
             }
             await Client.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED Stateful Contract Instance");
+        }
+        public static implicit operator Address(StatefulContract fxContract)
+        {
+            return fxContract.ContractRecord.Contract;
         }
     }
 }

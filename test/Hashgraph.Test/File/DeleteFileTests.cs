@@ -32,6 +32,23 @@ namespace Hashgraph.Test.File
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.True(info.Deleted);
         }
+        [Fact(DisplayName = "Delete File: Can Delete with Record (no extra Signatory)")]
+        public async Task CanDeleteAFileWithRecordNoSignatoryAsync()
+        {
+            await using var test = await TestFile.CreateAsync(_network);
+
+            var result = await test.Client.DeleteFileWithRecordAsync(test.Record.File, ctx => ctx.Signatory = new Signatory(_network.PrivateKey,test.CreateParams.Signatory));
+            Assert.NotNull(result);
+            Assert.Equal(ResponseCode.Success, result.Status);
+
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(0, info.Size);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
+            Assert.True(info.Deleted);
+        }
         [Fact(DisplayName = "Delete File: Cannot Delete and Imutable File")]
         public async Task CanNotDeleteAnImutableFileAsync()
         {

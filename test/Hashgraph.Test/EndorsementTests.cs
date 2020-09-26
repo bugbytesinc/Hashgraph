@@ -327,7 +327,7 @@ namespace Hashgraph.Tests
             Assert.False(asObject1.Equals(endorsement2));
         }
         [Fact(DisplayName = "Endorsements: Contract Protobuf Plublic Key can Create Contract Type")]
-        public void CanCreateContractEndorsmentFromProtobufContractKeyType()
+        public void CanCreateContractEndorsementFromProtobufContractKeyType()
         {
             var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
             var contractID = new Proto.ContractID(contract);
