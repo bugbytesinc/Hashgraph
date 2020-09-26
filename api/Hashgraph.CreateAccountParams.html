@@ -118,7 +118,7 @@
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateAccountParams_AutoRenewPeriod.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAccountParams.AutoRenewPeriod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L60">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L62">View Source</a>
   </span>
   <a id="Hashgraph_CreateAccountParams_AutoRenewPeriod_" data-uid="Hashgraph.CreateAccountParams.AutoRenewPeriod*"></a>
   <h4 id="Hashgraph_CreateAccountParams_AutoRenewPeriod" data-uid="Hashgraph.CreateAccountParams.AutoRenewPeriod">AutoRenewPeriod</h4>
@@ -218,7 +218,7 @@ upon creation.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateAccountParams_Proxy.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAccountParams.Proxy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L67">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L69">View Source</a>
   </span>
   <a id="Hashgraph_CreateAccountParams_Proxy_" data-uid="Hashgraph.CreateAccountParams.Proxy*"></a>
   <h4 id="Hashgraph_CreateAccountParams_Proxy" data-uid="Hashgraph.CreateAccountParams.Proxy">Proxy</h4>
@@ -252,7 +252,7 @@ proxy staked to a node chosen by the network without earning payments.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateAccountParams_ReceiveThresholdCreateRecord.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAccountParams.ReceiveThresholdCreateRecord%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L48">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L49">View Source</a>
   </span>
   <a id="Hashgraph_CreateAccountParams_ReceiveThresholdCreateRecord_" data-uid="Hashgraph.CreateAccountParams.ReceiveThresholdCreateRecord*"></a>
   <h4 id="Hashgraph_CreateAccountParams_ReceiveThresholdCreateRecord" data-uid="Hashgraph.CreateAccountParams.ReceiveThresholdCreateRecord">ReceiveThresholdCreateRecord</h4>
@@ -264,7 +264,8 @@ for the record creation.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ulong ReceiveThresholdCreateRecord { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;The Receive Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.&quot;)]
+public ulong ReceiveThresholdCreateRecord { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -292,7 +293,7 @@ a signed 64 bit integer can carry (9,223,372,036,854,775,807)</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateAccountParams_RequireReceiveSignature.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAccountParams.RequireReceiveSignature%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L54">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L56">View Source</a>
   </span>
   <a id="Hashgraph_CreateAccountParams_RequireReceiveSignature_" data-uid="Hashgraph.CreateAccountParams.RequireReceiveSignature*"></a>
   <h4 id="Hashgraph_CreateAccountParams_RequireReceiveSignature" data-uid="Hashgraph.CreateAccountParams.RequireReceiveSignature">RequireReceiveSignature</h4>
@@ -337,7 +338,8 @@ record creation.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ulong SendThresholdCreateRecord { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;The Send Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.&quot;)]
+public ulong SendThresholdCreateRecord { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -365,7 +367,7 @@ a signed 64 bit integer can carry (9,223,372,036,854,775,807)</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateAccountParams_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAccountParams.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L82">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/CreateAccountParams.cs/#L84">View Source</a>
   </span>
   <a id="Hashgraph_CreateAccountParams_Signatory_" data-uid="Hashgraph.CreateAccountParams.Signatory*"></a>
   <h4 id="Hashgraph_CreateAccountParams_Signatory" data-uid="Hashgraph.CreateAccountParams.Signatory">Signatory</h4>

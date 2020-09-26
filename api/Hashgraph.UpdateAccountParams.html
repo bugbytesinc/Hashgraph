@@ -153,7 +153,7 @@ apply to certain propertites such as the signing key are described below.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_AutoRenewPeriod.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.AutoRenewPeriod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L78">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L80">View Source</a>
   </span>
   <a id="Hashgraph_UpdateAccountParams_AutoRenewPeriod_" data-uid="Hashgraph.UpdateAccountParams.AutoRenewPeriod*"></a>
   <h4 id="Hashgraph_UpdateAccountParams_AutoRenewPeriod" data-uid="Hashgraph.UpdateAccountParams.AutoRenewPeriod">AutoRenewPeriod</h4>
@@ -229,7 +229,7 @@ for signing to meet this requirement.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_Expiration.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.Expiration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L70">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L72">View Source</a>
   </span>
   <a id="Hashgraph_UpdateAccountParams_Expiration_" data-uid="Hashgraph.UpdateAccountParams.Expiration*"></a>
   <h4 id="Hashgraph_UpdateAccountParams_Expiration" data-uid="Hashgraph.UpdateAccountParams.Expiration">Expiration</h4>
@@ -262,7 +262,7 @@ for this account.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_Proxy.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.Proxy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L85">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L87">View Source</a>
   </span>
   <a id="Hashgraph_UpdateAccountParams_Proxy_" data-uid="Hashgraph.UpdateAccountParams.Proxy*"></a>
   <h4 id="Hashgraph_UpdateAccountParams_Proxy" data-uid="Hashgraph.UpdateAccountParams.Proxy">Proxy</h4>
@@ -296,7 +296,7 @@ proxy staked to a node chosen by the network without earning payments.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_ReceiveThresholdCreateRecord.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.ReceiveThresholdCreateRecord%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L59">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L60">View Source</a>
   </span>
   <a id="Hashgraph_UpdateAccountParams_ReceiveThresholdCreateRecord_" data-uid="Hashgraph.UpdateAccountParams.ReceiveThresholdCreateRecord*"></a>
   <h4 id="Hashgraph_UpdateAccountParams_ReceiveThresholdCreateRecord" data-uid="Hashgraph.UpdateAccountParams.ReceiveThresholdCreateRecord">ReceiveThresholdCreateRecord</h4>
@@ -308,7 +308,8 @@ for the record creation.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ulong? ReceiveThresholdCreateRecord { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;The Receive Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.&quot;)]
+public ulong? ReceiveThresholdCreateRecord { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -330,7 +331,7 @@ for the record creation.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_UpdateAccountParams_RequireReceiveSignature.md&amp;value=---%0Auid%3A%20Hashgraph.UpdateAccountParams.RequireReceiveSignature%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L64">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/UpdateAccountParams.cs/#L66">View Source</a>
   </span>
   <a id="Hashgraph_UpdateAccountParams_RequireReceiveSignature_" data-uid="Hashgraph.UpdateAccountParams.RequireReceiveSignature*"></a>
   <h4 id="Hashgraph_UpdateAccountParams_RequireReceiveSignature" data-uid="Hashgraph.UpdateAccountParams.RequireReceiveSignature">RequireReceiveSignature</h4>
@@ -374,7 +375,8 @@ record creation.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ulong? SendThresholdCreateRecord { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;The Send Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.&quot;)]
+public ulong? SendThresholdCreateRecord { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">

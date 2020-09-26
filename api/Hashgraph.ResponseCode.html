@@ -98,6 +98,15 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_AccountFrozenForToken">AccountFrozenForToken</td>
+        <td><p>Account is frozen and cannot transact with the token</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_AccountHasNoTokenRelationship">AccountHasNoTokenRelationship</td>
+        <td></td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_AccountIdDoesNotExist">AccountIdDoesNotExist</td>
         <td><p>the account id passed has not yet been created.</p>
 </td>
@@ -105,6 +114,11 @@
       <tr>
         <td id="Hashgraph_ResponseCode_AccountIsNotGenesisAccount">AccountIsNotGenesisAccount</td>
         <td><p>Special Account Operations should be performed by only Genesis account, return this code if it is not Genesis Account</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_AccountKycNotGrantedForToken">AccountKycNotGrantedForToken</td>
+        <td><p>KYC must be granted and account does not have KYC granted</p>
 </td>
       </tr>
       <tr>
@@ -140,6 +154,11 @@
       <tr>
         <td id="Hashgraph_ResponseCode_Busy">Busy</td>
         <td><p>If API is throttled out</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CannotWipeTokenTreasuryAccount">CannotWipeTokenTreasuryAccount</td>
+        <td><p>Cannot execute wipe operation on treasury account</p>
 </td>
       </tr>
       <tr>
@@ -313,6 +332,11 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_InsufficientTokenBalance">InsufficientTokenBalance</td>
+        <td><p>Token balance is not sufficient for the transaction</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_InsufficientTxFee">InsufficientTxFee</td>
         <td><p>The fee provided in the transaction is insufficient for this type of transaction</p>
 </td>
@@ -382,6 +406,10 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_InvalidFreezeKey">InvalidFreezeKey</td>
+        <td></td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_InvalidFreezeTransactionBody">InvalidFreezeTransactionBody</td>
         <td><p>FreezeTransactionBody is invalid</p>
 </td>
@@ -392,9 +420,17 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_InvalidInitialSupply">InvalidInitialSupply</td>
+        <td></td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_InvalidKeyEncoding">InvalidKeyEncoding</td>
         <td><p>Provided key encoding was not supported by the system</p>
 </td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidKycKey">InvalidKycKey</td>
+        <td></td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidLiveHashSize">InvalidLiveHashSize</td>
@@ -423,7 +459,7 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidReceiveRecordThreshold">InvalidReceiveRecordThreshold</td>
-        <td><p>attempt to set negative receive record threshold</p>
+        <td><p>[Deprecated]. attempt to set negative receive record threshold</p>
 </td>
       </tr>
       <tr>
@@ -438,7 +474,7 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidSendRecordThreshold">InvalidSendRecordThreshold</td>
-        <td><p>attempt to set negative send record threshold</p>
+        <td><p>[Deprecated]. attempt to set negative send record threshold</p>
 </td>
       </tr>
       <tr>
@@ -469,6 +505,35 @@
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidSubmitKey">InvalidSubmitKey</td>
         <td></td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidSupplyKey">InvalidSupplyKey</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenBurnAmount">InvalidTokenBurnAmount</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenDecimals">InvalidTokenDecimals</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenId">InvalidTokenId</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenMintAmount">InvalidTokenMintAmount</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenRef">InvalidTokenRef</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenSymbol">InvalidTokenSymbol</td>
+        <td><p>Token Symbol is not UTF-8 alphanumeric uppercase string</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidTopicId">InvalidTopicId</td>
@@ -503,6 +568,20 @@
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidTransactionStart">InvalidTransactionStart</td>
         <td><p>Transaction start time is greater than current consensus time</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTreasuryAccountForToken">InvalidTreasuryAccountForToken</td>
+        <td><p>Treasury Account does not exist or is deleted</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidWipeKey">InvalidWipeKey</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidWipingAmount">InvalidWipingAmount</td>
+        <td><p>The provided wipe amount must not be negative, zero or bigger than the token holder balance</p>
 </td>
       </tr>
       <tr>
@@ -558,6 +637,16 @@
       <tr>
         <td id="Hashgraph_ResponseCode_MissingQueryHeader">MissingQueryHeader</td>
         <td><p>Header is missing in Query request</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_MissingTokenName">MissingTokenName</td>
+        <td><p>Token Name is not provided</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_MissingTokenSymbol">MissingTokenSymbol</td>
+        <td><p>Token Symbol is not provided</p>
 </td>
       </tr>
       <tr>
@@ -622,7 +711,7 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_PlatformTransactionNotCreated">PlatformTransactionNotCreated</td>
-        <td><p>transaction not created by platform due to either large backlog or message size exceeded transactionMaxBytes</p>
+        <td><p>transaction not created by platform due to large backlog</p>
 </td>
       </tr>
       <tr>
@@ -658,6 +747,61 @@
       <tr>
         <td id="Hashgraph_ResponseCode_Success">Success</td>
         <td><p>The transaction succeeded</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenHasNoFreezeKey">TokenHasNoFreezeKey</td>
+        <td><p>Freeze key is not set on token</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenHasNoKycKey">TokenHasNoKycKey</td>
+        <td><p>KYC key is not set on token</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenHasNoSupplyKey">TokenHasNoSupplyKey</td>
+        <td><p>Supply key is not set on token</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenHasNoWipeKey">TokenHasNoWipeKey</td>
+        <td><p>Wipe key is not set on token</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenIsImmutablE">TokenIsImmutablE</td>
+        <td><p>Token does not have Admin key set, thus update/delete transactions cannot be performed</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenNameAlreadyInUse">TokenNameAlreadyInUse</td>
+        <td><p>Token Name is already used</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenNameTooLong">TokenNameTooLong</td>
+        <td><p>Token name is too long</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokensPerAccountLimitExceeded">TokensPerAccountLimitExceeded</td>
+        <td><p>Maximum number of token relations for agiven account is exceeded</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenSymbolAlreadyInUse">TokenSymbolAlreadyInUse</td>
+        <td><p>Token Symbol is already used</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenSymbolTooLong">TokenSymbolTooLong</td>
+        <td><p>Token Symbol is too long</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenWasDeleted">TokenWasDeleted</td>
+        <td><p>Token transactions cannot be executed on deleted token</p>
 </td>
       </tr>
       <tr>
@@ -697,13 +841,18 @@ by HAPI.</p>
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_TransfersNotZeroSumForToken">TransfersNotZeroSumForToken</td>
+        <td><p>Amounts in transfer list are not net zero</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_Unauthorized">Unauthorized</td>
         <td><p>An attempted operation was not authorized (ie - a deleteTopic for a topic with no adminKey).</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_Unknown">Unknown</td>
-        <td><p>Transaction hasn't yet reached consensus, or has already expired</p>
+        <td><p>The responding node has submitted the transaction to the network. Its final status is still unknown.</p>
 </td>
       </tr>
     </tbody>

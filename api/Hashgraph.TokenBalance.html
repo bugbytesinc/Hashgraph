@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class TransactionReceipt
+    <title>Class TokenBalance
    | Hashgraph </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class TransactionReceipt
+    <meta name="title" content="Class TokenBalance
    | Hashgraph ">
     <meta name="generator" content="docfx 2.56.2.0">
     
@@ -68,26 +68,19 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Hashgraph.TransactionReceipt">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.TokenBalance">
   
   
-  <h1 id="Hashgraph_TransactionReceipt" data-uid="Hashgraph.TransactionReceipt" class="text-break">Class TransactionReceipt
+  <h1 id="Hashgraph_TokenBalance" data-uid="Hashgraph.TokenBalance" class="text-break">Class TokenBalance
   </h1>
-  <div class="markdown level0 summary"><p>The details returned from the network after consensus
-has been reached for a network request.</p>
+  <div class="markdown level0 summary"><p>The token balance information associated with an account,
+including the amount of coins held, KYC status and Freeze status.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">TransactionReceipt</span></div>
-      <div class="level2"><a class="xref" href="Hashgraph.CreateAccountReceipt.html">CreateAccountReceipt</a></div>
-      <div class="level2"><a class="xref" href="Hashgraph.CreateContractReceipt.html">CreateContractReceipt</a></div>
-      <div class="level2"><a class="xref" href="Hashgraph.CreateTokenReceipt.html">CreateTokenReceipt</a></div>
-      <div class="level2"><a class="xref" href="Hashgraph.CreateTopicReceipt.html">CreateTopicReceipt</a></div>
-      <div class="level2"><a class="xref" href="Hashgraph.FileReceipt.html">FileReceipt</a></div>
-      <div class="level2"><a class="xref" href="Hashgraph.SubmitMessageReceipt.html">SubmitMessageReceipt</a></div>
-      <div class="level2"><a class="xref" href="Hashgraph.TransactionRecord.html">TransactionRecord</a></div>
+    <div class="level1"><span class="xref">TokenBalance</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -115,28 +108,28 @@ has been reached for a network request.</p>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
-  <h5 id="Hashgraph_TransactionReceipt_syntax">Syntax</h5>
+  <h5 id="Hashgraph_TokenBalance_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class TransactionReceipt</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class TokenBalance</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt_CurrentExchangeRate.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.CurrentExchangeRate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenBalance_Balance.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.Balance%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L27">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenBalance.cs/#L23">View Source</a>
   </span>
-  <a id="Hashgraph_TransactionReceipt_CurrentExchangeRate_" data-uid="Hashgraph.TransactionReceipt.CurrentExchangeRate*"></a>
-  <h4 id="Hashgraph_TransactionReceipt_CurrentExchangeRate" data-uid="Hashgraph.TransactionReceipt.CurrentExchangeRate">CurrentExchangeRate</h4>
-  <div class="markdown level1 summary"><p>The current exchange between USD and hBars as
-broadcast by the hedera Network.</p>
+  <a id="Hashgraph_TokenBalance_Balance_" data-uid="Hashgraph.TokenBalance.Balance*"></a>
+  <h4 id="Hashgraph_TokenBalance_Balance" data-uid="Hashgraph.TokenBalance.Balance">Balance</h4>
+  <div class="markdown level1 summary"><p>The balance of tokens held by the associated account
+in the smallest denomination.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ExchangeRate CurrentExchangeRate { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public ulong Balance { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -148,62 +141,26 @@ broadcast by the hedera Network.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Hashgraph.ExchangeRate.html">ExchangeRate</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="Hashgraph_TransactionReceipt_CurrentExchangeRate_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Not all Receipts and Records will have this information
-returned from the network.  This value can be <pre><code>null</code></pre>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt_Id.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.Id%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L14">View Source</a>
-  </span>
-  <a id="Hashgraph_TransactionReceipt_Id_" data-uid="Hashgraph.TransactionReceipt.Id*"></a>
-  <h4 id="Hashgraph_TransactionReceipt_Id" data-uid="Hashgraph.TransactionReceipt.Id">Id</h4>
-  <div class="markdown level1 summary"><p>The Transaction ID associated with the request.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TxId Id { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="Hashgraph.TxId.html">TxId</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt_NextExchangeRate.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.NextExchangeRate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenBalance_KycStatus.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.KycStatus%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L36">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenBalance.cs/#L27">View Source</a>
   </span>
-  <a id="Hashgraph_TransactionReceipt_NextExchangeRate_" data-uid="Hashgraph.TransactionReceipt.NextExchangeRate*"></a>
-  <h4 id="Hashgraph_TransactionReceipt_NextExchangeRate" data-uid="Hashgraph.TransactionReceipt.NextExchangeRate">NextExchangeRate</h4>
-  <div class="markdown level1 summary"><p>The next/future exchange between USD and
-hBars as broadcast by the hedera Network.</p>
+  <a id="Hashgraph_TokenBalance_KycStatus_" data-uid="Hashgraph.TokenBalance.KycStatus*"></a>
+  <h4 id="Hashgraph_TokenBalance_KycStatus" data-uid="Hashgraph.TokenBalance.KycStatus">KycStatus</h4>
+  <div class="markdown level1 summary"><p>The KYC status of the token for this account.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ExchangeRate NextExchangeRate { get; set; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TokenKycStatus KycStatus { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -215,30 +172,26 @@ hBars as broadcast by the hedera Network.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Hashgraph.ExchangeRate.html">ExchangeRate</a></td>
+        <td><a class="xref" href="Hashgraph.TokenKycStatus.html">TokenKycStatus</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 id="Hashgraph_TransactionReceipt_NextExchangeRate_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Not all Receipts and Records will have this information
-returned from the network.  This value can be <pre><code>null</code></pre>.</p>
-</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt_Status.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.Status%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenBalance_Symbol.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.Symbol%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L18">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenBalance.cs/#L18">View Source</a>
   </span>
-  <a id="Hashgraph_TransactionReceipt_Status_" data-uid="Hashgraph.TransactionReceipt.Status*"></a>
-  <h4 id="Hashgraph_TransactionReceipt_Status" data-uid="Hashgraph.TransactionReceipt.Status">Status</h4>
-  <div class="markdown level1 summary"><p>The response code returned from the server.</p>
+  <a id="Hashgraph_TokenBalance_Symbol_" data-uid="Hashgraph.TokenBalance.Symbol*"></a>
+  <h4 id="Hashgraph_TokenBalance_Symbol" data-uid="Hashgraph.TokenBalance.Symbol">Symbol</h4>
+  <div class="markdown level1 summary"><p>The string symbol representing this token.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ResponseCode Status { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public string Symbol { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -250,7 +203,69 @@ returned from the network.  This value can be <pre><code>null</code></pre>.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Hashgraph.ResponseCode.html">ResponseCode</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenBalance_Token.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.Token%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenBalance.cs/#L14">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenBalance_Token_" data-uid="Hashgraph.TokenBalance.Token*"></a>
+  <h4 id="Hashgraph_TokenBalance_Token" data-uid="Hashgraph.TokenBalance.Token">Token</h4>
+  <div class="markdown level1 summary"><p>The Address of the token</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address Token { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenBalance_TradableStatus.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.TradableStatus%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenBalance.cs/#L31">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenBalance_TradableStatus_" data-uid="Hashgraph.TokenBalance.TradableStatus*"></a>
+  <h4 id="Hashgraph_TokenBalance_TradableStatus" data-uid="Hashgraph.TokenBalance.TradableStatus">TradableStatus</h4>
+  <div class="markdown level1 summary"><p>The Frozen status of the token for this account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TokenTradableStatus TradableStatus { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.TokenTradableStatus.html">TokenTradableStatus</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -263,10 +278,10 @@ returned from the network.  This value can be <pre><code>null</code></pre>.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenBalance.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenBalance.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

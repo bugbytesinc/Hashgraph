@@ -7,6 +7,51 @@ references:
   commentId: N:Hashgraph
   fullName: Hashgraph
   nameWithType: Hashgraph
+- uid: Hashgraph.AccountBalances
+  name: AccountBalances
+  href: api/Hashgraph.AccountBalances.html
+  commentId: T:Hashgraph.AccountBalances
+  fullName: Hashgraph.AccountBalances
+  nameWithType: AccountBalances
+- uid: Hashgraph.AccountBalances.Address
+  name: Address
+  href: api/Hashgraph.AccountBalances.html#Hashgraph_AccountBalances_Address
+  commentId: P:Hashgraph.AccountBalances.Address
+  fullName: Hashgraph.AccountBalances.Address
+  nameWithType: AccountBalances.Address
+- uid: Hashgraph.AccountBalances.Address*
+  name: Address
+  href: api/Hashgraph.AccountBalances.html#Hashgraph_AccountBalances_Address_
+  commentId: Overload:Hashgraph.AccountBalances.Address
+  isSpec: "True"
+  fullName: Hashgraph.AccountBalances.Address
+  nameWithType: AccountBalances.Address
+- uid: Hashgraph.AccountBalances.Crypto
+  name: Crypto
+  href: api/Hashgraph.AccountBalances.html#Hashgraph_AccountBalances_Crypto
+  commentId: P:Hashgraph.AccountBalances.Crypto
+  fullName: Hashgraph.AccountBalances.Crypto
+  nameWithType: AccountBalances.Crypto
+- uid: Hashgraph.AccountBalances.Crypto*
+  name: Crypto
+  href: api/Hashgraph.AccountBalances.html#Hashgraph_AccountBalances_Crypto_
+  commentId: Overload:Hashgraph.AccountBalances.Crypto
+  isSpec: "True"
+  fullName: Hashgraph.AccountBalances.Crypto
+  nameWithType: AccountBalances.Crypto
+- uid: Hashgraph.AccountBalances.Tokens
+  name: Tokens
+  href: api/Hashgraph.AccountBalances.html#Hashgraph_AccountBalances_Tokens
+  commentId: P:Hashgraph.AccountBalances.Tokens
+  fullName: Hashgraph.AccountBalances.Tokens
+  nameWithType: AccountBalances.Tokens
+- uid: Hashgraph.AccountBalances.Tokens*
+  name: Tokens
+  href: api/Hashgraph.AccountBalances.html#Hashgraph_AccountBalances_Tokens_
+  commentId: Overload:Hashgraph.AccountBalances.Tokens
+  isSpec: "True"
+  fullName: Hashgraph.AccountBalances.Tokens
+  nameWithType: AccountBalances.Tokens
 - uid: Hashgraph.AccountInfo
   name: AccountInfo
   href: api/Hashgraph.AccountInfo.html
@@ -169,6 +214,19 @@ references:
   isSpec: "True"
   fullName: Hashgraph.AccountInfo.SmartContractId
   nameWithType: AccountInfo.SmartContractId
+- uid: Hashgraph.AccountInfo.Tokens
+  name: Tokens
+  href: api/Hashgraph.AccountInfo.html#Hashgraph_AccountInfo_Tokens
+  commentId: P:Hashgraph.AccountInfo.Tokens
+  fullName: Hashgraph.AccountInfo.Tokens
+  nameWithType: AccountInfo.Tokens
+- uid: Hashgraph.AccountInfo.Tokens*
+  name: Tokens
+  href: api/Hashgraph.AccountInfo.html#Hashgraph_AccountInfo_Tokens_
+  commentId: Overload:Hashgraph.AccountInfo.Tokens
+  isSpec: "True"
+  fullName: Hashgraph.AccountInfo.Tokens
+  nameWithType: AccountInfo.Tokens
 - uid: Hashgraph.Address
   name: Address
   href: api/Hashgraph.Address.html
@@ -516,6 +574,56 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.AppendFileWithRecordAsync
   nameWithType: Client.AppendFileWithRecordAsync
+- uid: Hashgraph.Client.BurnTokenAsync(Hashgraph.TokenIdentifier,System.UInt64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: BurnTokenAsync(TokenIdentifier, UInt64, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_BurnTokenAsync_Hashgraph_TokenIdentifier_System_UInt64_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.BurnTokenAsync(Hashgraph.TokenIdentifier,System.UInt64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: BurnTokenAsync(TokenIdentifier, UInt64, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.BurnTokenAsync(Hashgraph.TokenIdentifier, System.UInt64, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.BurnTokenAsync(Hashgraph.TokenIdentifier, System.UInt64, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.BurnTokenAsync(TokenIdentifier, UInt64, Signatory, Action<IContext>)
+  nameWithType.vb: Client.BurnTokenAsync(TokenIdentifier, UInt64, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.BurnTokenAsync(Hashgraph.TokenIdentifier,System.UInt64,System.Action{Hashgraph.IContext})
+  name: BurnTokenAsync(TokenIdentifier, UInt64, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_BurnTokenAsync_Hashgraph_TokenIdentifier_System_UInt64_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.BurnTokenAsync(Hashgraph.TokenIdentifier,System.UInt64,System.Action{Hashgraph.IContext})
+  name.vb: BurnTokenAsync(TokenIdentifier, UInt64, Action(Of IContext))
+  fullName: Hashgraph.Client.BurnTokenAsync(Hashgraph.TokenIdentifier, System.UInt64, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.BurnTokenAsync(Hashgraph.TokenIdentifier, System.UInt64, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.BurnTokenAsync(TokenIdentifier, UInt64, Action<IContext>)
+  nameWithType.vb: Client.BurnTokenAsync(TokenIdentifier, UInt64, Action(Of IContext))
+- uid: Hashgraph.Client.BurnTokenAsync*
+  name: BurnTokenAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_BurnTokenAsync_
+  commentId: Overload:Hashgraph.Client.BurnTokenAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.BurnTokenAsync
+  nameWithType: Client.BurnTokenAsync
+- uid: Hashgraph.Client.BurnTokenWithRecordAsync(Hashgraph.TokenIdentifier,System.UInt64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: BurnTokenWithRecordAsync(TokenIdentifier, UInt64, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_BurnTokenWithRecordAsync_Hashgraph_TokenIdentifier_System_UInt64_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.BurnTokenWithRecordAsync(Hashgraph.TokenIdentifier,System.UInt64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: BurnTokenWithRecordAsync(TokenIdentifier, UInt64, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.BurnTokenWithRecordAsync(Hashgraph.TokenIdentifier, System.UInt64, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.BurnTokenWithRecordAsync(Hashgraph.TokenIdentifier, System.UInt64, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.BurnTokenWithRecordAsync(TokenIdentifier, UInt64, Signatory, Action<IContext>)
+  nameWithType.vb: Client.BurnTokenWithRecordAsync(TokenIdentifier, UInt64, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.BurnTokenWithRecordAsync(Hashgraph.TokenIdentifier,System.UInt64,System.Action{Hashgraph.IContext})
+  name: BurnTokenWithRecordAsync(TokenIdentifier, UInt64, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_BurnTokenWithRecordAsync_Hashgraph_TokenIdentifier_System_UInt64_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.BurnTokenWithRecordAsync(Hashgraph.TokenIdentifier,System.UInt64,System.Action{Hashgraph.IContext})
+  name.vb: BurnTokenWithRecordAsync(TokenIdentifier, UInt64, Action(Of IContext))
+  fullName: Hashgraph.Client.BurnTokenWithRecordAsync(Hashgraph.TokenIdentifier, System.UInt64, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.BurnTokenWithRecordAsync(Hashgraph.TokenIdentifier, System.UInt64, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.BurnTokenWithRecordAsync(TokenIdentifier, UInt64, Action<IContext>)
+  nameWithType.vb: Client.BurnTokenWithRecordAsync(TokenIdentifier, UInt64, Action(Of IContext))
+- uid: Hashgraph.Client.BurnTokenWithRecordAsync*
+  name: BurnTokenWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_BurnTokenWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.BurnTokenWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.BurnTokenWithRecordAsync
+  nameWithType: Client.BurnTokenWithRecordAsync
 - uid: Hashgraph.Client.CallContractAsync(Hashgraph.CallContractParams,System.Action{Hashgraph.IContext})
   name: CallContractAsync(CallContractParams, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_CallContractAsync_Hashgraph_CallContractParams_System_Action_Hashgraph_IContext__
@@ -580,6 +688,56 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.Configure
   nameWithType: Client.Configure
+- uid: Hashgraph.Client.ConfiscateTokensAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: ConfiscateTokensAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ConfiscateTokensAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.ConfiscateTokensAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: ConfiscateTokensAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.ConfiscateTokensAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.ConfiscateTokensAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.ConfiscateTokensAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.ConfiscateTokensAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.ConfiscateTokensAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: ConfiscateTokensAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ConfiscateTokensAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.ConfiscateTokensAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: ConfiscateTokensAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.ConfiscateTokensAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.ConfiscateTokensAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.ConfiscateTokensAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.ConfiscateTokensAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.ConfiscateTokensAsync*
+  name: ConfiscateTokensAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ConfiscateTokensAsync_
+  commentId: Overload:Hashgraph.Client.ConfiscateTokensAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.ConfiscateTokensAsync
+  nameWithType: Client.ConfiscateTokensAsync
+- uid: Hashgraph.Client.ConfiscateTokensWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: ConfiscateTokensWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ConfiscateTokensWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.ConfiscateTokensWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: ConfiscateTokensWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.ConfiscateTokensWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.ConfiscateTokensWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.ConfiscateTokensWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.ConfiscateTokensWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.ConfiscateTokensWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: ConfiscateTokensWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ConfiscateTokensWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.ConfiscateTokensWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: ConfiscateTokensWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.ConfiscateTokensWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.ConfiscateTokensWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.ConfiscateTokensWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.ConfiscateTokensWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.ConfiscateTokensWithRecordAsync*
+  name: ConfiscateTokensWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ConfiscateTokensWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.ConfiscateTokensWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.ConfiscateTokensWithRecordAsync
+  nameWithType: Client.ConfiscateTokensWithRecordAsync
 - uid: Hashgraph.Client.CreateAccountAsync(Hashgraph.CreateAccountParams,System.Action{Hashgraph.IContext})
   name: CreateAccountAsync(CreateAccountParams, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_CreateAccountAsync_Hashgraph_CreateAccountParams_System_Action_Hashgraph_IContext__
@@ -724,6 +882,38 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.CreateNewTxId
   nameWithType: Client.CreateNewTxId
+- uid: Hashgraph.Client.CreateTokenAsync(Hashgraph.CreateTokenParams,System.Action{Hashgraph.IContext})
+  name: CreateTokenAsync(CreateTokenParams, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_CreateTokenAsync_Hashgraph_CreateTokenParams_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.CreateTokenAsync(Hashgraph.CreateTokenParams,System.Action{Hashgraph.IContext})
+  name.vb: CreateTokenAsync(CreateTokenParams, Action(Of IContext))
+  fullName: Hashgraph.Client.CreateTokenAsync(Hashgraph.CreateTokenParams, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.CreateTokenAsync(Hashgraph.CreateTokenParams, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.CreateTokenAsync(CreateTokenParams, Action<IContext>)
+  nameWithType.vb: Client.CreateTokenAsync(CreateTokenParams, Action(Of IContext))
+- uid: Hashgraph.Client.CreateTokenAsync*
+  name: CreateTokenAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_CreateTokenAsync_
+  commentId: Overload:Hashgraph.Client.CreateTokenAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.CreateTokenAsync
+  nameWithType: Client.CreateTokenAsync
+- uid: Hashgraph.Client.CreateTokenWithRecordAsync(Hashgraph.CreateTokenParams,System.Action{Hashgraph.IContext})
+  name: CreateTokenWithRecordAsync(CreateTokenParams, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_CreateTokenWithRecordAsync_Hashgraph_CreateTokenParams_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.CreateTokenWithRecordAsync(Hashgraph.CreateTokenParams,System.Action{Hashgraph.IContext})
+  name.vb: CreateTokenWithRecordAsync(CreateTokenParams, Action(Of IContext))
+  fullName: Hashgraph.Client.CreateTokenWithRecordAsync(Hashgraph.CreateTokenParams, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.CreateTokenWithRecordAsync(Hashgraph.CreateTokenParams, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.CreateTokenWithRecordAsync(CreateTokenParams, Action<IContext>)
+  nameWithType.vb: Client.CreateTokenWithRecordAsync(CreateTokenParams, Action(Of IContext))
+- uid: Hashgraph.Client.CreateTokenWithRecordAsync*
+  name: CreateTokenWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_CreateTokenWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.CreateTokenWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.CreateTokenWithRecordAsync
+  nameWithType: Client.CreateTokenWithRecordAsync
 - uid: Hashgraph.Client.CreateTopicAsync(Hashgraph.CreateTopicParams,System.Action{Hashgraph.IContext})
   name: CreateTopicAsync(CreateTopicParams, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_CreateTopicAsync_Hashgraph_CreateTopicParams_System_Action_Hashgraph_IContext__
@@ -872,6 +1062,31 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.DeleteFileWithRecordAsync
   nameWithType: Client.DeleteFileWithRecordAsync
+- uid: Hashgraph.Client.DeleteTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: DeleteTokenAsync(TokenIdentifier, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_DeleteTokenAsync_Hashgraph_TokenIdentifier_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.DeleteTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: DeleteTokenAsync(TokenIdentifier, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.DeleteTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.DeleteTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.DeleteTokenAsync(TokenIdentifier, Signatory, Action<IContext>)
+  nameWithType.vb: Client.DeleteTokenAsync(TokenIdentifier, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.DeleteTokenAsync(Hashgraph.TokenIdentifier,System.Action{Hashgraph.IContext})
+  name: DeleteTokenAsync(TokenIdentifier, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_DeleteTokenAsync_Hashgraph_TokenIdentifier_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.DeleteTokenAsync(Hashgraph.TokenIdentifier,System.Action{Hashgraph.IContext})
+  name.vb: DeleteTokenAsync(TokenIdentifier, Action(Of IContext))
+  fullName: Hashgraph.Client.DeleteTokenAsync(Hashgraph.TokenIdentifier, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.DeleteTokenAsync(Hashgraph.TokenIdentifier, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.DeleteTokenAsync(TokenIdentifier, Action<IContext>)
+  nameWithType.vb: Client.DeleteTokenAsync(TokenIdentifier, Action(Of IContext))
+- uid: Hashgraph.Client.DeleteTokenAsync*
+  name: DeleteTokenAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_DeleteTokenAsync_
+  commentId: Overload:Hashgraph.Client.DeleteTokenAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.DeleteTokenAsync
+  nameWithType: Client.DeleteTokenAsync
 - uid: Hashgraph.Client.DeleteTopicAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
   name: DeleteTopicAsync(Address, Signatory, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_DeleteTopicAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
@@ -926,6 +1141,22 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.GetAccountBalanceAsync
   nameWithType: Client.GetAccountBalanceAsync
+- uid: Hashgraph.Client.GetAccountBalancesAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: GetAccountBalancesAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetAccountBalancesAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GetAccountBalancesAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: GetAccountBalancesAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.GetAccountBalancesAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GetAccountBalancesAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GetAccountBalancesAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.GetAccountBalancesAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.GetAccountBalancesAsync*
+  name: GetAccountBalancesAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetAccountBalancesAsync_
+  commentId: Overload:Hashgraph.Client.GetAccountBalancesAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.GetAccountBalancesAsync
+  nameWithType: Client.GetAccountBalancesAsync
 - uid: Hashgraph.Client.GetAccountInfoAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
   name: GetAccountInfoAsync(Address, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_GetAccountInfoAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
@@ -958,6 +1189,38 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.GetAccountRecordsAsync
   nameWithType: Client.GetAccountRecordsAsync
+- uid: Hashgraph.Client.GetAllReceiptsAsync(Hashgraph.TxId,System.Action{Hashgraph.IContext})
+  name: GetAllReceiptsAsync(TxId, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetAllReceiptsAsync_Hashgraph_TxId_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GetAllReceiptsAsync(Hashgraph.TxId,System.Action{Hashgraph.IContext})
+  name.vb: GetAllReceiptsAsync(TxId, Action(Of IContext))
+  fullName: Hashgraph.Client.GetAllReceiptsAsync(Hashgraph.TxId, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GetAllReceiptsAsync(Hashgraph.TxId, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GetAllReceiptsAsync(TxId, Action<IContext>)
+  nameWithType.vb: Client.GetAllReceiptsAsync(TxId, Action(Of IContext))
+- uid: Hashgraph.Client.GetAllReceiptsAsync*
+  name: GetAllReceiptsAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetAllReceiptsAsync_
+  commentId: Overload:Hashgraph.Client.GetAllReceiptsAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.GetAllReceiptsAsync
+  nameWithType: Client.GetAllReceiptsAsync
+- uid: Hashgraph.Client.GetAllTransactionRecordsAsync(Hashgraph.TxId,System.Action{Hashgraph.IContext})
+  name: GetAllTransactionRecordsAsync(TxId, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetAllTransactionRecordsAsync_Hashgraph_TxId_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GetAllTransactionRecordsAsync(Hashgraph.TxId,System.Action{Hashgraph.IContext})
+  name.vb: GetAllTransactionRecordsAsync(TxId, Action(Of IContext))
+  fullName: Hashgraph.Client.GetAllTransactionRecordsAsync(Hashgraph.TxId, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GetAllTransactionRecordsAsync(Hashgraph.TxId, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GetAllTransactionRecordsAsync(TxId, Action<IContext>)
+  nameWithType.vb: Client.GetAllTransactionRecordsAsync(TxId, Action(Of IContext))
+- uid: Hashgraph.Client.GetAllTransactionRecordsAsync*
+  name: GetAllTransactionRecordsAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetAllTransactionRecordsAsync_
+  commentId: Overload:Hashgraph.Client.GetAllTransactionRecordsAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.GetAllTransactionRecordsAsync
+  nameWithType: Client.GetAllTransactionRecordsAsync
 - uid: Hashgraph.Client.GetContractBalanceAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
   name: GetContractBalanceAsync(Address, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_GetContractBalanceAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
@@ -974,6 +1237,22 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.GetContractBalanceAsync
   nameWithType: Client.GetContractBalanceAsync
+- uid: Hashgraph.Client.GetContractBalancesAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: GetContractBalancesAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetContractBalancesAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GetContractBalancesAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: GetContractBalancesAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.GetContractBalancesAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GetContractBalancesAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GetContractBalancesAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.GetContractBalancesAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.GetContractBalancesAsync*
+  name: GetContractBalancesAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetContractBalancesAsync_
+  commentId: Overload:Hashgraph.Client.GetContractBalancesAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.GetContractBalancesAsync
+  nameWithType: Client.GetContractBalancesAsync
 - uid: Hashgraph.Client.GetContractInfoAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
   name: GetContractInfoAsync(Address, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_GetContractInfoAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
@@ -1054,6 +1333,22 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.GetReceiptAsync
   nameWithType: Client.GetReceiptAsync
+- uid: Hashgraph.Client.GetTokenInfoAsync(Hashgraph.TokenIdentifier,System.Action{Hashgraph.IContext})
+  name: GetTokenInfoAsync(TokenIdentifier, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetTokenInfoAsync_Hashgraph_TokenIdentifier_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GetTokenInfoAsync(Hashgraph.TokenIdentifier,System.Action{Hashgraph.IContext})
+  name.vb: GetTokenInfoAsync(TokenIdentifier, Action(Of IContext))
+  fullName: Hashgraph.Client.GetTokenInfoAsync(Hashgraph.TokenIdentifier, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GetTokenInfoAsync(Hashgraph.TokenIdentifier, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GetTokenInfoAsync(TokenIdentifier, Action<IContext>)
+  nameWithType.vb: Client.GetTokenInfoAsync(TokenIdentifier, Action(Of IContext))
+- uid: Hashgraph.Client.GetTokenInfoAsync*
+  name: GetTokenInfoAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GetTokenInfoAsync_
+  commentId: Overload:Hashgraph.Client.GetTokenInfoAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.GetTokenInfoAsync
+  nameWithType: Client.GetTokenInfoAsync
 - uid: Hashgraph.Client.GetTopicInfoAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
   name: GetTopicInfoAsync(Address, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_GetTopicInfoAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
@@ -1086,6 +1381,106 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.GetTransactionRecordAsync
   nameWithType: Client.GetTransactionRecordAsync
+- uid: Hashgraph.Client.GrantTokenKycAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: GrantTokenKycAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GrantTokenKycAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GrantTokenKycAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: GrantTokenKycAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.GrantTokenKycAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GrantTokenKycAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GrantTokenKycAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.GrantTokenKycAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.GrantTokenKycAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: GrantTokenKycAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GrantTokenKycAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GrantTokenKycAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: GrantTokenKycAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.GrantTokenKycAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GrantTokenKycAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GrantTokenKycAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.GrantTokenKycAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.GrantTokenKycAsync*
+  name: GrantTokenKycAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GrantTokenKycAsync_
+  commentId: Overload:Hashgraph.Client.GrantTokenKycAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.GrantTokenKycAsync
+  nameWithType: Client.GrantTokenKycAsync
+- uid: Hashgraph.Client.GrantTokenKycWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: GrantTokenKycWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GrantTokenKycWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GrantTokenKycWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: GrantTokenKycWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.GrantTokenKycWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GrantTokenKycWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GrantTokenKycWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.GrantTokenKycWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.GrantTokenKycWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: GrantTokenKycWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GrantTokenKycWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.GrantTokenKycWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: GrantTokenKycWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.GrantTokenKycWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.GrantTokenKycWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.GrantTokenKycWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.GrantTokenKycWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.GrantTokenKycWithRecordAsync*
+  name: GrantTokenKycWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_GrantTokenKycWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.GrantTokenKycWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.GrantTokenKycWithRecordAsync
+  nameWithType: Client.GrantTokenKycWithRecordAsync
+- uid: Hashgraph.Client.MintTokenAsync(Hashgraph.TokenIdentifier,System.UInt64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: MintTokenAsync(TokenIdentifier, UInt64, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_MintTokenAsync_Hashgraph_TokenIdentifier_System_UInt64_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.MintTokenAsync(Hashgraph.TokenIdentifier,System.UInt64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: MintTokenAsync(TokenIdentifier, UInt64, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.MintTokenAsync(Hashgraph.TokenIdentifier, System.UInt64, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.MintTokenAsync(Hashgraph.TokenIdentifier, System.UInt64, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.MintTokenAsync(TokenIdentifier, UInt64, Signatory, Action<IContext>)
+  nameWithType.vb: Client.MintTokenAsync(TokenIdentifier, UInt64, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.MintTokenAsync(Hashgraph.TokenIdentifier,System.UInt64,System.Action{Hashgraph.IContext})
+  name: MintTokenAsync(TokenIdentifier, UInt64, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_MintTokenAsync_Hashgraph_TokenIdentifier_System_UInt64_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.MintTokenAsync(Hashgraph.TokenIdentifier,System.UInt64,System.Action{Hashgraph.IContext})
+  name.vb: MintTokenAsync(TokenIdentifier, UInt64, Action(Of IContext))
+  fullName: Hashgraph.Client.MintTokenAsync(Hashgraph.TokenIdentifier, System.UInt64, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.MintTokenAsync(Hashgraph.TokenIdentifier, System.UInt64, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.MintTokenAsync(TokenIdentifier, UInt64, Action<IContext>)
+  nameWithType.vb: Client.MintTokenAsync(TokenIdentifier, UInt64, Action(Of IContext))
+- uid: Hashgraph.Client.MintTokenAsync*
+  name: MintTokenAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_MintTokenAsync_
+  commentId: Overload:Hashgraph.Client.MintTokenAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.MintTokenAsync
+  nameWithType: Client.MintTokenAsync
+- uid: Hashgraph.Client.MintTokenWithRecordAsync(Hashgraph.TokenIdentifier,System.UInt64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: MintTokenWithRecordAsync(TokenIdentifier, UInt64, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_MintTokenWithRecordAsync_Hashgraph_TokenIdentifier_System_UInt64_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.MintTokenWithRecordAsync(Hashgraph.TokenIdentifier,System.UInt64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: MintTokenWithRecordAsync(TokenIdentifier, UInt64, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.MintTokenWithRecordAsync(Hashgraph.TokenIdentifier, System.UInt64, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.MintTokenWithRecordAsync(Hashgraph.TokenIdentifier, System.UInt64, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.MintTokenWithRecordAsync(TokenIdentifier, UInt64, Signatory, Action<IContext>)
+  nameWithType.vb: Client.MintTokenWithRecordAsync(TokenIdentifier, UInt64, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.MintTokenWithRecordAsync(Hashgraph.TokenIdentifier,System.UInt64,System.Action{Hashgraph.IContext})
+  name: MintTokenWithRecordAsync(TokenIdentifier, UInt64, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_MintTokenWithRecordAsync_Hashgraph_TokenIdentifier_System_UInt64_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.MintTokenWithRecordAsync(Hashgraph.TokenIdentifier,System.UInt64,System.Action{Hashgraph.IContext})
+  name.vb: MintTokenWithRecordAsync(TokenIdentifier, UInt64, Action(Of IContext))
+  fullName: Hashgraph.Client.MintTokenWithRecordAsync(Hashgraph.TokenIdentifier, System.UInt64, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.MintTokenWithRecordAsync(Hashgraph.TokenIdentifier, System.UInt64, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.MintTokenWithRecordAsync(TokenIdentifier, UInt64, Action<IContext>)
+  nameWithType.vb: Client.MintTokenWithRecordAsync(TokenIdentifier, UInt64, Action(Of IContext))
+- uid: Hashgraph.Client.MintTokenWithRecordAsync*
+  name: MintTokenWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_MintTokenWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.MintTokenWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.MintTokenWithRecordAsync
+  nameWithType: Client.MintTokenWithRecordAsync
 - uid: Hashgraph.Client.QueryContractAsync(Hashgraph.QueryContractParams,System.Action{Hashgraph.IContext})
   name: QueryContractAsync(QueryContractParams, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_QueryContractAsync_Hashgraph_QueryContractParams_System_Action_Hashgraph_IContext__
@@ -1102,6 +1497,106 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.QueryContractAsync
   nameWithType: Client.QueryContractAsync
+- uid: Hashgraph.Client.ResumeTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: ResumeTokenAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ResumeTokenAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.ResumeTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: ResumeTokenAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.ResumeTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.ResumeTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.ResumeTokenAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.ResumeTokenAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.ResumeTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: ResumeTokenAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ResumeTokenAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.ResumeTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: ResumeTokenAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.ResumeTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.ResumeTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.ResumeTokenAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.ResumeTokenAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.ResumeTokenAsync*
+  name: ResumeTokenAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ResumeTokenAsync_
+  commentId: Overload:Hashgraph.Client.ResumeTokenAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.ResumeTokenAsync
+  nameWithType: Client.ResumeTokenAsync
+- uid: Hashgraph.Client.ResumeTokenWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: ResumeTokenWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ResumeTokenWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.ResumeTokenWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: ResumeTokenWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.ResumeTokenWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.ResumeTokenWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.ResumeTokenWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.ResumeTokenWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.ResumeTokenWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: ResumeTokenWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ResumeTokenWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.ResumeTokenWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: ResumeTokenWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.ResumeTokenWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.ResumeTokenWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.ResumeTokenWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.ResumeTokenWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.ResumeTokenWithRecordAsync*
+  name: ResumeTokenWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_ResumeTokenWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.ResumeTokenWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.ResumeTokenWithRecordAsync
+  nameWithType: Client.ResumeTokenWithRecordAsync
+- uid: Hashgraph.Client.RevokeTokenKycAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: RevokeTokenKycAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_RevokeTokenKycAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.RevokeTokenKycAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: RevokeTokenKycAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.RevokeTokenKycAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.RevokeTokenKycAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.RevokeTokenKycAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.RevokeTokenKycAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.RevokeTokenKycAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: RevokeTokenKycAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_RevokeTokenKycAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.RevokeTokenKycAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: RevokeTokenKycAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.RevokeTokenKycAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.RevokeTokenKycAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.RevokeTokenKycAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.RevokeTokenKycAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.RevokeTokenKycAsync*
+  name: RevokeTokenKycAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_RevokeTokenKycAsync_
+  commentId: Overload:Hashgraph.Client.RevokeTokenKycAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.RevokeTokenKycAsync
+  nameWithType: Client.RevokeTokenKycAsync
+- uid: Hashgraph.Client.RevokeTokenKycWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: RevokeTokenKycWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_RevokeTokenKycWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.RevokeTokenKycWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: RevokeTokenKycWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.RevokeTokenKycWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.RevokeTokenKycWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.RevokeTokenKycWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.RevokeTokenKycWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.RevokeTokenKycWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: RevokeTokenKycWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_RevokeTokenKycWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.RevokeTokenKycWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: RevokeTokenKycWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.RevokeTokenKycWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.RevokeTokenKycWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.RevokeTokenKycWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.RevokeTokenKycWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.RevokeTokenKycWithRecordAsync*
+  name: RevokeTokenKycWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_RevokeTokenKycWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.RevokeTokenKycWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.RevokeTokenKycWithRecordAsync
+  nameWithType: Client.RevokeTokenKycWithRecordAsync
 - uid: Hashgraph.Client.SubmitMessageAsync(Hashgraph.Address,System.ReadOnlyMemory{System.Byte},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
   name: SubmitMessageAsync(Address, ReadOnlyMemory<Byte>, Signatory, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_SubmitMessageAsync_Hashgraph_Address_System_ReadOnlyMemory_System_Byte__Hashgraph_Signatory_System_Action_Hashgraph_IContext__
@@ -1170,6 +1665,382 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.SubmitMessageWithRecordAsync
   nameWithType: Client.SubmitMessageWithRecordAsync
+- uid: Hashgraph.Client.SubmitUnsafeTransactionAsync(System.ReadOnlyMemory{System.Byte},System.Action{Hashgraph.IContext})
+  name: SubmitUnsafeTransactionAsync(ReadOnlyMemory<Byte>, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SubmitUnsafeTransactionAsync_System_ReadOnlyMemory_System_Byte__System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SubmitUnsafeTransactionAsync(System.ReadOnlyMemory{System.Byte},System.Action{Hashgraph.IContext})
+  name.vb: SubmitUnsafeTransactionAsync(ReadOnlyMemory(Of Byte), Action(Of IContext))
+  fullName: Hashgraph.Client.SubmitUnsafeTransactionAsync(System.ReadOnlyMemory<System.Byte>, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SubmitUnsafeTransactionAsync(System.ReadOnlyMemory(Of System.Byte), System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SubmitUnsafeTransactionAsync(ReadOnlyMemory<Byte>, Action<IContext>)
+  nameWithType.vb: Client.SubmitUnsafeTransactionAsync(ReadOnlyMemory(Of Byte), Action(Of IContext))
+- uid: Hashgraph.Client.SubmitUnsafeTransactionAsync*
+  name: SubmitUnsafeTransactionAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SubmitUnsafeTransactionAsync_
+  commentId: Overload:Hashgraph.Client.SubmitUnsafeTransactionAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SubmitUnsafeTransactionAsync
+  nameWithType: Client.SubmitUnsafeTransactionAsync
+- uid: Hashgraph.Client.SubmitUnsafeTransactionWithRecordAsync(System.ReadOnlyMemory{System.Byte},System.Action{Hashgraph.IContext})
+  name: SubmitUnsafeTransactionWithRecordAsync(ReadOnlyMemory<Byte>, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SubmitUnsafeTransactionWithRecordAsync_System_ReadOnlyMemory_System_Byte__System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SubmitUnsafeTransactionWithRecordAsync(System.ReadOnlyMemory{System.Byte},System.Action{Hashgraph.IContext})
+  name.vb: SubmitUnsafeTransactionWithRecordAsync(ReadOnlyMemory(Of Byte), Action(Of IContext))
+  fullName: Hashgraph.Client.SubmitUnsafeTransactionWithRecordAsync(System.ReadOnlyMemory<System.Byte>, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SubmitUnsafeTransactionWithRecordAsync(System.ReadOnlyMemory(Of System.Byte), System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SubmitUnsafeTransactionWithRecordAsync(ReadOnlyMemory<Byte>, Action<IContext>)
+  nameWithType.vb: Client.SubmitUnsafeTransactionWithRecordAsync(ReadOnlyMemory(Of Byte), Action(Of IContext))
+- uid: Hashgraph.Client.SubmitUnsafeTransactionWithRecordAsync*
+  name: SubmitUnsafeTransactionWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SubmitUnsafeTransactionWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.SubmitUnsafeTransactionWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SubmitUnsafeTransactionWithRecordAsync
+  nameWithType: Client.SubmitUnsafeTransactionWithRecordAsync
+- uid: Hashgraph.Client.SuspendNetworkAsync(System.TimeSpan,System.TimeSpan,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SuspendNetworkAsync(TimeSpan, TimeSpan, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SuspendNetworkAsync_System_TimeSpan_System_TimeSpan_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SuspendNetworkAsync(System.TimeSpan,System.TimeSpan,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SuspendNetworkAsync(TimeSpan, TimeSpan, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SuspendNetworkAsync(System.TimeSpan, System.TimeSpan, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SuspendNetworkAsync(System.TimeSpan, System.TimeSpan, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SuspendNetworkAsync(TimeSpan, TimeSpan, Address, Action<IContext>)
+  nameWithType.vb: Client.SuspendNetworkAsync(TimeSpan, TimeSpan, Address, Action(Of IContext))
+- uid: Hashgraph.Client.SuspendNetworkAsync*
+  name: SuspendNetworkAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SuspendNetworkAsync_
+  commentId: Overload:Hashgraph.Client.SuspendNetworkAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SuspendNetworkAsync
+  nameWithType: Client.SuspendNetworkAsync
+- uid: Hashgraph.Client.SuspendTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SuspendTokenAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SuspendTokenAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SuspendTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SuspendTokenAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SuspendTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SuspendTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SuspendTokenAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SuspendTokenAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SuspendTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SuspendTokenAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SuspendTokenAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SuspendTokenAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SuspendTokenAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SuspendTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SuspendTokenAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SuspendTokenAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.SuspendTokenAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.SuspendTokenAsync*
+  name: SuspendTokenAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SuspendTokenAsync_
+  commentId: Overload:Hashgraph.Client.SuspendTokenAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SuspendTokenAsync
+  nameWithType: Client.SuspendTokenAsync
+- uid: Hashgraph.Client.SuspendTokenWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SuspendTokenWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SuspendTokenWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SuspendTokenWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SuspendTokenWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SuspendTokenWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SuspendTokenWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SuspendTokenWithRecordAsync(TokenIdentifier, Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SuspendTokenWithRecordAsync(TokenIdentifier, Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SuspendTokenWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SuspendTokenWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SuspendTokenWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SuspendTokenWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SuspendTokenWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SuspendTokenWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SuspendTokenWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SuspendTokenWithRecordAsync(TokenIdentifier, Address, Action<IContext>)
+  nameWithType.vb: Client.SuspendTokenWithRecordAsync(TokenIdentifier, Address, Action(Of IContext))
+- uid: Hashgraph.Client.SuspendTokenWithRecordAsync*
+  name: SuspendTokenWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SuspendTokenWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.SuspendTokenWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SuspendTokenWithRecordAsync
+  nameWithType: Client.SuspendTokenWithRecordAsync
+- uid: Hashgraph.Client.SystemDeleteContractAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SystemDeleteContractAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteContractAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteContractAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteContractAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteContractAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteContractAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteContractAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteContractAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteContractAsync*
+  name: SystemDeleteContractAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteContractAsync_
+  commentId: Overload:Hashgraph.Client.SystemDeleteContractAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemDeleteContractAsync
+  nameWithType: Client.SystemDeleteContractAsync
+- uid: Hashgraph.Client.SystemDeleteContractImplementationAsync*
+  name: SystemDeleteContractImplementationAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteContractImplementationAsync_
+  commentId: Overload:Hashgraph.Client.SystemDeleteContractImplementationAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemDeleteContractImplementationAsync
+  nameWithType: Client.SystemDeleteContractImplementationAsync
+- uid: Hashgraph.Client.SystemDeleteContractImplementationAsync``1(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemDeleteContractImplementationAsync<TResult>(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteContractImplementationAsync__1_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteContractImplementationAsync``1(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteContractImplementationAsync(Of TResult)(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteContractImplementationAsync<TResult>(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteContractImplementationAsync(Of TResult)(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteContractImplementationAsync<TResult>(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteContractImplementationAsync(Of TResult)(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteContractWithRecordAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemDeleteContractWithRecordAsync(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteContractWithRecordAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteContractWithRecordAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteContractWithRecordAsync(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteContractWithRecordAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteContractWithRecordAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteContractWithRecordAsync(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteContractWithRecordAsync(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteContractWithRecordAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SystemDeleteContractWithRecordAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteContractWithRecordAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteContractWithRecordAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteContractWithRecordAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteContractWithRecordAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteContractWithRecordAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteContractWithRecordAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteContractWithRecordAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteContractWithRecordAsync*
+  name: SystemDeleteContractWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteContractWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.SystemDeleteContractWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemDeleteContractWithRecordAsync
+  nameWithType: Client.SystemDeleteContractWithRecordAsync
+- uid: Hashgraph.Client.SystemDeleteFileAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemDeleteFileAsync(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteFileAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteFileAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteFileAsync(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteFileAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteFileAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteFileAsync(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteFileAsync(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteFileAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SystemDeleteFileAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteFileAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteFileAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteFileAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteFileAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteFileAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteFileAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteFileAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteFileAsync*
+  name: SystemDeleteFileAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteFileAsync_
+  commentId: Overload:Hashgraph.Client.SystemDeleteFileAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemDeleteFileAsync
+  nameWithType: Client.SystemDeleteFileAsync
+- uid: Hashgraph.Client.SystemDeleteFileImplementationAsync*
+  name: SystemDeleteFileImplementationAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteFileImplementationAsync_
+  commentId: Overload:Hashgraph.Client.SystemDeleteFileImplementationAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemDeleteFileImplementationAsync
+  nameWithType: Client.SystemDeleteFileImplementationAsync
+- uid: Hashgraph.Client.SystemDeleteFileImplementationAsync``1(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemDeleteFileImplementationAsync<TResult>(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteFileImplementationAsync__1_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteFileImplementationAsync``1(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteFileImplementationAsync(Of TResult)(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteFileImplementationAsync<TResult>(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteFileImplementationAsync(Of TResult)(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteFileImplementationAsync<TResult>(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteFileImplementationAsync(Of TResult)(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteFileWithRecordAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemDeleteFileWithRecordAsync(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteFileWithRecordAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteFileWithRecordAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteFileWithRecordAsync(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteFileWithRecordAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteFileWithRecordAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteFileWithRecordAsync(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteFileWithRecordAsync(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteFileWithRecordAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SystemDeleteFileWithRecordAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteFileWithRecordAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemDeleteFileWithRecordAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SystemDeleteFileWithRecordAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemDeleteFileWithRecordAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemDeleteFileWithRecordAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemDeleteFileWithRecordAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.SystemDeleteFileWithRecordAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.SystemDeleteFileWithRecordAsync*
+  name: SystemDeleteFileWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemDeleteFileWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.SystemDeleteFileWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemDeleteFileWithRecordAsync
+  nameWithType: Client.SystemDeleteFileWithRecordAsync
+- uid: Hashgraph.Client.SystemRestoreContractAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SystemRestoreContractAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreContractAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreContractAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreContractAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreContractAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreContractAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreContractAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreContractAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreContractAsync*
+  name: SystemRestoreContractAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreContractAsync_
+  commentId: Overload:Hashgraph.Client.SystemRestoreContractAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemRestoreContractAsync
+  nameWithType: Client.SystemRestoreContractAsync
+- uid: Hashgraph.Client.SystemRestoreContractImplementationAsync*
+  name: SystemRestoreContractImplementationAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreContractImplementationAsync_
+  commentId: Overload:Hashgraph.Client.SystemRestoreContractImplementationAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemRestoreContractImplementationAsync
+  nameWithType: Client.SystemRestoreContractImplementationAsync
+- uid: Hashgraph.Client.SystemRestoreContractImplementationAsync``1(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemRestoreContractImplementationAsync<TResult>(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreContractImplementationAsync__1_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreContractImplementationAsync``1(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreContractImplementationAsync(Of TResult)(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreContractImplementationAsync<TResult>(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreContractImplementationAsync(Of TResult)(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreContractImplementationAsync<TResult>(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreContractImplementationAsync(Of TResult)(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreContractWithRecordAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemRestoreContractWithRecordAsync(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreContractWithRecordAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreContractWithRecordAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreContractWithRecordAsync(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreContractWithRecordAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreContractWithRecordAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreContractWithRecordAsync(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreContractWithRecordAsync(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreContractWithRecordAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SystemRestoreContractWithRecordAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreContractWithRecordAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreContractWithRecordAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreContractWithRecordAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreContractWithRecordAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreContractWithRecordAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreContractWithRecordAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreContractWithRecordAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreContractWithRecordAsync*
+  name: SystemRestoreContractWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreContractWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.SystemRestoreContractWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemRestoreContractWithRecordAsync
+  nameWithType: Client.SystemRestoreContractWithRecordAsync
+- uid: Hashgraph.Client.SystemRestoreFileAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemRestoreFileAsync(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreFileAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreFileAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreFileAsync(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreFileAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreFileAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreFileAsync(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreFileAsync(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreFileAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SystemRestoreFileAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreFileAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreFileAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreFileAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreFileAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreFileAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreFileAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreFileAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreFileAsync*
+  name: SystemRestoreFileAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreFileAsync_
+  commentId: Overload:Hashgraph.Client.SystemRestoreFileAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemRestoreFileAsync
+  nameWithType: Client.SystemRestoreFileAsync
+- uid: Hashgraph.Client.SystemRestoreFileImplementationAsync*
+  name: SystemRestoreFileImplementationAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreFileImplementationAsync_
+  commentId: Overload:Hashgraph.Client.SystemRestoreFileImplementationAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemRestoreFileImplementationAsync
+  nameWithType: Client.SystemRestoreFileImplementationAsync
+- uid: Hashgraph.Client.SystemRestoreFileImplementationAsync``1(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemRestoreFileImplementationAsync<TResult>(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreFileImplementationAsync__1_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreFileImplementationAsync``1(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreFileImplementationAsync(Of TResult)(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreFileImplementationAsync<TResult>(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreFileImplementationAsync(Of TResult)(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreFileImplementationAsync<TResult>(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreFileImplementationAsync(Of TResult)(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreFileWithRecordAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SystemRestoreFileWithRecordAsync(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreFileWithRecordAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreFileWithRecordAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreFileWithRecordAsync(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreFileWithRecordAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreFileWithRecordAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreFileWithRecordAsync(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreFileWithRecordAsync(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreFileWithRecordAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: SystemRestoreFileWithRecordAsync(Address, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreFileWithRecordAsync_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SystemRestoreFileWithRecordAsync(Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: SystemRestoreFileWithRecordAsync(Address, Action(Of IContext))
+  fullName: Hashgraph.Client.SystemRestoreFileWithRecordAsync(Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SystemRestoreFileWithRecordAsync(Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SystemRestoreFileWithRecordAsync(Address, Action<IContext>)
+  nameWithType.vb: Client.SystemRestoreFileWithRecordAsync(Address, Action(Of IContext))
+- uid: Hashgraph.Client.SystemRestoreFileWithRecordAsync*
+  name: SystemRestoreFileWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SystemRestoreFileWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.SystemRestoreFileWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SystemRestoreFileWithRecordAsync
+  nameWithType: Client.SystemRestoreFileWithRecordAsync
+- uid: Hashgraph.Client.SytemDeleteContractAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SytemDeleteContractAsync(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SytemDeleteContractAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SytemDeleteContractAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SytemDeleteContractAsync(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SytemDeleteContractAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SytemDeleteContractAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SytemDeleteContractAsync(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SytemDeleteContractAsync(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SytemDeleteContractAsync*
+  name: SytemDeleteContractAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SytemDeleteContractAsync_
+  commentId: Overload:Hashgraph.Client.SytemDeleteContractAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SytemDeleteContractAsync
+  nameWithType: Client.SytemDeleteContractAsync
+- uid: Hashgraph.Client.SytemRestoreContractAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: SytemRestoreContractAsync(Address, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SytemRestoreContractAsync_Hashgraph_Address_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.SytemRestoreContractAsync(Hashgraph.Address,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: SytemRestoreContractAsync(Address, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.SytemRestoreContractAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.SytemRestoreContractAsync(Hashgraph.Address, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.SytemRestoreContractAsync(Address, Signatory, Action<IContext>)
+  nameWithType.vb: Client.SytemRestoreContractAsync(Address, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.SytemRestoreContractAsync*
+  name: SytemRestoreContractAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_SytemRestoreContractAsync_
+  commentId: Overload:Hashgraph.Client.SytemRestoreContractAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.SytemRestoreContractAsync
+  nameWithType: Client.SytemRestoreContractAsync
 - uid: Hashgraph.Client.TransferAsync(Hashgraph.Address,Hashgraph.Address,System.Int64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
   name: TransferAsync(Address, Address, Int64, Signatory, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_TransferAsync_Hashgraph_Address_Hashgraph_Address_System_Int64_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
@@ -1188,24 +2059,24 @@ references:
   fullName.vb: Hashgraph.Client.TransferAsync(Hashgraph.Address, Hashgraph.Address, System.Int64, System.Action(Of Hashgraph.IContext))
   nameWithType: Client.TransferAsync(Address, Address, Int64, Action<IContext>)
   nameWithType.vb: Client.TransferAsync(Address, Address, Int64, Action(Of IContext))
-- uid: Hashgraph.Client.TransferAsync(System.Collections.Generic.Dictionary{Hashgraph.Address,System.Int64},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
-  name: TransferAsync(Dictionary<Address, Int64>, Signatory, Action<IContext>)
-  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferAsync_System_Collections_Generic_Dictionary_Hashgraph_Address_System_Int64__Hashgraph_Signatory_System_Action_Hashgraph_IContext__
-  commentId: M:Hashgraph.Client.TransferAsync(System.Collections.Generic.Dictionary{Hashgraph.Address,System.Int64},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
-  name.vb: TransferAsync(Dictionary(Of Address, Int64), Signatory, Action(Of IContext))
-  fullName: Hashgraph.Client.TransferAsync(System.Collections.Generic.Dictionary<Hashgraph.Address, System.Int64>, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
-  fullName.vb: Hashgraph.Client.TransferAsync(System.Collections.Generic.Dictionary(Of Hashgraph.Address, System.Int64), Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
-  nameWithType: Client.TransferAsync(Dictionary<Address, Int64>, Signatory, Action<IContext>)
-  nameWithType.vb: Client.TransferAsync(Dictionary(Of Address, Int64), Signatory, Action(Of IContext))
-- uid: Hashgraph.Client.TransferAsync(System.Collections.Generic.Dictionary{Hashgraph.Address,System.Int64},System.Action{Hashgraph.IContext})
-  name: TransferAsync(Dictionary<Address, Int64>, Action<IContext>)
-  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferAsync_System_Collections_Generic_Dictionary_Hashgraph_Address_System_Int64__System_Action_Hashgraph_IContext__
-  commentId: M:Hashgraph.Client.TransferAsync(System.Collections.Generic.Dictionary{Hashgraph.Address,System.Int64},System.Action{Hashgraph.IContext})
-  name.vb: TransferAsync(Dictionary(Of Address, Int64), Action(Of IContext))
-  fullName: Hashgraph.Client.TransferAsync(System.Collections.Generic.Dictionary<Hashgraph.Address, System.Int64>, System.Action<Hashgraph.IContext>)
-  fullName.vb: Hashgraph.Client.TransferAsync(System.Collections.Generic.Dictionary(Of Hashgraph.Address, System.Int64), System.Action(Of Hashgraph.IContext))
-  nameWithType: Client.TransferAsync(Dictionary<Address, Int64>, Action<IContext>)
-  nameWithType.vb: Client.TransferAsync(Dictionary(Of Address, Int64), Action(Of IContext))
+- uid: Hashgraph.Client.TransferAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Hashgraph.Address,System.Int64}},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: TransferAsync(IEnumerable<KeyValuePair<Address, Int64>>, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferAsync_System_Collections_Generic_IEnumerable_System_Collections_Generic_KeyValuePair_Hashgraph_Address_System_Int64___Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Hashgraph.Address,System.Int64}},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: TransferAsync(IEnumerable(Of KeyValuePair(Of Address, Int64)), Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.TransferAsync(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<Hashgraph.Address, System.Int64>>, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferAsync(System.Collections.Generic.IEnumerable(Of System.Collections.Generic.KeyValuePair(Of Hashgraph.Address, System.Int64)), Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferAsync(IEnumerable<KeyValuePair<Address, Int64>>, Signatory, Action<IContext>)
+  nameWithType.vb: Client.TransferAsync(IEnumerable(Of KeyValuePair(Of Address, Int64)), Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.TransferAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Hashgraph.Address,System.Int64}},System.Action{Hashgraph.IContext})
+  name: TransferAsync(IEnumerable<KeyValuePair<Address, Int64>>, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferAsync_System_Collections_Generic_IEnumerable_System_Collections_Generic_KeyValuePair_Hashgraph_Address_System_Int64___System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Hashgraph.Address,System.Int64}},System.Action{Hashgraph.IContext})
+  name.vb: TransferAsync(IEnumerable(Of KeyValuePair(Of Address, Int64)), Action(Of IContext))
+  fullName: Hashgraph.Client.TransferAsync(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<Hashgraph.Address, System.Int64>>, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferAsync(System.Collections.Generic.IEnumerable(Of System.Collections.Generic.KeyValuePair(Of Hashgraph.Address, System.Int64)), System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferAsync(IEnumerable<KeyValuePair<Address, Int64>>, Action<IContext>)
+  nameWithType.vb: Client.TransferAsync(IEnumerable(Of KeyValuePair(Of Address, Int64)), Action(Of IContext))
 - uid: Hashgraph.Client.TransferAsync*
   name: TransferAsync
   href: api/Hashgraph.Client.html#Hashgraph_Client_TransferAsync_
@@ -1213,6 +2084,92 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.TransferAsync
   nameWithType: Client.TransferAsync
+- uid: Hashgraph.Client.TransferTokensAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Address,System.Int64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: TransferTokensAsync(TokenIdentifier, Address, Address, Int64, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Address_System_Int64_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferTokensAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Address,System.Int64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: TransferTokensAsync(TokenIdentifier, Address, Address, Int64, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.TransferTokensAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Address, System.Int64, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferTokensAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Address, System.Int64, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferTokensAsync(TokenIdentifier, Address, Address, Int64, Signatory, Action<IContext>)
+  nameWithType.vb: Client.TransferTokensAsync(TokenIdentifier, Address, Address, Int64, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.TransferTokensAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Address,System.Int64,System.Action{Hashgraph.IContext})
+  name: TransferTokensAsync(TokenIdentifier, Address, Address, Int64, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Address_System_Int64_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferTokensAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Address,System.Int64,System.Action{Hashgraph.IContext})
+  name.vb: TransferTokensAsync(TokenIdentifier, Address, Address, Int64, Action(Of IContext))
+  fullName: Hashgraph.Client.TransferTokensAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Address, System.Int64, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferTokensAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Address, System.Int64, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferTokensAsync(TokenIdentifier, Address, Address, Int64, Action<IContext>)
+  nameWithType.vb: Client.TransferTokensAsync(TokenIdentifier, Address, Address, Int64, Action(Of IContext))
+- uid: Hashgraph.Client.TransferTokensAsync(System.Collections.Generic.IEnumerable{Hashgraph.TokenTransfer},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: TransferTokensAsync(IEnumerable<TokenTransfer>, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensAsync_System_Collections_Generic_IEnumerable_Hashgraph_TokenTransfer__Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferTokensAsync(System.Collections.Generic.IEnumerable{Hashgraph.TokenTransfer},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: TransferTokensAsync(IEnumerable(Of TokenTransfer), Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.TransferTokensAsync(System.Collections.Generic.IEnumerable<Hashgraph.TokenTransfer>, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferTokensAsync(System.Collections.Generic.IEnumerable(Of Hashgraph.TokenTransfer), Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferTokensAsync(IEnumerable<TokenTransfer>, Signatory, Action<IContext>)
+  nameWithType.vb: Client.TransferTokensAsync(IEnumerable(Of TokenTransfer), Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.TransferTokensAsync(System.Collections.Generic.IEnumerable{Hashgraph.TokenTransfer},System.Action{Hashgraph.IContext})
+  name: TransferTokensAsync(IEnumerable<TokenTransfer>, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensAsync_System_Collections_Generic_IEnumerable_Hashgraph_TokenTransfer__System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferTokensAsync(System.Collections.Generic.IEnumerable{Hashgraph.TokenTransfer},System.Action{Hashgraph.IContext})
+  name.vb: TransferTokensAsync(IEnumerable(Of TokenTransfer), Action(Of IContext))
+  fullName: Hashgraph.Client.TransferTokensAsync(System.Collections.Generic.IEnumerable<Hashgraph.TokenTransfer>, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferTokensAsync(System.Collections.Generic.IEnumerable(Of Hashgraph.TokenTransfer), System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferTokensAsync(IEnumerable<TokenTransfer>, Action<IContext>)
+  nameWithType.vb: Client.TransferTokensAsync(IEnumerable(Of TokenTransfer), Action(Of IContext))
+- uid: Hashgraph.Client.TransferTokensAsync*
+  name: TransferTokensAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensAsync_
+  commentId: Overload:Hashgraph.Client.TransferTokensAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.TransferTokensAsync
+  nameWithType: Client.TransferTokensAsync
+- uid: Hashgraph.Client.TransferTokensWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Address,System.Int64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: TransferTokensWithRecordAsync(TokenIdentifier, Address, Address, Int64, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Address_System_Int64_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferTokensWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Address,System.Int64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: TransferTokensWithRecordAsync(TokenIdentifier, Address, Address, Int64, Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.TransferTokensWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Address, System.Int64, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferTokensWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Address, System.Int64, Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferTokensWithRecordAsync(TokenIdentifier, Address, Address, Int64, Signatory, Action<IContext>)
+  nameWithType.vb: Client.TransferTokensWithRecordAsync(TokenIdentifier, Address, Address, Int64, Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.TransferTokensWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Address,System.Int64,System.Action{Hashgraph.IContext})
+  name: TransferTokensWithRecordAsync(TokenIdentifier, Address, Address, Int64, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensWithRecordAsync_Hashgraph_TokenIdentifier_Hashgraph_Address_Hashgraph_Address_System_Int64_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferTokensWithRecordAsync(Hashgraph.TokenIdentifier,Hashgraph.Address,Hashgraph.Address,System.Int64,System.Action{Hashgraph.IContext})
+  name.vb: TransferTokensWithRecordAsync(TokenIdentifier, Address, Address, Int64, Action(Of IContext))
+  fullName: Hashgraph.Client.TransferTokensWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Address, System.Int64, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferTokensWithRecordAsync(Hashgraph.TokenIdentifier, Hashgraph.Address, Hashgraph.Address, System.Int64, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferTokensWithRecordAsync(TokenIdentifier, Address, Address, Int64, Action<IContext>)
+  nameWithType.vb: Client.TransferTokensWithRecordAsync(TokenIdentifier, Address, Address, Int64, Action(Of IContext))
+- uid: Hashgraph.Client.TransferTokensWithRecordAsync(System.Collections.Generic.IEnumerable{Hashgraph.TokenTransfer},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: TransferTokensWithRecordAsync(IEnumerable<TokenTransfer>, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensWithRecordAsync_System_Collections_Generic_IEnumerable_Hashgraph_TokenTransfer__Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferTokensWithRecordAsync(System.Collections.Generic.IEnumerable{Hashgraph.TokenTransfer},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: TransferTokensWithRecordAsync(IEnumerable(Of TokenTransfer), Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.TransferTokensWithRecordAsync(System.Collections.Generic.IEnumerable<Hashgraph.TokenTransfer>, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferTokensWithRecordAsync(System.Collections.Generic.IEnumerable(Of Hashgraph.TokenTransfer), Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferTokensWithRecordAsync(IEnumerable<TokenTransfer>, Signatory, Action<IContext>)
+  nameWithType.vb: Client.TransferTokensWithRecordAsync(IEnumerable(Of TokenTransfer), Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.TransferTokensWithRecordAsync(System.Collections.Generic.IEnumerable{Hashgraph.TokenTransfer},System.Action{Hashgraph.IContext})
+  name: TransferTokensWithRecordAsync(IEnumerable<TokenTransfer>, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensWithRecordAsync_System_Collections_Generic_IEnumerable_Hashgraph_TokenTransfer__System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferTokensWithRecordAsync(System.Collections.Generic.IEnumerable{Hashgraph.TokenTransfer},System.Action{Hashgraph.IContext})
+  name.vb: TransferTokensWithRecordAsync(IEnumerable(Of TokenTransfer), Action(Of IContext))
+  fullName: Hashgraph.Client.TransferTokensWithRecordAsync(System.Collections.Generic.IEnumerable<Hashgraph.TokenTransfer>, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferTokensWithRecordAsync(System.Collections.Generic.IEnumerable(Of Hashgraph.TokenTransfer), System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferTokensWithRecordAsync(IEnumerable<TokenTransfer>, Action<IContext>)
+  nameWithType.vb: Client.TransferTokensWithRecordAsync(IEnumerable(Of TokenTransfer), Action(Of IContext))
+- uid: Hashgraph.Client.TransferTokensWithRecordAsync*
+  name: TransferTokensWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferTokensWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.TransferTokensWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.TransferTokensWithRecordAsync
+  nameWithType: Client.TransferTokensWithRecordAsync
 - uid: Hashgraph.Client.TransferWithRecordAsync(Hashgraph.Address,Hashgraph.Address,System.Int64,Hashgraph.Signatory,System.Action{Hashgraph.IContext})
   name: TransferWithRecordAsync(Address, Address, Int64, Signatory, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_TransferWithRecordAsync_Hashgraph_Address_Hashgraph_Address_System_Int64_Hashgraph_Signatory_System_Action_Hashgraph_IContext__
@@ -1231,24 +2188,24 @@ references:
   fullName.vb: Hashgraph.Client.TransferWithRecordAsync(Hashgraph.Address, Hashgraph.Address, System.Int64, System.Action(Of Hashgraph.IContext))
   nameWithType: Client.TransferWithRecordAsync(Address, Address, Int64, Action<IContext>)
   nameWithType.vb: Client.TransferWithRecordAsync(Address, Address, Int64, Action(Of IContext))
-- uid: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.Dictionary{Hashgraph.Address,System.Int64},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
-  name: TransferWithRecordAsync(Dictionary<Address, Int64>, Signatory, Action<IContext>)
-  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferWithRecordAsync_System_Collections_Generic_Dictionary_Hashgraph_Address_System_Int64__Hashgraph_Signatory_System_Action_Hashgraph_IContext__
-  commentId: M:Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.Dictionary{Hashgraph.Address,System.Int64},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
-  name.vb: TransferWithRecordAsync(Dictionary(Of Address, Int64), Signatory, Action(Of IContext))
-  fullName: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.Dictionary<Hashgraph.Address, System.Int64>, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
-  fullName.vb: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.Dictionary(Of Hashgraph.Address, System.Int64), Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
-  nameWithType: Client.TransferWithRecordAsync(Dictionary<Address, Int64>, Signatory, Action<IContext>)
-  nameWithType.vb: Client.TransferWithRecordAsync(Dictionary(Of Address, Int64), Signatory, Action(Of IContext))
-- uid: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.Dictionary{Hashgraph.Address,System.Int64},System.Action{Hashgraph.IContext})
-  name: TransferWithRecordAsync(Dictionary<Address, Int64>, Action<IContext>)
-  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferWithRecordAsync_System_Collections_Generic_Dictionary_Hashgraph_Address_System_Int64__System_Action_Hashgraph_IContext__
-  commentId: M:Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.Dictionary{Hashgraph.Address,System.Int64},System.Action{Hashgraph.IContext})
-  name.vb: TransferWithRecordAsync(Dictionary(Of Address, Int64), Action(Of IContext))
-  fullName: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.Dictionary<Hashgraph.Address, System.Int64>, System.Action<Hashgraph.IContext>)
-  fullName.vb: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.Dictionary(Of Hashgraph.Address, System.Int64), System.Action(Of Hashgraph.IContext))
-  nameWithType: Client.TransferWithRecordAsync(Dictionary<Address, Int64>, Action<IContext>)
-  nameWithType.vb: Client.TransferWithRecordAsync(Dictionary(Of Address, Int64), Action(Of IContext))
+- uid: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Hashgraph.Address,System.Int64}},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name: TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, Int64>>, Signatory, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferWithRecordAsync_System_Collections_Generic_IEnumerable_System_Collections_Generic_KeyValuePair_Hashgraph_Address_System_Int64___Hashgraph_Signatory_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Hashgraph.Address,System.Int64}},Hashgraph.Signatory,System.Action{Hashgraph.IContext})
+  name.vb: TransferWithRecordAsync(IEnumerable(Of KeyValuePair(Of Address, Int64)), Signatory, Action(Of IContext))
+  fullName: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<Hashgraph.Address, System.Int64>>, Hashgraph.Signatory, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.IEnumerable(Of System.Collections.Generic.KeyValuePair(Of Hashgraph.Address, System.Int64)), Hashgraph.Signatory, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, Int64>>, Signatory, Action<IContext>)
+  nameWithType.vb: Client.TransferWithRecordAsync(IEnumerable(Of KeyValuePair(Of Address, Int64)), Signatory, Action(Of IContext))
+- uid: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Hashgraph.Address,System.Int64}},System.Action{Hashgraph.IContext})
+  name: TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, Int64>>, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_TransferWithRecordAsync_System_Collections_Generic_IEnumerable_System_Collections_Generic_KeyValuePair_Hashgraph_Address_System_Int64___System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{Hashgraph.Address,System.Int64}},System.Action{Hashgraph.IContext})
+  name.vb: TransferWithRecordAsync(IEnumerable(Of KeyValuePair(Of Address, Int64)), Action(Of IContext))
+  fullName: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<Hashgraph.Address, System.Int64>>, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.TransferWithRecordAsync(System.Collections.Generic.IEnumerable(Of System.Collections.Generic.KeyValuePair(Of Hashgraph.Address, System.Int64)), System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, Int64>>, Action<IContext>)
+  nameWithType.vb: Client.TransferWithRecordAsync(IEnumerable(Of KeyValuePair(Of Address, Int64)), Action(Of IContext))
 - uid: Hashgraph.Client.TransferWithRecordAsync*
   name: TransferWithRecordAsync
   href: api/Hashgraph.Client.html#Hashgraph_Client_TransferWithRecordAsync_
@@ -1368,6 +2325,38 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Client.UpdateFileWithRecordAsync
   nameWithType: Client.UpdateFileWithRecordAsync
+- uid: Hashgraph.Client.UpdateTokenAsync(Hashgraph.UpdateTokenParams,System.Action{Hashgraph.IContext})
+  name: UpdateTokenAsync(UpdateTokenParams, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_UpdateTokenAsync_Hashgraph_UpdateTokenParams_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.UpdateTokenAsync(Hashgraph.UpdateTokenParams,System.Action{Hashgraph.IContext})
+  name.vb: UpdateTokenAsync(UpdateTokenParams, Action(Of IContext))
+  fullName: Hashgraph.Client.UpdateTokenAsync(Hashgraph.UpdateTokenParams, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.UpdateTokenAsync(Hashgraph.UpdateTokenParams, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.UpdateTokenAsync(UpdateTokenParams, Action<IContext>)
+  nameWithType.vb: Client.UpdateTokenAsync(UpdateTokenParams, Action(Of IContext))
+- uid: Hashgraph.Client.UpdateTokenAsync*
+  name: UpdateTokenAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_UpdateTokenAsync_
+  commentId: Overload:Hashgraph.Client.UpdateTokenAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.UpdateTokenAsync
+  nameWithType: Client.UpdateTokenAsync
+- uid: Hashgraph.Client.UpdateTokenWithRecordAsync(Hashgraph.UpdateTokenParams,System.Action{Hashgraph.IContext})
+  name: UpdateTokenWithRecordAsync(UpdateTokenParams, Action<IContext>)
+  href: api/Hashgraph.Client.html#Hashgraph_Client_UpdateTokenWithRecordAsync_Hashgraph_UpdateTokenParams_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Client.UpdateTokenWithRecordAsync(Hashgraph.UpdateTokenParams,System.Action{Hashgraph.IContext})
+  name.vb: UpdateTokenWithRecordAsync(UpdateTokenParams, Action(Of IContext))
+  fullName: Hashgraph.Client.UpdateTokenWithRecordAsync(Hashgraph.UpdateTokenParams, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Client.UpdateTokenWithRecordAsync(Hashgraph.UpdateTokenParams, System.Action(Of Hashgraph.IContext))
+  nameWithType: Client.UpdateTokenWithRecordAsync(UpdateTokenParams, Action<IContext>)
+  nameWithType.vb: Client.UpdateTokenWithRecordAsync(UpdateTokenParams, Action(Of IContext))
+- uid: Hashgraph.Client.UpdateTokenWithRecordAsync*
+  name: UpdateTokenWithRecordAsync
+  href: api/Hashgraph.Client.html#Hashgraph_Client_UpdateTokenWithRecordAsync_
+  commentId: Overload:Hashgraph.Client.UpdateTokenWithRecordAsync
+  isSpec: "True"
+  fullName: Hashgraph.Client.UpdateTokenWithRecordAsync
+  nameWithType: Client.UpdateTokenWithRecordAsync
 - uid: Hashgraph.Client.UpdateTopicAsync(Hashgraph.UpdateTopicParams,System.Action{Hashgraph.IContext})
   name: UpdateTopicAsync(UpdateTopicParams, Action<IContext>)
   href: api/Hashgraph.Client.html#Hashgraph_Client_UpdateTopicAsync_Hashgraph_UpdateTopicParams_System_Action_Hashgraph_IContext__
@@ -2226,6 +3215,193 @@ references:
   isSpec: "True"
   fullName: Hashgraph.CreateFileParams.Signatory
   nameWithType: CreateFileParams.Signatory
+- uid: Hashgraph.CreateTokenParams
+  name: CreateTokenParams
+  href: api/Hashgraph.CreateTokenParams.html
+  commentId: T:Hashgraph.CreateTokenParams
+  fullName: Hashgraph.CreateTokenParams
+  nameWithType: CreateTokenParams
+- uid: Hashgraph.CreateTokenParams.Administrator
+  name: Administrator
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Administrator
+  commentId: P:Hashgraph.CreateTokenParams.Administrator
+  fullName: Hashgraph.CreateTokenParams.Administrator
+  nameWithType: CreateTokenParams.Administrator
+- uid: Hashgraph.CreateTokenParams.Administrator*
+  name: Administrator
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Administrator_
+  commentId: Overload:Hashgraph.CreateTokenParams.Administrator
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.Administrator
+  nameWithType: CreateTokenParams.Administrator
+- uid: Hashgraph.CreateTokenParams.Circulation
+  name: Circulation
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Circulation
+  commentId: P:Hashgraph.CreateTokenParams.Circulation
+  fullName: Hashgraph.CreateTokenParams.Circulation
+  nameWithType: CreateTokenParams.Circulation
+- uid: Hashgraph.CreateTokenParams.Circulation*
+  name: Circulation
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Circulation_
+  commentId: Overload:Hashgraph.CreateTokenParams.Circulation
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.Circulation
+  nameWithType: CreateTokenParams.Circulation
+- uid: Hashgraph.CreateTokenParams.ConfiscateEndorsement
+  name: ConfiscateEndorsement
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_ConfiscateEndorsement
+  commentId: P:Hashgraph.CreateTokenParams.ConfiscateEndorsement
+  fullName: Hashgraph.CreateTokenParams.ConfiscateEndorsement
+  nameWithType: CreateTokenParams.ConfiscateEndorsement
+- uid: Hashgraph.CreateTokenParams.ConfiscateEndorsement*
+  name: ConfiscateEndorsement
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_ConfiscateEndorsement_
+  commentId: Overload:Hashgraph.CreateTokenParams.ConfiscateEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.ConfiscateEndorsement
+  nameWithType: CreateTokenParams.ConfiscateEndorsement
+- uid: Hashgraph.CreateTokenParams.Decimals
+  name: Decimals
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Decimals
+  commentId: P:Hashgraph.CreateTokenParams.Decimals
+  fullName: Hashgraph.CreateTokenParams.Decimals
+  nameWithType: CreateTokenParams.Decimals
+- uid: Hashgraph.CreateTokenParams.Decimals*
+  name: Decimals
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Decimals_
+  commentId: Overload:Hashgraph.CreateTokenParams.Decimals
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.Decimals
+  nameWithType: CreateTokenParams.Decimals
+- uid: Hashgraph.CreateTokenParams.GrantKycEndorsement
+  name: GrantKycEndorsement
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_GrantKycEndorsement
+  commentId: P:Hashgraph.CreateTokenParams.GrantKycEndorsement
+  fullName: Hashgraph.CreateTokenParams.GrantKycEndorsement
+  nameWithType: CreateTokenParams.GrantKycEndorsement
+- uid: Hashgraph.CreateTokenParams.GrantKycEndorsement*
+  name: GrantKycEndorsement
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_GrantKycEndorsement_
+  commentId: Overload:Hashgraph.CreateTokenParams.GrantKycEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.GrantKycEndorsement
+  nameWithType: CreateTokenParams.GrantKycEndorsement
+- uid: Hashgraph.CreateTokenParams.InitializeSuspended
+  name: InitializeSuspended
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_InitializeSuspended
+  commentId: P:Hashgraph.CreateTokenParams.InitializeSuspended
+  fullName: Hashgraph.CreateTokenParams.InitializeSuspended
+  nameWithType: CreateTokenParams.InitializeSuspended
+- uid: Hashgraph.CreateTokenParams.InitializeSuspended*
+  name: InitializeSuspended
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_InitializeSuspended_
+  commentId: Overload:Hashgraph.CreateTokenParams.InitializeSuspended
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.InitializeSuspended
+  nameWithType: CreateTokenParams.InitializeSuspended
+- uid: Hashgraph.CreateTokenParams.Signatory
+  name: Signatory
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Signatory
+  commentId: P:Hashgraph.CreateTokenParams.Signatory
+  fullName: Hashgraph.CreateTokenParams.Signatory
+  nameWithType: CreateTokenParams.Signatory
+- uid: Hashgraph.CreateTokenParams.Signatory*
+  name: Signatory
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Signatory_
+  commentId: Overload:Hashgraph.CreateTokenParams.Signatory
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.Signatory
+  nameWithType: CreateTokenParams.Signatory
+- uid: Hashgraph.CreateTokenParams.SupplyEndorsement
+  name: SupplyEndorsement
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_SupplyEndorsement
+  commentId: P:Hashgraph.CreateTokenParams.SupplyEndorsement
+  fullName: Hashgraph.CreateTokenParams.SupplyEndorsement
+  nameWithType: CreateTokenParams.SupplyEndorsement
+- uid: Hashgraph.CreateTokenParams.SupplyEndorsement*
+  name: SupplyEndorsement
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_SupplyEndorsement_
+  commentId: Overload:Hashgraph.CreateTokenParams.SupplyEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.SupplyEndorsement
+  nameWithType: CreateTokenParams.SupplyEndorsement
+- uid: Hashgraph.CreateTokenParams.SuspendEndorsement
+  name: SuspendEndorsement
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_SuspendEndorsement
+  commentId: P:Hashgraph.CreateTokenParams.SuspendEndorsement
+  fullName: Hashgraph.CreateTokenParams.SuspendEndorsement
+  nameWithType: CreateTokenParams.SuspendEndorsement
+- uid: Hashgraph.CreateTokenParams.SuspendEndorsement*
+  name: SuspendEndorsement
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_SuspendEndorsement_
+  commentId: Overload:Hashgraph.CreateTokenParams.SuspendEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.SuspendEndorsement
+  nameWithType: CreateTokenParams.SuspendEndorsement
+- uid: Hashgraph.CreateTokenParams.Symbol
+  name: Symbol
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Symbol
+  commentId: P:Hashgraph.CreateTokenParams.Symbol
+  fullName: Hashgraph.CreateTokenParams.Symbol
+  nameWithType: CreateTokenParams.Symbol
+- uid: Hashgraph.CreateTokenParams.Symbol*
+  name: Symbol
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Symbol_
+  commentId: Overload:Hashgraph.CreateTokenParams.Symbol
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.Symbol
+  nameWithType: CreateTokenParams.Symbol
+- uid: Hashgraph.CreateTokenParams.Treasury
+  name: Treasury
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Treasury
+  commentId: P:Hashgraph.CreateTokenParams.Treasury
+  fullName: Hashgraph.CreateTokenParams.Treasury
+  nameWithType: CreateTokenParams.Treasury
+- uid: Hashgraph.CreateTokenParams.Treasury*
+  name: Treasury
+  href: api/Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Treasury_
+  commentId: Overload:Hashgraph.CreateTokenParams.Treasury
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenParams.Treasury
+  nameWithType: CreateTokenParams.Treasury
+- uid: Hashgraph.CreateTokenReceipt
+  name: CreateTokenReceipt
+  href: api/Hashgraph.CreateTokenReceipt.html
+  commentId: T:Hashgraph.CreateTokenReceipt
+  fullName: Hashgraph.CreateTokenReceipt
+  nameWithType: CreateTokenReceipt
+- uid: Hashgraph.CreateTokenReceipt.Token
+  name: Token
+  href: api/Hashgraph.CreateTokenReceipt.html#Hashgraph_CreateTokenReceipt_Token
+  commentId: P:Hashgraph.CreateTokenReceipt.Token
+  fullName: Hashgraph.CreateTokenReceipt.Token
+  nameWithType: CreateTokenReceipt.Token
+- uid: Hashgraph.CreateTokenReceipt.Token*
+  name: Token
+  href: api/Hashgraph.CreateTokenReceipt.html#Hashgraph_CreateTokenReceipt_Token_
+  commentId: Overload:Hashgraph.CreateTokenReceipt.Token
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenReceipt.Token
+  nameWithType: CreateTokenReceipt.Token
+- uid: Hashgraph.CreateTokenRecord
+  name: CreateTokenRecord
+  href: api/Hashgraph.CreateTokenRecord.html
+  commentId: T:Hashgraph.CreateTokenRecord
+  fullName: Hashgraph.CreateTokenRecord
+  nameWithType: CreateTokenRecord
+- uid: Hashgraph.CreateTokenRecord.Token
+  name: Token
+  href: api/Hashgraph.CreateTokenRecord.html#Hashgraph_CreateTokenRecord_Token
+  commentId: P:Hashgraph.CreateTokenRecord.Token
+  fullName: Hashgraph.CreateTokenRecord.Token
+  nameWithType: CreateTokenRecord.Token
+- uid: Hashgraph.CreateTokenRecord.Token*
+  name: Token
+  href: api/Hashgraph.CreateTokenRecord.html#Hashgraph_CreateTokenRecord_Token_
+  commentId: Overload:Hashgraph.CreateTokenRecord.Token
+  isSpec: "True"
+  fullName: Hashgraph.CreateTokenRecord.Token
+  nameWithType: CreateTokenRecord.Token
 - uid: Hashgraph.CreateTopicParams
   name: CreateTopicParams
   href: api/Hashgraph.CreateTopicParams.html
@@ -2828,6 +4004,44 @@ references:
   isSpec: "True"
   fullName: Hashgraph.Extensions.FeeSchedules.Next
   nameWithType: FeeSchedules.Next
+- uid: Hashgraph.Extensions.GetTokenBalanceExtension
+  name: GetTokenBalanceExtension
+  href: api/Hashgraph.Extensions.GetTokenBalanceExtension.html
+  commentId: T:Hashgraph.Extensions.GetTokenBalanceExtension
+  fullName: Hashgraph.Extensions.GetTokenBalanceExtension
+  nameWithType: GetTokenBalanceExtension
+- uid: Hashgraph.Extensions.GetTokenBalanceExtension.GetAccountTokenBalanceAsync(Hashgraph.Client,Hashgraph.Address,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: GetAccountTokenBalanceAsync(Client, Address, Address, Action<IContext>)
+  href: api/Hashgraph.Extensions.GetTokenBalanceExtension.html#Hashgraph_Extensions_GetTokenBalanceExtension_GetAccountTokenBalanceAsync_Hashgraph_Client_Hashgraph_Address_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Extensions.GetTokenBalanceExtension.GetAccountTokenBalanceAsync(Hashgraph.Client,Hashgraph.Address,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: GetAccountTokenBalanceAsync(Client, Address, Address, Action(Of IContext))
+  fullName: Hashgraph.Extensions.GetTokenBalanceExtension.GetAccountTokenBalanceAsync(Hashgraph.Client, Hashgraph.Address, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Extensions.GetTokenBalanceExtension.GetAccountTokenBalanceAsync(Hashgraph.Client, Hashgraph.Address, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: GetTokenBalanceExtension.GetAccountTokenBalanceAsync(Client, Address, Address, Action<IContext>)
+  nameWithType.vb: GetTokenBalanceExtension.GetAccountTokenBalanceAsync(Client, Address, Address, Action(Of IContext))
+- uid: Hashgraph.Extensions.GetTokenBalanceExtension.GetAccountTokenBalanceAsync*
+  name: GetAccountTokenBalanceAsync
+  href: api/Hashgraph.Extensions.GetTokenBalanceExtension.html#Hashgraph_Extensions_GetTokenBalanceExtension_GetAccountTokenBalanceAsync_
+  commentId: Overload:Hashgraph.Extensions.GetTokenBalanceExtension.GetAccountTokenBalanceAsync
+  isSpec: "True"
+  fullName: Hashgraph.Extensions.GetTokenBalanceExtension.GetAccountTokenBalanceAsync
+  nameWithType: GetTokenBalanceExtension.GetAccountTokenBalanceAsync
+- uid: Hashgraph.Extensions.GetTokenBalanceExtension.GetContractTokenBalanceAsync(Hashgraph.Client,Hashgraph.Address,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name: GetContractTokenBalanceAsync(Client, Address, Address, Action<IContext>)
+  href: api/Hashgraph.Extensions.GetTokenBalanceExtension.html#Hashgraph_Extensions_GetTokenBalanceExtension_GetContractTokenBalanceAsync_Hashgraph_Client_Hashgraph_Address_Hashgraph_Address_System_Action_Hashgraph_IContext__
+  commentId: M:Hashgraph.Extensions.GetTokenBalanceExtension.GetContractTokenBalanceAsync(Hashgraph.Client,Hashgraph.Address,Hashgraph.Address,System.Action{Hashgraph.IContext})
+  name.vb: GetContractTokenBalanceAsync(Client, Address, Address, Action(Of IContext))
+  fullName: Hashgraph.Extensions.GetTokenBalanceExtension.GetContractTokenBalanceAsync(Hashgraph.Client, Hashgraph.Address, Hashgraph.Address, System.Action<Hashgraph.IContext>)
+  fullName.vb: Hashgraph.Extensions.GetTokenBalanceExtension.GetContractTokenBalanceAsync(Hashgraph.Client, Hashgraph.Address, Hashgraph.Address, System.Action(Of Hashgraph.IContext))
+  nameWithType: GetTokenBalanceExtension.GetContractTokenBalanceAsync(Client, Address, Address, Action<IContext>)
+  nameWithType.vb: GetTokenBalanceExtension.GetContractTokenBalanceAsync(Client, Address, Address, Action(Of IContext))
+- uid: Hashgraph.Extensions.GetTokenBalanceExtension.GetContractTokenBalanceAsync*
+  name: GetContractTokenBalanceAsync
+  href: api/Hashgraph.Extensions.GetTokenBalanceExtension.html#Hashgraph_Extensions_GetTokenBalanceExtension_GetContractTokenBalanceAsync_
+  commentId: Overload:Hashgraph.Extensions.GetTokenBalanceExtension.GetContractTokenBalanceAsync
+  isSpec: "True"
+  fullName: Hashgraph.Extensions.GetTokenBalanceExtension.GetContractTokenBalanceAsync
+  nameWithType: GetTokenBalanceExtension.GetContractTokenBalanceAsync
 - uid: Hashgraph.Extensions.NodeInfo
   name: NodeInfo
   href: api/Hashgraph.Extensions.NodeInfo.html
@@ -3925,6 +5139,18 @@ references:
   commentId: F:Hashgraph.ResponseCode.AccountDeleted
   fullName: Hashgraph.ResponseCode.AccountDeleted
   nameWithType: ResponseCode.AccountDeleted
+- uid: Hashgraph.ResponseCode.AccountFrozenForToken
+  name: AccountFrozenForToken
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_AccountFrozenForToken
+  commentId: F:Hashgraph.ResponseCode.AccountFrozenForToken
+  fullName: Hashgraph.ResponseCode.AccountFrozenForToken
+  nameWithType: ResponseCode.AccountFrozenForToken
+- uid: Hashgraph.ResponseCode.AccountHasNoTokenRelationship
+  name: AccountHasNoTokenRelationship
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_AccountHasNoTokenRelationship
+  commentId: F:Hashgraph.ResponseCode.AccountHasNoTokenRelationship
+  fullName: Hashgraph.ResponseCode.AccountHasNoTokenRelationship
+  nameWithType: ResponseCode.AccountHasNoTokenRelationship
 - uid: Hashgraph.ResponseCode.AccountIdDoesNotExist
   name: AccountIdDoesNotExist
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_AccountIdDoesNotExist
@@ -3937,6 +5163,12 @@ references:
   commentId: F:Hashgraph.ResponseCode.AccountIsNotGenesisAccount
   fullName: Hashgraph.ResponseCode.AccountIsNotGenesisAccount
   nameWithType: ResponseCode.AccountIsNotGenesisAccount
+- uid: Hashgraph.ResponseCode.AccountKycNotGrantedForToken
+  name: AccountKycNotGrantedForToken
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_AccountKycNotGrantedForToken
+  commentId: F:Hashgraph.ResponseCode.AccountKycNotGrantedForToken
+  fullName: Hashgraph.ResponseCode.AccountKycNotGrantedForToken
+  nameWithType: ResponseCode.AccountKycNotGrantedForToken
 - uid: Hashgraph.ResponseCode.AccountRepeatedInAccountAmounts
   name: AccountRepeatedInAccountAmounts
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_AccountRepeatedInAccountAmounts
@@ -3979,6 +5211,12 @@ references:
   commentId: F:Hashgraph.ResponseCode.Busy
   fullName: Hashgraph.ResponseCode.Busy
   nameWithType: ResponseCode.Busy
+- uid: Hashgraph.ResponseCode.CannotWipeTokenTreasuryAccount
+  name: CannotWipeTokenTreasuryAccount
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_CannotWipeTokenTreasuryAccount
+  commentId: F:Hashgraph.ResponseCode.CannotWipeTokenTreasuryAccount
+  fullName: Hashgraph.ResponseCode.CannotWipeTokenTreasuryAccount
+  nameWithType: ResponseCode.CannotWipeTokenTreasuryAccount
 - uid: Hashgraph.ResponseCode.ContractBytecodeEmpty
   name: ContractBytecodeEmpty
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_ContractBytecodeEmpty
@@ -4183,6 +5421,12 @@ references:
   commentId: F:Hashgraph.ResponseCode.InsufficientPayerBalance
   fullName: Hashgraph.ResponseCode.InsufficientPayerBalance
   nameWithType: ResponseCode.InsufficientPayerBalance
+- uid: Hashgraph.ResponseCode.InsufficientTokenBalance
+  name: InsufficientTokenBalance
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InsufficientTokenBalance
+  commentId: F:Hashgraph.ResponseCode.InsufficientTokenBalance
+  fullName: Hashgraph.ResponseCode.InsufficientTokenBalance
+  nameWithType: ResponseCode.InsufficientTokenBalance
 - uid: Hashgraph.ResponseCode.InsufficientTxFee
   name: InsufficientTxFee
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InsufficientTxFee
@@ -4267,6 +5511,12 @@ references:
   commentId: F:Hashgraph.ResponseCode.InvalidFileWacl
   fullName: Hashgraph.ResponseCode.InvalidFileWacl
   nameWithType: ResponseCode.InvalidFileWacl
+- uid: Hashgraph.ResponseCode.InvalidFreezeKey
+  name: InvalidFreezeKey
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidFreezeKey
+  commentId: F:Hashgraph.ResponseCode.InvalidFreezeKey
+  fullName: Hashgraph.ResponseCode.InvalidFreezeKey
+  nameWithType: ResponseCode.InvalidFreezeKey
 - uid: Hashgraph.ResponseCode.InvalidFreezeTransactionBody
   name: InvalidFreezeTransactionBody
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidFreezeTransactionBody
@@ -4279,12 +5529,24 @@ references:
   commentId: F:Hashgraph.ResponseCode.InvalidInitialBalance
   fullName: Hashgraph.ResponseCode.InvalidInitialBalance
   nameWithType: ResponseCode.InvalidInitialBalance
+- uid: Hashgraph.ResponseCode.InvalidInitialSupply
+  name: InvalidInitialSupply
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidInitialSupply
+  commentId: F:Hashgraph.ResponseCode.InvalidInitialSupply
+  fullName: Hashgraph.ResponseCode.InvalidInitialSupply
+  nameWithType: ResponseCode.InvalidInitialSupply
 - uid: Hashgraph.ResponseCode.InvalidKeyEncoding
   name: InvalidKeyEncoding
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidKeyEncoding
   commentId: F:Hashgraph.ResponseCode.InvalidKeyEncoding
   fullName: Hashgraph.ResponseCode.InvalidKeyEncoding
   nameWithType: ResponseCode.InvalidKeyEncoding
+- uid: Hashgraph.ResponseCode.InvalidKycKey
+  name: InvalidKycKey
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidKycKey
+  commentId: F:Hashgraph.ResponseCode.InvalidKycKey
+  fullName: Hashgraph.ResponseCode.InvalidKycKey
+  nameWithType: ResponseCode.InvalidKycKey
 - uid: Hashgraph.ResponseCode.InvalidLiveHashSize
   name: InvalidLiveHashSize
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidLiveHashSize
@@ -4375,6 +5637,48 @@ references:
   commentId: F:Hashgraph.ResponseCode.InvalidSubmitKey
   fullName: Hashgraph.ResponseCode.InvalidSubmitKey
   nameWithType: ResponseCode.InvalidSubmitKey
+- uid: Hashgraph.ResponseCode.InvalidSupplyKey
+  name: InvalidSupplyKey
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidSupplyKey
+  commentId: F:Hashgraph.ResponseCode.InvalidSupplyKey
+  fullName: Hashgraph.ResponseCode.InvalidSupplyKey
+  nameWithType: ResponseCode.InvalidSupplyKey
+- uid: Hashgraph.ResponseCode.InvalidTokenBurnAmount
+  name: InvalidTokenBurnAmount
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTokenBurnAmount
+  commentId: F:Hashgraph.ResponseCode.InvalidTokenBurnAmount
+  fullName: Hashgraph.ResponseCode.InvalidTokenBurnAmount
+  nameWithType: ResponseCode.InvalidTokenBurnAmount
+- uid: Hashgraph.ResponseCode.InvalidTokenDecimals
+  name: InvalidTokenDecimals
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTokenDecimals
+  commentId: F:Hashgraph.ResponseCode.InvalidTokenDecimals
+  fullName: Hashgraph.ResponseCode.InvalidTokenDecimals
+  nameWithType: ResponseCode.InvalidTokenDecimals
+- uid: Hashgraph.ResponseCode.InvalidTokenId
+  name: InvalidTokenId
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTokenId
+  commentId: F:Hashgraph.ResponseCode.InvalidTokenId
+  fullName: Hashgraph.ResponseCode.InvalidTokenId
+  nameWithType: ResponseCode.InvalidTokenId
+- uid: Hashgraph.ResponseCode.InvalidTokenMintAmount
+  name: InvalidTokenMintAmount
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTokenMintAmount
+  commentId: F:Hashgraph.ResponseCode.InvalidTokenMintAmount
+  fullName: Hashgraph.ResponseCode.InvalidTokenMintAmount
+  nameWithType: ResponseCode.InvalidTokenMintAmount
+- uid: Hashgraph.ResponseCode.InvalidTokenRef
+  name: InvalidTokenRef
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTokenRef
+  commentId: F:Hashgraph.ResponseCode.InvalidTokenRef
+  fullName: Hashgraph.ResponseCode.InvalidTokenRef
+  nameWithType: ResponseCode.InvalidTokenRef
+- uid: Hashgraph.ResponseCode.InvalidTokenSymbol
+  name: InvalidTokenSymbol
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTokenSymbol
+  commentId: F:Hashgraph.ResponseCode.InvalidTokenSymbol
+  fullName: Hashgraph.ResponseCode.InvalidTokenSymbol
+  nameWithType: ResponseCode.InvalidTokenSymbol
 - uid: Hashgraph.ResponseCode.InvalidTopicId
   name: InvalidTopicId
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTopicId
@@ -4417,6 +5721,24 @@ references:
   commentId: F:Hashgraph.ResponseCode.InvalidTransactionStart
   fullName: Hashgraph.ResponseCode.InvalidTransactionStart
   nameWithType: ResponseCode.InvalidTransactionStart
+- uid: Hashgraph.ResponseCode.InvalidTreasuryAccountForToken
+  name: InvalidTreasuryAccountForToken
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidTreasuryAccountForToken
+  commentId: F:Hashgraph.ResponseCode.InvalidTreasuryAccountForToken
+  fullName: Hashgraph.ResponseCode.InvalidTreasuryAccountForToken
+  nameWithType: ResponseCode.InvalidTreasuryAccountForToken
+- uid: Hashgraph.ResponseCode.InvalidWipeKey
+  name: InvalidWipeKey
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidWipeKey
+  commentId: F:Hashgraph.ResponseCode.InvalidWipeKey
+  fullName: Hashgraph.ResponseCode.InvalidWipeKey
+  nameWithType: ResponseCode.InvalidWipeKey
+- uid: Hashgraph.ResponseCode.InvalidWipingAmount
+  name: InvalidWipingAmount
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_InvalidWipingAmount
+  commentId: F:Hashgraph.ResponseCode.InvalidWipingAmount
+  fullName: Hashgraph.ResponseCode.InvalidWipingAmount
+  nameWithType: ResponseCode.InvalidWipingAmount
 - uid: Hashgraph.ResponseCode.KeyNotProvided
   name: KeyNotProvided
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_KeyNotProvided
@@ -4483,6 +5805,18 @@ references:
   commentId: F:Hashgraph.ResponseCode.MissingQueryHeader
   fullName: Hashgraph.ResponseCode.MissingQueryHeader
   nameWithType: ResponseCode.MissingQueryHeader
+- uid: Hashgraph.ResponseCode.MissingTokenName
+  name: MissingTokenName
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_MissingTokenName
+  commentId: F:Hashgraph.ResponseCode.MissingTokenName
+  fullName: Hashgraph.ResponseCode.MissingTokenName
+  nameWithType: ResponseCode.MissingTokenName
+- uid: Hashgraph.ResponseCode.MissingTokenSymbol
+  name: MissingTokenSymbol
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_MissingTokenSymbol
+  commentId: F:Hashgraph.ResponseCode.MissingTokenSymbol
+  fullName: Hashgraph.ResponseCode.MissingTokenSymbol
+  nameWithType: ResponseCode.MissingTokenSymbol
 - uid: Hashgraph.ResponseCode.ModifyingImmutableContract
   name: ModifyingImmutableContract
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_ModifyingImmutableContract
@@ -4603,6 +5937,72 @@ references:
   commentId: F:Hashgraph.ResponseCode.Success
   fullName: Hashgraph.ResponseCode.Success
   nameWithType: ResponseCode.Success
+- uid: Hashgraph.ResponseCode.TokenHasNoFreezeKey
+  name: TokenHasNoFreezeKey
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenHasNoFreezeKey
+  commentId: F:Hashgraph.ResponseCode.TokenHasNoFreezeKey
+  fullName: Hashgraph.ResponseCode.TokenHasNoFreezeKey
+  nameWithType: ResponseCode.TokenHasNoFreezeKey
+- uid: Hashgraph.ResponseCode.TokenHasNoKycKey
+  name: TokenHasNoKycKey
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenHasNoKycKey
+  commentId: F:Hashgraph.ResponseCode.TokenHasNoKycKey
+  fullName: Hashgraph.ResponseCode.TokenHasNoKycKey
+  nameWithType: ResponseCode.TokenHasNoKycKey
+- uid: Hashgraph.ResponseCode.TokenHasNoSupplyKey
+  name: TokenHasNoSupplyKey
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenHasNoSupplyKey
+  commentId: F:Hashgraph.ResponseCode.TokenHasNoSupplyKey
+  fullName: Hashgraph.ResponseCode.TokenHasNoSupplyKey
+  nameWithType: ResponseCode.TokenHasNoSupplyKey
+- uid: Hashgraph.ResponseCode.TokenHasNoWipeKey
+  name: TokenHasNoWipeKey
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenHasNoWipeKey
+  commentId: F:Hashgraph.ResponseCode.TokenHasNoWipeKey
+  fullName: Hashgraph.ResponseCode.TokenHasNoWipeKey
+  nameWithType: ResponseCode.TokenHasNoWipeKey
+- uid: Hashgraph.ResponseCode.TokenIsImmutablE
+  name: TokenIsImmutablE
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenIsImmutablE
+  commentId: F:Hashgraph.ResponseCode.TokenIsImmutablE
+  fullName: Hashgraph.ResponseCode.TokenIsImmutablE
+  nameWithType: ResponseCode.TokenIsImmutablE
+- uid: Hashgraph.ResponseCode.TokenNameAlreadyInUse
+  name: TokenNameAlreadyInUse
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenNameAlreadyInUse
+  commentId: F:Hashgraph.ResponseCode.TokenNameAlreadyInUse
+  fullName: Hashgraph.ResponseCode.TokenNameAlreadyInUse
+  nameWithType: ResponseCode.TokenNameAlreadyInUse
+- uid: Hashgraph.ResponseCode.TokenNameTooLong
+  name: TokenNameTooLong
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenNameTooLong
+  commentId: F:Hashgraph.ResponseCode.TokenNameTooLong
+  fullName: Hashgraph.ResponseCode.TokenNameTooLong
+  nameWithType: ResponseCode.TokenNameTooLong
+- uid: Hashgraph.ResponseCode.TokensPerAccountLimitExceeded
+  name: TokensPerAccountLimitExceeded
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokensPerAccountLimitExceeded
+  commentId: F:Hashgraph.ResponseCode.TokensPerAccountLimitExceeded
+  fullName: Hashgraph.ResponseCode.TokensPerAccountLimitExceeded
+  nameWithType: ResponseCode.TokensPerAccountLimitExceeded
+- uid: Hashgraph.ResponseCode.TokenSymbolAlreadyInUse
+  name: TokenSymbolAlreadyInUse
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenSymbolAlreadyInUse
+  commentId: F:Hashgraph.ResponseCode.TokenSymbolAlreadyInUse
+  fullName: Hashgraph.ResponseCode.TokenSymbolAlreadyInUse
+  nameWithType: ResponseCode.TokenSymbolAlreadyInUse
+- uid: Hashgraph.ResponseCode.TokenSymbolTooLong
+  name: TokenSymbolTooLong
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenSymbolTooLong
+  commentId: F:Hashgraph.ResponseCode.TokenSymbolTooLong
+  fullName: Hashgraph.ResponseCode.TokenSymbolTooLong
+  nameWithType: ResponseCode.TokenSymbolTooLong
+- uid: Hashgraph.ResponseCode.TokenWasDeleted
+  name: TokenWasDeleted
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TokenWasDeleted
+  commentId: F:Hashgraph.ResponseCode.TokenWasDeleted
+  fullName: Hashgraph.ResponseCode.TokenWasDeleted
+  nameWithType: ResponseCode.TokenWasDeleted
 - uid: Hashgraph.ResponseCode.TopicExpired
   name: TopicExpired
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TopicExpired
@@ -4645,6 +6045,12 @@ references:
   commentId: F:Hashgraph.ResponseCode.TransferListSizeLimitExceeded
   fullName: Hashgraph.ResponseCode.TransferListSizeLimitExceeded
   nameWithType: ResponseCode.TransferListSizeLimitExceeded
+- uid: Hashgraph.ResponseCode.TransfersNotZeroSumForToken
+  name: TransfersNotZeroSumForToken
+  href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_TransfersNotZeroSumForToken
+  commentId: F:Hashgraph.ResponseCode.TransfersNotZeroSumForToken
+  fullName: Hashgraph.ResponseCode.TransfersNotZeroSumForToken
+  nameWithType: ResponseCode.TransfersNotZeroSumForToken
 - uid: Hashgraph.ResponseCode.Unauthorized
   name: Unauthorized
   href: api/Hashgraph.ResponseCode.html#Hashgraph_ResponseCode_Unauthorized
@@ -5183,6 +6589,662 @@ references:
   isSpec: "True"
   fullName: Hashgraph.SubscribeTopicParams.Topic
   nameWithType: SubscribeTopicParams.Topic
+- uid: Hashgraph.TokenAddressTransfer
+  name: TokenAddressTransfer
+  href: api/Hashgraph.TokenAddressTransfer.html
+  commentId: T:Hashgraph.TokenAddressTransfer
+  fullName: Hashgraph.TokenAddressTransfer
+  nameWithType: TokenAddressTransfer
+- uid: Hashgraph.TokenAddressTransfer.Address
+  name: Address
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Address
+  commentId: P:Hashgraph.TokenAddressTransfer.Address
+  fullName: Hashgraph.TokenAddressTransfer.Address
+  nameWithType: TokenAddressTransfer.Address
+- uid: Hashgraph.TokenAddressTransfer.Address*
+  name: Address
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Address_
+  commentId: Overload:Hashgraph.TokenAddressTransfer.Address
+  isSpec: "True"
+  fullName: Hashgraph.TokenAddressTransfer.Address
+  nameWithType: TokenAddressTransfer.Address
+- uid: Hashgraph.TokenAddressTransfer.Amount
+  name: Amount
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Amount
+  commentId: P:Hashgraph.TokenAddressTransfer.Amount
+  fullName: Hashgraph.TokenAddressTransfer.Amount
+  nameWithType: TokenAddressTransfer.Amount
+- uid: Hashgraph.TokenAddressTransfer.Amount*
+  name: Amount
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Amount_
+  commentId: Overload:Hashgraph.TokenAddressTransfer.Amount
+  isSpec: "True"
+  fullName: Hashgraph.TokenAddressTransfer.Amount
+  nameWithType: TokenAddressTransfer.Amount
+- uid: Hashgraph.TokenAddressTransfer.Equals(Hashgraph.TokenAddressTransfer)
+  name: Equals(TokenAddressTransfer)
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Equals_Hashgraph_TokenAddressTransfer_
+  commentId: M:Hashgraph.TokenAddressTransfer.Equals(Hashgraph.TokenAddressTransfer)
+  fullName: Hashgraph.TokenAddressTransfer.Equals(Hashgraph.TokenAddressTransfer)
+  nameWithType: TokenAddressTransfer.Equals(TokenAddressTransfer)
+- uid: Hashgraph.TokenAddressTransfer.Equals(System.Object)
+  name: Equals(Object)
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Equals_System_Object_
+  commentId: M:Hashgraph.TokenAddressTransfer.Equals(System.Object)
+  fullName: Hashgraph.TokenAddressTransfer.Equals(System.Object)
+  nameWithType: TokenAddressTransfer.Equals(Object)
+- uid: Hashgraph.TokenAddressTransfer.Equals*
+  name: Equals
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Equals_
+  commentId: Overload:Hashgraph.TokenAddressTransfer.Equals
+  isSpec: "True"
+  fullName: Hashgraph.TokenAddressTransfer.Equals
+  nameWithType: TokenAddressTransfer.Equals
+- uid: Hashgraph.TokenAddressTransfer.GetHashCode
+  name: GetHashCode()
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_GetHashCode
+  commentId: M:Hashgraph.TokenAddressTransfer.GetHashCode
+  fullName: Hashgraph.TokenAddressTransfer.GetHashCode()
+  nameWithType: TokenAddressTransfer.GetHashCode()
+- uid: Hashgraph.TokenAddressTransfer.GetHashCode*
+  name: GetHashCode
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_GetHashCode_
+  commentId: Overload:Hashgraph.TokenAddressTransfer.GetHashCode
+  isSpec: "True"
+  fullName: Hashgraph.TokenAddressTransfer.GetHashCode
+  nameWithType: TokenAddressTransfer.GetHashCode
+- uid: Hashgraph.TokenAddressTransfer.op_Equality(Hashgraph.TokenAddressTransfer,Hashgraph.TokenAddressTransfer)
+  name: Equality(TokenAddressTransfer, TokenAddressTransfer)
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_op_Equality_Hashgraph_TokenAddressTransfer_Hashgraph_TokenAddressTransfer_
+  commentId: M:Hashgraph.TokenAddressTransfer.op_Equality(Hashgraph.TokenAddressTransfer,Hashgraph.TokenAddressTransfer)
+  fullName: Hashgraph.TokenAddressTransfer.Equality(Hashgraph.TokenAddressTransfer, Hashgraph.TokenAddressTransfer)
+  nameWithType: TokenAddressTransfer.Equality(TokenAddressTransfer, TokenAddressTransfer)
+- uid: Hashgraph.TokenAddressTransfer.op_Equality*
+  name: Equality
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_op_Equality_
+  commentId: Overload:Hashgraph.TokenAddressTransfer.op_Equality
+  isSpec: "True"
+  fullName: Hashgraph.TokenAddressTransfer.Equality
+  nameWithType: TokenAddressTransfer.Equality
+- uid: Hashgraph.TokenAddressTransfer.op_Inequality(Hashgraph.TokenAddressTransfer,Hashgraph.TokenAddressTransfer)
+  name: Inequality(TokenAddressTransfer, TokenAddressTransfer)
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_op_Inequality_Hashgraph_TokenAddressTransfer_Hashgraph_TokenAddressTransfer_
+  commentId: M:Hashgraph.TokenAddressTransfer.op_Inequality(Hashgraph.TokenAddressTransfer,Hashgraph.TokenAddressTransfer)
+  fullName: Hashgraph.TokenAddressTransfer.Inequality(Hashgraph.TokenAddressTransfer, Hashgraph.TokenAddressTransfer)
+  nameWithType: TokenAddressTransfer.Inequality(TokenAddressTransfer, TokenAddressTransfer)
+- uid: Hashgraph.TokenAddressTransfer.op_Inequality*
+  name: Inequality
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_op_Inequality_
+  commentId: Overload:Hashgraph.TokenAddressTransfer.op_Inequality
+  isSpec: "True"
+  fullName: Hashgraph.TokenAddressTransfer.Inequality
+  nameWithType: TokenAddressTransfer.Inequality
+- uid: Hashgraph.TokenAddressTransfer.Token
+  name: Token
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Token
+  commentId: P:Hashgraph.TokenAddressTransfer.Token
+  fullName: Hashgraph.TokenAddressTransfer.Token
+  nameWithType: TokenAddressTransfer.Token
+- uid: Hashgraph.TokenAddressTransfer.Token*
+  name: Token
+  href: api/Hashgraph.TokenAddressTransfer.html#Hashgraph_TokenAddressTransfer_Token_
+  commentId: Overload:Hashgraph.TokenAddressTransfer.Token
+  isSpec: "True"
+  fullName: Hashgraph.TokenAddressTransfer.Token
+  nameWithType: TokenAddressTransfer.Token
+- uid: Hashgraph.TokenBalance
+  name: TokenBalance
+  href: api/Hashgraph.TokenBalance.html
+  commentId: T:Hashgraph.TokenBalance
+  fullName: Hashgraph.TokenBalance
+  nameWithType: TokenBalance
+- uid: Hashgraph.TokenBalance.Balance
+  name: Balance
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_Balance
+  commentId: P:Hashgraph.TokenBalance.Balance
+  fullName: Hashgraph.TokenBalance.Balance
+  nameWithType: TokenBalance.Balance
+- uid: Hashgraph.TokenBalance.Balance*
+  name: Balance
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_Balance_
+  commentId: Overload:Hashgraph.TokenBalance.Balance
+  isSpec: "True"
+  fullName: Hashgraph.TokenBalance.Balance
+  nameWithType: TokenBalance.Balance
+- uid: Hashgraph.TokenBalance.KycStatus
+  name: KycStatus
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_KycStatus
+  commentId: P:Hashgraph.TokenBalance.KycStatus
+  fullName: Hashgraph.TokenBalance.KycStatus
+  nameWithType: TokenBalance.KycStatus
+- uid: Hashgraph.TokenBalance.KycStatus*
+  name: KycStatus
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_KycStatus_
+  commentId: Overload:Hashgraph.TokenBalance.KycStatus
+  isSpec: "True"
+  fullName: Hashgraph.TokenBalance.KycStatus
+  nameWithType: TokenBalance.KycStatus
+- uid: Hashgraph.TokenBalance.Symbol
+  name: Symbol
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_Symbol
+  commentId: P:Hashgraph.TokenBalance.Symbol
+  fullName: Hashgraph.TokenBalance.Symbol
+  nameWithType: TokenBalance.Symbol
+- uid: Hashgraph.TokenBalance.Symbol*
+  name: Symbol
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_Symbol_
+  commentId: Overload:Hashgraph.TokenBalance.Symbol
+  isSpec: "True"
+  fullName: Hashgraph.TokenBalance.Symbol
+  nameWithType: TokenBalance.Symbol
+- uid: Hashgraph.TokenBalance.Token
+  name: Token
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_Token
+  commentId: P:Hashgraph.TokenBalance.Token
+  fullName: Hashgraph.TokenBalance.Token
+  nameWithType: TokenBalance.Token
+- uid: Hashgraph.TokenBalance.Token*
+  name: Token
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_Token_
+  commentId: Overload:Hashgraph.TokenBalance.Token
+  isSpec: "True"
+  fullName: Hashgraph.TokenBalance.Token
+  nameWithType: TokenBalance.Token
+- uid: Hashgraph.TokenBalance.TradableStatus
+  name: TradableStatus
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_TradableStatus
+  commentId: P:Hashgraph.TokenBalance.TradableStatus
+  fullName: Hashgraph.TokenBalance.TradableStatus
+  nameWithType: TokenBalance.TradableStatus
+- uid: Hashgraph.TokenBalance.TradableStatus*
+  name: TradableStatus
+  href: api/Hashgraph.TokenBalance.html#Hashgraph_TokenBalance_TradableStatus_
+  commentId: Overload:Hashgraph.TokenBalance.TradableStatus
+  isSpec: "True"
+  fullName: Hashgraph.TokenBalance.TradableStatus
+  nameWithType: TokenBalance.TradableStatus
+- uid: Hashgraph.TokenIdentifier
+  name: TokenIdentifier
+  href: api/Hashgraph.TokenIdentifier.html
+  commentId: T:Hashgraph.TokenIdentifier
+  fullName: Hashgraph.TokenIdentifier
+  nameWithType: TokenIdentifier
+- uid: Hashgraph.TokenIdentifier.#ctor(Hashgraph.Address)
+  name: TokenIdentifier(Address)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier__ctor_Hashgraph_Address_
+  commentId: M:Hashgraph.TokenIdentifier.#ctor(Hashgraph.Address)
+  fullName: Hashgraph.TokenIdentifier.TokenIdentifier(Hashgraph.Address)
+  nameWithType: TokenIdentifier.TokenIdentifier(Address)
+- uid: Hashgraph.TokenIdentifier.#ctor(System.Int64,System.Int64,System.Int64)
+  name: TokenIdentifier(Int64, Int64, Int64)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier__ctor_System_Int64_System_Int64_System_Int64_
+  commentId: M:Hashgraph.TokenIdentifier.#ctor(System.Int64,System.Int64,System.Int64)
+  fullName: Hashgraph.TokenIdentifier.TokenIdentifier(System.Int64, System.Int64, System.Int64)
+  nameWithType: TokenIdentifier.TokenIdentifier(Int64, Int64, Int64)
+- uid: Hashgraph.TokenIdentifier.#ctor(System.String)
+  name: TokenIdentifier(String)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier__ctor_System_String_
+  commentId: M:Hashgraph.TokenIdentifier.#ctor(System.String)
+  fullName: Hashgraph.TokenIdentifier.TokenIdentifier(System.String)
+  nameWithType: TokenIdentifier.TokenIdentifier(String)
+- uid: Hashgraph.TokenIdentifier.#ctor*
+  name: TokenIdentifier
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier__ctor_
+  commentId: Overload:Hashgraph.TokenIdentifier.#ctor
+  isSpec: "True"
+  fullName: Hashgraph.TokenIdentifier.TokenIdentifier
+  nameWithType: TokenIdentifier.TokenIdentifier
+- uid: Hashgraph.TokenIdentifier.Address
+  name: Address
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_Address
+  commentId: P:Hashgraph.TokenIdentifier.Address
+  fullName: Hashgraph.TokenIdentifier.Address
+  nameWithType: TokenIdentifier.Address
+- uid: Hashgraph.TokenIdentifier.Address*
+  name: Address
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_Address_
+  commentId: Overload:Hashgraph.TokenIdentifier.Address
+  isSpec: "True"
+  fullName: Hashgraph.TokenIdentifier.Address
+  nameWithType: TokenIdentifier.Address
+- uid: Hashgraph.TokenIdentifier.Equals(Hashgraph.TokenIdentifier)
+  name: Equals(TokenIdentifier)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_Equals_Hashgraph_TokenIdentifier_
+  commentId: M:Hashgraph.TokenIdentifier.Equals(Hashgraph.TokenIdentifier)
+  fullName: Hashgraph.TokenIdentifier.Equals(Hashgraph.TokenIdentifier)
+  nameWithType: TokenIdentifier.Equals(TokenIdentifier)
+- uid: Hashgraph.TokenIdentifier.Equals(System.Object)
+  name: Equals(Object)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_Equals_System_Object_
+  commentId: M:Hashgraph.TokenIdentifier.Equals(System.Object)
+  fullName: Hashgraph.TokenIdentifier.Equals(System.Object)
+  nameWithType: TokenIdentifier.Equals(Object)
+- uid: Hashgraph.TokenIdentifier.Equals*
+  name: Equals
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_Equals_
+  commentId: Overload:Hashgraph.TokenIdentifier.Equals
+  isSpec: "True"
+  fullName: Hashgraph.TokenIdentifier.Equals
+  nameWithType: TokenIdentifier.Equals
+- uid: Hashgraph.TokenIdentifier.GetHashCode
+  name: GetHashCode()
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_GetHashCode
+  commentId: M:Hashgraph.TokenIdentifier.GetHashCode
+  fullName: Hashgraph.TokenIdentifier.GetHashCode()
+  nameWithType: TokenIdentifier.GetHashCode()
+- uid: Hashgraph.TokenIdentifier.GetHashCode*
+  name: GetHashCode
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_GetHashCode_
+  commentId: Overload:Hashgraph.TokenIdentifier.GetHashCode
+  isSpec: "True"
+  fullName: Hashgraph.TokenIdentifier.GetHashCode
+  nameWithType: TokenIdentifier.GetHashCode
+- uid: Hashgraph.TokenIdentifier.op_Equality(Hashgraph.TokenIdentifier,Hashgraph.TokenIdentifier)
+  name: Equality(TokenIdentifier, TokenIdentifier)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_op_Equality_Hashgraph_TokenIdentifier_Hashgraph_TokenIdentifier_
+  commentId: M:Hashgraph.TokenIdentifier.op_Equality(Hashgraph.TokenIdentifier,Hashgraph.TokenIdentifier)
+  fullName: Hashgraph.TokenIdentifier.Equality(Hashgraph.TokenIdentifier, Hashgraph.TokenIdentifier)
+  nameWithType: TokenIdentifier.Equality(TokenIdentifier, TokenIdentifier)
+- uid: Hashgraph.TokenIdentifier.op_Equality*
+  name: Equality
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_op_Equality_
+  commentId: Overload:Hashgraph.TokenIdentifier.op_Equality
+  isSpec: "True"
+  fullName: Hashgraph.TokenIdentifier.Equality
+  nameWithType: TokenIdentifier.Equality
+- uid: Hashgraph.TokenIdentifier.op_Implicit(Hashgraph.Address)~Hashgraph.TokenIdentifier
+  name: Implicit(Address to TokenIdentifier)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_op_Implicit_Hashgraph_Address__Hashgraph_TokenIdentifier
+  commentId: M:Hashgraph.TokenIdentifier.op_Implicit(Hashgraph.Address)~Hashgraph.TokenIdentifier
+  name.vb: Widening(Address to TokenIdentifier)
+  fullName: Hashgraph.TokenIdentifier.Implicit(Hashgraph.Address to Hashgraph.TokenIdentifier)
+  fullName.vb: Hashgraph.TokenIdentifier.Widening(Hashgraph.Address to Hashgraph.TokenIdentifier)
+  nameWithType: TokenIdentifier.Implicit(Address to TokenIdentifier)
+  nameWithType.vb: TokenIdentifier.Widening(Address to TokenIdentifier)
+- uid: Hashgraph.TokenIdentifier.op_Implicit(System.String)~Hashgraph.TokenIdentifier
+  name: Implicit(String to TokenIdentifier)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_op_Implicit_System_String__Hashgraph_TokenIdentifier
+  commentId: M:Hashgraph.TokenIdentifier.op_Implicit(System.String)~Hashgraph.TokenIdentifier
+  name.vb: Widening(String to TokenIdentifier)
+  fullName: Hashgraph.TokenIdentifier.Implicit(System.String to Hashgraph.TokenIdentifier)
+  fullName.vb: Hashgraph.TokenIdentifier.Widening(System.String to Hashgraph.TokenIdentifier)
+  nameWithType: TokenIdentifier.Implicit(String to TokenIdentifier)
+  nameWithType.vb: TokenIdentifier.Widening(String to TokenIdentifier)
+- uid: Hashgraph.TokenIdentifier.op_Implicit*
+  name: Implicit
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_op_Implicit_
+  commentId: Overload:Hashgraph.TokenIdentifier.op_Implicit
+  isSpec: "True"
+  name.vb: Widening
+  fullName: Hashgraph.TokenIdentifier.Implicit
+  fullName.vb: Hashgraph.TokenIdentifier.Widening
+  nameWithType: TokenIdentifier.Implicit
+  nameWithType.vb: TokenIdentifier.Widening
+- uid: Hashgraph.TokenIdentifier.op_Inequality(Hashgraph.TokenIdentifier,Hashgraph.TokenIdentifier)
+  name: Inequality(TokenIdentifier, TokenIdentifier)
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_op_Inequality_Hashgraph_TokenIdentifier_Hashgraph_TokenIdentifier_
+  commentId: M:Hashgraph.TokenIdentifier.op_Inequality(Hashgraph.TokenIdentifier,Hashgraph.TokenIdentifier)
+  fullName: Hashgraph.TokenIdentifier.Inequality(Hashgraph.TokenIdentifier, Hashgraph.TokenIdentifier)
+  nameWithType: TokenIdentifier.Inequality(TokenIdentifier, TokenIdentifier)
+- uid: Hashgraph.TokenIdentifier.op_Inequality*
+  name: Inequality
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_op_Inequality_
+  commentId: Overload:Hashgraph.TokenIdentifier.op_Inequality
+  isSpec: "True"
+  fullName: Hashgraph.TokenIdentifier.Inequality
+  nameWithType: TokenIdentifier.Inequality
+- uid: Hashgraph.TokenIdentifier.Symbol
+  name: Symbol
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_Symbol
+  commentId: P:Hashgraph.TokenIdentifier.Symbol
+  fullName: Hashgraph.TokenIdentifier.Symbol
+  nameWithType: TokenIdentifier.Symbol
+- uid: Hashgraph.TokenIdentifier.Symbol*
+  name: Symbol
+  href: api/Hashgraph.TokenIdentifier.html#Hashgraph_TokenIdentifier_Symbol_
+  commentId: Overload:Hashgraph.TokenIdentifier.Symbol
+  isSpec: "True"
+  fullName: Hashgraph.TokenIdentifier.Symbol
+  nameWithType: TokenIdentifier.Symbol
+- uid: Hashgraph.TokenInfo
+  name: TokenInfo
+  href: api/Hashgraph.TokenInfo.html
+  commentId: T:Hashgraph.TokenInfo
+  fullName: Hashgraph.TokenInfo
+  nameWithType: TokenInfo
+- uid: Hashgraph.TokenInfo.Administrator
+  name: Administrator
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Administrator
+  commentId: P:Hashgraph.TokenInfo.Administrator
+  fullName: Hashgraph.TokenInfo.Administrator
+  nameWithType: TokenInfo.Administrator
+- uid: Hashgraph.TokenInfo.Administrator*
+  name: Administrator
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Administrator_
+  commentId: Overload:Hashgraph.TokenInfo.Administrator
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.Administrator
+  nameWithType: TokenInfo.Administrator
+- uid: Hashgraph.TokenInfo.Circulation
+  name: Circulation
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Circulation
+  commentId: P:Hashgraph.TokenInfo.Circulation
+  fullName: Hashgraph.TokenInfo.Circulation
+  nameWithType: TokenInfo.Circulation
+- uid: Hashgraph.TokenInfo.Circulation*
+  name: Circulation
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Circulation_
+  commentId: Overload:Hashgraph.TokenInfo.Circulation
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.Circulation
+  nameWithType: TokenInfo.Circulation
+- uid: Hashgraph.TokenInfo.ConfiscateEndorsement
+  name: ConfiscateEndorsement
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_ConfiscateEndorsement
+  commentId: P:Hashgraph.TokenInfo.ConfiscateEndorsement
+  fullName: Hashgraph.TokenInfo.ConfiscateEndorsement
+  nameWithType: TokenInfo.ConfiscateEndorsement
+- uid: Hashgraph.TokenInfo.ConfiscateEndorsement*
+  name: ConfiscateEndorsement
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_ConfiscateEndorsement_
+  commentId: Overload:Hashgraph.TokenInfo.ConfiscateEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.ConfiscateEndorsement
+  nameWithType: TokenInfo.ConfiscateEndorsement
+- uid: Hashgraph.TokenInfo.Decimals
+  name: Decimals
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Decimals
+  commentId: P:Hashgraph.TokenInfo.Decimals
+  fullName: Hashgraph.TokenInfo.Decimals
+  nameWithType: TokenInfo.Decimals
+- uid: Hashgraph.TokenInfo.Decimals*
+  name: Decimals
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Decimals_
+  commentId: Overload:Hashgraph.TokenInfo.Decimals
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.Decimals
+  nameWithType: TokenInfo.Decimals
+- uid: Hashgraph.TokenInfo.Deleted
+  name: Deleted
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Deleted
+  commentId: P:Hashgraph.TokenInfo.Deleted
+  fullName: Hashgraph.TokenInfo.Deleted
+  nameWithType: TokenInfo.Deleted
+- uid: Hashgraph.TokenInfo.Deleted*
+  name: Deleted
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Deleted_
+  commentId: Overload:Hashgraph.TokenInfo.Deleted
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.Deleted
+  nameWithType: TokenInfo.Deleted
+- uid: Hashgraph.TokenInfo.GrantKycEndorsement
+  name: GrantKycEndorsement
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_GrantKycEndorsement
+  commentId: P:Hashgraph.TokenInfo.GrantKycEndorsement
+  fullName: Hashgraph.TokenInfo.GrantKycEndorsement
+  nameWithType: TokenInfo.GrantKycEndorsement
+- uid: Hashgraph.TokenInfo.GrantKycEndorsement*
+  name: GrantKycEndorsement
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_GrantKycEndorsement_
+  commentId: Overload:Hashgraph.TokenInfo.GrantKycEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.GrantKycEndorsement
+  nameWithType: TokenInfo.GrantKycEndorsement
+- uid: Hashgraph.TokenInfo.KycStatus
+  name: KycStatus
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_KycStatus
+  commentId: P:Hashgraph.TokenInfo.KycStatus
+  fullName: Hashgraph.TokenInfo.KycStatus
+  nameWithType: TokenInfo.KycStatus
+- uid: Hashgraph.TokenInfo.KycStatus*
+  name: KycStatus
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_KycStatus_
+  commentId: Overload:Hashgraph.TokenInfo.KycStatus
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.KycStatus
+  nameWithType: TokenInfo.KycStatus
+- uid: Hashgraph.TokenInfo.SupplyEndorsement
+  name: SupplyEndorsement
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_SupplyEndorsement
+  commentId: P:Hashgraph.TokenInfo.SupplyEndorsement
+  fullName: Hashgraph.TokenInfo.SupplyEndorsement
+  nameWithType: TokenInfo.SupplyEndorsement
+- uid: Hashgraph.TokenInfo.SupplyEndorsement*
+  name: SupplyEndorsement
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_SupplyEndorsement_
+  commentId: Overload:Hashgraph.TokenInfo.SupplyEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.SupplyEndorsement
+  nameWithType: TokenInfo.SupplyEndorsement
+- uid: Hashgraph.TokenInfo.SuspendEndorsement
+  name: SuspendEndorsement
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_SuspendEndorsement
+  commentId: P:Hashgraph.TokenInfo.SuspendEndorsement
+  fullName: Hashgraph.TokenInfo.SuspendEndorsement
+  nameWithType: TokenInfo.SuspendEndorsement
+- uid: Hashgraph.TokenInfo.SuspendEndorsement*
+  name: SuspendEndorsement
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_SuspendEndorsement_
+  commentId: Overload:Hashgraph.TokenInfo.SuspendEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.SuspendEndorsement
+  nameWithType: TokenInfo.SuspendEndorsement
+- uid: Hashgraph.TokenInfo.Symbol
+  name: Symbol
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Symbol
+  commentId: P:Hashgraph.TokenInfo.Symbol
+  fullName: Hashgraph.TokenInfo.Symbol
+  nameWithType: TokenInfo.Symbol
+- uid: Hashgraph.TokenInfo.Symbol*
+  name: Symbol
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Symbol_
+  commentId: Overload:Hashgraph.TokenInfo.Symbol
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.Symbol
+  nameWithType: TokenInfo.Symbol
+- uid: Hashgraph.TokenInfo.Token
+  name: Token
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Token
+  commentId: P:Hashgraph.TokenInfo.Token
+  fullName: Hashgraph.TokenInfo.Token
+  nameWithType: TokenInfo.Token
+- uid: Hashgraph.TokenInfo.Token*
+  name: Token
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Token_
+  commentId: Overload:Hashgraph.TokenInfo.Token
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.Token
+  nameWithType: TokenInfo.Token
+- uid: Hashgraph.TokenInfo.TradableStatus
+  name: TradableStatus
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_TradableStatus
+  commentId: P:Hashgraph.TokenInfo.TradableStatus
+  fullName: Hashgraph.TokenInfo.TradableStatus
+  nameWithType: TokenInfo.TradableStatus
+- uid: Hashgraph.TokenInfo.TradableStatus*
+  name: TradableStatus
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_TradableStatus_
+  commentId: Overload:Hashgraph.TokenInfo.TradableStatus
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.TradableStatus
+  nameWithType: TokenInfo.TradableStatus
+- uid: Hashgraph.TokenInfo.Treasury
+  name: Treasury
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Treasury
+  commentId: P:Hashgraph.TokenInfo.Treasury
+  fullName: Hashgraph.TokenInfo.Treasury
+  nameWithType: TokenInfo.Treasury
+- uid: Hashgraph.TokenInfo.Treasury*
+  name: Treasury
+  href: api/Hashgraph.TokenInfo.html#Hashgraph_TokenInfo_Treasury_
+  commentId: Overload:Hashgraph.TokenInfo.Treasury
+  isSpec: "True"
+  fullName: Hashgraph.TokenInfo.Treasury
+  nameWithType: TokenInfo.Treasury
+- uid: Hashgraph.TokenKycStatus
+  name: TokenKycStatus
+  href: api/Hashgraph.TokenKycStatus.html
+  commentId: T:Hashgraph.TokenKycStatus
+  fullName: Hashgraph.TokenKycStatus
+  nameWithType: TokenKycStatus
+- uid: Hashgraph.TokenKycStatus.Granted
+  name: Granted
+  href: api/Hashgraph.TokenKycStatus.html#Hashgraph_TokenKycStatus_Granted
+  commentId: F:Hashgraph.TokenKycStatus.Granted
+  fullName: Hashgraph.TokenKycStatus.Granted
+  nameWithType: TokenKycStatus.Granted
+- uid: Hashgraph.TokenKycStatus.NotApplicable
+  name: NotApplicable
+  href: api/Hashgraph.TokenKycStatus.html#Hashgraph_TokenKycStatus_NotApplicable
+  commentId: F:Hashgraph.TokenKycStatus.NotApplicable
+  fullName: Hashgraph.TokenKycStatus.NotApplicable
+  nameWithType: TokenKycStatus.NotApplicable
+- uid: Hashgraph.TokenKycStatus.Revoked
+  name: Revoked
+  href: api/Hashgraph.TokenKycStatus.html#Hashgraph_TokenKycStatus_Revoked
+  commentId: F:Hashgraph.TokenKycStatus.Revoked
+  fullName: Hashgraph.TokenKycStatus.Revoked
+  nameWithType: TokenKycStatus.Revoked
+- uid: Hashgraph.TokenTradableStatus
+  name: TokenTradableStatus
+  href: api/Hashgraph.TokenTradableStatus.html
+  commentId: T:Hashgraph.TokenTradableStatus
+  fullName: Hashgraph.TokenTradableStatus
+  nameWithType: TokenTradableStatus
+- uid: Hashgraph.TokenTradableStatus.NotApplicable
+  name: NotApplicable
+  href: api/Hashgraph.TokenTradableStatus.html#Hashgraph_TokenTradableStatus_NotApplicable
+  commentId: F:Hashgraph.TokenTradableStatus.NotApplicable
+  fullName: Hashgraph.TokenTradableStatus.NotApplicable
+  nameWithType: TokenTradableStatus.NotApplicable
+- uid: Hashgraph.TokenTradableStatus.Suspended
+  name: Suspended
+  href: api/Hashgraph.TokenTradableStatus.html#Hashgraph_TokenTradableStatus_Suspended
+  commentId: F:Hashgraph.TokenTradableStatus.Suspended
+  fullName: Hashgraph.TokenTradableStatus.Suspended
+  nameWithType: TokenTradableStatus.Suspended
+- uid: Hashgraph.TokenTradableStatus.Tradable
+  name: Tradable
+  href: api/Hashgraph.TokenTradableStatus.html#Hashgraph_TokenTradableStatus_Tradable
+  commentId: F:Hashgraph.TokenTradableStatus.Tradable
+  fullName: Hashgraph.TokenTradableStatus.Tradable
+  nameWithType: TokenTradableStatus.Tradable
+- uid: Hashgraph.TokenTransfer
+  name: TokenTransfer
+  href: api/Hashgraph.TokenTransfer.html
+  commentId: T:Hashgraph.TokenTransfer
+  fullName: Hashgraph.TokenTransfer
+  nameWithType: TokenTransfer
+- uid: Hashgraph.TokenTransfer.#ctor(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Int64)
+  name: TokenTransfer(TokenIdentifier, Address, Int64)
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer__ctor_Hashgraph_TokenIdentifier_Hashgraph_Address_System_Int64_
+  commentId: M:Hashgraph.TokenTransfer.#ctor(Hashgraph.TokenIdentifier,Hashgraph.Address,System.Int64)
+  fullName: Hashgraph.TokenTransfer.TokenTransfer(Hashgraph.TokenIdentifier, Hashgraph.Address, System.Int64)
+  nameWithType: TokenTransfer.TokenTransfer(TokenIdentifier, Address, Int64)
+- uid: Hashgraph.TokenTransfer.#ctor*
+  name: TokenTransfer
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer__ctor_
+  commentId: Overload:Hashgraph.TokenTransfer.#ctor
+  isSpec: "True"
+  fullName: Hashgraph.TokenTransfer.TokenTransfer
+  nameWithType: TokenTransfer.TokenTransfer
+- uid: Hashgraph.TokenTransfer.Address
+  name: Address
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Address
+  commentId: P:Hashgraph.TokenTransfer.Address
+  fullName: Hashgraph.TokenTransfer.Address
+  nameWithType: TokenTransfer.Address
+- uid: Hashgraph.TokenTransfer.Address*
+  name: Address
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Address_
+  commentId: Overload:Hashgraph.TokenTransfer.Address
+  isSpec: "True"
+  fullName: Hashgraph.TokenTransfer.Address
+  nameWithType: TokenTransfer.Address
+- uid: Hashgraph.TokenTransfer.Amount
+  name: Amount
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Amount
+  commentId: P:Hashgraph.TokenTransfer.Amount
+  fullName: Hashgraph.TokenTransfer.Amount
+  nameWithType: TokenTransfer.Amount
+- uid: Hashgraph.TokenTransfer.Amount*
+  name: Amount
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Amount_
+  commentId: Overload:Hashgraph.TokenTransfer.Amount
+  isSpec: "True"
+  fullName: Hashgraph.TokenTransfer.Amount
+  nameWithType: TokenTransfer.Amount
+- uid: Hashgraph.TokenTransfer.Equals(Hashgraph.TokenTransfer)
+  name: Equals(TokenTransfer)
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Equals_Hashgraph_TokenTransfer_
+  commentId: M:Hashgraph.TokenTransfer.Equals(Hashgraph.TokenTransfer)
+  fullName: Hashgraph.TokenTransfer.Equals(Hashgraph.TokenTransfer)
+  nameWithType: TokenTransfer.Equals(TokenTransfer)
+- uid: Hashgraph.TokenTransfer.Equals(System.Object)
+  name: Equals(Object)
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Equals_System_Object_
+  commentId: M:Hashgraph.TokenTransfer.Equals(System.Object)
+  fullName: Hashgraph.TokenTransfer.Equals(System.Object)
+  nameWithType: TokenTransfer.Equals(Object)
+- uid: Hashgraph.TokenTransfer.Equals*
+  name: Equals
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Equals_
+  commentId: Overload:Hashgraph.TokenTransfer.Equals
+  isSpec: "True"
+  fullName: Hashgraph.TokenTransfer.Equals
+  nameWithType: TokenTransfer.Equals
+- uid: Hashgraph.TokenTransfer.GetHashCode
+  name: GetHashCode()
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_GetHashCode
+  commentId: M:Hashgraph.TokenTransfer.GetHashCode
+  fullName: Hashgraph.TokenTransfer.GetHashCode()
+  nameWithType: TokenTransfer.GetHashCode()
+- uid: Hashgraph.TokenTransfer.GetHashCode*
+  name: GetHashCode
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_GetHashCode_
+  commentId: Overload:Hashgraph.TokenTransfer.GetHashCode
+  isSpec: "True"
+  fullName: Hashgraph.TokenTransfer.GetHashCode
+  nameWithType: TokenTransfer.GetHashCode
+- uid: Hashgraph.TokenTransfer.op_Equality(Hashgraph.TokenTransfer,Hashgraph.TokenTransfer)
+  name: Equality(TokenTransfer, TokenTransfer)
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_op_Equality_Hashgraph_TokenTransfer_Hashgraph_TokenTransfer_
+  commentId: M:Hashgraph.TokenTransfer.op_Equality(Hashgraph.TokenTransfer,Hashgraph.TokenTransfer)
+  fullName: Hashgraph.TokenTransfer.Equality(Hashgraph.TokenTransfer, Hashgraph.TokenTransfer)
+  nameWithType: TokenTransfer.Equality(TokenTransfer, TokenTransfer)
+- uid: Hashgraph.TokenTransfer.op_Equality*
+  name: Equality
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_op_Equality_
+  commentId: Overload:Hashgraph.TokenTransfer.op_Equality
+  isSpec: "True"
+  fullName: Hashgraph.TokenTransfer.Equality
+  nameWithType: TokenTransfer.Equality
+- uid: Hashgraph.TokenTransfer.op_Inequality(Hashgraph.TokenTransfer,Hashgraph.TokenTransfer)
+  name: Inequality(TokenTransfer, TokenTransfer)
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_op_Inequality_Hashgraph_TokenTransfer_Hashgraph_TokenTransfer_
+  commentId: M:Hashgraph.TokenTransfer.op_Inequality(Hashgraph.TokenTransfer,Hashgraph.TokenTransfer)
+  fullName: Hashgraph.TokenTransfer.Inequality(Hashgraph.TokenTransfer, Hashgraph.TokenTransfer)
+  nameWithType: TokenTransfer.Inequality(TokenTransfer, TokenTransfer)
+- uid: Hashgraph.TokenTransfer.op_Inequality*
+  name: Inequality
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_op_Inequality_
+  commentId: Overload:Hashgraph.TokenTransfer.op_Inequality
+  isSpec: "True"
+  fullName: Hashgraph.TokenTransfer.Inequality
+  nameWithType: TokenTransfer.Inequality
+- uid: Hashgraph.TokenTransfer.Token
+  name: Token
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Token
+  commentId: P:Hashgraph.TokenTransfer.Token
+  fullName: Hashgraph.TokenTransfer.Token
+  nameWithType: TokenTransfer.Token
+- uid: Hashgraph.TokenTransfer.Token*
+  name: Token
+  href: api/Hashgraph.TokenTransfer.html#Hashgraph_TokenTransfer_Token_
+  commentId: Overload:Hashgraph.TokenTransfer.Token
+  isSpec: "True"
+  fullName: Hashgraph.TokenTransfer.Token
+  nameWithType: TokenTransfer.Token
 - uid: Hashgraph.TopicInfo
   name: TopicInfo
   href: api/Hashgraph.TopicInfo.html
@@ -5538,6 +7600,19 @@ references:
   isSpec: "True"
   fullName: Hashgraph.TransactionRecord.Memo
   nameWithType: TransactionRecord.Memo
+- uid: Hashgraph.TransactionRecord.TokenTransfers
+  name: TokenTransfers
+  href: api/Hashgraph.TransactionRecord.html#Hashgraph_TransactionRecord_TokenTransfers
+  commentId: P:Hashgraph.TransactionRecord.TokenTransfers
+  fullName: Hashgraph.TransactionRecord.TokenTransfers
+  nameWithType: TransactionRecord.TokenTransfers
+- uid: Hashgraph.TransactionRecord.TokenTransfers*
+  name: TokenTransfers
+  href: api/Hashgraph.TransactionRecord.html#Hashgraph_TransactionRecord_TokenTransfers_
+  commentId: Overload:Hashgraph.TransactionRecord.TokenTransfers
+  isSpec: "True"
+  fullName: Hashgraph.TransactionRecord.TokenTransfers
+  nameWithType: TransactionRecord.TokenTransfers
 - uid: Hashgraph.TransactionRecord.Transfers
   name: Transfers
   href: api/Hashgraph.TransactionRecord.html#Hashgraph_TransactionRecord_Transfers
@@ -5925,6 +8000,129 @@ references:
   isSpec: "True"
   fullName: Hashgraph.UpdateFileParams.Signatory
   nameWithType: UpdateFileParams.Signatory
+- uid: Hashgraph.UpdateTokenParams
+  name: UpdateTokenParams
+  href: api/Hashgraph.UpdateTokenParams.html
+  commentId: T:Hashgraph.UpdateTokenParams
+  fullName: Hashgraph.UpdateTokenParams
+  nameWithType: UpdateTokenParams
+- uid: Hashgraph.UpdateTokenParams.Administrator
+  name: Administrator
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Administrator
+  commentId: P:Hashgraph.UpdateTokenParams.Administrator
+  fullName: Hashgraph.UpdateTokenParams.Administrator
+  nameWithType: UpdateTokenParams.Administrator
+- uid: Hashgraph.UpdateTokenParams.Administrator*
+  name: Administrator
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Administrator_
+  commentId: Overload:Hashgraph.UpdateTokenParams.Administrator
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.Administrator
+  nameWithType: UpdateTokenParams.Administrator
+- uid: Hashgraph.UpdateTokenParams.ConfiscateEndorsement
+  name: ConfiscateEndorsement
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_ConfiscateEndorsement
+  commentId: P:Hashgraph.UpdateTokenParams.ConfiscateEndorsement
+  fullName: Hashgraph.UpdateTokenParams.ConfiscateEndorsement
+  nameWithType: UpdateTokenParams.ConfiscateEndorsement
+- uid: Hashgraph.UpdateTokenParams.ConfiscateEndorsement*
+  name: ConfiscateEndorsement
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_ConfiscateEndorsement_
+  commentId: Overload:Hashgraph.UpdateTokenParams.ConfiscateEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.ConfiscateEndorsement
+  nameWithType: UpdateTokenParams.ConfiscateEndorsement
+- uid: Hashgraph.UpdateTokenParams.GrantKycEndorsement
+  name: GrantKycEndorsement
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_GrantKycEndorsement
+  commentId: P:Hashgraph.UpdateTokenParams.GrantKycEndorsement
+  fullName: Hashgraph.UpdateTokenParams.GrantKycEndorsement
+  nameWithType: UpdateTokenParams.GrantKycEndorsement
+- uid: Hashgraph.UpdateTokenParams.GrantKycEndorsement*
+  name: GrantKycEndorsement
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_GrantKycEndorsement_
+  commentId: Overload:Hashgraph.UpdateTokenParams.GrantKycEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.GrantKycEndorsement
+  nameWithType: UpdateTokenParams.GrantKycEndorsement
+- uid: Hashgraph.UpdateTokenParams.Signatory
+  name: Signatory
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Signatory
+  commentId: P:Hashgraph.UpdateTokenParams.Signatory
+  fullName: Hashgraph.UpdateTokenParams.Signatory
+  nameWithType: UpdateTokenParams.Signatory
+- uid: Hashgraph.UpdateTokenParams.Signatory*
+  name: Signatory
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Signatory_
+  commentId: Overload:Hashgraph.UpdateTokenParams.Signatory
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.Signatory
+  nameWithType: UpdateTokenParams.Signatory
+- uid: Hashgraph.UpdateTokenParams.SupplyEndorsement
+  name: SupplyEndorsement
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_SupplyEndorsement
+  commentId: P:Hashgraph.UpdateTokenParams.SupplyEndorsement
+  fullName: Hashgraph.UpdateTokenParams.SupplyEndorsement
+  nameWithType: UpdateTokenParams.SupplyEndorsement
+- uid: Hashgraph.UpdateTokenParams.SupplyEndorsement*
+  name: SupplyEndorsement
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_SupplyEndorsement_
+  commentId: Overload:Hashgraph.UpdateTokenParams.SupplyEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.SupplyEndorsement
+  nameWithType: UpdateTokenParams.SupplyEndorsement
+- uid: Hashgraph.UpdateTokenParams.SuspendEndorsement
+  name: SuspendEndorsement
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_SuspendEndorsement
+  commentId: P:Hashgraph.UpdateTokenParams.SuspendEndorsement
+  fullName: Hashgraph.UpdateTokenParams.SuspendEndorsement
+  nameWithType: UpdateTokenParams.SuspendEndorsement
+- uid: Hashgraph.UpdateTokenParams.SuspendEndorsement*
+  name: SuspendEndorsement
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_SuspendEndorsement_
+  commentId: Overload:Hashgraph.UpdateTokenParams.SuspendEndorsement
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.SuspendEndorsement
+  nameWithType: UpdateTokenParams.SuspendEndorsement
+- uid: Hashgraph.UpdateTokenParams.Symbol
+  name: Symbol
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Symbol
+  commentId: P:Hashgraph.UpdateTokenParams.Symbol
+  fullName: Hashgraph.UpdateTokenParams.Symbol
+  nameWithType: UpdateTokenParams.Symbol
+- uid: Hashgraph.UpdateTokenParams.Symbol*
+  name: Symbol
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Symbol_
+  commentId: Overload:Hashgraph.UpdateTokenParams.Symbol
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.Symbol
+  nameWithType: UpdateTokenParams.Symbol
+- uid: Hashgraph.UpdateTokenParams.Token
+  name: Token
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Token
+  commentId: P:Hashgraph.UpdateTokenParams.Token
+  fullName: Hashgraph.UpdateTokenParams.Token
+  nameWithType: UpdateTokenParams.Token
+- uid: Hashgraph.UpdateTokenParams.Token*
+  name: Token
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Token_
+  commentId: Overload:Hashgraph.UpdateTokenParams.Token
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.Token
+  nameWithType: UpdateTokenParams.Token
+- uid: Hashgraph.UpdateTokenParams.Treasury
+  name: Treasury
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Treasury
+  commentId: P:Hashgraph.UpdateTokenParams.Treasury
+  fullName: Hashgraph.UpdateTokenParams.Treasury
+  nameWithType: UpdateTokenParams.Treasury
+- uid: Hashgraph.UpdateTokenParams.Treasury*
+  name: Treasury
+  href: api/Hashgraph.UpdateTokenParams.html#Hashgraph_UpdateTokenParams_Treasury_
+  commentId: Overload:Hashgraph.UpdateTokenParams.Treasury
+  isSpec: "True"
+  fullName: Hashgraph.UpdateTokenParams.Treasury
+  nameWithType: UpdateTokenParams.Treasury
 - uid: Hashgraph.UpdateTopicParams
   name: UpdateTopicParams
   href: api/Hashgraph.UpdateTopicParams.html

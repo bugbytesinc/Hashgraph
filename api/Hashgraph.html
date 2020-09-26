@@ -77,6 +77,9 @@
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
+      <h4><a class="xref" href="Hashgraph.AccountBalances.html">AccountBalances</a></h4>
+      <section><p>Extended Balance information for an Account, including Token Balances.</p>
+</section>
       <h4><a class="xref" href="Hashgraph.AccountInfo.html">AccountInfo</a></h4>
       <section><p>The information returned from the CreateAccountAsync Client method call.<br>
 It represents the details concerning a Hedera Network Account, including
@@ -143,6 +146,14 @@ the public key value to use in smart contract interaction.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.CreateFileParams.html">CreateFileParams</a></h4>
       <section><p>File creation parameters.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.CreateTokenParams.html">CreateTokenParams</a></h4>
+      <section></section>
+      <h4><a class="xref" href="Hashgraph.CreateTokenReceipt.html">CreateTokenReceipt</a></h4>
+      <section><p>Receipt produced from creating a new token.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.CreateTokenRecord.html">CreateTokenRecord</a></h4>
+      <section><p>Record produced from creating a new token.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.CreateTopicParams.html">CreateTopicParams</a></h4>
       <section><p>Consensus Topic Creation Parameters.</p>
@@ -219,6 +230,29 @@ includes Segment Information.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.SubscribeTopicParams.html">SubscribeTopicParams</a></h4>
       <section></section>
+      <h4><a class="xref" href="Hashgraph.TokenAddressTransfer.html">TokenAddressTransfer</a></h4>
+      <section><p>Represents a token transfer (Token, Account, Amount)</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenBalance.html">TokenBalance</a></h4>
+      <section><p>The token balance information associated with an account,
+including the amount of coins held, KYC status and Freeze status.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenIdentifier.html">TokenIdentifier</a></h4>
+      <section><p>Identifies a Token instance, this can be via the</p>
+<pre><code>Address</code></pre> identifying the token, or it
+<p>can be the <pre><code>Symbol</code></pre>.  In general the</p>
+<pre><code>Address</code></pre> is preferred over the symbol
+<p>since the symbol can change over time for mutable
+token definitions, the Address will not.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenInfo.html">TokenInfo</a></h4>
+      <section><p>The information returned from the GetTokenInfo Client
+method call.  It represents the details concerning a
+Hedera Fungable Token.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenTransfer.html">TokenTransfer</a></h4>
+      <section><p>Represents a token transfer (Token (Address/Symbol), Account, Amount)</p>
+</section>
       <h4><a class="xref" href="Hashgraph.TopicInfo.html">TopicInfo</a></h4>
       <section><p>The information returned from the GetTopicInfo Client
 method call.  It represents the details concerning a
@@ -265,6 +299,16 @@ the contract is imutable and cannot be changed.</p>
       <h4><a class="xref" href="Hashgraph.UpdateFileParams.html">UpdateFileParams</a></h4>
       <section><p>Input parameters describing how to update a network file.</p>
 </section>
+      <h4><a class="xref" href="Hashgraph.UpdateTokenParams.html">UpdateTokenParams</a></h4>
+      <section><p>Represents the properties on a token definition that can be changed.
+Any property set to <pre><code>null</code></pre> on this object when submitted to the
+<a class="xref" href="Hashgraph.Client.html#Hashgraph_Client_UpdateTokenAsync_Hashgraph_UpdateTokenParams_System_Action_Hashgraph_IContext__">UpdateTokenAsync(UpdateTokenParams, Action&lt;IContext&gt;)</a>
+method will be left unchanged by the system.  The transaction must be
+appropriately signed as described by the original
+<a class="xref" href="Hashgraph.CreateTokenParams.html#Hashgraph_CreateTokenParams_Administrator">Administrator</a> endorsement in order
+to make changes.  If there is no administrator endorsement specified,
+the token is imutable and cannot be changed.</p>
+</section>
       <h4><a class="xref" href="Hashgraph.UpdateTopicParams.html">UpdateTopicParams</a></h4>
       <section><p>Represents the properties on a topic that can be changed.
 Any property set to <pre><code>null</code></pre> on this object when submitted to the
@@ -307,7 +351,7 @@ collected from the signatories.</p>
       <section><p>Identifies the type of <a class="xref" href="Hashgraph.Signatory.html">Signatory</a> or
 <a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a>.  Typically these objects
 a represent a public key or a list of child keys.
-For endorsments a list type can represent an n of m
+For endorsements a list type can represent an n of m
 number of child keys that must sign to validat a
 transaction.  For signatories, the list
 type represents simply a collection of keys, all of
@@ -322,6 +366,12 @@ the callback form.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.ResponseCode.html">ResponseCode</a></h4>
       <section><p>Pre-Check and Receipt Response Codes - 1to1 mapping with protobuf ResponseCodeEnum</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenKycStatus.html">TokenKycStatus</a></h4>
+      <section><p>KYC Status of a Token</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenTradableStatus.html">TokenTradableStatus</a></h4>
+      <section><p>The Frozen Status of a Token</p>
 </section>
 </article>
           </div>
