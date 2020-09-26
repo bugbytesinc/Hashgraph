@@ -33,5 +33,10 @@ namespace Hashgraph
         /// <see cref="IContext.Payer"/>.
         /// </summary>
         public ReadOnlyDictionary<Address, long> Transfers { get; internal set; }
+        /// <summary>
+        /// A list token transfers to and from accounts associated with
+        /// the record represented by this transaction.
+        /// </summary>
+        public ReadOnlyCollection<TokenAddressTransfer> TokenTransfers { get; internal set; }
     }
 }

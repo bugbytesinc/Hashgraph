@@ -11,7 +11,7 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> PublicKey;
         public ReadOnlyMemory<byte> PrivateKey;
         public CreateFileParams CreateParams;
-        public Address Payer;        
+        public Address Payer;
         public Client Client;
         public FileRecord Record;
         public NetworkCredentials Network;
@@ -57,6 +57,11 @@ namespace Hashgraph.Test.Fixtures
             }
             await Client.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED Test File Instance");
+        }
+
+        public static implicit operator Address(TestFile fxFile)
+        {
+            return fxFile.Record.File;
         }
     }
 }

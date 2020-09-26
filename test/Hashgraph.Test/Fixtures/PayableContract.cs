@@ -95,5 +95,9 @@ namespace Hashgraph.Test.Fixtures
             await Client.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED Stateful Contract Instance");
         }
+        public static implicit operator Address(PayableContract fxContract)
+        {
+            return fxContract.ContractRecord.Contract;
+        }
     }
 }

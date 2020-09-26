@@ -17,6 +17,7 @@
                         ProxiedToAccount = ProxyReceived,
                         Endorsement = Key.ToEndorsement(),
                         Balance = Balance,
+                        Tokens = TokenRelationships.ToBalances(),
                         SendThresholdCreateRecord = GenerateSendRecordThreshold,
                         ReceiveThresholdCreateRecord = GenerateReceiveRecordThreshold,
                         ReceiveSignatureRequired = ReceiverSigRequired,

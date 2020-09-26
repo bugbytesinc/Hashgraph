@@ -294,7 +294,7 @@ namespace Hashgraph
                 case Type.List:
                     return $"Signatory:{_type}:{string.Join(':', ((Signatory[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode();
             }
-            return "Endorsment:Empty".GetHashCode();
+            return "Signatory:Empty".GetHashCode();
         }
         /// <summary>
         /// Equals implementation.

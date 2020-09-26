@@ -67,5 +67,10 @@ namespace Hashgraph.Test.Fixtures
             await TestAccount.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED Test Topic Instance");
         }
+
+        public static implicit operator Address(TestTopic fxTopic)
+        {
+            return fxTopic.Record.Topic;
+        }
     }
 }

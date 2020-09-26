@@ -49,6 +49,7 @@ namespace Hashgraph
         /// for the transaction. This account will be charged for the 
         /// record creation.
         /// </summary>
+        [Obsolete("The Send Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.")]
         public ulong? SendThresholdCreateRecord { get; set; }
         /// <summary>
         /// Threshold in tinybars at which deposits larger than
@@ -56,6 +57,7 @@ namespace Hashgraph
         /// record for the transaction.  This account will be charged
         /// for the record creation.
         /// </summary>
+        [Obsolete("The Receive Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.")]
         public ulong? ReceiveThresholdCreateRecord { get; set; }
         /// <summary>
         /// If set to True, the account must sign any transaction 

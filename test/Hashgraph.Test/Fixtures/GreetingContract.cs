@@ -97,5 +97,9 @@ namespace Hashgraph.Test.Fixtures
             await Client.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED Greeting Contract Instance");
         }
+        public static implicit operator Address(GreetingContract fxContract)
+        {
+            return fxContract.ContractRecord.Contract;
+        }
     }
 }

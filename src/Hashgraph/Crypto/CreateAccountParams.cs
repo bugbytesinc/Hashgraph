@@ -32,6 +32,7 @@ namespace Hashgraph
         /// the network will accept values not larger than what
         /// a signed 64 bit integer can carry (9,223,372,036,854,775,807)
         /// </remarks>
+        [Obsolete("The Send Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.")]
         public ulong SendThresholdCreateRecord { get; set; } = ulong.MaxValue / 2;
         /// <summary>
         /// Threshold in tinybars at which deposits larger than
@@ -45,6 +46,7 @@ namespace Hashgraph
         /// the network will accept values not larger than what
         /// a signed 64 bit integer can carry (9,223,372,036,854,775,807)
         /// </remarks>
+        [Obsolete("The Receive Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.")]
         public ulong ReceiveThresholdCreateRecord { get; set; } = ulong.MaxValue / 2;
         /// <summary>
         /// When creating a new account: the newly created account must 

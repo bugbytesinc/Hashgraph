@@ -1,5 +1,7 @@
-﻿using Hashgraph;
-using Hashgraph.Implementation;
+﻿using Google.Protobuf.Collections;
+using Hashgraph;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Proto
 {
@@ -22,6 +24,10 @@ namespace Proto
             else if (Receipt.ContractID != null)
             {
                 return FillProperties(new CreateContractRecord());
+            }
+            else if (Receipt.TokenId != null)
+            {
+                return FillProperties(new CreateTokenRecord());
             }
             else if (!Receipt.TopicRunningHash.IsEmpty)
             {
@@ -76,6 +82,12 @@ namespace Proto
             record.File = Receipt.FileID.ToAddress();
             return record;
         }
+        internal CreateTokenRecord FillProperties(CreateTokenRecord record)
+        {
+            FillCommonProperties(record);
+            record.Token = Receipt.TokenId.ToAddress();
+            return record;
+        }
         internal Hashgraph.TransactionRecord FillProperties(Hashgraph.TransactionRecord record)
         {
             FillCommonProperties(record);
@@ -90,11 +102,37 @@ namespace Proto
             record.Memo = Memo;
             record.Fee = TransactionFee;
             record.Transfers = TransferList.ToTransfers();
+            record.TokenTransfers = TokenTransferLists.ToTransfers();
             if (Receipt.ExchangeRate != null)
             {
                 record.CurrentExchangeRate = Receipt.ExchangeRate.CurrentRate?.ToExchangeRate();
                 record.NextExchangeRate = Receipt.ExchangeRate.NextRate?.ToExchangeRate();
             }
+        }
+    }
+    internal static class TransactionRecordExtensions
+    {
+        private static ReadOnlyCollection<Hashgraph.TransactionRecord> EMPTY_RESULT = new List<Hashgraph.TransactionRecord>().AsReadOnly();
+        internal static ReadOnlyCollection<Hashgraph.TransactionRecord> ToTransactionRecordList(this RepeatedField<TransactionRecord> list, TransactionRecord first)
+        {
+            var count = (first != null ? 1 : 0) + (list != null ? list.Count : 0);
+            if (count > 0)
+            {
+                var result = new List<Hashgraph.TransactionRecord>(count);
+                if (first != null)
+                {
+                    result.Add(first.ToTransactionRecord());
+                }
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var entry in list)
+                    {
+                        result.Add(entry.ToTransactionRecord());
+                    }
+                }
+                return result.AsReadOnly();
+            }
+            return EMPTY_RESULT;
         }
     }
 }

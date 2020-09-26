@@ -52,13 +52,17 @@ namespace Hashgraph.Implementation
             }
             return addressToDelete;
         }
-        internal static Address TopicToDelete(Address topicToDelete)
+        internal static TokenIdentifier TokenIdentifier(TokenIdentifier token)
         {
-            if (topicToDelete is null)
+            if (token is null)
             {
-                throw new ArgumentNullException(nameof(topicToDelete), "Topic to Delete is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(token), "Token is missing. Please check that it is not null.");
             }
-            return topicToDelete;
+            if ((token.Address is null || token.Address == Hashgraph.Address.None) && string.IsNullOrWhiteSpace(token.Symbol))
+            {
+                throw new ArgumentNullException(nameof(token), "Token Address and Symbol are missing. At least one is required.");
+            }
+            return token;
         }
         internal static Address File(Address file)
         {
@@ -76,6 +80,14 @@ namespace Hashgraph.Implementation
             }
             return fileToDelete;
         }
+        internal static Address FileToRestore(Address fileToRestore)
+        {
+            if (fileToRestore is null)
+            {
+                throw new ArgumentNullException(nameof(fileToRestore), "File to Restore is missing. Please check that it is not null.");
+            }
+            return fileToRestore;
+        }
         internal static Address ContractToDelete(Address contractToDelete)
         {
             if (contractToDelete is null)
@@ -83,6 +95,14 @@ namespace Hashgraph.Implementation
                 throw new ArgumentNullException(nameof(contractToDelete), "Contract to Delete is missing. Please check that it is not null.");
             }
             return contractToDelete;
+        }
+        internal static Address ContractToRestore(Address contractToRestore)
+        {
+            if (contractToRestore is null)
+            {
+                throw new ArgumentNullException(nameof(contractToRestore), "Contract to Restore is missing. Please check that it is not null.");
+            }
+            return contractToRestore;
         }
         internal static Address TransferToAddress(Address transferToAddress)
         {
@@ -116,16 +136,20 @@ namespace Hashgraph.Implementation
             }
             return amount;
         }
-        internal static (Address address, long amount)[] TransferList(Dictionary<Address, long> transfers)
+        internal static ulong ConfiscateAmount(ulong amount)
+        {
+            if (amount == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "The amount to confiscate must be greater than zero.");
+            }
+            return amount;
+        }
+        internal static (Address address, long amount)[] CryptoTransferList(IEnumerable<KeyValuePair<Address, long>> transfers)
         {
             long sum = 0;
             if (transfers is null)
             {
                 throw new ArgumentNullException(nameof(transfers), "The dictionary of transfers can not be null.");
-            }
-            if (transfers.Count == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(transfers), "The dictionary of transfers can not be empty.");
             }
             var result = new List<(Address address, long amount)>();
             foreach (var transfer in transfers)
@@ -136,6 +160,10 @@ namespace Hashgraph.Implementation
                 }
                 result.Add((transfer.Key, transfer.Value));
                 sum = sum + transfer.Value;
+            }
+            if (result.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(transfers), "The dictionary of transfers can not be empty.");
             }
             if (sum != 0)
             {
@@ -163,7 +191,7 @@ namespace Hashgraph.Implementation
             }
             if (Hashgraph.Endorsement.None.Equals(updateParameters.Endorsement))
             {
-                throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsement), "Endorsment can not be 'None', it must contain at least one key requirement.");
+                throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsement), "Endorsement can not be 'None', it must contain at least one key requirement.");
             }
             if (updateParameters.Endorsement is null &&
                 updateParameters.SendThresholdCreateRecord is null &&
@@ -217,6 +245,43 @@ namespace Hashgraph.Implementation
                 updateParameters.RenewAccount is null)
             {
                 throw new ArgumentException("The Topic Updates contain no update properties, it is blank.", nameof(updateParameters));
+            }
+            return updateParameters;
+        }
+        internal static UpdateTokenParams UpdateParameters(UpdateTokenParams updateParameters)
+        {
+            if (updateParameters is null)
+            {
+                throw new ArgumentNullException(nameof(updateParameters), "Token Update Parameters argument is missing. Please check that it is not null.");
+            }
+            if (updateParameters.Token is null || ((updateParameters.Token.Address is null || updateParameters.Token.Address == Hashgraph.Address.None) && string.IsNullOrWhiteSpace(updateParameters.Token.Symbol)))
+            {
+                throw new ArgumentNullException(nameof(updateParameters.Token), "The Token Identifer (Address or Symbol) is missing, at least Address or Symbol is required.");
+            }
+            if (updateParameters.Treasury is null &&
+                updateParameters.Administrator is null &&
+                updateParameters.GrantKycEndorsement is null &&
+                updateParameters.SuspendEndorsement is null &&
+                updateParameters.ConfiscateEndorsement is null &&
+                updateParameters.SupplyEndorsement is null &&
+                string.IsNullOrWhiteSpace(updateParameters.Symbol))
+            {
+                throw new ArgumentException("The Topic Updates contain no update properties, it is blank.", nameof(updateParameters));
+            }
+            if (!string.IsNullOrWhiteSpace(updateParameters.Symbol))
+            {
+                if (updateParameters.Symbol.Trim().Length != updateParameters.Symbol.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol cannot contain leading or trailing white space.");
+                }
+                if (updateParameters.Symbol.Length > 32)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol cannot exceed 32 characters in length.");
+                }
+                if (!updateParameters.Symbol.Equals(updateParameters.Symbol.ToUpperInvariant()))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol must contain upper case characters.");
+                }
             }
             return updateParameters;
         }
@@ -294,18 +359,6 @@ namespace Hashgraph.Implementation
                 }
             }
             return endorsements;
-        }
-        internal static Endorsement Endorsement(Endorsement endorsement)
-        {
-            if (endorsement is null)
-            {
-                throw new ArgumentNullException(nameof(endorsement), "Endorsement must not be null.");
-            }
-            else if (Hashgraph.Endorsement.None.Equals(endorsement))
-            {
-                throw new ArgumentOutOfRangeException(nameof(endorsement), "Endorsement must not be empty.");
-            }
-            return endorsement;
         }
         internal static uint RequiredCount(uint requiredCount, int maxCount)
         {
@@ -398,6 +451,42 @@ namespace Hashgraph.Implementation
             }
             return createParameters;
         }
+        internal static CreateTokenParams CreateParameters(CreateTokenParams createParameters)
+        {
+            if (createParameters is null)
+            {
+                throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
+            }
+            if (string.IsNullOrWhiteSpace(createParameters.Symbol))
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol must be specified.");
+            }
+            if (createParameters.Symbol.Trim().Length != createParameters.Symbol.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol cannot contain leading or trailing white space.");
+            }
+            if (createParameters.Symbol.Length > 32)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol cannot exceed 32 characters in length.");
+            }
+            if (!createParameters.Symbol.Equals(createParameters.Symbol.ToUpperInvariant()))
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol must contain upper case characters.");
+            }
+            if (createParameters.Circulation < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Circulation), "The initial circulation of tokens must be greater than zero.");
+            }
+            if (createParameters.Decimals < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Decimals), "The divisibility of tokens cannot be negative.");
+            }
+            if (createParameters.Treasury is null || createParameters.Treasury == Hashgraph.Address.None)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Treasury), "The treasury must be specified.");
+            }
+            return createParameters;
+        }
         internal static SubscribeTopicParams SubscribeParameters(SubscribeTopicParams subscribeParameters)
         {
             if (subscribeParameters is null)
@@ -465,6 +554,70 @@ namespace Hashgraph.Implementation
                 throw new ArgumentNullException(nameof(appendParameters.File), "File identifier is missing. Please check that it is not null.");
             }
             return appendParameters;
+        }
+        internal static ulong TokenAmount(ulong amount)
+        {
+            if (amount == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "The token amount must be greater than zero.");
+            }
+            return amount;
+        }
+        internal static (TimeSpan starting, TimeSpan length) StartingAndEndingTimes(TimeSpan starting, TimeSpan length)
+        {
+            if (length.Ticks < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "The length of time must be greater than zero.");
+            }
+            if (length.TotalHours > 24)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "The length of time must not exceed 24 hours.");
+            }
+            if (starting.TotalHours > 24)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length), "The starting wait must not exceed 24 hours.");
+            }
+            var now = DateTime.UtcNow;
+            var then = now.Add(starting).Add(length);
+            if (then < now)
+            {
+                throw new ArgumentOutOfRangeException(nameof(starting), "The combination of starting wait and suspension lenght has already passed.");
+            }
+            return (starting, length);
+        }
+        internal static Proto.TransactionID IdFromTransactionBytes(ReadOnlyMemory<byte> transaction)
+        {
+            Proto.Transaction decodedTransaction;
+            Proto.TransactionBody decodedTransactionBody;
+            if (transaction.IsEmpty)
+            {
+                throw new ArgumentOutOfRangeException(nameof(transaction), "Missing Transaction Bytes (was empty.)");
+            }
+            try
+            {
+                decodedTransaction = Proto.Transaction.Parser.ParseFrom(transaction.ToArray());
+            }
+            catch (Exception pe)
+            {
+                throw new ArgumentException(nameof(transaction), "The submitted bytes do not appear to belong to a transaction.", pe);
+            }
+            try
+            {
+                decodedTransactionBody = Proto.TransactionBody.Parser.ParseFrom(decodedTransaction.BodyBytes);
+            }
+            catch (Exception pe)
+            {
+                throw new ArgumentException(nameof(transaction), "The submitted bytes do not appear to have a transaction body.", pe);
+            }
+            if (decodedTransactionBody is null)
+            {
+                throw new ArgumentException(nameof(transaction), "The submitted bytes do not appear to have a transaction body.");
+            }
+            if (decodedTransactionBody.TransactionID is null)
+            {
+                throw new ArgumentException(nameof(transaction), "The submitted transaction bytes do not appear to contain a transaction id.");
+            }
+            return decodedTransactionBody.TransactionID;
         }
     }
 }

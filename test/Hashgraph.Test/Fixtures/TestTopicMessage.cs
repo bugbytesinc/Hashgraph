@@ -20,7 +20,8 @@ namespace Hashgraph.Test.Fixtures
             fx.TestTopic = await TestTopic.CreateAsync(networkCredentials);
             fx.Message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
             customize?.Invoke(fx);
-            fx.Record = await fx.TestTopic.Client.SubmitMessageWithRecordAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey, ctx => {
+            fx.Record = await fx.TestTopic.Client.SubmitMessageWithRecordAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey, ctx =>
+            {
                 ctx.Memo = "TestTopicMessage Setup: " + fx.TestTopic.Memo ?? "(null memo)";
             });
             Assert.Equal(ResponseCode.Success, fx.Record.Status);

@@ -96,7 +96,7 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_SOLIDITY_ID")] InvalidSolidityId = 20,
         /// <summary>
-        /// Transaction hasn't yet reached consensus, or has already expired
+        /// The responding node has submitted the transaction to the network. Its final status is still unknown.
         /// </summary>
         [Description("UNKNOWN")] Unknown = 21,
         /// <summary>
@@ -288,7 +288,7 @@ namespace Hashgraph
         /// </summary>
         [Description("KEY_PREFIX_MISMATCH")] KeyPrefixMismatch = 68,
         /// <summary>
-        /// transaction not created by platform due to either large backlog or message size exceeded transactionMaxBytes
+        /// transaction not created by platform due to large backlog
         /// </summary>
         [Description("PLATFORM_TRANSACTION_NOT_CREATED")] PlatformTransactionNotCreated = 69,
         /// <summary>
@@ -356,11 +356,11 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_INITIAL_BALANCE")] InvalidInitialBalance = 85,
         /// <summary>
-        /// attempt to set negative receive record threshold
+        /// [Deprecated]. attempt to set negative receive record threshold
         /// </summary>
         [Description("INVALID_RECEIVE_RECORD_THRESHOLD")] InvalidReceiveRecordThreshold = 86,
         /// <summary>
-        /// attempt to set negative send record threshold
+        /// [Deprecated]. attempt to set negative send record threshold
         /// </summary>
         [Description("INVALID_SEND_RECORD_THRESHOLD")] InvalidSendRecordThreshold = 87,
         /// <summary>
@@ -492,5 +492,102 @@ namespace Hashgraph
         /// For every chunk, the payer account that is part of initialTransactionID must match the Payer Account of this transaction. The entire initialTransactionID should match the transactionID of the first chunk, but this is not checked or enforced by Hedera except when the chunk number is 1.
         /// </summary>
         [Description("INVALID_CHUNK_TRANSACTION_ID")] InvalidChunkTransactionId = 164,
+        /// <summary>
+        /// Account is frozen and cannot transact with the token
+        /// </summary>
+        [Description("ACCOUNT_FROZEN_FOR_TOKEN")] AccountFrozenForToken = 165,
+        /// <summary>
+        /// Maximum number of token relations for agiven account is exceeded
+        /// </summary>
+        [Description("TOKENS_PER_ACCOUNT_LIMIT_EXCEEDED")] TokensPerAccountLimitExceeded = 166,
+        /// <summary>
+        /// </summary>
+        [Description("INVALID_TOKEN_ID")] InvalidTokenId = 167,
+        [Description("INVALID_TOKEN_DECIMALS")] InvalidTokenDecimals = 168,
+        [Description("INVALID_INITIAL_SUPPLY")] InvalidInitialSupply = 169,
+        /// <summary>
+        /// Treasury Account does not exist or is deleted
+        /// </summary>
+        [Description("INVALID_TREASURY_ACCOUNT_FOR_TOKEN")] InvalidTreasuryAccountForToken = 170,
+        /// <summary>
+        /// Token Symbol is not UTF-8 alphanumeric uppercase string
+        /// </summary>
+        [Description("INVALID_TOKEN_SYMBOL")] InvalidTokenSymbol = 171,
+        /// <summary>
+        /// Freeze key is not set on token
+        /// </summary>
+        [Description("TOKEN_HAS_NO_FREEZE_KEY")] TokenHasNoFreezeKey = 172,
+        /// <summary>
+        /// Amounts in transfer list are not net zero
+        /// </summary>
+        [Description("TRANSFERS_NOT_ZERO_SUM_FOR_TOKEN")] TransfersNotZeroSumForToken = 173,
+        /// <summary>
+        /// Token Symbol is not provided
+        /// </summary>
+        [Description("MISSING_TOKEN_SYMBOL")] MissingTokenSymbol = 174,
+        /// <summary>
+        /// Token Symbol is too long
+        /// </summary>
+        [Description("TOKEN_SYMBOL_TOO_LONG")] TokenSymbolTooLong = 175,
+        /// <summary>
+        /// Token Symbol is already used
+        /// </summary>
+        [Description("TOKEN_SYMBOL_ALREADY_IN_USE")] TokenSymbolAlreadyInUse = 176,
+        [Description("INVALID_TOKEN_REF")] InvalidTokenRef = 177,
+        /// <summary>
+        /// KYC must be granted and account does not have KYC granted
+        /// </summary>
+        [Description("ACCOUNT_KYC_NOT_GRANTED_FOR_TOKEN")] AccountKycNotGrantedForToken = 178,
+        /// <summary>
+        /// KYC key is not set on token
+        /// </summary>
+        [Description("TOKEN_HAS_NO_KYC_KEY")] TokenHasNoKycKey = 179,
+        /// <summary>
+        /// Token balance is not sufficient for the transaction
+        /// </summary>
+        [Description("INSUFFICIENT_TOKEN_BALANCE")] InsufficientTokenBalance = 180,
+        /// <summary>
+        /// Token transactions cannot be executed on deleted token
+        /// </summary>
+        [Description("TOKEN_WAS_DELETED")] TokenWasDeleted = 181,
+        /// <summary>
+        /// Supply key is not set on token
+        /// </summary>
+        [Description("TOKEN_HAS_NO_SUPPLY_KEY")] TokenHasNoSupplyKey = 182,
+        /// <summary>
+        /// Wipe key is not set on token
+        /// </summary>
+        [Description("TOKEN_HAS_NO_WIPE_KEY")] TokenHasNoWipeKey = 183,
+        [Description("INVALID_TOKEN_MINT_AMOUNT")] InvalidTokenMintAmount = 184,
+        [Description("INVALID_TOKEN_BURN_AMOUNT")] InvalidTokenBurnAmount = 185,
+        [Description("ACCOUNT_HAS_NO_TOKEN_RELATIONSHIP")] AccountHasNoTokenRelationship = 186,
+        /// <summary>
+        /// Cannot execute wipe operation on treasury account
+        /// </summary>
+        [Description("CANNOT_WIPE_TOKEN_TREASURY_ACCOUNT")] CannotWipeTokenTreasuryAccount = 187,
+        [Description("INVALID_KYC_KEY")] InvalidKycKey = 188,
+        [Description("INVALID_WIPE_KEY")] InvalidWipeKey = 189,
+        [Description("INVALID_FREEZE_KEY")] InvalidFreezeKey = 190,
+        [Description("INVALID_SUPPLY_KEY")] InvalidSupplyKey = 191,
+        /// <summary>
+        /// Token Name is already used
+        /// </summary>
+        [Description("TOKEN_NAME_ALREADY_IN_USE")] TokenNameAlreadyInUse = 192,
+        /// <summary>
+        /// Token Name is not provided
+        /// </summary>
+        [Description("MISSING_TOKEN_NAME")] MissingTokenName = 193,
+        /// <summary>
+        /// Token name is too long
+        /// </summary>
+        [Description("TOKEN_NAME_TOO_LONG")] TokenNameTooLong = 194,
+        /// <summary>
+        /// The provided wipe amount must not be negative, zero or bigger than the token holder balance
+        /// </summary>
+        [Description("INVALID_WIPING_AMOUNT")] InvalidWipingAmount = 195,
+        /// <summary>
+        /// Token does not have Admin key set, thus update/delete transactions cannot be performed
+        /// </summary>
+        [Description("TOKEN_IS_IMMUTABlE")] TokenIsImmutablE = 196,
     }
 }

@@ -166,7 +166,7 @@ namespace Hashgraph.Test.Topic
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Null(info.RenewAccount);
         }
-        [Fact(DisplayName = "Create Topic: Create Topic with no missing signatures raises error.")]
+        [Fact(DisplayName = "Create Topic: Create Topic with missing signatures raises error.")]
         public async Task CanCreateATopicWithMissingSignaturesRaisesError()
         {
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>

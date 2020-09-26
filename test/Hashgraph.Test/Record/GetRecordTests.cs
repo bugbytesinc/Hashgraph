@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Test.Fixtures;
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -208,6 +209,61 @@ namespace Hashgraph.Test.Record
             Assert.Equal(fx.Record.Memo, FileRecord.Memo);
             Assert.Equal(fx.Record.Fee, FileRecord.Fee);
             Assert.Equal(fx.Record.File, FileRecord.File);
+        }
+        [Fact(DisplayName = "Get Record: Can get List of Duplicate Records")]
+        public async Task CanGetListOfDuplicateRecords()
+        {
+            for (int tries = 0; tries < 5; tries++)
+            {
+                var duplicates = Generator.Integer(10, 15);
+                var passedPrecheck = duplicates;
+                await using var client = _network.NewClient();
+                var txid = client.CreateNewTxId();
+                var tasks = new Task[duplicates];
+                for (var i = 0; i < duplicates; i++)
+                {
+                    tasks[i] = client.TransferAsync(_network.Payer, _network.Gateway, 1, ctx => ctx.Transaction = txid);
+                }
+                for (var i = 0; i < duplicates; i++)
+                {
+                    try
+                    {
+                        await tasks[i];
+                    }
+                    catch
+                    {
+                        passedPrecheck--;
+                    }
+                }
+                if (passedPrecheck == 0)
+                {
+                    // Start over.
+                    continue;
+                }
+                var receipts = await client.GetAllTransactionRecordsAsync(txid);
+                Assert.Equal(passedPrecheck, receipts.Count);
+                Assert.Equal(1, receipts.Count(t => t.Status == ResponseCode.Success));
+                Assert.Equal(passedPrecheck - 1, receipts.Count(t => t.Status == ResponseCode.DuplicateTransaction));
+                return;
+            }
+            _network.Output?.WriteLine("TEST INCONCLUSIVE, UNABLE TO CREATE DUPLICATE TRANSACTIONS THIS TIME AROUND.");
+        }
+        [Fact(DisplayName = "Get Record: Can get List of One Record")]
+        public async Task CanGetListOfOneRecord()
+        {
+            await using var client = _network.NewClient();
+            var receipt = await client.TransferAsync(_network.Payer, _network.Gateway, 1);
+            var receipts = await client.GetAllTransactionRecordsAsync(receipt.Id);
+            Assert.Single(receipts);
+            Assert.Equal(ResponseCode.Success, receipts[0].Status);
+        }
+        [Fact(DisplayName = "Get Record: Can get List of No Records")]
+        public async Task CanGetListOfNoRecords()
+        {
+            await using var client = _network.NewClient();
+            var txid = client.CreateNewTxId();
+            var receipts = await client.GetAllTransactionRecordsAsync(txid);
+            Assert.Empty(receipts);
         }
     }
 }

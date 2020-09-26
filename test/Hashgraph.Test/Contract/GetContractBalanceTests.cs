@@ -26,6 +26,15 @@ namespace Hashgraph.Test.Crypto
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.Equal(balance, info.Balance);
         }
+        [Fact(DisplayName = "Get Contract Balance: Can Get Contract Balances for Contract")]
+        public async Task CanGetBalancesForContractAsync()
+        {
+            await using var fx = await PayableContract.CreateAsync(_network);
+
+            var balances = await fx.Client.GetContractBalancesAsync(fx.ContractRecord.Contract);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, balances.Crypto);
+            Assert.Empty(balances.Tokens);
+        }
         [Fact(DisplayName = "Get Contract Balance: Missing Payer Account Does not Throw Exception (Free Query)")]
         public async Task MissingPayerAccountDosNotThrowException()
         {

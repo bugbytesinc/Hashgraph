@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
 using System;
+using System.Collections.ObjectModel;
 
 namespace Hashgraph
 {
@@ -45,11 +46,17 @@ namespace Hashgraph
         /// </summary>
         public ulong Balance { get; internal set; }
         /// <summary>
+        /// Balances of tokens associated with this account.
+        /// </summary>
+        public ReadOnlyCollection<TokenBalance> Tokens { get; internal set; }
+
+        /// <summary>
         /// Threshold in tinybars at which withdraws larger than
         /// this value will automatically trigger the creation of a record 
         /// for the transaction. This account will be charged for the 
         /// record creation.
         /// </summary>
+        [Obsolete("The Send Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.")]
         public ulong SendThresholdCreateRecord { get; internal set; }
         /// <summary>
         /// Threshold in tinybars at which deposits larger than
@@ -57,6 +64,7 @@ namespace Hashgraph
         /// record for the transaction.  This account will be charged
         /// for the record creation.
         /// </summary>
+        [Obsolete("The Receive Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.")]
         public ulong ReceiveThresholdCreateRecord { get; internal set; }
         /// <summary>
         /// <code>True</code> if any receipt of funds require
@@ -76,6 +84,5 @@ namespace Hashgraph
         /// to renew if sufficient funds remain in the account.
         /// </summary>
         public DateTime Expiration { get; internal set; }
-
     }
 }

@@ -18,7 +18,7 @@ namespace Hashgraph
         internal readonly object _data;
         /// <summary>
         /// Returns a list of child endorsements identified by
-        /// this endorsment (of list type).  If the endorsement
+        /// this endorsement (of list type).  If the endorsement
         /// is not of a list type, the list will be empty.
         /// </summary>
         public Endorsement[] List
@@ -33,16 +33,16 @@ namespace Hashgraph
             }
         }
         /// <summary>
-        /// When this endorsment contains a list of child endorsements, 
+        /// When this endorsement contains a list of child endorsements, 
         /// this represents the number of child endorsements that must
-        /// be fulfilled in order to consider this endorsment fulfilled.
+        /// be fulfilled in order to consider this endorsement fulfilled.
         /// </summary>
         public uint RequiredCount { get; internal set; }
         /// <summary>
-        /// The type of endorsment this object is.  It either contains
+        /// The type of endorsement this object is.  It either contains
         /// a representation of a public key or a list of child endorsements
         /// with a not of how many are requrired to be fullfilled for this
-        /// endorsment to be fulfilled.
+        /// endorsement to be fulfilled.
         /// </summary>
         public KeyType Type { get; internal set; }
         /// <summary>
@@ -72,13 +72,13 @@ namespace Hashgraph
         /// It represents an "empty" list of keys, which the network will 
         /// intrepret as "clear all keys" from this setting (typically the value
         /// null is intepreted as "make no change").  In this way, it is possible
-        /// to change a topic from mutable (which has an Administrator endorsment)
-        /// to imutable (having no Administrator endorsment).
+        /// to change a topic from mutable (which has an Administrator endorsement)
+        /// to imutable (having no Administrator endorsement).
         /// </summary>
         public static Endorsement None { get; private set; } = new Endorsement();
         /// <summary>
         /// Internal Constructor representing the "Empty List" version of an
-        /// endorsment.  This is a special construct that is used by the network
+        /// endorsement.  This is a special construct that is used by the network
         /// to represent "removing" keys from an "Administrator" key list.  For
         /// example, turning a mutable contract into an imutable contract.  One
         /// should never create an empty key list so this is why the constructor
@@ -280,7 +280,7 @@ namespace Hashgraph
                 case KeyType.List:
                     return $"Endorsement:{Type}:{string.Join(':', ((Endorsement[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode();
             }
-            return "Endorsment:Empty".GetHashCode();
+            return "Endorsement:Empty".GetHashCode();
         }
         /// <summary>
         /// Equals implementation.

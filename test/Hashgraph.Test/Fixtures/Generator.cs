@@ -9,6 +9,7 @@ namespace Hashgraph.Test.Fixtures
     {
         private static Random _random = new Random();
         private static char[] _sample = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-*&%$#@!".ToCharArray();
+        private static char[] _alphaSample = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
         public static Int32 Integer(Int32 minValueInclusive, Int32 maxValueInclusive)
         {
@@ -31,6 +32,15 @@ namespace Hashgraph.Test.Fixtures
             for (int i = 0; i < length; i++)
             {
                 buffer[i] = _sample[_random.Next(0, _sample.Length)];
+            }
+            return new string(buffer);
+        }
+        public static String UppercaseAlphaCode(Int32 length)
+        {
+            var buffer = new char[length];
+            for (int i = 0; i < length; i++)
+            {
+                buffer[i] = _alphaSample[_random.Next(0, _alphaSample.Length)];
             }
             return new string(buffer);
         }

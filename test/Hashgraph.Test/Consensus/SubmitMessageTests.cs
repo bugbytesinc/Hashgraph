@@ -176,5 +176,31 @@ namespace Hashgraph.Test.Topic
             Assert.Equal((ulong)expectedSequenceNumber, record.SequenceNumber);
             Assert.Equal(info.RunningHash.ToArray(), record.RunningHash.ToArray());
         }
+        [Fact(DisplayName = "Submit Message: Submitting Messages Can Retrieve Records (without extra Signatory)")]
+        public async Task CanCallWithRecordPayerSignatory()
+        {
+            SubmitMessageRecord record = null;
+            await using var fx = await TestTopic.CreateAsync(_network);
+            var expectedSequenceNumber = Generator.Integer(10, 20);
+
+            for (int i = 0; i < expectedSequenceNumber; i++)
+            {
+                var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
+                record = await fx.Client.SubmitMessageWithRecordAsync(fx.Record.Topic, message, ctx => ctx.Signatory = new Signatory(fx.ParticipantPrivateKey, _network.PrivateKey));
+                Assert.Equal(ResponseCode.Success, record.Status);
+                Assert.Equal((ulong)i + 1, record.SequenceNumber);
+                Assert.False(record.RunningHash.IsEmpty);
+                Assert.False(record.Hash.IsEmpty);
+                Assert.NotNull(record.Concensus);
+                Assert.Empty(record.Memo);
+                Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+                Assert.Equal(_network.Payer, record.Id.Address);
+            }
+
+            var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
+            Assert.Equal((ulong)expectedSequenceNumber, info.SequenceNumber);
+            Assert.Equal((ulong)expectedSequenceNumber, record.SequenceNumber);
+            Assert.Equal(info.RunningHash.ToArray(), record.RunningHash.ToArray());
+        }
     }
 }
