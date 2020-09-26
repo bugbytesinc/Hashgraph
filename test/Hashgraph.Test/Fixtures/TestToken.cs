@@ -17,7 +17,6 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> SupplyPublicKey;
         public ReadOnlyMemory<byte> SupplyPrivateKey;
         public TestAccount TreasuryAccount;
-        public TestAccount RenewAccount;
         public Address Payer;
         public Client Client;
         public CreateTokenParams Params;
@@ -37,10 +36,8 @@ namespace Hashgraph.Test.Fixtures
             fx.Payer = networkCredentials.Payer;
             fx.Client = networkCredentials.NewClient();
             fx.TreasuryAccount = await TestAccount.CreateAsync(networkCredentials);
-            fx.RenewAccount = await TestAccount.CreateAsync(networkCredentials);
             fx.Params = new CreateTokenParams
             {
-                Name = Generator.Code(50),
                 Symbol = Generator.UppercaseAlphaCode(20),
                 Circulation = (ulong)(Generator.Integer(10, 20) * 100000),
                 Decimals = (uint)Generator.Integer(2, 5),
@@ -51,10 +48,7 @@ namespace Hashgraph.Test.Fixtures
                 ConfiscateEndorsement = fx.ConfiscatePublicKey,
                 SupplyEndorsement = fx.SupplyPublicKey,
                 InitializeSuspended = false,
-                Expiration = Generator.TruncatedFutureDate(2000, 3000),
-                RenewAccount = fx.RenewAccount.Record.Address,
-                RenewPeriod = TimeSpan.FromDays(90),
-                Signatory = new Signatory(fx.AdminPrivateKey, fx.GrantPrivateKey, fx.SuspendPrivateKey, fx.ConfiscatePrivateKey, fx.SupplyPrivateKey, fx.RenewAccount.PrivateKey)
+                Signatory = new Signatory(fx.AdminPrivateKey, fx.GrantPrivateKey, fx.SuspendPrivateKey, fx.ConfiscatePrivateKey, fx.SupplyPrivateKey)
             };
             customize?.Invoke(fx);
             fx.Record = await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
@@ -82,7 +76,6 @@ namespace Hashgraph.Test.Fixtures
             }
             await Client.DisposeAsync();
             await TreasuryAccount.DisposeAsync();
-            await RenewAccount.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED Test Token Instance");
         }
 

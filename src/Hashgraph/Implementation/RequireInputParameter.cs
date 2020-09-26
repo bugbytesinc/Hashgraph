@@ -264,11 +264,7 @@ namespace Hashgraph.Implementation
                 updateParameters.SuspendEndorsement is null &&
                 updateParameters.ConfiscateEndorsement is null &&
                 updateParameters.SupplyEndorsement is null &&
-                string.IsNullOrWhiteSpace(updateParameters.Symbol) &&
-                string.IsNullOrWhiteSpace(updateParameters.Name) &&
-                !updateParameters.Expiration.HasValue &&
-                !updateParameters.RenewPeriod.HasValue &&
-                updateParameters.RenewAccount is null)
+                string.IsNullOrWhiteSpace(updateParameters.Symbol))
             {
                 throw new ArgumentException("The Topic Updates contain no update properties, it is blank.", nameof(updateParameters));
             }
@@ -285,27 +281,6 @@ namespace Hashgraph.Implementation
                 if (!updateParameters.Symbol.Equals(updateParameters.Symbol.ToUpperInvariant()))
                 {
                     throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol must contain upper case characters.");
-                }
-            }
-            if (!string.IsNullOrWhiteSpace(updateParameters.Name))
-            {
-                if (updateParameters.Name.Trim().Length != updateParameters.Name.Length)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Name), "The new token name cannot contain leading or trailing white space.");
-                }
-            }
-            if (updateParameters.Expiration.HasValue)
-            {
-                if (updateParameters.Expiration.Value < DateTime.UtcNow)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Expiration), "The new expiration can not be set to the past.");
-                }
-            }
-            if (updateParameters.RenewPeriod.HasValue)
-            {
-                if (updateParameters.RenewPeriod.Value.TotalSeconds < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(updateParameters.RenewPeriod), "The renew period must be non negative.");
                 }
             }
             return updateParameters;
@@ -482,10 +457,6 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
             }
-            if (string.IsNullOrWhiteSpace(createParameters.Name))
-            {
-                throw new ArgumentOutOfRangeException(nameof(createParameters.Name), "The name cannot be null or empty.");
-            }
             if (string.IsNullOrWhiteSpace(createParameters.Symbol))
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol must be specified.");
@@ -513,14 +484,6 @@ namespace Hashgraph.Implementation
             if (createParameters.Treasury is null || createParameters.Treasury == Hashgraph.Address.None)
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.Treasury), "The treasury must be specified.");
-            }
-            if (createParameters.Expiration < DateTime.UtcNow)
-            {
-                throw new ArgumentOutOfRangeException(nameof(createParameters.Treasury), "The expiration time must be in the future.");
-            }
-            if (createParameters.RenewAccount.IsNullOrNone() ^ createParameters.RenewPeriod.Ticks <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(createParameters.RenewPeriod), "Both the renew account and period must be specified, or not at all.");
             }
             return createParameters;
         }

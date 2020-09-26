@@ -29,10 +29,6 @@ namespace Hashgraph
     public sealed class CreateTokenParams
     {
         /// <summary>
-        /// Name of the token, only ASCII characters are allowed, must be globally unique.
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
         /// A string containing only upper case ASCII alpha characters identifying this token.
         /// </summary>
         public string Symbol { get; set; }
@@ -81,30 +77,6 @@ namespace Hashgraph
         /// to an tradable/unfrozen relationship.
         /// </summary>
         public bool InitializeSuspended { get; set; }
-        /// <summary>
-        /// Original expiration date for the token, fees will be charged as appropriate.
-        /// </summary>
-        public DateTime Expiration { get; set; }
-        /// <summary>
-        /// Interval of the topic and auto-renewal period. If
-        /// the associated renewal account does not have sufficient funds to 
-        /// renew at the expiration time, it will be renewed for a period 
-        /// of time the remaining funds can support.  If no funds remain, the
-        /// topic instance will be deleted.
-        /// </summary>
-        public TimeSpan RenewPeriod { get; internal set; } = TimeSpan.FromDays(90);
-        /// <summary>
-        /// Optional address of the account supporting the auto renewal of 
-        /// the token at expiration time.  The topic lifetime will be
-        /// extended by the RenewPeriod at expiration time if this account
-        /// contains sufficient funds.  The private key associated with
-        /// this account must sign the transaction if RenewAccount is
-        /// specified.
-        /// </summary>
-        /// <remarks>
-        /// If specified, an Administrator Endorsement must also be specified.
-        /// </remarks>
-        public Address? RenewAccount { get; set; }
         /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to create to this token.  Typically matches the

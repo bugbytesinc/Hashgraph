@@ -20,10 +20,6 @@ namespace Hashgraph
         /// </summary>
         public string Symbol { get; internal set; }
         /// <summary>
-        /// Name of this token
-        /// </summary>
-        public string Name { get; internal set; }
-        /// <summary>
         /// The treasury account holding uncirculated tokens.
         /// </summary>
         public Address Treasury { get; internal set; }
@@ -67,31 +63,6 @@ namespace Hashgraph
         /// The current default KYC status of the token.
         /// </summary>
         public TokenKycStatus KycStatus { get; internal set; }
-        /// <summary>
-        /// Expiration date for the token.  Will renew as determined by the
-        /// renew period and balance of auto renew account.
-        /// </summary>
-        public DateTime Expiration { get; internal set; }
-        /// <summary>
-        /// Interval of the topic and auto-renewal period. If
-        /// the associated renewal account does not have sufficient funds to 
-        /// renew at the expiration time, it will be renewed for a period 
-        /// of time the remaining funds can support.  If no funds remain, the
-        /// topic instance will be deleted.
-        /// </summary>
-        public TimeSpan RenewPeriod { get; internal set; }
-        /// <summary>
-        /// Optional address of the account supporting the auto renewal of 
-        /// the token at expiration time.  The topic lifetime will be
-        /// extended by the RenewPeriod at expiration time if this account
-        /// contains sufficient funds.  The private key associated with
-        /// this account must sign the transaction if RenewAccount is
-        /// specified.
-        /// </summary>
-        /// <remarks>
-        /// If specified, an Administrator Endorsement must also be specified.
-        /// </remarks>
-        public Address? RenewAccount { get; internal set; }
         /// <summary>
         /// Flag indicating the token has been deleted.
         /// </summary>
