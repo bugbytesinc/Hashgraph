@@ -30,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> MintTokenAsync(TokenIdentifier token, ulong amount, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> MintTokenAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
             return MintTokenImplementationAsync<TransactionReceipt>(token, amount, null, configure);
         }
@@ -60,7 +60,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> MintTokenAsync(TokenIdentifier token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> MintTokenAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
             return MintTokenImplementationAsync<TransactionReceipt>(token, amount, signatory, configure);
         }
@@ -86,7 +86,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> MintTokenWithRecordAsync(TokenIdentifier token, ulong amount, Action<IContext>? configure = null)
+        public Task<TransactionRecord> MintTokenWithRecordAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
             return MintTokenImplementationAsync<TransactionRecord>(token, amount, null, configure);
         }
@@ -116,16 +116,16 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> MintTokenWithRecordAsync(TokenIdentifier token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionRecord> MintTokenWithRecordAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
             return MintTokenImplementationAsync<TransactionRecord>(token, amount, signatory, configure);
         }
         /// <summary>
         /// Internal implementation of mint token method.
         /// </summary>
-        private async Task<TResult> MintTokenImplementationAsync<TResult>(TokenIdentifier token, ulong amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> MintTokenImplementationAsync<TResult>(Address token, ulong amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
-            token = RequireInputParameter.TokenIdentifier(token);
+            token = RequireInputParameter.Token(token);
             amount = RequireInputParameter.TokenAmount(amount);
             await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
@@ -133,9 +133,9 @@ namespace Hashgraph
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
-            transactionBody.TokenMint = new TokenMintCoins
+            transactionBody.TokenMint = new TokenMintTransactionBody
             {
-                Token = new TokenRef(token),
+                Token = new TokenID(token),
                 Amount = amount
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);

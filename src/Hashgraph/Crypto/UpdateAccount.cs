@@ -77,14 +77,6 @@ namespace Hashgraph
             {
                 updateAccountBody.Key = new Key(updateParameters.Endorsement);
             }
-            if (updateParameters.SendThresholdCreateRecord.HasValue)
-            {
-                updateAccountBody.SendRecordThresholdWrapper = updateParameters.SendThresholdCreateRecord.Value;
-            }
-            if (updateParameters.ReceiveThresholdCreateRecord.HasValue)
-            {
-                updateAccountBody.ReceiveRecordThresholdWrapper = updateParameters.ReceiveThresholdCreateRecord.Value;
-            }
             if (updateParameters.RequireReceiveSignature.HasValue)
             {
                 updateAccountBody.ReceiverSigRequiredWrapper = updateParameters.RequireReceiveSignature.Value;

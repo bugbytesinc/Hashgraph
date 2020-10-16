@@ -55,40 +55,6 @@ namespace Hashgraph.Test.Crypto
             });
             Assert.StartsWith("Transaction Failed Pre-Check: AccountDeleted", exception.Message);
         }
-        [Fact(DisplayName = "Create Account: Set Send Threshold")]
-        public async Task CanSetSendTreshold()
-        {
-            var (publicKey, privateKey) = Generator.KeyPair();
-            var expectedValue = (ulong)Generator.Integer(500, 1000);
-            await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = 1,
-                Endorsement = publicKey,
-                SendThresholdCreateRecord = expectedValue
-            });
-            Assert.Equal(ResponseCode.Success, createResult.Status);
-
-            var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(expectedValue, info.SendThresholdCreateRecord);
-        }
-        [Fact(DisplayName = "Create Account: Set Receive Threshold")]
-        public async Task CanSetReceiveTreshold()
-        {
-            var (publicKey, privateKey) = Generator.KeyPair();
-            var expectedValue = (ulong)Generator.Integer(500, 1000);
-            await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = 1,
-                Endorsement = publicKey,
-                ReceiveThresholdCreateRecord = expectedValue
-            });
-            Assert.Equal(ResponseCode.Success, createResult.Status);
-
-            var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(expectedValue, info.ReceiveThresholdCreateRecord);
-        }
         [Fact(DisplayName = "Create Account: Set Signature Required True")]
         public async Task CanSetSignatureRequiredTrue()
         {

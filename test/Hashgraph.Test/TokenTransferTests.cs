@@ -5,25 +5,14 @@ namespace Hashgraph.Tests
 {
     public class TokenTransferTests
     {
-        [Fact(DisplayName = "TokenTransfer: Can Create Token Transfer Object from Address")]
-        public void CanCreateTokenTransferObjectFromAddress()
+        [Fact(DisplayName = "TokenTransfer: Can Create Token Transfer Object")]
+        public void CanCreateTokenTransferObject()
         {
             var token = new Address(0, 0, Generator.Integer(0, 200));
             var address = new Address(0, 0, Generator.Integer(200, 400));
             long amount = Generator.Integer(500, 600);
             var tt = new TokenTransfer(token, address, amount);
-            Assert.Equal(new TokenIdentifier(token), tt.Token);
-            Assert.Equal(address, tt.Address);
-            Assert.Equal(amount, tt.Amount);
-        }
-        [Fact(DisplayName = "TokenTransfer: Can Create Token Transfer Object from Symbol")]
-        public void CanCreateTokenTransferObjectFromSymbol()
-        {
-            var symbol = Generator.UppercaseAlphaCode(20);
-            var address = new Address(0, 0, Generator.Integer(200, 400));
-            long amount = Generator.Integer(500, 600);
-            var tt = new TokenTransfer(symbol, address, amount);
-            Assert.Equal(new TokenIdentifier(symbol), tt.Token);
+            Assert.Equal(token, tt.Token);
             Assert.Equal(address, tt.Address);
             Assert.Equal(amount, tt.Amount);
         }

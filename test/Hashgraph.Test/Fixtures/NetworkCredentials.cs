@@ -19,15 +19,15 @@ namespace Hashgraph.Test.Fixtures
         private Address _systemFreezeAdminAddress = null;
 
         public string NetworkAddress { get { return _configuration["network:address"]; } }
-        public int NetworkPort { get { return getAsInt("network:port"); } }
-        public long ServerShard { get { return getAsInt("server:shard"); } }
-        public long ServerRealm { get { return getAsInt("server:realm"); } }
-        public long ServerNumber { get { return getAsInt("server:number"); } }
-        public long AccountShard { get { return getAsInt("account:shard"); } }
-        public long AccountRealm { get { return getAsInt("account:realm"); } }
-        public long AccountNumber { get { return getAsInt("account:number"); } }
+        public int NetworkPort { get { return GetAsInt("network:port"); } }
+        public long ServerShard { get { return GetAsInt("server:shard"); } }
+        public long ServerRealm { get { return GetAsInt("server:realm"); } }
+        public long ServerNumber { get { return GetAsInt("server:number"); } }
+        public long AccountShard { get { return GetAsInt("account:shard"); } }
+        public long AccountRealm { get { return GetAsInt("account:realm"); } }
+        public long AccountNumber { get { return GetAsInt("account:number"); } }
         public string MirrorAddress { get { return _configuration["mirror:address"]; } }
-        public int MirrorPort { get { return getAsInt("mirror:port"); } }
+        public int MirrorPort { get { return GetAsInt("mirror:port"); } }
         public ReadOnlyMemory<byte> PrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
         public ReadOnlyMemory<byte> PublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
         public Address Payer { get { return new Address(AccountShard, AccountRealm, AccountNumber); } }
@@ -71,15 +71,13 @@ namespace Hashgraph.Test.Fixtures
             long agc = 200;
             if (_exchangeRate == null)
             {
-                await using (var client = NewClient())
-                {
-                    _exchangeRate = (await client.GetExchangeRatesAsync()).Current;
-                }
+                await using var client = NewClient();
+                _exchangeRate = (await client.GetExchangeRatesAsync()).Current;
             }
             // This is not necessarily correct, but hopefully stable.
             return ((long)(agu * agc * _exchangeRate.HBarEquivalent)) / (_exchangeRate.USDCentEquivalent);
         }
-        private int getAsInt(string key)
+        private int GetAsInt(string key)
         {
             var valueAsString = _configuration[key];
             if (int.TryParse(valueAsString, out int value))
@@ -92,21 +90,23 @@ namespace Hashgraph.Test.Fixtures
         {
             if (Output != null)
             {
-                if (message is Proto.Transaction transaction && transaction.BodyBytes != null)
+                if (message is Proto.Transaction transaction && transaction.SignedTransactionBytes != null)
                 {
-                    var transactionBody = Proto.TransactionBody.Parser.ParseFrom(transaction.BodyBytes);
+                    var signedTransaction = Proto.SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
+                    var transactionBody = Proto.TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
                     Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
                     Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(message)}");
                 }
-                else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.BodyBytes != null)
+                else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.SignedTransactionBytes != null)
                 {
-                    if (payment.BodyBytes.IsEmpty)
+                    var signedTransaction = Proto.SignedTransaction.Parser.ParseFrom(payment.SignedTransactionBytes);
+                    if (signedTransaction.BodyBytes.IsEmpty)
                     {
                         Output.WriteLine($"{DateTime.UtcNow}  QX ASK → {JsonFormatter.Default.Format(message)}");
                     }
                     else
                     {
-                        var transactionBody = Proto.TransactionBody.Parser.ParseFrom(payment.BodyBytes);
+                        var transactionBody = Proto.TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
                         Output.WriteLine($"{DateTime.UtcNow}  QX PYMT  {JsonFormatter.Default.Format(transactionBody)}");
                         Output.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(message)}");
                     }

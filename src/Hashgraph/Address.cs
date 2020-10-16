@@ -21,12 +21,12 @@ namespace Hashgraph
         /// </summary>
         public long AccountNum { get; private set; }
         /// <summary>
-        /// A special designation of an account that can't be created.
-        /// It represents the absence of a valid account.  The network will
-        /// intrepret as "no account" when applied to change parameters.
-        /// (typically the value null is intepreted as "make no change").  
-        /// In this way, it is possible to remove a auto-renew account
-        /// from a topic.
+        /// A special designation of an address that can't be created.
+        /// It represents the absence of a valid address.  The network will
+        /// intrepret as "no account/file/topic/token/contract" when applied 
+        /// to change parameters. (typically the value null is intepreted 
+        /// as "make no change"). In this way, it is possible to remove a 
+        /// auto-renew account from a topic.
         /// </summary>
         public static Address None { get; private set; } = new Address();
         /// <summary>

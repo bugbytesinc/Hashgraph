@@ -11,10 +11,10 @@ namespace Proto
             {
                 Token = TokenId.ToAddress(),
                 Symbol = Symbol,
-                //Name = Name,
+                Name = Name,
                 Treasury = Treasury.ToAddress(),
-                Circulation = CurrentFloat,
-                Decimals = Divisibility,
+                Circulation = TotalSupply,
+                Decimals = Decimals,
                 Administrator = AdminKey?.ToEndorsement(),
                 GrantKycEndorsement = KycKey?.ToEndorsement(),
                 SuspendEndorsement = FreezeKey?.ToEndorsement(),
@@ -22,9 +22,9 @@ namespace Proto
                 SupplyEndorsement = SupplyKey?.ToEndorsement(),
                 TradableStatus = (Hashgraph.TokenTradableStatus)DefaultFreezeStatus,
                 KycStatus = (Hashgraph.TokenKycStatus)DefaultKycStatus,
-                //Expiration = Epoch.ToDate((long)Expiry, 0),
-                //RenewPeriod = TimeSpan.FromSeconds(AutoRenewPeriod),
-                //RenewAccount = AutoRenewAccount?.ToAddress(),
+                Expiration = Epoch.ToDate((long)Expiry, 0),
+                RenewPeriod = TimeSpan.FromSeconds(AutoRenewPeriod),
+                RenewAccount = AutoRenewAccount?.ToAddress(),
                 Deleted = IsDeleted
             };
         }

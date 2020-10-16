@@ -40,7 +40,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferTokensAsync(TokenIdentifier token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> TransferTokensAsync(Address token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
             return TransferTokenImplementationAsync<TransactionReceipt>(token, fromAddress, toAddress, amount, null, configure);
         }
@@ -79,7 +79,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferTokensAsync(TokenIdentifier token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> TransferTokensAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
             return TransferTokenImplementationAsync<TransactionReceipt>(token, fromAddress, toAddress, amount, signatory, configure);
         }
@@ -114,7 +114,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferTokensWithRecordAsync(TokenIdentifier token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
+        public Task<TransactionRecord> TransferTokensWithRecordAsync(Address token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
             return TransferTokenImplementationAsync<TransactionRecord>(token, fromAddress, toAddress, amount, null, configure);
         }
@@ -153,7 +153,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferTokensWithRecordAsync(TokenIdentifier token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionRecord> TransferTokensWithRecordAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
             return TransferTokenImplementationAsync<TransactionRecord>(token, fromAddress, toAddress, amount, signatory, configure);
         }
@@ -282,9 +282,9 @@ namespace Hashgraph
         /// Returns either a receipt or record or throws
         /// an exception.
         /// </summary>
-        private async Task<TResult> TransferTokenImplementationAsync<TResult>(TokenIdentifier token, Address fromAddress, Address toAddress, long amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> TransferTokenImplementationAsync<TResult>(Address token, Address fromAddress, Address toAddress, long amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
-            token = RequireInputParameter.TokenIdentifier(token);
+            token = RequireInputParameter.Token(token);
             fromAddress = RequireInputParameter.FromAddress(fromAddress);
             toAddress = RequireInputParameter.ToAddress(toAddress);
             amount = RequireInputParameter.Amount(amount);
@@ -304,7 +304,7 @@ namespace Hashgraph
         /// Internal implementation for Multi Account Transfer Crypto.
         /// Returns either a receipt or record or throws an exception.
         /// </summary>
-        private async Task<TResult> TransferTokenImplementationAsync<TResult>(TokenTransfers transfers, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> TransferTokenImplementationAsync<TResult>(TokenTransfersTransactionBody transfers, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
             await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);

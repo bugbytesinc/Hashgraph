@@ -81,6 +81,18 @@ namespace Hashgraph.Test.Record
             Assert.Equal(fx.Record.NextExchangeRate, fileReceipt.NextExchangeRate);
             Assert.Equal(fx.Record.File, fileReceipt.File);
         }
+        [Fact(DisplayName = "Get Receipt: Can get Create Token Receipt")]
+        public async Task CanGetCreateTokenReceipt()
+        {
+            await using var fx = await TestToken.CreateAsync(_network);
+            var receipt = await fx.Client.GetReceiptAsync(fx.Record.Id);
+            var createReceipt = Assert.IsType<CreateTokenReceipt>(receipt);
+            Assert.Equal(fx.Record.Id, createReceipt.Id);
+            Assert.Equal(fx.Record.Status, createReceipt.Status);
+            Assert.Equal(fx.Record.CurrentExchangeRate, createReceipt.CurrentExchangeRate);
+            Assert.Equal(fx.Record.NextExchangeRate, createReceipt.NextExchangeRate);
+            Assert.Equal(fx.Record.Token, createReceipt.Token);
+        }
         [Fact(DisplayName = "Get Receipt: Can get List of Duplicate Receipts")]
         public async Task CanGetListOfDuplicateReceipts()
         {
@@ -135,6 +147,20 @@ namespace Hashgraph.Test.Record
             var txid = client.CreateNewTxId();
             var receipts = await client.GetAllReceiptsAsync(txid);
             Assert.Empty(receipts);
+        }
+        [Fact(DisplayName = "Get Receipt: Can get Create Token Receipt as List")]
+        public async Task CanGetCreateTokenReceiptAsList()
+        {
+            await using var fx = await TestToken.CreateAsync(_network);
+            var receipts = await fx.Client.GetAllReceiptsAsync(fx.Record.Id);
+            Assert.Single(receipts);
+            var receipt = receipts[0];
+            var createReceipt = Assert.IsType<CreateTokenReceipt>(receipt);
+            Assert.Equal(fx.Record.Id, createReceipt.Id);
+            Assert.Equal(fx.Record.Status, createReceipt.Status);
+            Assert.Equal(fx.Record.CurrentExchangeRate, createReceipt.CurrentExchangeRate);
+            Assert.Equal(fx.Record.NextExchangeRate, createReceipt.NextExchangeRate);
+            Assert.Equal(fx.Record.Token, createReceipt.Token);
         }
     }
 }

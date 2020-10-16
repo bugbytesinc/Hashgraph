@@ -32,8 +32,6 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, info.ProxiedToAccount);
             Assert.Equal(new Endorsement(_network.PublicKey), info.Endorsement);
             Assert.True(info.Balance > 0);
-            Assert.True(info.SendThresholdCreateRecord > 0);
-            Assert.True(info.ReceiveThresholdCreateRecord > 0);
             Assert.False(info.ReceiveSignatureRequired);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
@@ -54,8 +52,6 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(new Address(0, 0, 0), info.Proxy);
             Assert.True(info.ProxiedToAccount > -1);
             Assert.True(info.Balance > 0);
-            Assert.True(info.SendThresholdCreateRecord > 0);
-            Assert.True(info.ReceiveThresholdCreateRecord > 0);
             Assert.False(info.ReceiveSignatureRequired);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);

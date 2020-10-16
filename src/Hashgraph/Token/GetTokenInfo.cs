@@ -25,16 +25,16 @@ namespace Hashgraph
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        public async Task<TokenInfo> GetTokenInfoAsync(TokenIdentifier token, Action<IContext>? configure = null)
+        public async Task<TokenInfo> GetTokenInfoAsync(Address token, Action<IContext>? configure = null)
         {
-            token = RequireInputParameter.TokenIdentifier(token);
+            token = RequireInputParameter.Token(token);
             await using var context = CreateChildContext(configure);
             var query = new Query
             {
                 TokenGetInfo = new TokenGetInfoQuery
                 {
                     Header = Transactions.CreateAskCostHeader(),
-                    Token = new TokenRef(token)
+                    Token = new TokenID(token)
                 }
             };
             var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);

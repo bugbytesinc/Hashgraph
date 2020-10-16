@@ -18,7 +18,7 @@ namespace Hashgraph
         /// <summary>
         /// The identifier (Address/Symbol) of the token to update.
         /// </summary>
-        public TokenIdentifier Token { get; set; }
+        public Address Token { get; set; }
         /// <summary>
         /// The treasury account holding the reserve balance of tokens.
         /// </summary>
@@ -59,6 +59,33 @@ namespace Hashgraph
         /// the new Symbol.  The new symbol must not already be in use.
         /// </summary>
         public string Symbol { get; set; }
+        /// <summary>
+        /// If specified, replaces the current name of this token with
+        /// the new name. The new name must not already be in use.
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// If specified, changes to expiration new date, fees will be charged as appropriate.
+        /// </summary>
+        public DateTime? Expiration { get; set; }
+        /// <summary>
+        /// If specified, update the interval of the topic and auto-renewal period. If
+        /// the associated renewal account does not have sufficient funds to 
+        /// renew at the expiration time, it will be renewed for a period 
+        /// of time the remaining funds can support.  If no funds remain, the
+        /// topic instance will be deleted.
+        /// </summary>
+        public TimeSpan? RenewPeriod { get; internal set; }
+        /// <summary>
+        /// If specified updates the address of the account supporting the auto 
+        /// renewal of the token at expiration time.  The topic lifetime will be
+        /// extended by the RenewPeriod at expiration time if this account
+        /// contains sufficient funds.  The private key associated with
+        /// this account must sign the transaction if RenewAccount is
+        /// specified.  Setting the value to <code>Address.None</code> clears the
+        /// renewal account.
+        /// </summary>
+        public Address? RenewAccount { get; set; }
         /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to update this token.  Typically matches the

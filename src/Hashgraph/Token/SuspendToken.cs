@@ -31,7 +31,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> SuspendTokenAsync(TokenIdentifier token, Address address, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> SuspendTokenAsync(Address token, Address address, Action<IContext>? configure = null)
         {
             return SuspendTokenImplementationAsync<TransactionReceipt>(token, address, null, configure);
         }
@@ -62,7 +62,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> SuspendTokenAsync(TokenIdentifier token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> SuspendTokenAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
             return SuspendTokenImplementationAsync<TransactionReceipt>(token, address, signatory, configure);
         }
@@ -89,7 +89,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> SuspendTokenWithRecordAsync(TokenIdentifier token, Address address, Action<IContext>? configure = null)
+        public Task<TransactionRecord> SuspendTokenWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
         {
             return SuspendTokenImplementationAsync<TransactionRecord>(token, address, null, configure);
         }
@@ -120,16 +120,16 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> SuspendTokenWithRecordAsync(TokenIdentifier token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionRecord> SuspendTokenWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
             return SuspendTokenImplementationAsync<TransactionRecord>(token, address, signatory, configure);
         }
         /// <summary>
         /// Internal implementation of delete token method.
         /// </summary>
-        private async Task<TResult> SuspendTokenImplementationAsync<TResult>(TokenIdentifier token, Address address, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> SuspendTokenImplementationAsync<TResult>(Address token, Address address, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
-            token = RequireInputParameter.TokenIdentifier(token);
+            token = RequireInputParameter.Token(token);
             address = RequireInputParameter.Address(address);
             await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
@@ -137,9 +137,9 @@ namespace Hashgraph
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
-            transactionBody.TokenFreeze = new TokenFreeze
+            transactionBody.TokenFreeze = new TokenFreezeAccountTransactionBody
             {
-                Token = new TokenRef(token),
+                Token = new TokenID(token),
                 Account = new AccountID(address)
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);

@@ -77,8 +77,6 @@ namespace Hashgraph
             {
                 Key = publicKey,
                 InitialBalance = createParameters.InitialBalance,
-                SendRecordThreshold = createParameters.SendThresholdCreateRecord,
-                ReceiveRecordThreshold = createParameters.ReceiveThresholdCreateRecord,
                 ReceiverSigRequired = createParameters.RequireReceiveSignature,
                 AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod),
                 ProxyAccountID = createParameters.Proxy is null ? null : new AccountID(createParameters.Proxy),

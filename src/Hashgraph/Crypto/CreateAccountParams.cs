@@ -21,34 +21,6 @@ namespace Hashgraph
         /// </summary>
         public ulong InitialBalance { get; set; }
         /// <summary>
-        /// Threshold in tinybars at which withdraws larger than
-        /// this value will automatically trigger the creation of a record 
-        /// for the transaction. This new account will be charged for the 
-        /// record creation.
-        /// </summary>
-        /// <remarks>
-        /// On might think that since the protocol allows the
-        /// maximum value for an unsigned 64 bit integer, however
-        /// the network will accept values not larger than what
-        /// a signed 64 bit integer can carry (9,223,372,036,854,775,807)
-        /// </remarks>
-        [Obsolete("The Send Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.")]
-        public ulong SendThresholdCreateRecord { get; set; } = ulong.MaxValue / 2;
-        /// <summary>
-        /// Threshold in tinybars at which deposits larger than
-        /// this value will automatically trigger the creation of a 
-        /// record for the transaction.  This new account will be charged
-        /// for the record creation.
-        /// </summary>
-        /// <remarks>
-        /// On might think that since the protocol allows the
-        /// maximum value for an unsigned 64 bit integer, however
-        /// the network will accept values not larger than what
-        /// a signed 64 bit integer can carry (9,223,372,036,854,775,807)
-        /// </remarks>
-        [Obsolete("The Receive Threshold Limit Functionality has been removed from the network and will be removed from this API in the next release.")]
-        public ulong ReceiveThresholdCreateRecord { get; set; } = ulong.MaxValue / 2;
-        /// <summary>
         /// When creating a new account: the newly created account must 
         /// sign any transaction transferring crypto into the newly 
         /// created account.

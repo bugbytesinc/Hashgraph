@@ -3,14 +3,14 @@
 namespace Hashgraph
 {
     /// <summary>
-    /// Represents a token transfer (Token (Address/Symbol), Account, Amount)
+    /// Represents a token transfer (Token, Account, Amount)
     /// </summary>
     public sealed class TokenTransfer : IEquatable<TokenTransfer>
     {
         /// <summary>
-        /// The Token (Address/Symbol) of the Token who's coins have transferred.
+        /// The Address of the Token who's coins have transferred.
         /// </summary>
-        public TokenIdentifier Token { get; private set; }
+        public Address Token { get; private set; }
         /// <summary>
         /// The Address receiving or sending the token's coins.
         /// </summary>
@@ -33,10 +33,10 @@ namespace Hashgraph
             Amount = 0;
         }
         /// <summary>
-        /// Public Constructor, an <code>TokenIdentifierTransfer</code> is immutable after creation.
+        /// Public Constructor, an <code>TokenTransfer</code> is immutable after creation.
         /// </summary>
         /// <param name="token">
-        /// The Token (Address/Symbol) of the Token who's coins have transferred.
+        /// The Address of the Token who's coins have transferred.
         /// </param>
         /// <param name="address">
         /// The Address receiving or sending the token's coins.
@@ -46,7 +46,7 @@ namespace Hashgraph
         /// indicate an outflow of coins to the <code>Account</code> positive
         /// values indicate an inflow of coins from the associated <code>Account</code>.
         /// </param>
-        public TokenTransfer(TokenIdentifier token, Address address, long amount)
+        internal TokenTransfer(Address token, Address address, long amount)
         {
             Token = token;
             Address = address;
@@ -56,11 +56,11 @@ namespace Hashgraph
         /// Equality implementation.
         /// </summary>
         /// <param name="other">
-        /// The other <code>TokenIdentifierTransfer</code> object to compare.
+        /// The other <code>TokenTransfer</code> object to compare.
         /// </param>
         /// <returns>
         /// True if the Token, Address and Amount are identical to the 
-        /// other <code>TokenIdentifierTransfer</code> object.
+        /// other <code>TokenTransfer</code> object.
         /// </returns>
         public bool Equals(TokenTransfer? other)
         {
@@ -77,13 +77,13 @@ namespace Hashgraph
         /// Equality implementation.
         /// </summary>
         /// <param name="obj">
-        /// The other <code>TokenIdentifierTransfer</code> object to compare (if it is
-        /// an <code>TokenIdentifierTransfer</code>).
+        /// The other <code>TokenTransfer</code> object to compare (if it is
+        /// an <code>TokenTransfer</code>).
         /// </param>
         /// <returns>
-        /// If the other object is an TokenIdentifierTransfer, then <code>True</code> 
+        /// If the other object is an TokenTransfer, then <code>True</code> 
         /// if the Token, Address and Amount are identical 
-        /// to the other <code>TokenIdentifierTransfer</code> object, otherwise 
+        /// to the other <code>TokenTransfer</code> object, otherwise 
         /// <code>False</code>.
         /// </returns>
         public override bool Equals(object? obj)
@@ -106,26 +106,26 @@ namespace Hashgraph
         /// Equality implementation.
         /// </summary>
         /// <returns>
-        /// A unique hash of the contents of this <code>TokenIdentifierTransfer</code> 
+        /// A unique hash of the contents of this <code>TokenTransfer</code> 
         /// object.  Only consistent within the current instance of 
         /// the application process.
         /// </returns>
         public override int GetHashCode()
         {
-            return $"TokenIdentifierTransfer:{Token.GetHashCode()}:{Address.GetHashCode()}:{Amount}".GetHashCode();
+            return $"TokenTransfer:{Token.GetHashCode()}:{Address.GetHashCode()}:{Amount}".GetHashCode();
         }
         /// <summary>
         /// Equals implementation.
         /// </summary>
         /// <param name="left">
-        /// Left hand <code>TokenIdentifierTransfer</code> argument.
+        /// Left hand <code>TokenTransfer</code> argument.
         /// </param>
         /// <param name="right">
-        /// Right hand <code>TokenIdentifierTransfer</code> argument.
+        /// Right hand <code>TokenTransfer</code> argument.
         /// </param>
         /// <returns>
         /// True if the Token, Address and Amount are identical
-        /// within each <code>TokenIdentifierTransfer</code> objects.
+        /// within each <code>TokenTransfer</code> objects.
         /// </returns>
         public static bool operator ==(TokenTransfer left, TokenTransfer right)
         {
@@ -139,14 +139,14 @@ namespace Hashgraph
         /// Not equals implementation.
         /// </summary>
         /// <param name="left">
-        /// Left hand <code>TokenIdentifierTransfer</code> argument.
+        /// Left hand <code>TokenTransfer</code> argument.
         /// </param>
         /// <param name="right">
-        /// Right hand <code>TokenIdentifierTransfer</code> argument.
+        /// Right hand <code>TokenTransfer</code> argument.
         /// </param>
         /// <returns>
         /// <code>False</code> if Token, Address and Amount 
-        /// are identical within each <code>TokenIdentifierTransfer</code> object.  
+        /// are identical within each <code>TokenTransfer</code> object.  
         /// <code>True</code> if they are not identical.
         /// </returns>
         public static bool operator !=(TokenTransfer left, TokenTransfer right)
@@ -154,9 +154,9 @@ namespace Hashgraph
             return !(left == right);
         }
         /// <summary>
-        /// Creates a new TokenIdentifierTransfer object representing a transfer
+        /// Creates a new TokenTransfer object representing a transfer
         /// of the sum of the coins identified by the transfer plus the
-        /// additional amount.  This creates a new <code>TokenIdentifierTransfer</code>
+        /// additional amount.  This creates a new <code>TokenTransfer</code>
         /// object.
         /// </summary>
         /// <param name="amount">The amount to add (or subtract if negative)

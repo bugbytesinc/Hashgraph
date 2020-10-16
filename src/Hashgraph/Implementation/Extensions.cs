@@ -18,5 +18,9 @@ namespace Hashgraph.Implementation
         {
             return address is null || address == Address.None;
         }
+        internal static bool IsNullOrNone([AllowNull] this Endorsement endorsement)
+        {
+            return endorsement is null || endorsement == Endorsement.None;
+        }
     }
 }

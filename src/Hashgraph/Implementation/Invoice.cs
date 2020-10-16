@@ -54,7 +54,7 @@ namespace Hashgraph.Implementation
                 _signatures.Add(key, pair);
             }
         }
-        internal Transaction GetSignedTransaction()
+        internal SignedTransaction GetSignedTransaction()
         {
             if (_signatures.Count == 0)
             {
@@ -65,7 +65,7 @@ namespace Hashgraph.Implementation
             {
                 signatures.SigPair.Add(signature);
             }
-            return new Transaction
+            return new SignedTransaction
             {
                 BodyBytes = ByteString.CopyFrom(_txBytes.Span),
                 SigMap = signatures

@@ -70,9 +70,9 @@ namespace Hashgraph
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
-            var updateTokenBody = new TokenManagement
+            var updateTokenBody = new TokenUpdateTransactionBody
             {
-                Token = new TokenRef(updateParameters.Token)
+                Token = new TokenID(updateParameters.Token)
             };
             if (!(updateParameters.Treasury is null))
             {
@@ -102,22 +102,22 @@ namespace Hashgraph
             {
                 updateTokenBody.Symbol = updateParameters.Symbol;
             }
-            //if (!string.IsNullOrWhiteSpace(updateParameters.Name))
-            //{
-            //    updateTokenBody.Name = updateParameters.Name;
-            //}
-            //if (updateParameters.Expiration.HasValue)
-            //{
-            //    updateTokenBody.Expiry = (ulong)Epoch.FromDate(updateParameters.Expiration.Value).seconds;
-            //}
-            //if (updateParameters.RenewPeriod.HasValue)
-            //{
-            //    updateTokenBody.AutoRenewPeriod = (ulong)updateParameters.RenewPeriod.Value.TotalSeconds;
-            //}
-            //if (!(updateParameters.RenewAccount is null))
-            //{
-            //    updateTokenBody.AutoRenewAccount = new AccountID(updateParameters.RenewAccount);
-            //}
+            if (!string.IsNullOrWhiteSpace(updateParameters.Name))
+            {
+                updateTokenBody.Name = updateParameters.Name;
+            }
+            if (updateParameters.Expiration.HasValue)
+            {
+                updateTokenBody.Expiry = (ulong)Epoch.FromDate(updateParameters.Expiration.Value).seconds;
+            }
+            if (updateParameters.RenewPeriod.HasValue)
+            {
+                updateTokenBody.AutoRenewPeriod = (ulong)updateParameters.RenewPeriod.Value.TotalSeconds;
+            }
+            if (!(updateParameters.RenewAccount is null))
+            {
+                updateTokenBody.AutoRenewAccount = new AccountID(updateParameters.RenewAccount);
+            }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.TokenUpdate = updateTokenBody;

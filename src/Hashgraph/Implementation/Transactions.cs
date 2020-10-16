@@ -84,27 +84,30 @@ namespace Hashgraph
             }
             return transfers;
         }
-        internal static TokenTransfers CreateTokenTransfers(Address fromAccount, Address toAccount, TokenIdentifier token, long amount)
+        internal static TokenTransfersTransactionBody CreateTokenTransfers(Address fromAccount, Address toAccount, Address token, long amount)
         {
-            var transfers = new TokenTransfers();
-            transfers.Transfers.Add(new Proto.TokenTransfer
+            var transactions = new TokenTransfersTransactionBody();
+            var xferList = new TokenTransferList
             {
-                Token = new TokenRef(token),
-                Account = new AccountID(fromAccount),
+                Token = new TokenID(token)
+            };
+            xferList.Transfers.Add(new AccountAmount
+            {
+                AccountID = new AccountID(fromAccount),
                 Amount = -amount
             });
-            transfers.Transfers.Add(new Proto.TokenTransfer
+            xferList.Transfers.Add(new AccountAmount
             {
-                Token = new TokenRef(token),
-                Account = new AccountID(toAccount),
+                AccountID = new AccountID(toAccount),
                 Amount = amount
             });
-            return transfers;
+            transactions.TokenTransfers.Add(xferList);
+            return transactions;
         }
 
-        internal static TokenTransfers CreateTokenTransfers(IEnumerable<TokenTransfer> list)
+        internal static TokenTransfersTransactionBody CreateTokenTransfers(IEnumerable<TokenTransfer> list)
         {
-            var tokenTransfers = new TokenTransfers();
+            var transactions = new TokenTransfersTransactionBody();
             foreach (var tokenGroup in list.GroupBy(txfer => txfer.Token))
             {
                 var netTransfers = new Dictionary<Address, long>();
@@ -119,20 +122,27 @@ namespace Hashgraph
                         netTransfers[tokenTransfer.Address] = tokenTransfer.Amount;
                     }
                 }
+                var xferList = new TokenTransferList
+                {
+                    Token = new TokenID(tokenGroup.Key)
+                };
                 foreach (var netTransfer in netTransfers)
                 {
                     if (netTransfer.Value != 0)
                     {
-                        tokenTransfers.Transfers.Add(new Proto.TokenTransfer
+                        xferList.Transfers.Add(new AccountAmount
                         {
-                            Token = new TokenRef(tokenGroup.Key),
-                            Account = new AccountID(netTransfer.Key),
+                            AccountID = new AccountID(netTransfer.Key),
                             Amount = netTransfer.Value
                         });
                     }
                 }
+                if (xferList.Transfers.Count > 0)
+                {
+                    transactions.TokenTransfers.Add(xferList);
+                }
             }
-            return tokenTransfers;
+            return transactions;
         }
         internal static TransactionBody CreateTransactionBody(GossipContextStack context, TransactionID transactionId)
         {
@@ -149,7 +159,7 @@ namespace Hashgraph
         {
             return new QueryHeader
             {
-                Payment = new Transaction { BodyBytes = ByteString.Empty },
+                Payment = new Transaction { SignedTransactionBytes = ByteString.Empty },
                 ResponseType = ResponseType.CostAnswer
             };
         }
@@ -174,11 +184,14 @@ namespace Hashgraph
                 Payment = await SignTransactionAsync(transactionBody, signatory)
             };
         }
-        internal static async Task<Proto.Transaction> SignTransactionAsync(TransactionBody transactionBody, ISignatory signatory)
+        internal static async Task<Transaction> SignTransactionAsync(TransactionBody transactionBody, ISignatory signatory)
         {
             var invoice = new Invoice(transactionBody);
             await signatory.SignAsync(invoice);
-            return invoice.GetSignedTransaction();
+            return new Transaction
+            {
+                SignedTransactionBytes = invoice.GetSignedTransaction().ToByteString()
+            };          
         }
         internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
         {
@@ -284,7 +297,8 @@ namespace Hashgraph
                     // performance or grpc connection issues already.
                     if (transaction != null)
                     {
-                        var transactionBody = TransactionBody.Parser.ParseFrom(transaction.BodyBytes);
+                        var signedTransaction = SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
+                        var transactionBody = TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
                         var transactionId = transactionBody.TransactionID;
                         var query = new Query
                         {

@@ -37,6 +37,6 @@ namespace Hashgraph
         /// A list token transfers to and from accounts associated with
         /// the record represented by this transaction.
         /// </summary>
-        public ReadOnlyCollection<TokenAddressTransfer> TokenTransfers { get; internal set; }
+        public ReadOnlyCollection<TokenTransfer> TokenTransfers { get; internal set; }
     }
 }
