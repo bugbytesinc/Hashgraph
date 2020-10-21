@@ -39,6 +39,7 @@ steps:
     nobuild: true
     arguments: '--configuration $(buildConfiguration) --no-build --verbosity detailed'
     publishTestResults: true
+    timeoutInMinutes: 360
   env:
     'network:address': $(test:network:address)
     'network:port': $(test:network:port)
