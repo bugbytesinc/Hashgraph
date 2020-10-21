@@ -33,13 +33,13 @@ steps:
 
 - task: DotNetCoreCLI@2
   displayName: Run Automated Tests  
+  timeoutInMinutes: 360
   inputs:
     command: test
     projects: 'test/**/*.csproj'
     nobuild: true
     arguments: '--configuration $(buildConfiguration) --no-build --verbosity detailed'
     publishTestResults: true
-    timeoutInMinutes: 360
   env:
     'network:address': $(test:network:address)
     'network:port': $(test:network:port)
