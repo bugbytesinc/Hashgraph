@@ -12,62 +12,64 @@
 #  test:account:publicKey:         Public Key of test account making requests of the network, encoded in Hex (last 32 bytes)
 #  test:account:privateKey:        Private Key of test account making requests of the network, encoded in Hex
 
-timeoutInMinutes: 360
-steps:
-- task: DotNetCoreInstaller@0
-  displayName: 'Ensure .Net Core 3.1'  
-  inputs:
-    version: '3.1.100'
+jobs:
+  - job: primary
+    timeoutInMinutes: 360
+    steps:
+    - task: DotNetCoreInstaller@0
+      displayName: 'Ensure .Net Core 3.1'  
+      inputs:
+        version: '3.1.100'
 
-- task: DotNetCoreCLI@2
-  displayName: Restore Dependencies  
-  inputs:
-    command: restore
-    projects: '**/*.csproj'
+    - task: DotNetCoreCLI@2
+      displayName: Restore Dependencies  
+      inputs:
+        command: restore
+        projects: '**/*.csproj'
 
-- task: DotNetCoreCLI@2
-  displayName: Build Projects  
-  inputs:
-    command: build
-    projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: Build Projects  
+      inputs:
+        command: build
+        projects: '**/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'
 
-- task: DotNetCoreCLI@2
-  displayName: Run Automated Tests  
-  inputs:
-    command: test
-    projects: 'test/**/*.csproj'
-    nobuild: true
-    arguments: '--configuration $(buildConfiguration) --no-build --verbosity detailed'
-    publishTestResults: true
-  env:
-    'network:address': $(test:network:address)
-    'network:port': $(test:network:port)
-    'server:number': $(test:server:number)
-    'account:number': $(test:account:number)
-    'account:publicKey': $(test:account:publicKey)
-    'account:privateKey': $(test:account:privateKey)
-    'mirror:address': $(test:mirror:address)
-    'mirror:port': $(test:mirror:port)
+    - task: DotNetCoreCLI@2
+      displayName: Run Automated Tests  
+      inputs:
+        command: test
+        projects: 'test/**/*.csproj'
+        nobuild: true
+        arguments: '--configuration $(buildConfiguration) --no-build --verbosity detailed'
+        publishTestResults: true
+      env:
+        'network:address': $(test:network:address)
+        'network:port': $(test:network:port)
+        'server:number': $(test:server:number)
+        'account:number': $(test:account:number)
+        'account:publicKey': $(test:account:publicKey)
+        'account:privateKey': $(test:account:privateKey)
+        'mirror:address': $(test:mirror:address)
+        'mirror:port': $(test:mirror:port)
 
-- task: DotNetCoreCLI@2
-  displayName: Create NuGet Packages  
-  inputs:
-    command: pack
-    projects: src/**/*.csproj
-    nobuild: true
-    arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    - task: DotNetCoreCLI@2
+      displayName: Create NuGet Packages  
+      inputs:
+        command: pack
+        projects: src/**/*.csproj
+        nobuild: true
+        arguments: '--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
 
-- task: PublishBuildArtifacts@1  
-  displayName: Save Package Artifacts  
-  inputs:
-    artifactName: packages
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1  
+      displayName: Save Package Artifacts  
+      inputs:
+        artifactName: packages
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
 
-- task: NuGetCommand@2
-  displayName: Publish NugGet Packages  
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), not(eq('n/a',coalesce(variables['nugetConnection'],'n/a'))))
-  inputs:
-    command: push
-    nuGetFeedType: external
-    publishFeedCredentials: $(nugetConnection)
+    - task: NuGetCommand@2
+      displayName: Publish NugGet Packages  
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), not(eq('n/a',coalesce(variables['nugetConnection'],'n/a'))))
+      inputs:
+        command: push
+        nuGetFeedType: external
+        publishFeedCredentials: $(nugetConnection)
