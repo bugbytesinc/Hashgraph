@@ -12,6 +12,7 @@
 #  test:account:publicKey:         Public Key of test account making requests of the network, encoded in Hex (last 32 bytes)
 #  test:account:privateKey:        Private Key of test account making requests of the network, encoded in Hex
 
+timeoutInMinutes: 360
 steps:
 - task: DotNetCoreInstaller@0
   displayName: 'Ensure .Net Core 3.1'  
@@ -33,7 +34,6 @@ steps:
 
 - task: DotNetCoreCLI@2
   displayName: Run Automated Tests  
-  timeoutInMinutes: 360
   inputs:
     command: test
     projects: 'test/**/*.csproj'
