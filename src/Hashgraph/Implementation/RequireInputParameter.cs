@@ -542,7 +542,7 @@ namespace Hashgraph.Implementation
             }
             if (createParameters.Expiration < DateTime.UtcNow)
             {
-                throw new ArgumentOutOfRangeException(nameof(createParameters.Treasury), "The expiration time must be in the future.");
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Expiration), "The expiration time must be in the future.");
             }
             if (createParameters.RenewAccount.IsNullOrNone() ^ createParameters.RenewPeriod.Ticks <= 0)
             {

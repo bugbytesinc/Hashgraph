@@ -10,7 +10,6 @@ namespace Hashgraph
     {
         /// <summary>
         /// Revokes KYC status from the associated account's relating to the specified token.
-        /// receive the specified token.
         /// </summary>
         /// <param name="token">
         /// The identifier (Address/Symbol) of the token to revoke KYC status.

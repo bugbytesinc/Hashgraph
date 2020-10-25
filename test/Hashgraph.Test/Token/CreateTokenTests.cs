@@ -551,6 +551,19 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
             Assert.StartsWith("Unable to create Token, status: InvalidSignature", tex.Message);
         }
+        [Fact(DisplayName = "Create Token: Expiration time in Past Raises Error")]
+        public async Task ExpirationTimeInPastRaisesError()
+        {
+            var aoe = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            {
+                await TestToken.CreateAsync(_network, fx =>
+                {
+                    fx.Params.Expiration = DateTime.UtcNow.AddDays(-5);
+                });
+            });
+            Assert.Equal("Expiration", aoe.ParamName);
+            Assert.StartsWith("The expiration time must be in the future.", aoe.Message);
+        }
         [Fact(DisplayName = "Create Token: Only Admin, Treasury and Renew Account Keys are Requied")]
         public async Task OnlyAdminTreasuryAndRenewAccountKeysAreRequied()
         {
@@ -675,6 +688,47 @@ namespace Hashgraph.Test.Token
             Assert.Single(treasury.Tokens);
             Assert.Equal(fxToken.Params.Circulation, treasury.Tokens[fxToken]);
             Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
+        }
+        [Fact(DisplayName = "Create Token: Can Create without Renewal Information")]
+        public async Task CanCreateWithoutRenewalInformation()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network, fx=> {
+                fx.Params.RenewAccount = null;
+                fx.Params.RenewPeriod = default;
+            });
+            Assert.NotNull(fxToken.Record);
+            Assert.NotNull(fxToken.Record.Token);
+            Assert.True(fxToken.Record.Token.AccountNum > 0);
+            Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.Params.Name, info.Name);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(TimeSpan.FromSeconds(0), info.RenewPeriod);
+            Assert.Null(info.RenewAccount);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.False(info.Deleted);
+
+            var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
+            Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
+            Assert.Single(treasury.Tokens);
+
+            var tokens = treasury.Tokens[0];
+            Assert.Equal(fxToken.Record.Token, tokens.Token);
+            Assert.Equal(fxToken.Params.Symbol, tokens.Symbol);
+            Assert.Equal(fxToken.Params.Circulation, tokens.Balance);
+            Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
         }
     }
 }

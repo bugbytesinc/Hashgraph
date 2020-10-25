@@ -29,7 +29,7 @@ namespace Hashgraph
     public sealed class CreateTokenParams
     {
         /// <summary>
-        /// Name of the token, only ASCII characters are allowed, must be globally unique.
+        /// Name of the token, only ASCII characters are allowed, not required to be globally unique.
         /// </summary>
         public string Name { get; set; }
         /// <summary>
@@ -92,7 +92,7 @@ namespace Hashgraph
         /// of time the remaining funds can support.  If no funds remain, the
         /// topic instance will be deleted.
         /// </summary>
-        public TimeSpan RenewPeriod { get; internal set; } = TimeSpan.FromDays(90);
+        public TimeSpan RenewPeriod { get; set; }
         /// <summary>
         /// Optional address of the account supporting the auto renewal of 
         /// the token at expiration time.  The topic lifetime will be
