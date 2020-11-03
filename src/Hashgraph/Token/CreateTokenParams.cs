@@ -37,9 +37,9 @@ namespace Hashgraph
         /// </summary>
         public string Symbol { get; set; }
         /// <summary>
-        /// The initial number of whole tokens to placed into the token treasury
-        /// account upon creation of the token.  The Treasury will be given units 
-        /// in the smallest denomination <code>(Circulation * 10 ^ Decimals)</code>.
+        /// The initial number of tokens to placed into the token treasury
+        /// account upon creation of the token (specified in the smallest 
+        /// unit). The Treasury receivie the initial circulation.
         /// </summary>
         public ulong Circulation { get; set; }
         /// <summary>

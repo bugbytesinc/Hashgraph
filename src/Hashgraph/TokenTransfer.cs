@@ -46,7 +46,7 @@ namespace Hashgraph
         /// indicate an outflow of coins to the <code>Account</code> positive
         /// values indicate an inflow of coins from the associated <code>Account</code>.
         /// </param>
-        internal TokenTransfer(Address token, Address address, long amount)
+        public TokenTransfer(Address token, Address address, long amount)
         {
             Token = token;
             Address = address;
