@@ -30,7 +30,8 @@ namespace Hashgraph.Test.Contract
                 Contract = fx.ContractRecord.Contract,
                 Expiration = newExpiration,
                 Administrator = newEndorsement,
-                Memo = newMemo
+                Memo = newMemo,
+                Signatory = fx.PrivateKey
             });
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
@@ -96,7 +97,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractRecord.Contract, info.Contract);
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(newExpiration, info.Expiration);
-            Assert.Equal(_network.PublicKey, info.Administrator);
+            Assert.Equal(fx.PublicKey, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
@@ -108,7 +109,7 @@ namespace Hashgraph.Test.Contract
             await using var fx = await GreetingContract.CreateAsync(_network);
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             var newEndorsement = new Endorsement(newPublicKey);
-            var updatedSignatory = new Signatory(_network.Signatory, newPrivateKey);
+            var updatedSignatory = new Signatory(_network.Signatory, fx.PrivateKey, newPrivateKey);
             fx.Client.Configure(ctx => ctx.Signatory = updatedSignatory);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
@@ -158,7 +159,8 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Memo = newMemo
+                Memo = newMemo,
+                Signatory = fx.PrivateKey
             });
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
@@ -177,7 +179,8 @@ namespace Hashgraph.Test.Contract
             var receipt = await fx.Client.UpdateContractAsync(new UpdateContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Memo = newMemo
+                Memo = newMemo,
+                Signatory = fx.PrivateKey
             });
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
@@ -191,14 +194,15 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Contract Update: Updating an immutable contract raises error.")]
         public async Task UpdatingImmutableContractRaisesError()
         {
-            await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.ContractParams.Administrator = null;
-            await fx.CompleteCreateAsync();
+            await using var fxContract = await GreetingContract.CreateAsync(_network, fx =>
+            {
+                fx.ContractParams.Administrator = null;
+            });
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
-                    Contract = fx.ContractRecord.Contract,
+                    Contract = fxContract.ContractRecord.Contract,
                     Memo = Generator.Code(50)
                 });
             });
@@ -209,10 +213,11 @@ namespace Hashgraph.Test.Contract
         public async Task UpdatingContractWithoutAdminKeyRaisesError()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.ContractParams.Administrator = publicKey;
-            fx.Client.Configure(ctx => ctx.Signatory = new Signatory(ctx.Signatory, privateKey));
-            await fx.CompleteCreateAsync();
+            await using var fx = await GreetingContract.CreateAsync(_network, ctx =>
+            {
+                ctx.ContractParams.Administrator = publicKey;
+                ctx.Client.Configure(ctx => ctx.Signatory = new Signatory(ctx.Signatory, privateKey));
+            });
             // First, Remove admin key from Payer's Account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {

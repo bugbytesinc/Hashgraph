@@ -1,5 +1,7 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Extensions;
+using Hashgraph.Test.Fixtures;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -353,6 +355,44 @@ namespace Hashgraph.Test.Token
             });
             Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
             Assert.StartsWith("Unable to Dissociate Token from Account, status: TokenNotAssociatedToAccount", tex.Message);
+        }
+        [Fact(DisplayName = "Dissociate Tokens: Can Dissociate token from Contract Consent")]
+        public async Task CanDissociateTokenFromContract()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+            var xferAmount = 2 * fxToken.Params.Circulation / 3;
+
+            var receipt = await fxContract.Client.AssociateTokenAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var info = await fxAccount.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+
+            var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+            Assert.NotNull(association);
+            Assert.Equal(fxToken.Record.Token, association.Token);
+            Assert.Equal(fxToken.Params.Symbol, association.Symbol);
+            Assert.Equal(0UL, association.Balance);
+            Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+
+            receipt = await fxContract.Client.DissociateTokenAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            info = await fxAccount.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Null(info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token));
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
+            });
+            Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
+            Assert.StartsWith("Unable to execute token transfers, status: TokenNotAssociatedToAccount", tex.Message);
+
+            Assert.Equal(0UL, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
         }
     }
 }

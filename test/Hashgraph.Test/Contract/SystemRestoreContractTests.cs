@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -26,7 +25,7 @@ namespace Hashgraph.Test.Contract
             }
 
             await using var fx = await GreetingContract.CreateAsync(_network);
-            await fx.Client.DeleteContractAsync(fx, _network.Payer);
+            await fx.Client.DeleteContractAsync(fx, _network.Payer, fx.PrivateKey);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {

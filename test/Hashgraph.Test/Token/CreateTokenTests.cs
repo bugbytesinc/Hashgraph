@@ -162,13 +162,14 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
             Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", tex.Message);
         }
-        [Fact(DisplayName = "Create Token: Can Set Treasury to Node Contract Account")]
+        [Fact(DisplayName = "Create Token: Can Set Treasury to Contract Account")]
         public async Task CanSetTreasuryToNodeContractAccount()
         {
             var fxContract = await GreetingContract.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
                 fx.Params.Treasury = fxContract.ContractRecord.Contract;
+                fx.Params.Signatory = new Signatory(fx.AdminPrivateKey, fx.RenewAccount.PrivateKey, fxContract.PrivateKey);
             });
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
@@ -664,6 +665,7 @@ namespace Hashgraph.Test.Token
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
                 fx.Params.Treasury = fxContract.ContractRecord.Contract;
+                fx.Params.Signatory = new Signatory(fx.AdminPrivateKey, fxContract.PrivateKey, fx.RenewAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 

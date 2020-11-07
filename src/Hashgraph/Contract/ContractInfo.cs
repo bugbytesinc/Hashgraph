@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
 using System;
+using System.Collections.ObjectModel;
 
 namespace Hashgraph
 {
@@ -53,9 +54,16 @@ namespace Hashgraph
         /// </summary>
         public string Memo { get; internal set; }
         /// <summary>
-        /// Contract's Account Balance in Tinybars
+        /// Contract's Account's Crypto Balance in Tinybars
         /// </summary>
         public ulong Balance { get; internal set; }
-
+        /// <summary>
+        /// Balances of tokens associated with this account.
+        /// </summary>
+        public ReadOnlyCollection<TokenBalance> Tokens { get; internal set; }
+        /// <summary>
+        /// <code>True</code> if this contract has been deleted.
+        /// </summary>
+        public bool Deleted { get; internal set; }
     }
 }

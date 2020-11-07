@@ -304,14 +304,16 @@ namespace Hashgraph
         /// Internal implementation for Multi Account Transfer Crypto.
         /// Returns either a receipt or record or throws an exception.
         /// </summary>
-        private async Task<TResult> TransferTokenImplementationAsync<TResult>(TokenTransfersTransactionBody transfers, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> TransferTokenImplementationAsync<TResult>(IEnumerable<TokenTransferList> transfers, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
             await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
-            transactionBody.TokenTransfers = transfers;
+            var cryptoTransferTransactionBody = new CryptoTransferTransactionBody();
+            cryptoTransferTransactionBody.TokenTransfers.AddRange(transfers);
+            transactionBody.CryptoTransfer = cryptoTransferTransactionBody;
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck);
@@ -334,8 +336,8 @@ namespace Hashgraph
 
             static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
             {
-                var client = new TokenService.TokenServiceClient(channel);
-                return async (Transaction request) => await client.transferTokensAsync(request);
+                var client = new CryptoService.CryptoServiceClient(channel);
+                return async (Transaction request) => await client.cryptoTransferAsync(request);
             }
 
             static ResponseCodeEnum getResponseCode(TransactionResponse response)

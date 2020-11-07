@@ -322,8 +322,8 @@ namespace Hashgraph.Test.Crypto
             {
                 await fx1.Client.TransferAsync(fx1.Record.Address, fx2.Record.Topic, transferAmount);
             });
-            Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Status);
-            Assert.StartsWith("Unable to execute crypto transfer, status: AccountIdDoesNotExist", tex.Message);
+            Assert.Equal(ResponseCode.FailInvalid, tex.Status);
+            Assert.StartsWith("Unable to execute crypto transfer, status: FailInvalid", tex.Message);
         }
         [Fact(DisplayName = "Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception")]
         public async Task InsufficientFeeExceptionIncludesRequiredFee()

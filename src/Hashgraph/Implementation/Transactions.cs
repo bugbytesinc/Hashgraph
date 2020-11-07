@@ -84,9 +84,9 @@ namespace Hashgraph
             }
             return transfers;
         }
-        internal static TokenTransfersTransactionBody CreateTokenTransfers(Address fromAccount, Address toAccount, Address token, long amount)
+        internal static IEnumerable<TokenTransferList> CreateTokenTransfers(Address fromAccount, Address toAccount, Address token, long amount)
         {
-            var transactions = new TokenTransfersTransactionBody();
+            var transactions = new List<TokenTransferList>();
             var xferList = new TokenTransferList
             {
                 Token = new TokenID(token)
@@ -101,13 +101,13 @@ namespace Hashgraph
                 AccountID = new AccountID(toAccount),
                 Amount = amount
             });
-            transactions.TokenTransfers.Add(xferList);
+            transactions.Add(xferList);
             return transactions;
         }
 
-        internal static TokenTransfersTransactionBody CreateTokenTransfers(IEnumerable<TokenTransfer> list)
+        internal static IEnumerable<TokenTransferList> CreateTokenTransfers(IEnumerable<TokenTransfer> list)
         {
-            var transactions = new TokenTransfersTransactionBody();
+            var transactions = new List<TokenTransferList>();
             foreach (var tokenGroup in list.GroupBy(txfer => txfer.Token))
             {
                 var netTransfers = new Dictionary<Address, long>();
@@ -139,7 +139,7 @@ namespace Hashgraph
                 }
                 if (xferList.Transfers.Count > 0)
                 {
-                    transactions.TokenTransfers.Add(xferList);
+                    transactions.Add(xferList);
                 }
             }
             return transactions;

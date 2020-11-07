@@ -18,7 +18,9 @@
                         RenewPeriod = AutoRenewPeriod.ToTimeSpan(),
                         Size = Storage,
                         Memo = Memo,
-                        Balance = Balance
+                        Balance = Balance,
+                        Tokens = TokenRelationships.ToBalances(),
+                        Deleted = Deleted
                     };
                 }
             }

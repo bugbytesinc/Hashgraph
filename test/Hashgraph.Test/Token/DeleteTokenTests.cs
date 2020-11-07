@@ -269,5 +269,19 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
         }
+        [Fact(DisplayName = "Token Delete: Can Delete Treasury after Deleting Token")]
+        public async Task CanDeleteTreasuryAfterDeletingToken()
+        {
+            await using var fx = await TestToken.CreateAsync(_network);
+
+            var record = await fx.Client.DeleteTokenAsync(fx.Record.Token, fx.AdminPrivateKey);
+            Assert.Equal(ResponseCode.Success, record.Status);
+
+            var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
+            Assert.True(info.Deleted);
+
+            var receipt = await fx.Client.DeleteAccountAsync(fx.TreasuryAccount.Record.Address, _network.Payer, fx.TreasuryAccount.PrivateKey);
+            Assert.Equal(ResponseCode.Success, record.Status);
+        }
     }
 }

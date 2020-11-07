@@ -16,9 +16,9 @@ namespace Hashgraph.Test.Fixtures
         public static async Task<TestAccount> CreateAsync(NetworkCredentials networkCredentials, Action<TestAccount> customize = null)
         {
             var fx = new TestAccount();
-            fx.Network = networkCredentials;
-            fx.Network.Output?.WriteLine("STARTING SETUP: Test Account Instance");
+            networkCredentials.Output?.WriteLine("STARTING SETUP: Test Account Instance");
             (fx.PublicKey, fx.PrivateKey) = Generator.KeyPair();
+            fx.Network = networkCredentials;
             fx.Client = networkCredentials.NewClient();
             fx.CreateParams = new CreateAccountParams
             {

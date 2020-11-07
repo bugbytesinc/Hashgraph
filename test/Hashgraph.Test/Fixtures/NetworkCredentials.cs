@@ -108,7 +108,8 @@ namespace Hashgraph.Test.Fixtures
                     {
                         var transactionBody = Proto.TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
                         Output.WriteLine($"{DateTime.UtcNow}  QX PYMT  {JsonFormatter.Default.Format(transactionBody)}");
-                        Output.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
+                        Output.WriteLine($"{DateTime.UtcNow}  ├─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
+                        Output.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(query)}");
                     }
                 }
                 else if (message is Com.Hedera.Mirror.Api.Proto.ConsensusTopicQuery)
@@ -146,7 +147,9 @@ namespace Hashgraph.Test.Fixtures
                     payment = query.ContractGetBytecode?.Header?.Payment;
                     break;
                 case Query.QueryOneofCase.ContractGetRecords:
+#pragma warning disable CS0612 // Type or member is obsolete
                     payment = query.ContractGetRecords?.Header?.Payment;
+#pragma warning restore CS0612 // Type or member is obsolete
                     break;
                 case Query.QueryOneofCase.CryptogetAccountBalance:
                     payment = query.CryptogetAccountBalance?.Header?.Payment;
@@ -183,7 +186,7 @@ namespace Hashgraph.Test.Fixtures
         }
         public async Task<Address> GetSystemAccountAddress()
         {
-            if(_systemAccountAddress is null)
+            if (_systemAccountAddress is null)
             {
                 _systemAccountAddress = await GetSpecialAccount(new Address(0, 0, 50));
             }
@@ -215,7 +218,7 @@ namespace Hashgraph.Test.Fixtures
         }
         private async Task<Address> GetSpecialAccount(Address address)
         {
-            await using var client = NewClient();            
+            await using var client = NewClient();
             try
             {
                 if (await client.GetAccountBalanceAsync(address) < 30_00_000_000)

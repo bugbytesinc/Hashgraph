@@ -20,7 +20,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, ctx => ctx.Signatory = new Signatory(_network.PrivateKey, fx.PrivateKey));
             Assert.Equal(ResponseCode.Success, record.Status);
         }
         [Fact(DisplayName = "Contract Delete: Can Call Delete without Error using Signatory")]
@@ -28,7 +28,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, _network.PrivateKey, ctx => ctx.Signatory = null);
+            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
         }
         [Fact(DisplayName = "Contract Delete: Deleting contract removes it (get info should fail).")]
@@ -36,7 +36,7 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -51,12 +51,12 @@ namespace Hashgraph.Test.Contract
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
 
-            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+            var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+                await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
             });
             Assert.Equal(ResponseCode.ContractDeleted, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: ContractDeleted", pex.Message);
@@ -64,21 +64,14 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Contract Delete: Deleting without admin key raises error.")]
         public async Task DeleteContractWithoutAdminKeyRaisesError()
         {
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.ContractParams.Administrator = publicKey;  // Default is to use Payor's
-            fx.Client.Configure(ctx => ctx.Signatory = new Signatory(ctx.Signatory, privateKey));
-            await fx.CompleteCreateAsync();
-
-            await using (var client = _network.NewClient())  // Will not have private key
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+            await using var client = _network.NewClient();
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-                {
-                    await client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
-                });
-                Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
-                Assert.StartsWith("Unable to delete contract, status: InvalidSignature", tex.Message);
-            }
+                await client.DeleteContractAsync(fxContract.ContractRecord.Contract, _network.Payer);
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.StartsWith("Unable to delete contract, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Contract Delete: Deleting with an invalid contract ID raises Error.")]
         public async Task DeleteContractWithInvalidContractIDRaisesError()
@@ -125,7 +118,7 @@ namespace Hashgraph.Test.Contract
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, fx2.Record.Address);
+                await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, fx2.Record.Address, fx.PrivateKey);
             });
             Assert.Equal(ResponseCode.AccountDeleted, tex.Status);
             Assert.StartsWith("Unable to delete contract, status: AccountDeleted", tex.Message);
@@ -153,7 +146,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fxContract.ContractParams.InitialBalance, contractBalanceBefore.CallResult.Result.As<long>());
 
             // Delete the Contract, returning contract balance to Account
-            var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount.Record.Address);
+            var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount.Record.Address, fxContract.PrivateKey);
             Assert.Equal(ResponseCode.Success, deleteContractRecord.Status);
 
             // Check the balance of account to see if it went up by contract's balance.
@@ -163,21 +156,20 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Contract Delete: Deleting an Imutable Contract Raises Error")]
         public async Task DeleteImutableContractRaisesError()
         {
-            await using var fx = await GreetingContract.CreateAsync(_network);
-            fx.ContractParams.Administrator = null;
-            await fx.CompleteCreateAsync();
+            await using var fxContract = await GreetingContract.CreateAsync(_network, fx =>
+            {
+                fx.ContractParams.Administrator = null;
+            });
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+                await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, _network.Payer);
             });
             Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
             Assert.StartsWith("Unable to delete contract, status: ModifyingImmutableContract", tex.Message);
 
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
             Assert.NotNull(info);
         }
     }
 }
-
-

@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Extensions;
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,9 +22,6 @@ namespace Hashgraph.Test.Token
             await using var fxToken = await TestToken.CreateAsync(_network);
             await using var fxTemplate = await TestToken.CreateAsync(_network);
 
-            // It looks like changing the treasury requires the receiving account to be
-            // associated first, since it still has to sign the update transaction anyway,
-            // this seems unecessary.
             await fxTemplate.TreasuryAccount.Client.AssociateTokenAsync(fxToken, fxTemplate.TreasuryAccount, fxTemplate.TreasuryAccount);
 
             var newSymbol = Generator.UppercaseAlphaCode(20);
@@ -147,7 +145,7 @@ namespace Hashgraph.Test.Token
             {
                 Token = fxToken.Record.Token,
                 Treasury = fxAccount.Record.Address,
-                Signatory = fxToken.AdminPrivateKey
+                Signatory = new Signatory(fxToken.AdminPrivateKey, fxAccount.PrivateKey)
             };
 
             var receipt = await fxToken.Client.UpdateTokenAsync(updateParams);
@@ -695,6 +693,134 @@ namespace Hashgraph.Test.Token
             });
             Assert.Equal(ResponseCode.TokenIsImmutable, tex.Status);
             Assert.StartsWith("Unable to update Token, status: TokenIsImmutable", tex.Message);
+        }
+        [Fact(DisplayName = "Update Token: Updating the Treasury Without Signing Raises Error")]
+        public async Task UpdatingTheTreasuryWithoutSigningRaisesError()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
+
+            var updateParams = new UpdateTokenParams
+            {
+                Token = fxToken.Record.Token,
+                Treasury = fxAccount.Record.Address,
+                Signatory = fxToken.AdminPrivateKey
+            };
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.UpdateTokenAsync(updateParams);
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.StartsWith("Unable to update Token, status: InvalidSignature", tex.Message);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.Params.Name, info.Name);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.False(info.Deleted);
+
+            Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+            Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+        }
+
+        [Fact(DisplayName = "Update Token: Updating the Treasury Without Signing Without Admin Key Raises Error")]
+        public async Task UpdatingTheTreasuryWithoutSigningWithoutAdminKeyRaisesError()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
+
+            var updateParams = new UpdateTokenParams
+            {
+                Token = fxToken.Record.Token,
+                Treasury = fxAccount.Record.Address,
+                Signatory = fxAccount.PrivateKey
+            };
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.UpdateTokenAsync(updateParams);
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.StartsWith("Unable to update Token, status: InvalidSignature", tex.Message);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.Params.Name, info.Name);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.False(info.Deleted);
+
+            Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+            Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+        }
+        [Fact(DisplayName = "Update Token: Can Update Treasury to Contract")]
+        public async Task CanUpdateTreasuryToContract()
+        {
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+
+            // Note: Contract did not need to sign.
+            await fxContract.Client.AssociateTokenAsync(fxToken, fxContract, fxContract.PrivateKey);
+
+            var updateParams = new UpdateTokenParams
+            {
+                Token = fxToken.Record.Token,
+                Treasury = fxContract.ContractRecord.Contract,
+                Signatory = new Signatory(fxToken.AdminPrivateKey, fxContract.PrivateKey)
+            };
+
+            var receipt = await fxToken.Client.UpdateTokenAsync(updateParams);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxContract.ContractRecord.Contract, info.Treasury);
+
+            Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
+        }
+        [Fact(DisplayName = "Update Token: Can Delete an Auto Renew Account while Used by Token")]
+        public async Task RemovingAnAutoRenewAccountIsNotAllowed()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network);
+
+            var receipt = await fxToken.Client.DeleteAccountAsync(fxToken.RenewAccount, _network.Payer, fxToken.RenewAccount);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.RenewAccount, info.RenewAccount);
+            Assert.Equal(fxToken.Params.RenewPeriod, info.RenewPeriod);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.False(info.Deleted);
         }
     }
 }

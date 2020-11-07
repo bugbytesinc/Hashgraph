@@ -52,8 +52,7 @@ namespace Hashgraph
             if (!suspendParameters.UpdateFile.IsNullOrNone())
             {
                 transactionBody.Freeze.UpdateFile = new FileID(suspendParameters.UpdateFile);
-                // Will be implemented in the next iteration of the network.
-                //transactionBody.Freeze.FileHash = ByteString.CopyFrom(suspendParameters.UpdateFileHash.Span);
+                transactionBody.Freeze.FileHash = ByteString.CopyFrom(suspendParameters.UpdateFileHash.Span);
             }
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

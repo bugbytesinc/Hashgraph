@@ -161,7 +161,7 @@ namespace Hashgraph.Test.Contract
         public async Task CallingDeletedContractRaisesError()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
-            var deleteReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer);
+            var deleteReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
             Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>

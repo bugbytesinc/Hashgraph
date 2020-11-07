@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Test.Fixtures;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -387,6 +388,28 @@ namespace Hashgraph.Test.Token
             });
             Assert.Equal(ResponseCode.TokenAlreadyAssociatedToAccount, tex.Status);
             Assert.StartsWith("Unable to associate Token with Account, status: TokenAlreadyAssociatedToAccount", tex.Message);
+        }
+        [Fact(DisplayName = "Associate Tokens: Can Associate token with Contract")]
+        public async Task CanAssociateTokenWithContract()
+        {
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+
+            // Assert Not Associated
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract);
+            Assert.Null(info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token));
+
+            var receipt = await fxContract.Client.AssociateTokenAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            info = await fxContract.Client.GetContractInfoAsync(fxContract);
+            var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+            Assert.NotNull(association);
+            Assert.Equal(fxToken.Record.Token, association.Token);
+            Assert.Equal(fxToken.Params.Symbol, association.Symbol);
+            Assert.Equal(0UL, association.Balance);
+            Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
         }
     }
 }
