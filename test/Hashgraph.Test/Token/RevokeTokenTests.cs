@@ -39,7 +39,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountKycNotGrantedForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
         [Fact(DisplayName = "Revoke Tokens: Can Revoke Token Coins and get Record")]
         public async Task CanRevokeTokensAndGetRecord()
@@ -75,7 +75,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountKycNotGrantedForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
         [Fact(DisplayName = "Revoke Tokens: Can Revoke Token Coins and get Record (Without Extra Signatory)")]
         public async Task CanRevokeTokensAndGetRecordWithoutExtraSignatory()
@@ -111,7 +111,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountKycNotGrantedForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
         [Fact(DisplayName = "Revoke Tokens: Can Revoke Token Coins from any Account with Grant Key")]
         public async Task CanRevokeTokenCoinsFromAnyAccountWithGrantKey()
@@ -143,7 +143,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountKycNotGrantedForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
         [Fact(DisplayName = "Revoke Tokens: Revoke Token Coins Requires Grant Key Signature")]
         public async Task RevokeTokenCoinsRequiresGrantKeySignature()

@@ -56,94 +56,6 @@ namespace Hashgraph
                 return new TransactionID(preExistingTransaction);
             }
         }
-        internal static TransferList CreateCryptoTransferList(params (Address address, long amount)[] list)
-        {
-            var netRequests = new Dictionary<Address, long>();
-            foreach (var (address, amount) in list)
-            {
-                if (netRequests.TryGetValue(address, out long value))
-                {
-                    netRequests[address] = value + amount;
-                }
-                else
-                {
-                    netRequests[address] = amount;
-                }
-            }
-            var transfers = new TransferList();
-            foreach (var transfer in netRequests)
-            {
-                if (transfer.Value != 0)
-                {
-                    transfers.AccountAmounts.Add(new AccountAmount
-                    {
-                        AccountID = new AccountID(transfer.Key),
-                        Amount = transfer.Value
-                    });
-                }
-            }
-            return transfers;
-        }
-        internal static IEnumerable<TokenTransferList> CreateTokenTransfers(Address fromAccount, Address toAccount, Address token, long amount)
-        {
-            var transactions = new List<TokenTransferList>();
-            var xferList = new TokenTransferList
-            {
-                Token = new TokenID(token)
-            };
-            xferList.Transfers.Add(new AccountAmount
-            {
-                AccountID = new AccountID(fromAccount),
-                Amount = -amount
-            });
-            xferList.Transfers.Add(new AccountAmount
-            {
-                AccountID = new AccountID(toAccount),
-                Amount = amount
-            });
-            transactions.Add(xferList);
-            return transactions;
-        }
-
-        internal static IEnumerable<TokenTransferList> CreateTokenTransfers(IEnumerable<TokenTransfer> list)
-        {
-            var transactions = new List<TokenTransferList>();
-            foreach (var tokenGroup in list.GroupBy(txfer => txfer.Token))
-            {
-                var netTransfers = new Dictionary<Address, long>();
-                foreach (var tokenTransfer in tokenGroup)
-                {
-                    if (netTransfers.TryGetValue(tokenTransfer.Address, out long value))
-                    {
-                        netTransfers[tokenTransfer.Address] = value + tokenTransfer.Amount;
-                    }
-                    else
-                    {
-                        netTransfers[tokenTransfer.Address] = tokenTransfer.Amount;
-                    }
-                }
-                var xferList = new TokenTransferList
-                {
-                    Token = new TokenID(tokenGroup.Key)
-                };
-                foreach (var netTransfer in netTransfers)
-                {
-                    if (netTransfer.Value != 0)
-                    {
-                        xferList.Transfers.Add(new AccountAmount
-                        {
-                            AccountID = new AccountID(netTransfer.Key),
-                            Amount = netTransfer.Value
-                        });
-                    }
-                }
-                if (xferList.Transfers.Count > 0)
-                {
-                    transactions.Add(xferList);
-                }
-            }
-            return transactions;
-        }
         internal static TransactionBody CreateTransactionBody(GossipContextStack context, TransactionID transactionId)
         {
             return new TransactionBody
@@ -177,7 +89,9 @@ namespace Hashgraph
                 TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
                 Memo = context.Memo ?? ""
             };
-            var transfers = CreateCryptoTransferList((payer, -fee), (gateway, fee));
+            var transfers = new TransferList();
+            transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(payer), Amount = -fee });
+            transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(gateway), Amount = fee });
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             return new QueryHeader
             {

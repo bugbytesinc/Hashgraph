@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -109,8 +110,8 @@ namespace Hashgraph.Test.Token
             Assert.Single(balances.Tokens);
             Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
         }
-        [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins and Get Record (Without Extra Signatory)")]
-        public async Task CanTransferTokensAndGetRecordNoExtraSignatory()
+        [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins and Get Record with signatories in context param")]
+        public async Task CanTransferTokensAndGetRecordWithSignatoriesInContextParam()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
@@ -173,21 +174,24 @@ namespace Hashgraph.Test.Token
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
             var xferAmount = fxToken.Params.Circulation / 3;
             var expectedTreasury = fxToken.Params.Circulation - 2 * xferAmount;
-
-            var transfers = new TokenTransfer[]
+            var transfers = new TransferParams
             {
-                new TokenTransfer(fxToken,fxAccount1,(long)xferAmount),
-                new TokenTransfer(fxToken,fxAccount2,(long)xferAmount),
-                new TokenTransfer(fxToken,fxToken.TreasuryAccount,-2*(long)xferAmount)
+                TokenTransfers = new TokenTransfer[]
+                {
+                    new TokenTransfer(fxToken,fxAccount1,(long)xferAmount),
+                    new TokenTransfer(fxToken,fxAccount2,(long)xferAmount),
+                    new TokenTransfer(fxToken,fxToken.TreasuryAccount,-2*(long)xferAmount)
+                },
+                Signatory = fxToken.TreasuryAccount.PrivateKey
             };
-            var receipt = await fxToken.Client.TransferTokensAsync(transfers, fxToken.TreasuryAccount.PrivateKey);
+            var receipt = await fxToken.Client.TransferAsync(transfers);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
             Assert.Equal(xferAmount, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
-        [Fact(DisplayName = "Transfer Tokens: Can Execute Multi-Transfer Token Coins with Record")]
+        [Fact(DisplayName = "Transfer Tokens: Can Execute Multi-Transfer Token with Record")]
         public async Task CanExecuteMultiTransferTokensWithRecord()
         {
             await using var fxAccount1 = await TestAccount.CreateAsync(_network);
@@ -195,14 +199,17 @@ namespace Hashgraph.Test.Token
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
             var xferAmount = fxToken.Params.Circulation / 3;
             var expectedTreasury = fxToken.Params.Circulation - 2 * xferAmount;
-
-            var transfers = new TokenTransfer[]
+            var transfers = new TransferParams
             {
-                new TokenTransfer(fxToken,fxAccount1,(long)xferAmount),
-                new TokenTransfer(fxToken,fxAccount2,(long)xferAmount),
-                new TokenTransfer(fxToken,fxToken.TreasuryAccount,-2*(long)xferAmount)
+                TokenTransfers = new TokenTransfer[]
+                {
+                    new TokenTransfer(fxToken, fxAccount1, (long)xferAmount),
+                    new TokenTransfer(fxToken, fxAccount2, (long)xferAmount),
+                    new TokenTransfer(fxToken, fxToken.TreasuryAccount, -2 * (long)xferAmount)
+                },
+                Signatory = fxToken.TreasuryAccount.PrivateKey
             };
-            var record = await fxToken.Client.TransferTokensWithRecordAsync(transfers, fxToken.TreasuryAccount.PrivateKey);
+            var record = await fxToken.Client.TransferWithRecordAsync(transfers);
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
@@ -233,22 +240,69 @@ namespace Hashgraph.Test.Token
             Assert.Equal(xferAmount, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
-        [Fact(DisplayName = "Transfer Tokens: Can Execute Multi-Transfer Token Coins with Record (No Extra Signatory)")]
-        public async Task CanExecuteMultiTransferTokensWithRecordNoExtraSignatory()
+        [Fact(DisplayName = "Transfer Tokens: Can Execute Multi-Transfer Token Coins and Crypto")]
+        public async Task CanExecuteMultiTransferTokensAndCrypto()
         {
             await using var fxAccount1 = await TestAccount.CreateAsync(_network);
             await using var fxAccount2 = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
-            var xferAmount = fxToken.Params.Circulation / 3;
-            var expectedTreasury = fxToken.Params.Circulation - 2 * xferAmount;
-
-            var transfers = new TokenTransfer[]
+            var tokenAmount = fxToken.Params.Circulation / 3;
+            var expectedTreasury = fxToken.Params.Circulation - 2 * tokenAmount;
+            var cryptoAmount = (long)Generator.Integer(100, 200);
+            var transfers = new TransferParams
             {
-                new TokenTransfer(fxToken,fxAccount1,(long)xferAmount),
-                new TokenTransfer(fxToken,fxAccount2,(long)xferAmount),
-                new TokenTransfer(fxToken,fxToken.TreasuryAccount,-2*(long)xferAmount)
+                CryptoTransfers = new Dictionary<Address, long>
+                {
+                    { _network.Payer, -2 * cryptoAmount },
+                    { fxAccount1, cryptoAmount },
+                    { fxAccount2, cryptoAmount }
+                },
+                TokenTransfers = new TokenTransfer[]
+                {
+                    new TokenTransfer(fxToken,fxAccount1,(long)tokenAmount),
+                    new TokenTransfer(fxToken,fxAccount2,(long)tokenAmount),
+                    new TokenTransfer(fxToken,fxToken.TreasuryAccount,-2*(long)tokenAmount)
+                },
+                Signatory = new Signatory(_network.Signatory, fxToken.TreasuryAccount.PrivateKey)
             };
-            var record = await fxToken.Client.TransferTokensWithRecordAsync(transfers, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxToken.TreasuryAccount.PrivateKey));
+            var receipt = await fxToken.Client.TransferAsync(transfers);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.NotNull(receipt.CurrentExchangeRate);
+            Assert.NotNull(receipt.NextExchangeRate);
+            Assert.Equal(_network.Payer, receipt.Id.Address);
+
+            Assert.Equal(fxAccount1.CreateParams.InitialBalance + (ulong)cryptoAmount, await fxAccount1.Client.GetAccountBalanceAsync(fxAccount1));
+            Assert.Equal(fxAccount2.CreateParams.InitialBalance + (ulong)cryptoAmount, await fxAccount2.Client.GetAccountBalanceAsync(fxAccount2));
+            Assert.Equal(tokenAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
+            Assert.Equal(tokenAmount, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
+            Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        }
+        [Fact(DisplayName = "Transfer Tokens: Can Execute Multi-Transfer Token Coins and Crypto with Record")]
+        public async Task CanExecuteMultiTransferTokensAndCryptoWithRecord()
+        {
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
+            var tokenAmount = fxToken.Params.Circulation / 3;
+            var expectedTreasury = fxToken.Params.Circulation - 2 * tokenAmount;
+            var cryptoAmount = (long)Generator.Integer(100, 200);
+            var transfers = new TransferParams
+            {
+                CryptoTransfers = new Dictionary<Address, long>
+                {
+                    { _network.Payer, -2 * cryptoAmount },
+                    { fxAccount1, cryptoAmount },
+                    { fxAccount2, cryptoAmount }
+                },
+                TokenTransfers = new TokenTransfer[]
+                {
+                    new TokenTransfer(fxToken,fxAccount1,(long)tokenAmount),
+                    new TokenTransfer(fxToken,fxAccount2,(long)tokenAmount),
+                    new TokenTransfer(fxToken,fxToken.TreasuryAccount,-2*(long)tokenAmount)
+                },
+                Signatory = new Signatory(_network.Signatory, fxToken.TreasuryAccount.PrivateKey)
+            };
+            var record = await fxToken.Client.TransferWithRecordAsync(transfers);
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
@@ -258,25 +312,31 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Equal(5, record.Transfers.Count);
             Assert.Equal(3, record.TokenTransfers.Count);
+
+            Assert.Equal(cryptoAmount, record.Transfers[fxAccount1]);
+            Assert.Equal(cryptoAmount, record.Transfers[fxAccount2]);
 
             var xferFrom = record.TokenTransfers.First(x => x.Address == fxToken.TreasuryAccount.Record.Address);
             Assert.NotNull(xferFrom);
             Assert.Equal(fxToken.Record.Token, xferFrom.Token);
-            Assert.Equal(-2 * (long)xferAmount, xferFrom.Amount);
+            Assert.Equal(-2 * (long)tokenAmount, xferFrom.Amount);
 
             var xferTo1 = record.TokenTransfers.First(x => x.Address == fxAccount1.Record.Address);
             Assert.NotNull(xferTo1);
             Assert.Equal(fxToken.Record.Token, xferFrom.Token);
-            Assert.Equal((long)xferAmount, xferTo1.Amount);
+            Assert.Equal((long)tokenAmount, xferTo1.Amount);
 
             var xferTo2 = record.TokenTransfers.First(x => x.Address == fxAccount2.Record.Address);
             Assert.NotNull(xferTo2);
             Assert.Equal(fxToken.Record.Token, xferFrom.Token);
-            Assert.Equal((long)xferAmount, xferTo2.Amount);
+            Assert.Equal((long)tokenAmount, xferTo2.Amount);
 
-            Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
-            Assert.Equal(xferAmount, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
+            Assert.Equal(fxAccount1.CreateParams.InitialBalance + (ulong)cryptoAmount, await fxAccount1.Client.GetAccountBalanceAsync(fxAccount1));
+            Assert.Equal(fxAccount2.CreateParams.InitialBalance + (ulong)cryptoAmount, await fxAccount2.Client.GetAccountBalanceAsync(fxAccount2));
+            Assert.Equal(tokenAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
+            Assert.Equal(tokenAmount, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
         [Fact(DisplayName = "Transfer Tokens: Can Pass A Token")]
@@ -316,7 +376,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, (long)xferAmount, fxAccount1);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: InvalidSignature", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: InvalidSignature", tex.Message);
 
             Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
             Assert.Equal(0UL, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
@@ -344,7 +404,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, (long)xferAmount, fxAccount1);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
             Assert.Equal(0UL, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
@@ -368,7 +428,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, (long)xferAmount, fxAccount1);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountKycNotGrantedForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
 
             Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
             Assert.Equal(0UL, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
@@ -392,7 +452,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Resume Participating Accounts
             await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount1, fxToken.SuspendPrivateKey);
@@ -414,7 +474,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxAccount2, fxAccount1, (long)xferAmount, fxAccount2);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Can we suspend the treasury?
             await fxToken.Client.SuspendTokenAsync(fxToken, fxToken.TreasuryAccount, fxToken.SuspendPrivateKey);
@@ -423,7 +483,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxAccount2, fxToken.TreasuryAccount, (long)xferAmount, fxAccount2);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Double Check can't send from frozen treasury.
             tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -431,7 +491,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount2, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Balances should not have changed
             Assert.Equal(circulation - xferAmount, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
@@ -467,7 +527,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxAccount2, fxAccount1, (long)xferAmount, fxAccount2);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Can we suspend the treasury?
             await fxToken.Client.SuspendTokenAsync(fxToken, fxToken.TreasuryAccount, fxToken.SuspendPrivateKey);
@@ -476,7 +536,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxAccount2, fxToken.TreasuryAccount, (long)xferAmount, fxAccount2);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Double Check can't send from frozen treasury.
             tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -484,7 +544,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount2, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Balances should not have changed
             Assert.Equal(circulation - xferAmount, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));

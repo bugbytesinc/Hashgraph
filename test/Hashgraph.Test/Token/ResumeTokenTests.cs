@@ -208,7 +208,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
         }
         [Fact(DisplayName = "Resume Tokens: Can Not Resume Token when Freeze Not Enabled")]
         public async Task CanNotResumeTokenWhenFreezeNotEnabled()

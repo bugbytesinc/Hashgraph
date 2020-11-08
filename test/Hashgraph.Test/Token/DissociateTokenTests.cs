@@ -390,7 +390,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: TokenNotAssociatedToAccount", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
 
             Assert.Equal(0UL, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
         }

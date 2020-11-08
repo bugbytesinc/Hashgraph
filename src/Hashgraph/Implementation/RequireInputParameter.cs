@@ -150,32 +150,133 @@ namespace Hashgraph.Implementation
             }
             return amount;
         }
-        internal static (Address address, long amount)[] CryptoTransferList(IEnumerable<KeyValuePair<Address, long>> transfers)
+
+        internal static (TransferList?, IEnumerable<TokenTransferList>?) CryptoAndTransferList(TransferParams transfers)
+        {
+            if(transfers == null)
+            {
+                throw new ArgumentNullException(nameof(transfers), "The transfer parametes cannot not be null.");
+            }
+            var cryptoTransfers = transfers.CryptoTransfers == null ? null : RequireInputParameter.CryptoTransferList(transfers.CryptoTransfers);
+            var tokenTransfers = transfers.TokenTransfers == null ? null : RequireInputParameter.TokenTransferList(transfers.TokenTransfers);
+            if (cryptoTransfers == null && tokenTransfers == null)
+            {
+                throw new ArgumentException(nameof(transfers), "Both crypto and token transfer lists are null.  At least one must include transfers.");
+            }
+            return (cryptoTransfers, tokenTransfers);
+        }
+
+        internal static TransferList CryptoTransferList(IEnumerable<KeyValuePair<Address, long>> cryptoTransfers)
         {
             long sum = 0;
-            if (transfers is null)
+            if (cryptoTransfers is null)
             {
-                throw new ArgumentNullException(nameof(transfers), "The dictionary of transfers can not be null.");
+                throw new ArgumentNullException(nameof(cryptoTransfers), "The dictionary of crypto transfers can not be null.");
             }
-            var result = new List<(Address address, long amount)>();
-            foreach (var transfer in transfers)
+            var netRequests = new Dictionary<Address, long>();
+            foreach (var transfer in cryptoTransfers)
             {
                 if (transfer.Value == 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(transfers), $"The amount to transfer to/from {transfer.Key.ShardNum}.{transfer.Key.RealmNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                    throw new ArgumentOutOfRangeException(nameof(cryptoTransfers), $"The amount to transfer crypto to/from {transfer.Key.ShardNum}.{transfer.Key.RealmNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
                 }
-                result.Add((transfer.Key, transfer.Value));
+                if (netRequests.TryGetValue(transfer.Key, out long value))
+                {
+                    netRequests[transfer.Key] = value + transfer.Value;
+                }
+                else
+                {
+                    netRequests[transfer.Key] = transfer.Value;
+                }
                 sum += transfer.Value;
             }
-            if (result.Count == 0)
+            if (netRequests.Count == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(transfers), "The dictionary of transfers can not be empty.");
+                throw new ArgumentOutOfRangeException(nameof(cryptoTransfers), "The dictionary of crypto transfers can not be empty.");
             }
             if (sum != 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(transfers), "The sum of sends and receives does not balance.");
+                throw new ArgumentOutOfRangeException(nameof(cryptoTransfers), "The sum of crypto sends and receives does not balance.");
             }
-            return result.ToArray();
+            var xferList = new TransferList();
+            foreach (var transfer in netRequests)
+            {
+                if (transfer.Value != 0)
+                {
+                    xferList.AccountAmounts.Add(new AccountAmount
+                    {
+                        AccountID = new AccountID(transfer.Key),
+                        Amount = transfer.Value
+                    });
+                }
+            }
+            return xferList;
+        }
+
+        internal static IEnumerable<TokenTransferList> TokenTransferList(IEnumerable<TokenTransfer> tokenTransfers)
+        {
+            if (tokenTransfers is null)
+            {
+                throw new ArgumentNullException(nameof(tokenTransfers), "The list of token transfers can not be null.");
+            }
+            var transactions = new List<TokenTransferList>();
+            foreach (var tokenGroup in tokenTransfers.GroupBy(txfer => txfer.Token))
+            {
+                if (tokenGroup.Key.IsNullOrNone())
+                {
+                    throw new ArgumentException("Token", "The list of token transfers cannot contain a null or empty Token value.");
+                }
+                long sum = 0;
+                var netRequests = new Dictionary<Address, long>();
+                foreach (var xfer in tokenGroup)
+                {
+                    if (xfer.Address.IsNullOrNone())
+                    {
+                        throw new ArgumentException(nameof(xfer.Address), "The list of token transfers cannot contain a null or empty account value.");
+                    }
+                    if (xfer.Amount == 0)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(xfer.Amount), $"The amount to transfer tokens to/from {xfer.Address.ShardNum}.{xfer.Address.RealmNum}.{xfer.Address.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                    }
+                    if (netRequests.TryGetValue(xfer.Address, out long value))
+                    {
+                        netRequests[xfer.Address] = value + xfer.Amount;
+                    }
+                    else
+                    {
+                        netRequests[xfer.Address] = xfer.Amount;
+                    }
+                    sum += xfer.Amount;
+                }
+                if (sum != 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(tokenTransfers), $"The sum of token sends and receives for {tokenGroup.Key.ShardNum}.{tokenGroup.Key.RealmNum}.{tokenGroup.Key.AccountNum} does not balance.");
+                }
+                var xferList = new TokenTransferList
+                {
+                    Token = new TokenID(tokenGroup.Key)
+                };
+                foreach (var netTransfer in netRequests)
+                {
+                    if (netTransfer.Value != 0)
+                    {
+                        xferList.Transfers.Add(new AccountAmount
+                        {
+                            AccountID = new AccountID(netTransfer.Key),
+                            Amount = netTransfer.Value
+                        });
+                    }
+                }
+                if (xferList.Transfers.Count > 0)
+                {
+                    transactions.Add(xferList);
+                }
+            }
+            if (transactions.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tokenTransfers), "The dictionary of token transfers can not be empty.");
+            }
+            return transactions;
         }
         internal static TxId Transaction(TxId transaction)
         {
@@ -689,7 +790,7 @@ namespace Hashgraph.Implementation
                 throw new ArgumentException(nameof(transaction), "The submitted transaction does not appear to have a parsable signed transaction byte array.", pe);
             }
             try
-            {                
+            {
                 decodedTransactionBody = Proto.TransactionBody.Parser.ParseFrom(decodedSignedTransaction.BodyBytes);
             }
             catch (Exception pe)

@@ -86,7 +86,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenWasDeleted, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: TokenWasDeleted", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: TokenWasDeleted", tex.Message);
         }
         [Fact(DisplayName = "Token Delete: Calling Delete Without Admin Key Raises Error")]
         public async Task CallingDeleteWithoutAdminKeyRaisesError()

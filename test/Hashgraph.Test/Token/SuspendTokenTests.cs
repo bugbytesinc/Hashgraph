@@ -37,7 +37,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
@@ -73,7 +73,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
@@ -109,7 +109,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
@@ -141,7 +141,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
@@ -166,7 +166,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
         }
         [Fact(DisplayName = "Suspend Tokens: Can Suspend a Resumed Account")]
         public async Task CanSuspendAResumedAccount()
@@ -195,7 +195,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
-            Assert.StartsWith("Unable to execute token transfers, status: AccountFrozenForToken", tex.Message);
+            Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
