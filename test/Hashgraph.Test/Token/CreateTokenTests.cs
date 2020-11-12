@@ -319,18 +319,44 @@ namespace Hashgraph.Test.Token
             Assert.Equal("Symbol", aoe.ParamName);
             Assert.StartsWith("The token symbol must be specified. (Parameter 'Symbol')", aoe.Message);
         }
-        [Fact(DisplayName = "Create Token: Symbol Does Not Allow Numbers")]
-        public async Task SymbolDoesNotAllowNumbers()
+        [Fact(DisplayName = "Create Token: Symbol Does Numbers")]
+        public async Task SymbolDoesAllowNumbers()
         {
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            await using var fxToken = await TestToken.CreateAsync(_network, ctx =>
             {
-                await using var fx = await TestToken.CreateAsync(_network, ctx =>
-                {
-                    ctx.Params.Symbol = Generator.UppercaseAlphaCode(20) + "123";
-                });
+                ctx.Params.Symbol = "123" + Generator.UppercaseAlphaCode(20) + "456";
             });
-            Assert.Equal(ResponseCode.InvalidTokenSymbol, pex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: InvalidTokenSymbol", pex.Message);
+            Assert.NotNull(fxToken.Record);
+            Assert.NotNull(fxToken.Record.Token);
+            Assert.True(fxToken.Record.Token.AccountNum > 0);
+            Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.Params.Name, info.Name);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.False(info.Deleted);
+
+            var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
+            Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
+            Assert.Single(treasury.Tokens);
+
+            var tokens = treasury.Tokens[0];
+            Assert.Equal(fxToken.Record.Token, tokens.Token);
+            Assert.Equal(fxToken.Params.Symbol, tokens.Symbol);
+            Assert.Equal(fxToken.Params.Circulation, tokens.Balance);
+            Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
         }
         [Fact(DisplayName = "Create Token: Duplicate Symbols Are Allowed")]
         public async Task TaskDuplicateSymbolsAreAllowed()
