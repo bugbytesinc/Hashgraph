@@ -501,7 +501,7 @@ namespace Hashgraph.Test.Token
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
                 fx.Params.RenewAccount = null;
-                fx.Params.RenewPeriod = TimeSpan.Zero;
+                fx.Params.RenewPeriod = null;
                 fx.Params.Signatory = new Signatory(fx.AdminPrivateKey, fx.TreasuryAccount.PrivateKey);
             });
 
@@ -741,7 +741,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(TimeSpan.FromSeconds(0), info.RenewPeriod);
+            Assert.Null(info.RenewPeriod);
             Assert.Null(info.RenewAccount);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);

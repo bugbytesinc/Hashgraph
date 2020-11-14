@@ -1,7 +1,4 @@
-﻿using Hashgraph.Implementation;
-using System;
-
-namespace Proto
+﻿namespace Proto
 {
     public sealed partial class TokenInfo
     {
@@ -22,10 +19,10 @@ namespace Proto
                 SupplyEndorsement = SupplyKey?.ToEndorsement(),
                 TradableStatus = (Hashgraph.TokenTradableStatus)DefaultFreezeStatus,
                 KycStatus = (Hashgraph.TokenKycStatus)DefaultKycStatus,
-                Expiration = Epoch.ToDate((long)Expiry, 0),
-                RenewPeriod = TimeSpan.FromSeconds(AutoRenewPeriod),
+                Expiration = Expiry.ToDateTime(),
+                RenewPeriod = AutoRenewPeriod?.ToTimeSpan(),
                 RenewAccount = AutoRenewAccount?.ToAddress(),
-                Deleted = IsDeleted
+                Deleted = Deleted
             };
         }
     }

@@ -3,7 +3,6 @@ using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -81,9 +80,9 @@ namespace Hashgraph
                 WipeKey = createParameters.ConfiscateEndorsement.IsNullOrNone() ? null : new Key(createParameters.ConfiscateEndorsement),
                 SupplyKey = createParameters.SupplyEndorsement.IsNullOrNone() ? null : new Key(createParameters.SupplyEndorsement),
                 FreezeDefault = createParameters.InitializeSuspended,
-                Expiry = (ulong)Epoch.FromDate(createParameters.Expiration).seconds,
+                Expiry = new Timestamp(createParameters.Expiration),
                 AutoRenewAccount = createParameters.RenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.RenewAccount),
-                AutoRenewPeriod = (ulong)createParameters.RenewPeriod.TotalSeconds
+                AutoRenewPeriod = createParameters.RenewPeriod.HasValue ? new Duration(createParameters.RenewPeriod.Value) : null
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

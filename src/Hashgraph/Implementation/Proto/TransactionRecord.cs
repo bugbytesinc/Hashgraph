@@ -25,7 +25,7 @@ namespace Proto
             {
                 return FillProperties(new CreateContractRecord());
             }
-            else if (Receipt.TokenId != null)
+            else if (Receipt.TokenID != null)
             {
                 return FillProperties(new CreateTokenRecord());
             }
@@ -85,7 +85,7 @@ namespace Proto
         internal CreateTokenRecord FillProperties(CreateTokenRecord record)
         {
             FillCommonProperties(record);
-            record.Token = Receipt.TokenId.ToAddress();
+            record.Token = Receipt.TokenID.ToAddress();
             return record;
         }
         internal Hashgraph.TransactionRecord FillProperties(Hashgraph.TransactionRecord record)

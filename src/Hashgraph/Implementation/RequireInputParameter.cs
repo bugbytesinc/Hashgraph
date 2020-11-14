@@ -645,7 +645,7 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.Expiration), "The expiration time must be in the future.");
             }
-            if (createParameters.RenewAccount.IsNullOrNone() ^ createParameters.RenewPeriod.Ticks <= 0)
+            if (createParameters.RenewAccount.IsNullOrNone() == createParameters.RenewPeriod.HasValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.RenewPeriod), "Both the renew account and period must be specified, or not at all.");
             }

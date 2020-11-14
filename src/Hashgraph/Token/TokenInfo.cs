@@ -79,7 +79,7 @@ namespace Hashgraph
         /// of time the remaining funds can support.  If no funds remain, the
         /// topic instance will be deleted.
         /// </summary>
-        public TimeSpan RenewPeriod { get; internal set; }
+        public TimeSpan? RenewPeriod { get; internal set; }
         /// <summary>
         /// Optional address of the account supporting the auto renewal of 
         /// the token at expiration time.  The topic lifetime will be

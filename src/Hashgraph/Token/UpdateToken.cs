@@ -108,11 +108,11 @@ namespace Hashgraph
             }
             if (updateParameters.Expiration.HasValue)
             {
-                updateTokenBody.Expiry = (ulong)Epoch.FromDate(updateParameters.Expiration.Value).seconds;
+                updateTokenBody.Expiry = new Timestamp(updateParameters.Expiration.Value);
             }
             if (updateParameters.RenewPeriod.HasValue)
             {
-                updateTokenBody.AutoRenewPeriod = (ulong)updateParameters.RenewPeriod.Value.TotalSeconds;
+                updateTokenBody.AutoRenewPeriod = new Duration(updateParameters.RenewPeriod.Value);
             }
             if (!(updateParameters.RenewAccount is null))
             {
