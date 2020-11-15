@@ -24,7 +24,7 @@ namespace Hashgraph
         /// Not all Receipts and Records will have this information
         /// returned from the network.  This value can be <code>null</code>.
         /// </remarks>
-        public ExchangeRate? CurrentExchangeRate { get; set; }
+        public ExchangeRate? CurrentExchangeRate { get; internal set; }
         /// <summary>
         /// The next/future exchange between USD and 
         /// hBars as broadcast by the hedera Network.
@@ -33,6 +33,6 @@ namespace Hashgraph
         /// Not all Receipts and Records will have this information
         /// returned from the network.  This value can be <code>null</code>.
         /// </remarks>
-        public ExchangeRate? NextExchangeRate { get; set; }
+        public ExchangeRate? NextExchangeRate { get; internal set; }
     }
 }

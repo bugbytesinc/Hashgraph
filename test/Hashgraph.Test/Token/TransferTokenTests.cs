@@ -622,7 +622,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(totalCirculation, await fxContract.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(0UL, await fxContract.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
         }
-        [Fact(DisplayName = "Unpublished Test: Transfer Tokens: Can Move Coins by Moving the Treasury")]
+        [Fact(DisplayName = "Transfer Tokens: Can Move Coins by Moving the Treasury")]
         public async Task CanMoveCoinsByMovingTheTreasury()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);

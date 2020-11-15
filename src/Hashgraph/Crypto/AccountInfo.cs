@@ -9,52 +9,52 @@ namespace Hashgraph
     /// It represents the details concerning a Hedera Network Account, including 
     /// the public key value to use in smart contract interaction.
     /// </summary>
-    public sealed class AccountInfo
+    public sealed record AccountInfo
     {
         /// <summary>
         /// The Hedera address of this account.
         /// </summary>
-        public Address Address { get; internal set; }
+        public Address Address { get; internal init; }
         /// <summary>
         /// The identity of the Hedera Account in a form to be
         /// used with smart contracts.  This can also be the
         /// ID of a smart contract instance if this is the account
         /// associated with a smart contract.
         /// </summary>
-        public string SmartContractId { get; internal set; }
+        public string SmartContractId { get; internal init; }
         /// <summary>
         /// <code>True</code> if this account has been deleted.
         /// Its existence in the network will cease after the expiration
         /// date for the account lapses.  It cannot participate in
         /// transactions except to extend the expiration/removal date.
         /// </summary>
-        public bool Deleted { get; internal set; }
+        public bool Deleted { get; internal init; }
         /// <summary>
         /// The Address of the Account to which this account has staked.
         /// </summary>
-        public Address Proxy { get; internal set; }
+        public Address Proxy { get; internal init; }
         /// <summary>
         /// The total number of tinybars that are proxy staked to this account.
         /// </summary>
-        public long ProxiedToAccount { get; internal set; }
+        public long ProxiedToAccount { get; internal init; }
         /// <summary>
         /// Account's Public Key (typically a single Ed25519 key).
         /// </summary>
-        public Endorsement Endorsement { get; internal set; }
+        public Endorsement Endorsement { get; internal init; }
         /// <summary>
         /// Account Balance in Tinybars
         /// </summary>
-        public ulong Balance { get; internal set; }
+        public ulong Balance { get; internal init; }
         /// <summary>
         /// Balances of tokens associated with this account.
         /// </summary>
-        public ReadOnlyCollection<TokenBalance> Tokens { get; internal set; }
+        public ReadOnlyCollection<TokenBalance> Tokens { get; internal init; }
 
         /// <summary>
         /// <code>True</code> if any receipt of funds require
         /// a signature from this account.
         /// </summary>
-        public bool ReceiveSignatureRequired { get; internal set; }
+        public bool ReceiveSignatureRequired { get; internal init; }
         /// <summary>
         /// Incremental period for auto-renewal of the account. If
         /// account does not have sufficient funds to renew at the
@@ -62,11 +62,11 @@ namespace Hashgraph
         /// the remaining funds can support.  If no funds remain, the
         /// account will be deleted.
         /// </summary>
-        public TimeSpan AutoRenewPeriod { get; internal set; }
+        public TimeSpan AutoRenewPeriod { get; internal init; }
         /// <summary>
         /// The account expiration time, at which it will attempt
         /// to renew if sufficient funds remain in the account.
         /// </summary>
-        public DateTime Expiration { get; internal set; }
+        public DateTime Expiration { get; internal init; }
     }
 }

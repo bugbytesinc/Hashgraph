@@ -9,17 +9,17 @@ namespace Hashgraph
     /// <code>TxId</code> implements the equitable interface and can be 
     /// compared to other transaction ids returned from the library.
     /// </summary>
-    public sealed class TxId : IEquatable<TxId>
+    public sealed record TxId
     {
         /// <summary>
         /// The address of the account paying the
         /// transaction processing fee.
         /// </summary>
-        public Address Address { get; internal set; }
+        public Address Address { get; internal init; }
         /// <summary>
         /// The number of whole seconds since the Epoch.
         /// </summary>
-        public long ValidStartSeconds { get; internal set; }
+        public long ValidStartSeconds { get; internal init; }
         /// <summary>
         /// The number of nanoseconds added to the 
         /// <see cref="ValidStartSeconds"/> value to 
@@ -32,7 +32,7 @@ namespace Hashgraph
         /// nano-seconds.  Therefore it is necessary to
         /// represent the date time in this manner.
         /// </remarks>
-        public int ValidStartNanos { get; internal set; }
+        public int ValidStartNanos { get; internal init; }
         /// <summary>
         /// Public constructor.
         /// </summary>
@@ -82,105 +82,6 @@ namespace Hashgraph
             // Because we don't want to set
             // this property to nullable
             Address = new Address(0, 0, 0);
-        }
-        /// <summary>
-        /// Equality implementation.
-        /// </summary>
-        /// <param name="other">
-        /// The other <code>TxId</code> object to compare.
-        /// </param>
-        /// <returns>
-        /// True if the id is identical to the 
-        /// other <code>TxId</code> object.
-        /// </returns>
-        public bool Equals(TxId? other)
-        {
-            if (other is null)
-            {
-                return false;
-            }
-            return
-                ValidStartNanos == other.ValidStartNanos &&
-                ValidStartSeconds == other.ValidStartSeconds &&
-                Address == other.Address;
-        }
-        /// <summary>
-        /// Equality implementation.
-        /// </summary>
-        /// <param name="obj">
-        /// The other <code>TxId</code> object to compare (if it is
-        /// an <code>TxId</code>).
-        /// </param>
-        /// <returns>
-        /// If the other object is an TxId, then <code>True</code> 
-        /// if id is identical to the other <code>TxId</code> object, 
-        /// otherwise <code>False</code>.
-        /// </returns>
-        public override bool Equals(object? obj)
-        {
-            if (obj is null)
-            {
-                return false;
-            }
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-            if (obj is TxId other)
-            {
-                return Equals(other);
-            }
-            return false;
-        }
-        /// <summary>
-        /// Equality implementation.
-        /// </summary>
-        /// <returns>
-        /// A unique hash of the contents of this <code>TxId</code> 
-        /// object.  Only consistent within the current instance of 
-        /// the application process.
-        /// </returns>
-        public override int GetHashCode()
-        {
-            return $"TxID:{Address.GetHashCode()}:{ValidStartSeconds}:{ValidStartNanos}".GetHashCode();
-        }
-        /// <summary>
-        /// Equals implementation.
-        /// </summary>
-        /// <param name="left">
-        /// Left hand <code>TxId</code> argument.
-        /// </param>
-        /// <param name="right">
-        /// Right hand <code>TxId</code> argument.
-        /// </param>
-        /// <returns>
-        /// <code>True</code> id is identical within each <code>TxId</code> objects.
-        /// </returns>
-        public static bool operator ==(TxId left, TxId right)
-        {
-            if (left is null)
-            {
-                return right is null;
-            }
-            return left.Equals(right);
-        }
-        /// <summary>
-        /// Not equals implementation.
-        /// </summary>
-        /// <param name="left">
-        /// Left hand <code>TxId</code> argument.
-        /// </param>
-        /// <param name="right">
-        /// Right hand <code>TxId</code> argument.
-        /// </param>
-        /// <returns>
-        /// <code>False</code> if the id is identical within 
-        /// each <code>TxId</code> object.  <code>True</code> 
-        /// if they are not identical.
-        /// </returns>
-        public static bool operator !=(TxId left, TxId right)
-        {
-            return !(left == right);
         }
     }
 }

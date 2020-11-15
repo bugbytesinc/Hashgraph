@@ -32,7 +32,7 @@ namespace Hashgraph
         /// of time the remaining funds can support.  If no funds remain, the
         /// topic instance will be deleted.
         /// </summary>
-        public TimeSpan RenewPeriod { get; internal set; } = TimeSpan.FromDays(90);
+        public TimeSpan RenewPeriod { get; set; } = TimeSpan.FromDays(90);
         /// <summary>
         /// Optional address of the account supporting the auto renewal of 
         /// the topic at expiration time.  The topic lifetime will be
