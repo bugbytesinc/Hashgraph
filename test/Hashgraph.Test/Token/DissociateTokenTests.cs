@@ -394,5 +394,41 @@ namespace Hashgraph.Test.Token
 
             Assert.Equal(0UL, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
         }
+        [Fact(DisplayName = "Token Delete: Can Delete Account Having Token Balance")]
+        public async Task CanDeleteAccountHavingTokenBalance()
+        {
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
+            var xferAmount = (long) fxToken.Params.Circulation;
+
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation);
+
+            await fxAccount1.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, xferAmount, fxToken.TreasuryAccount);
+
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, fxToken.Params.Circulation);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, 0);
+
+            // Can't delete the account because it has tokens associated with it.
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAccount1.Client.DeleteAccountAsync(fxAccount1, fxAccount2, fxAccount1.PrivateKey);
+            });
+            Assert.Equal(ResponseCode.TransactionRequiresZeroTokenBalances, tex.Status);
+            Assert.StartsWith("Unable to delete account, status: TransactionRequiresZeroTokenBalances", tex.Message);
+
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, fxToken.Params.Circulation);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, 0);
+
+            await fxAccount1.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, xferAmount, fxAccount1);
+            await fxAccount1.Client.DeleteAccountAsync(fxAccount1, fxAccount2, fxAccount1.PrivateKey);
+
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, fxToken.Params.Circulation);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, 0);
+        }
     }
 }
