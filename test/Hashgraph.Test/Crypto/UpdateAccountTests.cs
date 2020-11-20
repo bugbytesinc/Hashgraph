@@ -77,8 +77,8 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(new Endorsement(updatedKeyPair.publicKey), updatedInfo.Endorsement);
         }
-        [Fact(DisplayName = "Update Account: Can Update Send Threshold")]
-        public async Task CanUpdateSendTreshold()
+        [Fact(DisplayName = "Update Account: Can Not Update Send Threshold")]
+        public async Task CanNotUpdateSendTreshold()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var originalValue = (ulong)Generator.Integer(500, 1000);
@@ -93,7 +93,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(originalValue, originalInfo.SendThresholdCreateRecord);
+            Assert.Equal(0ul, originalInfo.SendThresholdCreateRecord);
 
             var newValue = originalValue + (ulong)Generator.Integer(500, 1000);
             var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
@@ -105,10 +105,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, updateResult.Status);
 
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(newValue, updatedInfo.SendThresholdCreateRecord);
+            Assert.Equal(0ul, updatedInfo.SendThresholdCreateRecord);
         }
-        [Fact(DisplayName = "Update Account: Can Update Receive Threshold")]
-        public async Task CanUpdateReceiveTreshold()
+        [Fact(DisplayName = "Update Account: Can Not Update Receive Threshold")]
+        public async Task CanNotUpdateReceiveTreshold()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var originalValue = (ulong)Generator.Integer(500, 1000);
@@ -122,7 +122,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(originalValue, originalInfo.ReceiveThresholdCreateRecord);
+            Assert.Equal(0ul, originalInfo.ReceiveThresholdCreateRecord);
 
             var newValue = originalValue + (ulong)Generator.Integer(500, 1000);
             var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
@@ -134,7 +134,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, updateResult.Status);
 
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(newValue, updatedInfo.ReceiveThresholdCreateRecord);
+            Assert.Equal(0ul, updatedInfo.ReceiveThresholdCreateRecord);
         }
         [Fact(DisplayName = "Update Account: Can Update Require Receive Signature")]
         public async Task CanUpdateRequireReceiveSignature()
@@ -249,28 +249,28 @@ namespace Hashgraph.Test.Crypto
         public async Task UpdateWithInsufficientFundsReturnsRequiredFee()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            var originalValue = (ulong)Generator.Integer(500, 1000);
+            var originalValue = Generator.Integer(0, 1) > 0;
             await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
                 Endorsement = publicKey,
                 Signatory = privateKey,
-                SendThresholdCreateRecord = originalValue
+                RequireReceiveSignature = originalValue
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(originalValue, originalInfo.SendThresholdCreateRecord);
+            Assert.Equal(originalValue, originalInfo.ReceiveSignatureRequired);
 
-            var newValue = originalValue + (ulong)Generator.Integer(500, 1000);
+            var newValue = !originalValue;
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await client.UpdateAccountAsync(new UpdateAccountParams
                 {
                     Address = createResult.Address,
                     Signatory = privateKey,
-                    SendThresholdCreateRecord = newValue,
+                    RequireReceiveSignature = newValue,
                 }, ctx =>
                 {
                     ctx.FeeLimit = 1;
@@ -281,7 +281,7 @@ namespace Hashgraph.Test.Crypto
             {
                 Address = createResult.Address,
                 Signatory = privateKey,
-                SendThresholdCreateRecord = newValue
+                RequireReceiveSignature = newValue
             }, ctx =>
             {
                 ctx.FeeLimit = (long)pex.RequiredFee;
@@ -289,7 +289,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, updateResult.Status);
 
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(newValue, updatedInfo.SendThresholdCreateRecord);
+            Assert.Equal(newValue, updatedInfo.ReceiveSignatureRequired);
         }
         [Fact(DisplayName = "Update Account: Empty Endorsement is Not Allowed")]
         public async Task EmptyEndorsementIsNotAllowed()

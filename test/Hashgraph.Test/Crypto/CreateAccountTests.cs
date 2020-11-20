@@ -55,8 +55,8 @@ namespace Hashgraph.Test.Crypto
             });
             Assert.StartsWith("Transaction Failed Pre-Check: AccountDeleted", exception.Message);
         }
-        [Fact(DisplayName = "Create Account: Set Send Threshold")]
-        public async Task CanSetSendTreshold()
+        [Fact(DisplayName = "Create Account: Can Not Set Send Threshold")]
+        public async Task CanNotSetSendTreshold()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
             var expectedValue = (ulong)Generator.Integer(500, 1000);
@@ -70,24 +70,23 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(expectedValue, info.SendThresholdCreateRecord);
+            Assert.Equal(0ul, info.SendThresholdCreateRecord);
         }
-        [Fact(DisplayName = "Create Account: Set Receive Threshold")]
-        public async Task CanSetReceiveTreshold()
+        [Fact(DisplayName = "Create Account: Can Not Set Receive Threshold")]
+        public async Task CanNotSetReceiveTreshold()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            var expectedValue = (ulong)Generator.Integer(500, 1000);
             await using var client = _network.NewClient();
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = 1,
                 Endorsement = publicKey,
-                ReceiveThresholdCreateRecord = expectedValue
+                ReceiveThresholdCreateRecord = (ulong)Generator.Integer(500, 1000)
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(expectedValue, info.ReceiveThresholdCreateRecord);
+            Assert.Equal(0ul, info.ReceiveThresholdCreateRecord);
         }
         [Fact(DisplayName = "Create Account: Set Signature Required True")]
         public async Task CanSetSignatureRequiredTrue()
