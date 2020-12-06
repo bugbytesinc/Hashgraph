@@ -21,20 +21,20 @@
 
   <ItemGroup>
     <PackageReference Include="BouncyCastle.NetCoreSdk" Version="1.9.3.1" />
-    <PackageReference Include="GitVersionTask" Version="5.5.0">
+    <PackageReference Include="GitVersionTask" Version="5.5.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Google.Protobuf" Version="3.14.0-rc2" />
-    <PackageReference Include="Grpc.Core" Version="2.33.1" />
-    <PackageReference Include="Grpc.Tools" Version="2.33.1">
+    <PackageReference Include="Google.Protobuf" Version="3.14.0" />
+    <PackageReference Include="Grpc.Core" Version="2.34.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.34.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>  
 
   <ItemGroup>
-    <Protobuf Include="..\..\reference\hapi-proto-vNext\src\main\proto\*.proto" GrpcServices="Client">
+    <Protobuf Include="..\..\reference\hapi-v0.9.0-rc.2-279-g6ad52bb2\src\main\proto\*.proto" GrpcServices="Client">
       <Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Protobuf>
     <Protobuf Include="..\..\reference\hedera-mirror\proto\ConsensusService-Mirror.proto" GrpcServices="Client">
