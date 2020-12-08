@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿#pragma warning disable CS8604
+using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -66,22 +67,22 @@ namespace Hashgraph
             var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
-            transactionBody.TokenCreation = new TokenCreation
+            transactionBody.TokenCreation = new TokenCreateTransactionBody
             {
-                //Name = createParameters.Name,
+                Name = createParameters.Name,
                 Symbol = createParameters.Symbol,
-                Float = createParameters.Circulation,
-                Divisibility = createParameters.Decimals,
+                InitialSupply = createParameters.Circulation,
+                Decimals = createParameters.Decimals,
                 Treasury = new AccountID(createParameters.Treasury),
-                AdminKey = createParameters.Administrator is null ? null : new Key(createParameters.Administrator),
-                KycKey = createParameters.GrantKycEndorsement is null ? null : new Key(createParameters.GrantKycEndorsement),
-                FreezeKey = createParameters.SuspendEndorsement is null ? null : new Key(createParameters.SuspendEndorsement),
-                WipeKey = createParameters.ConfiscateEndorsement is null ? null : new Key(createParameters.ConfiscateEndorsement),
-                SupplyKey = createParameters.SupplyEndorsement is null ? null : new Key(createParameters.SupplyEndorsement),
+                AdminKey = createParameters.Administrator.IsNullOrNone() ? null : new Key(createParameters.Administrator),
+                KycKey = createParameters.GrantKycEndorsement.IsNullOrNone() ? null : new Key(createParameters.GrantKycEndorsement),
+                FreezeKey = createParameters.SuspendEndorsement.IsNullOrNone() ? null : new Key(createParameters.SuspendEndorsement),
+                WipeKey = createParameters.ConfiscateEndorsement.IsNullOrNone() ? null : new Key(createParameters.ConfiscateEndorsement),
+                SupplyKey = createParameters.SupplyEndorsement.IsNullOrNone() ? null : new Key(createParameters.SupplyEndorsement),
                 FreezeDefault = createParameters.InitializeSuspended,
-                //Expiry = (ulong)Epoch.FromDate(createParameters.Expiration).seconds,
-                //AutoRenewAccount = createParameters.RenewAccount is null ? null : new AccountID(createParameters.RenewAccount),
-                //AutoRenewPeriod = (ulong)createParameters.RenewPeriod.TotalSeconds
+                Expiry = new Timestamp(createParameters.Expiration),
+                AutoRenewAccount = createParameters.RenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.RenewAccount),
+                AutoRenewPeriod = createParameters.RenewPeriod.HasValue ? new Duration(createParameters.RenewPeriod.Value) : null
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

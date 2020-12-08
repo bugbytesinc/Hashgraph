@@ -501,16 +501,23 @@ namespace Hashgraph
         /// </summary>
         [Description("TOKENS_PER_ACCOUNT_LIMIT_EXCEEDED")] TokensPerAccountLimitExceeded = 166,
         /// <summary>
+        /// The token is invalid or does not exist
         /// </summary>
         [Description("INVALID_TOKEN_ID")] InvalidTokenId = 167,
+        /// <summary>
+        /// Invalid token decimals
+        /// </summary>
         [Description("INVALID_TOKEN_DECIMALS")] InvalidTokenDecimals = 168,
-        [Description("INVALID_INITIAL_SUPPLY")] InvalidInitialSupply = 169,
+        /// <summary>
+        /// Invalid token initial supply
+        /// </summary>
+        [Description("INVALID_TOKEN_INITIAL_SUPPLY")] InvalidTokenInitialSupply = 169,
         /// <summary>
         /// Treasury Account does not exist or is deleted
         /// </summary>
         [Description("INVALID_TREASURY_ACCOUNT_FOR_TOKEN")] InvalidTreasuryAccountForToken = 170,
         /// <summary>
-        /// Token Symbol is not UTF-8 alphanumeric uppercase string
+        /// Token Symbol is not UTF-8 capitalized alphabetical string
         /// </summary>
         [Description("INVALID_TOKEN_SYMBOL")] InvalidTokenSymbol = 171,
         /// <summary>
@@ -530,64 +537,83 @@ namespace Hashgraph
         /// </summary>
         [Description("TOKEN_SYMBOL_TOO_LONG")] TokenSymbolTooLong = 175,
         /// <summary>
-        /// Token Symbol is already used
-        /// </summary>
-        [Description("TOKEN_SYMBOL_ALREADY_IN_USE")] TokenSymbolAlreadyInUse = 176,
-        [Description("INVALID_TOKEN_REF")] InvalidTokenRef = 177,
-        /// <summary>
         /// KYC must be granted and account does not have KYC granted
         /// </summary>
-        [Description("ACCOUNT_KYC_NOT_GRANTED_FOR_TOKEN")] AccountKycNotGrantedForToken = 178,
+        [Description("ACCOUNT_KYC_NOT_GRANTED_FOR_TOKEN")] AccountKycNotGrantedForToken = 176,
         /// <summary>
         /// KYC key is not set on token
         /// </summary>
-        [Description("TOKEN_HAS_NO_KYC_KEY")] TokenHasNoKycKey = 179,
+        [Description("TOKEN_HAS_NO_KYC_KEY")] TokenHasNoKycKey = 177,
         /// <summary>
         /// Token balance is not sufficient for the transaction
         /// </summary>
-        [Description("INSUFFICIENT_TOKEN_BALANCE")] InsufficientTokenBalance = 180,
+        [Description("INSUFFICIENT_TOKEN_BALANCE")] InsufficientTokenBalance = 178,
         /// <summary>
         /// Token transactions cannot be executed on deleted token
         /// </summary>
-        [Description("TOKEN_WAS_DELETED")] TokenWasDeleted = 181,
+        [Description("TOKEN_WAS_DELETED")] TokenWasDeleted = 179,
         /// <summary>
         /// Supply key is not set on token
         /// </summary>
-        [Description("TOKEN_HAS_NO_SUPPLY_KEY")] TokenHasNoSupplyKey = 182,
+        [Description("TOKEN_HAS_NO_SUPPLY_KEY")] TokenHasNoSupplyKey = 180,
         /// <summary>
         /// Wipe key is not set on token
         /// </summary>
-        [Description("TOKEN_HAS_NO_WIPE_KEY")] TokenHasNoWipeKey = 183,
-        [Description("INVALID_TOKEN_MINT_AMOUNT")] InvalidTokenMintAmount = 184,
-        [Description("INVALID_TOKEN_BURN_AMOUNT")] InvalidTokenBurnAmount = 185,
-        [Description("ACCOUNT_HAS_NO_TOKEN_RELATIONSHIP")] AccountHasNoTokenRelationship = 186,
+        [Description("TOKEN_HAS_NO_WIPE_KEY")] TokenHasNoWipeKey = 181,
+        [Description("INVALID_TOKEN_MINT_AMOUNT")] InvalidTokenMintAmount = 182,
+        [Description("INVALID_TOKEN_BURN_AMOUNT")] InvalidTokenBurnAmount = 183,
+        [Description("TOKEN_NOT_ASSOCIATED_TO_ACCOUNT")] TokenNotAssociatedToAccount = 184,
         /// <summary>
         /// Cannot execute wipe operation on treasury account
         /// </summary>
-        [Description("CANNOT_WIPE_TOKEN_TREASURY_ACCOUNT")] CannotWipeTokenTreasuryAccount = 187,
-        [Description("INVALID_KYC_KEY")] InvalidKycKey = 188,
-        [Description("INVALID_WIPE_KEY")] InvalidWipeKey = 189,
-        [Description("INVALID_FREEZE_KEY")] InvalidFreezeKey = 190,
-        [Description("INVALID_SUPPLY_KEY")] InvalidSupplyKey = 191,
-        /// <summary>
-        /// Token Name is already used
-        /// </summary>
-        [Description("TOKEN_NAME_ALREADY_IN_USE")] TokenNameAlreadyInUse = 192,
+        [Description("CANNOT_WIPE_TOKEN_TREASURY_ACCOUNT")] CannotWipeTokenTreasuryAccount = 185,
+        [Description("INVALID_KYC_KEY")] InvalidKycKey = 186,
+        [Description("INVALID_WIPE_KEY")] InvalidWipeKey = 187,
+        [Description("INVALID_FREEZE_KEY")] InvalidFreezeKey = 188,
+        [Description("INVALID_SUPPLY_KEY")] InvalidSupplyKey = 189,
         /// <summary>
         /// Token Name is not provided
         /// </summary>
-        [Description("MISSING_TOKEN_NAME")] MissingTokenName = 193,
+        [Description("MISSING_TOKEN_NAME")] MissingTokenName = 190,
         /// <summary>
-        /// Token name is too long
+        /// Token Name is too long
         /// </summary>
-        [Description("TOKEN_NAME_TOO_LONG")] TokenNameTooLong = 194,
+        [Description("TOKEN_NAME_TOO_LONG")] TokenNameTooLong = 191,
         /// <summary>
         /// The provided wipe amount must not be negative, zero or bigger than the token holder balance
         /// </summary>
-        [Description("INVALID_WIPING_AMOUNT")] InvalidWipingAmount = 195,
+        [Description("INVALID_WIPING_AMOUNT")] InvalidWipingAmount = 192,
         /// <summary>
         /// Token does not have Admin key set, thus update/delete transactions cannot be performed
         /// </summary>
-        [Description("TOKEN_IS_IMMUTABlE")] TokenIsImmutablE = 196,
+        [Description("TOKEN_IS_IMMUTABLE")] TokenIsImmutable = 193,
+        /// <summary>
+        /// An &lt;tt>associateToken&lt;/tt> operation specified a token already associated to the account
+        /// </summary>
+        [Description("TOKEN_ALREADY_ASSOCIATED_TO_ACCOUNT")] TokenAlreadyAssociatedToAccount = 194,
+        /// <summary>
+        /// An attempted operation is invalid until all token balances for the target account are zero
+        /// </summary>
+        [Description("TRANSACTION_REQUIRES_ZERO_TOKEN_BALANCES")] TransactionRequiresZeroTokenBalances = 195,
+        /// <summary>
+        /// An attempted operation is invalid because the account is a treasury
+        /// </summary>
+        [Description("ACCOUNT_IS_TREASURY")] AccountIsTreasury = 196,
+        /// <summary>
+        /// Same TokenIDs present in the token list
+        /// </summary>
+        [Description("TOKEN_ID_REPEATED_IN_TOKEN_LIST")] TokenIdRepeatedInTokenList = 197,
+        /// <summary>
+        /// Exceeded the number of token transfers (both from and to) allowed for token transfer list
+        /// </summary>
+        [Description("TOKEN_TRANSFER_LIST_SIZE_LIMIT_EXCEEDED")] TokenTransferListSizeLimitExceeded = 198,
+        /// <summary>
+        /// TokenTransfersTransactionBody has no TokenTransferList
+        /// </summary>
+        [Description("EMPTY_TOKEN_TRANSFER_BODY")] EmptyTokenTransferBody = 199,
+        /// <summary>
+        /// TokenTransfersTransactionBody has a TokenTransferList with no AccountAmounts
+        /// </summary>
+        [Description("EMPTY_TOKEN_TRANSFER_ACCOUNT_AMOUNTS")] EmptyTokenTransferAccountAmounts = 200,
     }
 }

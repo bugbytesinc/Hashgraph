@@ -12,27 +12,32 @@ documentType: homepage
         </div>
     </div>
 </div>
-<div class="container">
+<div class="container text-center">
     <div class="row">
         <h1>Supporting All Public Hedera Network Services</h1>
     </div>
     <div class="row">
-        <div class="col-md-3 text-center">
+        <div class="col-md-4 col-sm-6 text-center">
+            <i class="token-service"></i>
+            <h2>Native Tokens</h2>
+            <p class="lead">Create Fungible Tokens and distribute to any hedera account.  Administer the treasury, mint and burn coins, with optional KYC support.</p>
+        </div>
+        <div class="col-md-4 col-sm-6 text-center">
             <i class="consensus-service"></i>
             <h2>Consensus Service</h2>
             <p class="lead">Submit Hedera Consensus Services directly to the network including segmented messaging scenarios.  Create and Administer new Consensus Topics.</p>
         </div>
-        <div class="col-md-3 text-center">
+        <div class="col-md-4 col-sm-6 text-center">
             <i class="crypto-service"></i>
             <h2>Cryptocurrency</h2>
             <p class="lead">Transfer Cryptocurrency between two or more parties supporting in a single transaction, including complex multi-signature scenarios.  Create and Administer Hedera Cryptocurrency Accounts.</p>
         </div>
-        <div class="col-md-3 text-center">
+        <div class="col-md-4 col-md-offset-2 col-sm-offset-0 col-sm-6 text-center">
             <i class="file-service"></i>
             <h2>File Service</h2>
             <p class="lead">Create Files and Append additional Content.  Manage file properties, overwrite and remove files from the network.</p>
         </div>
-        <div class="col-md-3 text-center">
+        <div class="col-md-4 col-md-offset-0 col-sm-offset-3 col-sm-6 text-center">
             <i class="contract-service"></i>
             <h2>Smart Contract</h2>
             <p class="lead">Invoke methods on Smart Contracts, including payable scenarios.  Create and Administer new Contracts.</p>

@@ -13,7 +13,8 @@ namespace Hashgraph.Implementation
             {
                 return;
             }
-            throw new PrecheckException($"Transaction Failed Pre-Check: {response.NodeTransactionPrecheckCode}", transactionId.ToTxId(), (ResponseCode)response.NodeTransactionPrecheckCode, response.Cost);
+            var responseCode = (ResponseCode)response.NodeTransactionPrecheckCode;
+            throw new PrecheckException($"Transaction Failed Pre-Check: {responseCode}", transactionId.ToTxId(), responseCode, response.Cost);
         }
         internal static void ResponseHeader(TransactionID transactionId, ResponseHeader? header)
         {

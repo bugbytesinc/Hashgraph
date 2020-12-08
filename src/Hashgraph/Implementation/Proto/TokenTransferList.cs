@@ -7,8 +7,8 @@ namespace Proto
 {
     internal static class TokenTransferListExtensions
     {
-        private static ReadOnlyCollection<Hashgraph.TokenAddressTransfer> EMPTY_RESULT = new List<Hashgraph.TokenAddressTransfer>().AsReadOnly();
-        internal static ReadOnlyCollection<Hashgraph.TokenAddressTransfer> ToTransfers(this RepeatedField<TokenTransferList> list)
+        private static ReadOnlyCollection<TokenTransfer> EMPTY_RESULT = new List<TokenTransfer>().AsReadOnly();
+        internal static ReadOnlyCollection<TokenTransfer> ToTransfers(this RepeatedField<TokenTransferList> list)
         {
             if (list != null && list.Count > 0)
             {
@@ -23,10 +23,10 @@ namespace Proto
                         collector[key] = amount + xfer.Amount;
                     }
                 }
-                var result = new List<Hashgraph.TokenAddressTransfer>(collector.Count);
+                var result = new List<TokenTransfer>(collector.Count);
                 foreach (var entry in collector)
                 {
-                    result.Add(new Hashgraph.TokenAddressTransfer(entry.Key.Item1, entry.Key.Item2, entry.Value));
+                    result.Add(new TokenTransfer(entry.Key.Item1, entry.Key.Item2, entry.Value));
                 }
                 return result.AsReadOnly();
             }

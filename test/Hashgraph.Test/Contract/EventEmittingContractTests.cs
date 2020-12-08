@@ -173,7 +173,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.AccountDeleted, pex.Status);
 
             // Delete the Contract, returning any hidden hbars to account number 2
-            var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount2.Record.Address);
+            var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount2.Record.Address, fxContract.PrivateKey);
             Assert.Equal(ResponseCode.Success, deleteContractRecord.Status);
 
             // Check the balance of account number 2, the hBars should be there.

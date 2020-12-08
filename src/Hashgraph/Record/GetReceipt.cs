@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿#pragma warning disable IDE0066
+using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;

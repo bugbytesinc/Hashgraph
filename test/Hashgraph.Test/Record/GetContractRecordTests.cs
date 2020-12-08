@@ -15,15 +15,16 @@ namespace Hashgraph.Test.Record
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Contract Records: Creating a Contract does not leave a record that can be retrieved.")]
-        public async Task CanNotRetrieveRecordFromContractCreate()
+        [Fact(DisplayName = "Contract Records: Creating a Contract no longer leaves a record that can be retrieved.")]
+        public async Task CanRetrieveRecordFromContractCreateRemoved()
         {
             await using var fxContract = await StatefulContract.CreateAsync(_network);
             var records = await fxContract.Client.GetContractRecordsAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(records);
             Assert.Empty(records);
         }
-        [Fact(DisplayName = "Contract Records: Records Functionality has been removed")]
-        public async Task CanNotRetrieveRecordsFromContractMethodCalls()
+        [Fact(DisplayName = "Contract Records: Calling Contract Method no longer creates record that can be retrieved.")]
+        public async Task CanRetrieveRecordsFromContractMethodCalls()
         {
             await using var fxContract = await StatefulContract.CreateAsync(_network);
 
@@ -38,6 +39,7 @@ namespace Hashgraph.Test.Record
                 });
             }
             var records = await fxContract.Client.GetContractRecordsAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(records);
             Assert.Empty(records);
         }
         [Fact(DisplayName = "Contract Records: Casting Account Address as Contract Raises an Error")]

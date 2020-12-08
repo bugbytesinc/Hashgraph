@@ -7,15 +7,15 @@ namespace Hashgraph
     /// Services version and API Protobuf version implemented
     /// by the node being queried.
     /// </summary>
-    public sealed class VersionInfo
+    public sealed record VersionInfo
     {
         /// <summary>
         /// Hedera API Protobuf version supported by this node.
         /// </summary>
-        public SemanticVersion ApiProtobufVersion { get; internal set; }
+        public SemanticVersion ApiProtobufVersion { get; internal init; }
         /// <summary>
         /// Hedera Services Version implemented by this node.
         /// </summary>
-        public SemanticVersion HederaServicesVersion { get; internal set; }
+        public SemanticVersion HederaServicesVersion { get; internal init; }
     }
 }

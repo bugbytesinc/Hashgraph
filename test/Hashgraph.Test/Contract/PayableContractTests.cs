@@ -286,7 +286,7 @@ namespace Hashgraph.Test.Contract
             });
 
             // Delete the Contract, returning any hidden hbars to account number 2
-            var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount2.Record.Address);
+            var deleteContractRecord = await fxContract.Client.DeleteContractAsync(fxContract.ContractRecord.Contract, fxAccount2.Record.Address, fxContract.PrivateKey);
             Assert.Equal(ResponseCode.Success, deleteContractRecord.Status);
 
             // Check the balance of account number 2, the hBars should be there?
@@ -344,7 +344,7 @@ namespace Hashgraph.Test.Contract
             // We will need to revisit this in the future to decide how to test this
             // behavior.
             var testFailException = (await Assert.ThrowsAsync<TransactionException>(TransferFundsToPayableContractWithExternalPayableRaisesContractBalance));
-            Assert.StartsWith("Unable to execute crypto transfer, status: InvalidAccountId", testFailException.Message);
+            Assert.StartsWith("Unable to execute transfers, status: InvalidAccountId", testFailException.Message);
 
             //[Fact(DisplayName = "Payable Contract: Transfer Funds to External Payable Default Function Raises Contract's Account Balance")]
             async Task TransferFundsToPayableContractWithExternalPayableRaisesContractBalance()

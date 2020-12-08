@@ -30,7 +30,8 @@ namespace Hashgraph.Test.Contract
                 Contract = fx.ContractRecord.Contract,
                 Expiration = newExpiration,
                 Administrator = newEndorsement,
-                Memo = newMemo
+                Memo = newMemo,
+                Signatory = fx.PrivateKey
             });
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
@@ -96,7 +97,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractRecord.Contract, info.Contract);
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(newExpiration, info.Expiration);
-            Assert.Equal(_network.PublicKey, info.Administrator);
+            Assert.Equal(fx.PublicKey, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
@@ -108,7 +109,7 @@ namespace Hashgraph.Test.Contract
             await using var fx = await GreetingContract.CreateAsync(_network);
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             var newEndorsement = new Endorsement(newPublicKey);
-            var updatedSignatory = new Signatory(_network.Signatory, newPrivateKey);
+            var updatedSignatory = new Signatory(_network.Signatory, fx.PrivateKey, newPrivateKey);
             fx.Client.Configure(ctx => ctx.Signatory = updatedSignatory);
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
@@ -150,39 +151,6 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
-        [Fact(DisplayName = "Contract Update: Updating Contract Bytecode Silently Fails (IS THIS A NETWORK BUG?)")]
-        public async Task CanUpdateContractBytecode()
-        {
-            await using var fx = await GreetingContract.CreateAsync(_network);
-            await using var fx2 = await StatefulContract.CreateAsync(_network);
-            var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
-            {
-                Contract = fx.ContractRecord.Contract,
-                File = fx2.FileRecord.File
-            });
-            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
-            Assert.NotNull(info);
-            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
-            Assert.Equal(fx.ContractRecord.Contract, info.Address);
-            Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
-            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.Equal(fx.Memo, info.Memo);
-            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-
-            // Call a method that was not part of the original contract to check update.
-            // Note, this is a bug with the network, the call returned success but we are still 
-            // able to call the old contract method which should no longer exist.
-            var callRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
-            {
-                Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
-                FunctionName = "greet",
-            });
-            Assert.NotNull(callRecord);
-            Assert.Equal(ResponseCode.Success, record.Status);
-            Assert.Empty(callRecord.CallResult.Error);
-            Assert.Equal("Hello, world!", callRecord.CallResult.Result.As<string>());
-        }
         [Fact(DisplayName = "Contract Update: Can Update Memo.")]
         public async Task CanUpdateMemo()
         {
@@ -191,7 +159,8 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Memo = newMemo
+                Memo = newMemo,
+                Signatory = fx.PrivateKey
             });
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
@@ -210,7 +179,8 @@ namespace Hashgraph.Test.Contract
             var receipt = await fx.Client.UpdateContractAsync(new UpdateContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Memo = newMemo
+                Memo = newMemo,
+                Signatory = fx.PrivateKey
             });
             var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
             Assert.NotNull(info);
@@ -224,88 +194,30 @@ namespace Hashgraph.Test.Contract
         [Fact(DisplayName = "Contract Update: Updating an immutable contract raises error.")]
         public async Task UpdatingImmutableContractRaisesError()
         {
-            await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.ContractParams.Administrator = null;
-            await fx.CompleteCreateAsync();
+            await using var fxContract = await GreetingContract.CreateAsync(_network, fx =>
+            {
+                fx.ContractParams.Administrator = null;
+            });
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
-                    Contract = fx.ContractRecord.Contract,
+                    Contract = fxContract.ContractRecord.Contract,
                     Memo = Generator.Code(50)
                 });
             });
             Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
             Assert.StartsWith("Unable to update Contract, status: ModifyingImmutableContract", tex.Message);
         }
-        [Fact(DisplayName = "NETWORK V0.7.0 BUG: Contract Update: Updating contract made immutable raises error.")]
-        public async Task BugWithUpdatingContractMadeImutableRaisesError()
-        {
-            var testFailException = (await Assert.ThrowsAsync<TransactionException>(UpdatingContractMadeImutableRaisesError));
-            Assert.StartsWith("Unable to update Contra", testFailException.Message);
-
-            //[Fact(DisplayName = "Contract Update: Updating contract made immutable raises error.")]
-            async Task UpdatingContractMadeImutableRaisesError()
-            {
-                await using var fx = await GreetingContract.CreateAsync(_network);
-                await fx.Client.UpdateContractAsync(new UpdateContractParams
-                {
-                    Contract = fx.ContractRecord.Contract,
-                    Administrator = Endorsement.None
-                });
-                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-                {
-                    await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
-                    {
-                        Contract = fx.ContractRecord.Contract,
-                        Memo = Generator.Code(50)
-                    });
-                });
-                Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
-                Assert.StartsWith("Unable to update Contract, status: ModifyingImmutableContract", tex.Message);
-            }
-        }
-        [Fact(DisplayName = "NETWORK V0.7.0 BUG: Contract Update: Updating contract made immutable (from separate admin key) raises error.")]
-        public async Task BugWithUpdatingContractMadeImutableFromSeparateAdminKeyRaisesError()
-        {
-            var testFailException = (await Assert.ThrowsAsync<TransactionException>(UpdatingContractMadeImutableFromSeparateAdminKeyRaisesError));
-            Assert.StartsWith("Unable to update Contra", testFailException.Message);
-
-            //[Fact(DisplayName = "Contract Update: Updating contract made immutable (from separate admin key) raises error.")]
-            async Task UpdatingContractMadeImutableFromSeparateAdminKeyRaisesError()
-            {
-                var (adminPublic, adminPrivate) = Generator.KeyPair();
-                await using var fx = await GreetingContract.SetupAsync(_network);
-                fx.ContractParams.Administrator = adminPublic;
-                fx.ContractParams.Signatory = adminPrivate;
-                await fx.CompleteCreateAsync();
-
-                await fx.Client.UpdateContractAsync(new UpdateContractParams
-                {
-                    Contract = fx.ContractRecord.Contract,
-                    Administrator = Endorsement.None,
-                    Signatory = adminPrivate
-                });
-                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-                {
-                    await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
-                    {
-                        Contract = fx.ContractRecord.Contract,
-                        Memo = Generator.Code(50)
-                    });
-                });
-                Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
-                Assert.StartsWith("Unable to update Contract, status: ModifyingImmutableContract", tex.Message);
-            }
-        }
         [Fact(DisplayName = "Contract Update: Updating an contract without admin key raises error.")]
         public async Task UpdatingContractWithoutAdminKeyRaisesError()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            await using var fx = await GreetingContract.SetupAsync(_network);
-            fx.ContractParams.Administrator = publicKey;
-            fx.Client.Configure(ctx => ctx.Signatory = new Signatory(ctx.Signatory, privateKey));
-            await fx.CompleteCreateAsync();
+            await using var fx = await GreetingContract.CreateAsync(_network, ctx =>
+            {
+                ctx.ContractParams.Administrator = publicKey;
+                ctx.Client.Configure(ctx => ctx.Signatory = new Signatory(ctx.Signatory, privateKey));
+            });
             // First, Remove admin key from Payer's Account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -391,26 +303,6 @@ namespace Hashgraph.Test.Contract
             });
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", tex.Message);
-        }
-        [Fact(DisplayName = "Contract Update: Cannot make a contract immutable.")]
-        async Task CannotMakeAContractMutable()
-        {
-            await using var fxContract = await GreetingContract.CreateAsync(_network);
-
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
-                {
-                    Contract = fxContract.ContractRecord.Contract,
-                    Administrator = Endorsement.None
-                });
-            });
-            Assert.Equal(ResponseCode.InvalidAdminKey, tex.Status);
-            Assert.StartsWith("Unable to update Contract, status: InvalidAdminKey", tex.Message);
-
-            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
-            Assert.NotNull(info);
-            Assert.Equal(fxContract.ContractParams.Administrator, info.Administrator);
         }
     }
 }

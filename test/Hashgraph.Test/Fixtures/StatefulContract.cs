@@ -13,6 +13,8 @@ namespace Hashgraph.Test.Fixtures
         public CreateContractParams ContractParams;
         public CreateContractRecord ContractRecord;
         public NetworkCredentials Network;
+        public ReadOnlyMemory<byte> PublicKey;
+        public ReadOnlyMemory<byte> PrivateKey;
 
         /// <summary>
         /// The contract 'bytecode' encoded in Hex, Same as hello_world from java sdk, compiled in Remix for with Solidity 0.5.4
@@ -21,8 +23,9 @@ namespace Hashgraph.Test.Fixtures
         public static async Task<StatefulContract> CreateAsync(NetworkCredentials networkCredentials, Action<StatefulContract> customize = null)
         {
             var fx = new StatefulContract();
+            networkCredentials.Output?.WriteLine("STARTING SETUP: Creating Stateful Contract Instance");
+            (fx.PublicKey, fx.PrivateKey) = Generator.KeyPair();
             fx.Network = networkCredentials;
-            fx.Network.Output?.WriteLine("STARTING SETUP: Creating Stateful Contract Instance");
             fx.FileParams = new CreateFileParams
             {
                 Expiration = DateTime.UtcNow.AddSeconds(7890000),
@@ -38,7 +41,8 @@ namespace Hashgraph.Test.Fixtures
             fx.ContractParams = new CreateContractParams
             {
                 File = fx.FileRecord.File,
-                Administrator = networkCredentials.PublicKey,
+                Administrator = fx.PublicKey,
+                Signatory = fx.PrivateKey,
                 Gas = await networkCredentials.TinybarsFromGas(200),
                 RenewPeriod = TimeSpan.FromSeconds(7890000),
                 Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
@@ -60,7 +64,7 @@ namespace Hashgraph.Test.Fixtures
                 {
                     ctx.Memo = "Stateful Contract Teardown: Delete Contract File (may already be deleted)";
                 });
-                await Client.DeleteContractAsync(ContractRecord.Contract, Network.Payer, ctx =>
+                await Client.DeleteContractAsync(ContractRecord.Contract, Network.Payer, PrivateKey, ctx =>
                 {
                     ctx.Memo = "Stateful Contract Teardown: Delete Contract (may already be deleted)";
                 });

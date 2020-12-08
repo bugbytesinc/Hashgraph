@@ -101,6 +101,14 @@ i.contract-service {
   background-size: contain;
 }
 
+i.token-service {
+  display: inline-block;
+  width: 125px;
+  height: 125px;
+  background-image: url(../images/tokens.png);
+  background-size: contain;
+}
+
 .glyphicon {
   margin-right: 10px;
   font-size: 16px;

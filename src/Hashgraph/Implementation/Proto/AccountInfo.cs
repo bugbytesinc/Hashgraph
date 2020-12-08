@@ -18,8 +18,6 @@
                         Endorsement = Key.ToEndorsement(),
                         Balance = Balance,
                         Tokens = TokenRelationships.ToBalances(),
-                        SendThresholdCreateRecord = GenerateSendRecordThreshold,
-                        ReceiveThresholdCreateRecord = GenerateReceiveRecordThreshold,
                         ReceiveSignatureRequired = ReceiverSigRequired,
                         AutoRenewPeriod = AutoRenewPeriod.ToTimeSpan(),
                         Expiration = ExpirationTime.ToDateTime()

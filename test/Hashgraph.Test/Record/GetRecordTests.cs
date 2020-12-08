@@ -210,6 +210,22 @@ namespace Hashgraph.Test.Record
             Assert.Equal(fx.Record.Fee, FileRecord.Fee);
             Assert.Equal(fx.Record.File, FileRecord.File);
         }
+        [Fact(DisplayName = "Get Record: Can get Create Token Record")]
+        public async Task CanGetCreateTokenRecord()
+        {
+            await using var fx = await TestToken.CreateAsync(_network);
+            var record = await fx.Client.GetTransactionRecordAsync(fx.Record.Id);
+            var createRecord = Assert.IsType<CreateTokenRecord>(record);
+            Assert.Equal(fx.Record.Id, createRecord.Id);
+            Assert.Equal(fx.Record.Status, createRecord.Status);
+            Assert.Equal(fx.Record.CurrentExchangeRate, createRecord.CurrentExchangeRate);
+            Assert.Equal(fx.Record.NextExchangeRate, createRecord.NextExchangeRate);
+            Assert.Equal(fx.Record.Hash.ToArray(), createRecord.Hash.ToArray());
+            Assert.Equal(fx.Record.Concensus, createRecord.Concensus);
+            Assert.Equal(fx.Record.Memo, createRecord.Memo);
+            Assert.Equal(fx.Record.Fee, createRecord.Fee);
+            Assert.Equal(fx.Record.Token, createRecord.Token);
+        }
         [Fact(DisplayName = "Get Record: Can get List of Duplicate Records")]
         public async Task CanGetListOfDuplicateRecords()
         {
@@ -264,6 +280,24 @@ namespace Hashgraph.Test.Record
             var txid = client.CreateNewTxId();
             var receipts = await client.GetAllTransactionRecordsAsync(txid);
             Assert.Empty(receipts);
+        }
+        [Fact(DisplayName = "Get Record: Can get Create Token Record As List")]
+        public async Task CanGetCreateTokenRecordAsList()
+        {
+            await using var fx = await TestToken.CreateAsync(_network);
+            var records = await fx.Client.GetAllTransactionRecordsAsync(fx.Record.Id);
+            Assert.Single(records);
+            var record = records[0];
+            var createRecord = Assert.IsType<CreateTokenRecord>(record);
+            Assert.Equal(fx.Record.Id, createRecord.Id);
+            Assert.Equal(fx.Record.Status, createRecord.Status);
+            Assert.Equal(fx.Record.CurrentExchangeRate, createRecord.CurrentExchangeRate);
+            Assert.Equal(fx.Record.NextExchangeRate, createRecord.NextExchangeRate);
+            Assert.Equal(fx.Record.Hash.ToArray(), createRecord.Hash.ToArray());
+            Assert.Equal(fx.Record.Concensus, createRecord.Concensus);
+            Assert.Equal(fx.Record.Memo, createRecord.Memo);
+            Assert.Equal(fx.Record.Fee, createRecord.Fee);
+            Assert.Equal(fx.Record.Token, createRecord.Token);
         }
     }
 }

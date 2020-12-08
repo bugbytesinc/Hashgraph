@@ -1,7 +1,4 @@
 ﻿#pragma warning disable CS8618
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Hashgraph
 {
@@ -11,7 +8,7 @@ namespace Hashgraph
     /// of the segment and which parent message this
     /// segment correlates with.
     /// </summary>
-    public class MessageSegmentInfo
+    public sealed record MessageSegmentInfo
     {
         /// <summary>
         /// The transaction the created the first segment
@@ -19,15 +16,15 @@ namespace Hashgraph
         /// identifier to coalesce the segments of the
         /// message int one.
         /// </summary>
-        public TxId ParentTxId { get; internal set; }
+        public TxId ParentTxId { get; internal init; }
         /// <summary>
         /// The index of this segment (one based).
         /// </summary>
-        public int Index { get; internal set; }
+        public int Index { get; internal init; }
         /// <summary>
         /// The total number of segments making up
         /// the whole of the message when assembled.
         /// </summary>
-        public int TotalSegmentCount { get; internal set; }
+        public int TotalSegmentCount { get; internal init; }
     }
 }

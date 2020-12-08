@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf;
+using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -10,18 +11,13 @@ namespace Hashgraph
     {
         /// <summary>
         /// Set the period of time where the network will suspend will stop creating events 
-        /// and accepting transactions. This is used before safely shut down the platform 
-        /// for maintenance.
+        /// and accepting transactions. This can be used to safely shut down 
+        /// the platform for maintenance and for upgrades if the file information is included.
         /// </summary>
-        /// <param name="starting">
-        /// The time to wait before the the network deactivates.
+        /// <param name="suspendParameters">
+        /// The details of the suspend request, includes the time to wait before suspension, 
+        /// the duration of the suspension and optionally to include an update file.
         /// </param>
-        /// <param name="length">
-        /// The period of time the network remains deactivated.
-        /// </param>
-        /// <param name="file">
-        /// The ID of the file needs to be updated during a period.
-        /// </param>        
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
         /// the execution configuration for just this method call. 
@@ -35,26 +31,29 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> SuspendNetworkAsync(TimeSpan starting, TimeSpan length, Address file, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SuspendNetworkAsync(SuspendNetworkParams suspendParameters, Action<IContext>? configure = null)
         {
-            (starting, length) = RequireInputParameter.StartingAndEndingTimes(starting, length);
-            file = RequireInputParameter.File(file);
+            suspendParameters = RequireInputParameter.SuspendNetworkParams(suspendParameters);
             await using var context = CreateChildContext(configure);
             var gateway = RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
-            var startDate = DateTime.UtcNow.Add(starting);
-            var endDate = startDate.Add(length);
+            var startDate = DateTime.UtcNow.Add(suspendParameters.Starting);
+            var endDate = startDate.Add(suspendParameters.Duration);
             transactionBody.Freeze = new FreezeTransactionBody
             {
                 StartHour = startDate.Hour,
                 StartMin = startDate.Minute,
                 EndHour = endDate.Hour,
                 EndMin = endDate.Minute,
-                UpdateFile = new FileID(file)
             };
+            if (!suspendParameters.UpdateFile.IsNullOrNone())
+            {
+                transactionBody.Freeze.UpdateFile = new FileID(suspendParameters.UpdateFile);
+                transactionBody.Freeze.FileHash = ByteString.CopyFrom(suspendParameters.UpdateFileHash.Span);
+            }
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck);

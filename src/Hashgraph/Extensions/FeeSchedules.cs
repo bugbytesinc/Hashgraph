@@ -35,16 +35,16 @@ namespace Hashgraph.Extensions
     /// Contains a dictionary holding the fee calculation
     /// parameters for various network functions.
     /// </summary>
-    public sealed class FeeSchedule
+    public sealed record FeeSchedule
     {
         /// <summary>
         /// A dictionary mapping hedera functionality (by name) to 
         /// structured fee data (serialized as JSON data).
         /// </summary>
-        public Dictionary<string, string> Data { get; internal set; }
+        public Dictionary<string, string> Data { get; internal init; }
         /// <summary>
         /// The Time at which this fee schedule expires.
         /// </summary>
-        public DateTime Expires { get; internal set; }
+        public DateTime Expires { get; internal init; }
     }
 }

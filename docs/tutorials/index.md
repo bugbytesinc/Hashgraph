@@ -5,7 +5,7 @@ title: Hashgraph - .NET Client Library for Hedera Hashgraph
 
 Hashgraph provides access to the [Hedera Hashgraph](https://www.hedera.com/) Network for the .NET platform.  It manages the communication details with participating [network nodes](https://docs.hedera.com/guides/mainnet/mainnet-nodes) and provides an efficient set asynchronous interface methods for consumption by .NET programs.
 
-Hashgraph is built with [.NET Core](https://docs.microsoft.com/en-us/dotnet/core/introduction) Version 3.x
+Hashgraph is built with [.NET Core](https://docs.microsoft.com/en-us/dotnet/core/introduction) Version 5.x
 
 ## How do I Install It?
 

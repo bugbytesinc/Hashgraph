@@ -31,8 +31,6 @@ namespace Hashgraph.Tests.Docs.Recipe
                 Console.WriteLine($"Smart Contract ID:     {info.SmartContractId}");
                 Console.WriteLine($"Proxy Address:         0.0.{info.Proxy.AccountNum}");
                 Console.WriteLine($"Balance:               {info.Balance:#,#} tb");
-                Console.WriteLine($"Send Record Thrshld:   {info.SendThresholdCreateRecord:#,#} tb");
-                Console.WriteLine($"Rec. Record Thrshld:   {info.ReceiveThresholdCreateRecord:#,#} tb");
                 Console.WriteLine($"Receive Sig. Required: {info.ReceiveSignatureRequired}");
                 Console.WriteLine($"Auto-Renewal Period:   {info.AutoRenewPeriod}");
             }

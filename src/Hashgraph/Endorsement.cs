@@ -37,14 +37,14 @@ namespace Hashgraph
         /// this represents the number of child endorsements that must
         /// be fulfilled in order to consider this endorsement fulfilled.
         /// </summary>
-        public uint RequiredCount { get; internal set; }
+        public uint RequiredCount { get; private set; }
         /// <summary>
         /// The type of endorsement this object is.  It either contains
         /// a representation of a public key or a list of child endorsements
         /// with a not of how many are requrired to be fullfilled for this
         /// endorsement to be fulfilled.
         /// </summary>
-        public KeyType Type { get; internal set; }
+        public KeyType Type { get; private set; }
         /// <summary>
         /// The value of the public key held by this endorsement if it is
         /// of a key type.  If it is a list type, the value returned will
@@ -75,7 +75,7 @@ namespace Hashgraph
         /// to change a topic from mutable (which has an Administrator endorsement)
         /// to imutable (having no Administrator endorsement).
         /// </summary>
-        public static Endorsement None { get; private set; } = new Endorsement();
+        public static Endorsement None { get; } = new Endorsement();
         /// <summary>
         /// Internal Constructor representing the "Empty List" version of an
         /// endorsement.  This is a special construct that is used by the network

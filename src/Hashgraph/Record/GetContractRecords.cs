@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿#pragma warning disable CS0612
+using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -10,6 +11,7 @@ namespace Hashgraph
     public partial class Client
     {
         /// <summary>
+        /// DEPRICATED: THIS METHOD WILL BE REMOVED WHEN NETWORK RETURNS NOT-IMPLEMENTED
         /// Retrieves the records associated with an contract that are presently
         /// held within the network.
         /// </summary>
@@ -27,7 +29,7 @@ namespace Hashgraph
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        public async Task<TransactionRecord[]> GetContractRecordsAsync(Address contract, Action<IContext>? configure = null)
+        internal async Task<TransactionRecord[]> GetContractRecordsAsync(Address contract, Action<IContext>? configure = null)
         {
             contract = RequireInputParameter.Contract(contract);
             await using var context = CreateChildContext(configure);

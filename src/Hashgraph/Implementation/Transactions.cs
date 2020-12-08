@@ -56,84 +56,6 @@ namespace Hashgraph
                 return new TransactionID(preExistingTransaction);
             }
         }
-        internal static TransferList CreateCryptoTransferList(params (Address address, long amount)[] list)
-        {
-            var netRequests = new Dictionary<Address, long>();
-            foreach (var (address, amount) in list)
-            {
-                if (netRequests.TryGetValue(address, out long value))
-                {
-                    netRequests[address] = value + amount;
-                }
-                else
-                {
-                    netRequests[address] = amount;
-                }
-            }
-            var transfers = new TransferList();
-            foreach (var transfer in netRequests)
-            {
-                if (transfer.Value != 0)
-                {
-                    transfers.AccountAmounts.Add(new AccountAmount
-                    {
-                        AccountID = new AccountID(transfer.Key),
-                        Amount = transfer.Value
-                    });
-                }
-            }
-            return transfers;
-        }
-        internal static TokenTransfers CreateTokenTransfers(Address fromAccount, Address toAccount, TokenIdentifier token, long amount)
-        {
-            var transfers = new TokenTransfers();
-            transfers.Transfers.Add(new Proto.TokenTransfer
-            {
-                Token = new TokenRef(token),
-                Account = new AccountID(fromAccount),
-                Amount = -amount
-            });
-            transfers.Transfers.Add(new Proto.TokenTransfer
-            {
-                Token = new TokenRef(token),
-                Account = new AccountID(toAccount),
-                Amount = amount
-            });
-            return transfers;
-        }
-
-        internal static TokenTransfers CreateTokenTransfers(IEnumerable<TokenTransfer> list)
-        {
-            var tokenTransfers = new TokenTransfers();
-            foreach (var tokenGroup in list.GroupBy(txfer => txfer.Token))
-            {
-                var netTransfers = new Dictionary<Address, long>();
-                foreach (var tokenTransfer in tokenGroup)
-                {
-                    if (netTransfers.TryGetValue(tokenTransfer.Address, out long value))
-                    {
-                        netTransfers[tokenTransfer.Address] = value + tokenTransfer.Amount;
-                    }
-                    else
-                    {
-                        netTransfers[tokenTransfer.Address] = tokenTransfer.Amount;
-                    }
-                }
-                foreach (var netTransfer in netTransfers)
-                {
-                    if (netTransfer.Value != 0)
-                    {
-                        tokenTransfers.Transfers.Add(new Proto.TokenTransfer
-                        {
-                            Token = new TokenRef(tokenGroup.Key),
-                            Account = new AccountID(netTransfer.Key),
-                            Amount = netTransfer.Value
-                        });
-                    }
-                }
-            }
-            return tokenTransfers;
-        }
         internal static TransactionBody CreateTransactionBody(GossipContextStack context, TransactionID transactionId)
         {
             return new TransactionBody
@@ -149,7 +71,7 @@ namespace Hashgraph
         {
             return new QueryHeader
             {
-                Payment = new Transaction { BodyBytes = ByteString.Empty },
+                Payment = new Transaction { SignedTransactionBytes = ByteString.Empty },
                 ResponseType = ResponseType.CostAnswer
             };
         }
@@ -167,18 +89,23 @@ namespace Hashgraph
                 TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
                 Memo = context.Memo ?? ""
             };
-            var transfers = CreateCryptoTransferList((payer, -fee), (gateway, fee));
+            var transfers = new TransferList();
+            transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(payer), Amount = -fee });
+            transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(gateway), Amount = fee });
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             return new QueryHeader
             {
                 Payment = await SignTransactionAsync(transactionBody, signatory)
             };
         }
-        internal static async Task<Proto.Transaction> SignTransactionAsync(TransactionBody transactionBody, ISignatory signatory)
+        internal static async Task<Transaction> SignTransactionAsync(TransactionBody transactionBody, ISignatory signatory)
         {
             var invoice = new Invoice(transactionBody);
             await signatory.SignAsync(invoice);
-            return invoice.GetSignedTransaction();
+            return new Transaction
+            {
+                SignedTransactionBytes = invoice.GetSignedTransaction().ToByteString()
+            };          
         }
         internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
         {
@@ -284,7 +211,8 @@ namespace Hashgraph
                     // performance or grpc connection issues already.
                     if (transaction != null)
                     {
-                        var transactionBody = TransactionBody.Parser.ParseFrom(transaction.BodyBytes);
+                        var signedTransaction = SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
+                        var transactionBody = TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
                         var transactionId = transactionBody.TransactionID;
                         var query = new Query
                         {

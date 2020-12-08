@@ -7,9 +7,9 @@ namespace Hashgraph.Test.Fixtures
 {
     public static class Generator
     {
-        private static Random _random = new Random();
-        private static char[] _sample = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-*&%$#@!".ToCharArray();
-        private static char[] _alphaSample = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+        private static readonly Random _random = new Random();
+        private static readonly char[] _sample = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-*&%$#@!".ToCharArray();
+        private static readonly char[] _alphaSample = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 
         public static Int32 Integer(Int32 minValueInclusive, Int32 maxValueInclusive)
         {

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Proto;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Hashgraph.Implementation
@@ -19,6 +21,14 @@ namespace Hashgraph.Implementation
                 throw new ArgumentNullException(nameof(address), "Account Address is missing. Please check that it is not null.");
             }
             return address;
+        }
+        internal static Address Account(Address account)
+        {
+            if (account.IsNullOrNone())
+            {
+                throw new ArgumentNullException(nameof(account), "Account Address is missing. Please check that it is not null or empty.");
+            }
+            return account;
         }
         internal static Address Contract(Address contract)
         {
@@ -52,15 +62,11 @@ namespace Hashgraph.Implementation
             }
             return addressToDelete;
         }
-        internal static TokenIdentifier TokenIdentifier(TokenIdentifier token)
+        internal static Address Token(Address token)
         {
-            if (token is null)
+            if (token.IsNullOrNone())
             {
-                throw new ArgumentNullException(nameof(token), "Token is missing. Please check that it is not null.");
-            }
-            if ((token.Address is null || token.Address == Hashgraph.Address.None) && string.IsNullOrWhiteSpace(token.Symbol))
-            {
-                throw new ArgumentNullException(nameof(token), "Token Address and Symbol are missing. At least one is required.");
+                throw new ArgumentNullException(nameof(token), "Token is missing. Please check that it is not null or empty.");
             }
             return token;
         }
@@ -144,32 +150,133 @@ namespace Hashgraph.Implementation
             }
             return amount;
         }
-        internal static (Address address, long amount)[] CryptoTransferList(IEnumerable<KeyValuePair<Address, long>> transfers)
+
+        internal static (TransferList?, IEnumerable<TokenTransferList>?) CryptoAndTransferList(TransferParams transfers)
+        {
+            if(transfers == null)
+            {
+                throw new ArgumentNullException(nameof(transfers), "The transfer parametes cannot not be null.");
+            }
+            var cryptoTransfers = transfers.CryptoTransfers == null ? null : RequireInputParameter.CryptoTransferList(transfers.CryptoTransfers);
+            var tokenTransfers = transfers.TokenTransfers == null ? null : RequireInputParameter.TokenTransferList(transfers.TokenTransfers);
+            if (cryptoTransfers == null && tokenTransfers == null)
+            {
+                throw new ArgumentException(nameof(transfers), "Both crypto and token transfer lists are null.  At least one must include transfers.");
+            }
+            return (cryptoTransfers, tokenTransfers);
+        }
+
+        internal static TransferList CryptoTransferList(IEnumerable<KeyValuePair<Address, long>> cryptoTransfers)
         {
             long sum = 0;
-            if (transfers is null)
+            if (cryptoTransfers is null)
             {
-                throw new ArgumentNullException(nameof(transfers), "The dictionary of transfers can not be null.");
+                throw new ArgumentNullException(nameof(cryptoTransfers), "The dictionary of crypto transfers can not be null.");
             }
-            var result = new List<(Address address, long amount)>();
-            foreach (var transfer in transfers)
+            var netRequests = new Dictionary<Address, long>();
+            foreach (var transfer in cryptoTransfers)
             {
                 if (transfer.Value == 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(transfers), $"The amount to transfer to/from {transfer.Key.ShardNum}.{transfer.Key.RealmNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                    throw new ArgumentOutOfRangeException(nameof(cryptoTransfers), $"The amount to transfer crypto to/from {transfer.Key.ShardNum}.{transfer.Key.RealmNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
                 }
-                result.Add((transfer.Key, transfer.Value));
-                sum = sum + transfer.Value;
+                if (netRequests.TryGetValue(transfer.Key, out long value))
+                {
+                    netRequests[transfer.Key] = value + transfer.Value;
+                }
+                else
+                {
+                    netRequests[transfer.Key] = transfer.Value;
+                }
+                sum += transfer.Value;
             }
-            if (result.Count == 0)
+            if (netRequests.Count == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(transfers), "The dictionary of transfers can not be empty.");
+                throw new ArgumentOutOfRangeException(nameof(cryptoTransfers), "The dictionary of crypto transfers can not be empty.");
             }
             if (sum != 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(transfers), "The sum of sends and receives does not balance.");
+                throw new ArgumentOutOfRangeException(nameof(cryptoTransfers), "The sum of crypto sends and receives does not balance.");
             }
-            return result.ToArray();
+            var xferList = new TransferList();
+            foreach (var transfer in netRequests)
+            {
+                if (transfer.Value != 0)
+                {
+                    xferList.AccountAmounts.Add(new AccountAmount
+                    {
+                        AccountID = new AccountID(transfer.Key),
+                        Amount = transfer.Value
+                    });
+                }
+            }
+            return xferList;
+        }
+
+        internal static IEnumerable<TokenTransferList> TokenTransferList(IEnumerable<TokenTransfer> tokenTransfers)
+        {
+            if (tokenTransfers is null)
+            {
+                throw new ArgumentNullException(nameof(tokenTransfers), "The list of token transfers can not be null.");
+            }
+            var transactions = new List<TokenTransferList>();
+            foreach (var tokenGroup in tokenTransfers.GroupBy(txfer => txfer.Token))
+            {
+                if (tokenGroup.Key.IsNullOrNone())
+                {
+                    throw new ArgumentException("Token", "The list of token transfers cannot contain a null or empty Token value.");
+                }
+                long sum = 0;
+                var netRequests = new Dictionary<Address, long>();
+                foreach (var xfer in tokenGroup)
+                {
+                    if (xfer.Address.IsNullOrNone())
+                    {
+                        throw new ArgumentException(nameof(xfer.Address), "The list of token transfers cannot contain a null or empty account value.");
+                    }
+                    if (xfer.Amount == 0)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(xfer.Amount), $"The amount to transfer tokens to/from {xfer.Address.ShardNum}.{xfer.Address.RealmNum}.{xfer.Address.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                    }
+                    if (netRequests.TryGetValue(xfer.Address, out long value))
+                    {
+                        netRequests[xfer.Address] = value + xfer.Amount;
+                    }
+                    else
+                    {
+                        netRequests[xfer.Address] = xfer.Amount;
+                    }
+                    sum += xfer.Amount;
+                }
+                if (sum != 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(tokenTransfers), $"The sum of token sends and receives for {tokenGroup.Key.ShardNum}.{tokenGroup.Key.RealmNum}.{tokenGroup.Key.AccountNum} does not balance.");
+                }
+                var xferList = new TokenTransferList
+                {
+                    Token = new TokenID(tokenGroup.Key)
+                };
+                foreach (var netTransfer in netRequests)
+                {
+                    if (netTransfer.Value != 0)
+                    {
+                        xferList.Transfers.Add(new AccountAmount
+                        {
+                            AccountID = new AccountID(netTransfer.Key),
+                            Amount = netTransfer.Value
+                        });
+                    }
+                }
+                if (xferList.Transfers.Count > 0)
+                {
+                    transactions.Add(xferList);
+                }
+            }
+            if (transactions.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tokenTransfers), "The dictionary of token transfers can not be empty.");
+            }
+            return transactions;
         }
         internal static TxId Transaction(TxId transaction)
         {
@@ -194,8 +301,6 @@ namespace Hashgraph.Implementation
                 throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsement), "Endorsement can not be 'None', it must contain at least one key requirement.");
             }
             if (updateParameters.Endorsement is null &&
-                updateParameters.SendThresholdCreateRecord is null &&
-                updateParameters.ReceiveThresholdCreateRecord is null &&
                 updateParameters.RequireReceiveSignature is null &&
                 updateParameters.Expiration is null &&
                 updateParameters.AutoRenewPeriod is null &&
@@ -254,9 +359,9 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(updateParameters), "Token Update Parameters argument is missing. Please check that it is not null.");
             }
-            if (updateParameters.Token is null || ((updateParameters.Token.Address is null || updateParameters.Token.Address == Hashgraph.Address.None) && string.IsNullOrWhiteSpace(updateParameters.Token.Symbol)))
+            if (updateParameters.Token.IsNullOrNone())
             {
-                throw new ArgumentNullException(nameof(updateParameters.Token), "The Token Identifer (Address or Symbol) is missing, at least Address or Symbol is required.");
+                throw new ArgumentNullException(nameof(updateParameters.Token), "The Token is missing.  Please check that it is not null or empty.");
             }
             if (updateParameters.Treasury is null &&
                 updateParameters.Administrator is null &&
@@ -264,7 +369,11 @@ namespace Hashgraph.Implementation
                 updateParameters.SuspendEndorsement is null &&
                 updateParameters.ConfiscateEndorsement is null &&
                 updateParameters.SupplyEndorsement is null &&
-                string.IsNullOrWhiteSpace(updateParameters.Symbol))
+                string.IsNullOrWhiteSpace(updateParameters.Symbol) &&
+                string.IsNullOrWhiteSpace(updateParameters.Name) &&
+                !updateParameters.Expiration.HasValue &&
+                !updateParameters.RenewPeriod.HasValue &&
+                updateParameters.RenewAccount is null)
             {
                 throw new ArgumentException("The Topic Updates contain no update properties, it is blank.", nameof(updateParameters));
             }
@@ -281,6 +390,27 @@ namespace Hashgraph.Implementation
                 if (!updateParameters.Symbol.Equals(updateParameters.Symbol.ToUpperInvariant()))
                 {
                     throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol must contain upper case characters.");
+                }
+            }
+            if (!string.IsNullOrWhiteSpace(updateParameters.Name))
+            {
+                if (updateParameters.Name.Trim().Length != updateParameters.Name.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Name), "The new token name cannot contain leading or trailing white space.");
+                }
+            }
+            if (updateParameters.Expiration.HasValue)
+            {
+                if (updateParameters.Expiration.Value < DateTime.UtcNow)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Expiration), "The new expiration can not be set to the past.");
+                }
+            }
+            if (updateParameters.RenewPeriod.HasValue)
+            {
+                if (updateParameters.RenewPeriod.Value.TotalSeconds < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.RenewPeriod), "The renew period must be non negative.");
                 }
             }
             return updateParameters;
@@ -387,6 +517,28 @@ namespace Hashgraph.Implementation
             }
             return signatories;
         }
+
+        internal static TokenID[] Tokens(IEnumerable<Address> tokens)
+        {
+            if (tokens is null)
+            {
+                throw new ArgumentNullException(nameof(tokens), "The list of tokens cannot be null.");
+            }
+            var list = tokens.Select(token =>
+            {
+                if (token.IsNullOrNone())
+                {
+                    throw new ArgumentOutOfRangeException(nameof(tokens), "The list of tokens cannot contain an empty or null address.");
+                }
+                return new TokenID(token);
+            }).ToArray();
+            if (list.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(tokens), "The list of tokens cannot be empty.");
+            }
+            return list;
+        }
+
         internal static Func<IInvoice, Task> SigningCallback(Func<IInvoice, Task> signingCallback)
         {
             if (signingCallback is null)
@@ -457,6 +609,10 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
             }
+            if (string.IsNullOrWhiteSpace(createParameters.Name))
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Name), "The name cannot be null or empty.");
+            }
             if (string.IsNullOrWhiteSpace(createParameters.Symbol))
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol must be specified.");
@@ -484,6 +640,14 @@ namespace Hashgraph.Implementation
             if (createParameters.Treasury is null || createParameters.Treasury == Hashgraph.Address.None)
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.Treasury), "The treasury must be specified.");
+            }
+            if (createParameters.Expiration < DateTime.UtcNow)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.Expiration), "The expiration time must be in the future.");
+            }
+            if (createParameters.RenewAccount.IsNullOrNone() == createParameters.RenewPeriod.HasValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.RenewPeriod), "Both the renew account and period must be specified, or not at all.");
             }
             return createParameters;
         }
@@ -563,31 +727,43 @@ namespace Hashgraph.Implementation
             }
             return amount;
         }
-        internal static (TimeSpan starting, TimeSpan length) StartingAndEndingTimes(TimeSpan starting, TimeSpan length)
+        internal static SuspendNetworkParams SuspendNetworkParams(SuspendNetworkParams suspendParameters)
         {
-            if (length.Ticks < 0)
+            if (suspendParameters.Duration.Ticks < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(length), "The length of time must be greater than zero.");
+                throw new ArgumentOutOfRangeException(nameof(suspendParameters.Duration), "The duration of the suspension must be greater than zero.");
             }
-            if (length.TotalHours > 24)
+            if (suspendParameters.Duration.TotalHours > 24)
             {
-                throw new ArgumentOutOfRangeException(nameof(length), "The length of time must not exceed 24 hours.");
+                throw new ArgumentOutOfRangeException(nameof(suspendParameters.Duration), "The duration of suspension must not exceed 24 hours.");
             }
-            if (starting.TotalHours > 24)
+            if (suspendParameters.Starting.TotalHours > 24)
             {
-                throw new ArgumentOutOfRangeException(nameof(length), "The starting wait must not exceed 24 hours.");
+                throw new ArgumentOutOfRangeException(nameof(suspendParameters.Starting), "The starting wait must not exceed 24 hours.");
             }
             var now = DateTime.UtcNow;
-            var then = now.Add(starting).Add(length);
+            var then = now.Add(suspendParameters.Starting).Add(suspendParameters.Duration);
             if (then < now)
             {
-                throw new ArgumentOutOfRangeException(nameof(starting), "The combination of starting wait and suspension lenght has already passed.");
+                throw new ArgumentOutOfRangeException(nameof(suspendParameters.Starting), "The combination of Starting wait and Duration has already passed.");
             }
-            return (starting, length);
+            if (suspendParameters.UpdateFile.IsNullOrNone())
+            {
+                if (!suspendParameters.UpdateFileHash.IsEmpty)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(suspendParameters.UpdateFile), "The the the hash of the file contents is specified, an address for the update file must be included.");
+                }
+            }
+            else if (suspendParameters.UpdateFileHash.IsEmpty)
+            {
+                throw new ArgumentOutOfRangeException(nameof(suspendParameters.UpdateFileHash), "The an update file address is specified, the hash of the file contents must be included.");
+            }
+            return suspendParameters;
         }
         internal static Proto.TransactionID IdFromTransactionBytes(ReadOnlyMemory<byte> transaction)
         {
             Proto.Transaction decodedTransaction;
+            Proto.SignedTransaction decodedSignedTransaction;
             Proto.TransactionBody decodedTransactionBody;
             if (transaction.IsEmpty)
             {
@@ -601,9 +777,21 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentException(nameof(transaction), "The submitted bytes do not appear to belong to a transaction.", pe);
             }
+            if (decodedTransaction.SignedTransactionBytes.IsEmpty)
+            {
+                throw new ArgumentOutOfRangeException(nameof(transaction), "Missing Signed Transaction Bytes on Transaction (was empty.)");
+            }
             try
             {
-                decodedTransactionBody = Proto.TransactionBody.Parser.ParseFrom(decodedTransaction.BodyBytes);
+                decodedSignedTransaction = Proto.SignedTransaction.Parser.ParseFrom(decodedTransaction.SignedTransactionBytes);
+            }
+            catch (Exception pe)
+            {
+                throw new ArgumentException(nameof(transaction), "The submitted transaction does not appear to have a parsable signed transaction byte array.", pe);
+            }
+            try
+            {
+                decodedTransactionBody = Proto.TransactionBody.Parser.ParseFrom(decodedSignedTransaction.BodyBytes);
             }
             catch (Exception pe)
             {

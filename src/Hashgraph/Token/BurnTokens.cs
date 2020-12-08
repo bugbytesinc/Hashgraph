@@ -15,7 +15,7 @@ namespace Hashgraph
         /// The identifier (Address/Symbol) of the token to remove coins from.
         /// </param>
         /// <param name="amount">
-        /// The amount of coins to remove (in whole coins, no fractions)
+        /// The amount of coins to remove (specified in the smallest denomination).
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -30,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> BurnTokenAsync(TokenIdentifier token, ulong amount, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> BurnTokenAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
             return BurnTokenImplementationAsync<TransactionReceipt>(token, amount, null, configure);
         }
@@ -41,7 +41,7 @@ namespace Hashgraph
         /// The identifier (Address/Symbol) of the token to remove coins from.
         /// </param>
         /// <param name="amount">
-        /// The amount of coins to remove (in whole coins, no fractions)
+        /// The amount of coins to remove (specified in the smallest denomination).
         /// </param>
         /// <param name="signatory">
         /// Additional signing key matching the administrative endorsements
@@ -60,7 +60,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> BurnTokenAsync(TokenIdentifier token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> BurnTokenAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
             return BurnTokenImplementationAsync<TransactionReceipt>(token, amount, signatory, configure);
         }
@@ -71,7 +71,7 @@ namespace Hashgraph
         /// The identifier (Address/Symbol) of the token to remove coins from.
         /// </param>
         /// <param name="amount">
-        /// The amount of coins to remove (in whole coins, no fractions)
+        /// The amount of coins to remove (specified in the smallest denomination).
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -86,7 +86,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> BurnTokenWithRecordAsync(TokenIdentifier token, ulong amount, Action<IContext>? configure = null)
+        public Task<TransactionRecord> BurnTokenWithRecordAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
             return BurnTokenImplementationAsync<TransactionRecord>(token, amount, null, configure);
         }
@@ -97,7 +97,7 @@ namespace Hashgraph
         /// The identifier (Address/Symbol) of the token to remove coins from.
         /// </param>
         /// <param name="amount">
-        /// The amount of coins to remove (in whole coins, no fractions)
+        /// The amount of coins to remove (specified in the smallest denomination).
         /// </param>
         /// <param name="signatory">
         /// Additional signing key matching the administrative endorsements
@@ -116,16 +116,16 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> BurnTokenWithRecordAsync(TokenIdentifier token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionRecord> BurnTokenWithRecordAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
             return BurnTokenImplementationAsync<TransactionRecord>(token, amount, signatory, configure);
         }
         /// <summary>
         /// Internal implementation of burn token method.
         /// </summary>
-        private async Task<TResult> BurnTokenImplementationAsync<TResult>(TokenIdentifier token, ulong amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> BurnTokenImplementationAsync<TResult>(Address token, ulong amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
-            token = RequireInputParameter.TokenIdentifier(token);
+            token = RequireInputParameter.Token(token);
             amount = RequireInputParameter.TokenAmount(amount);
             await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
@@ -133,9 +133,9 @@ namespace Hashgraph
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
-            transactionBody.TokenBurn = new TokenBurnCoins
+            transactionBody.TokenBurn = new TokenBurnTransactionBody
             {
-                Token = new TokenRef(token),
+                Token = new TokenID(token),
                 Amount = amount
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);

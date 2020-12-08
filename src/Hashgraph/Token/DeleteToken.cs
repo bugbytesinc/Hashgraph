@@ -28,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteTokenAsync(TokenIdentifier token, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> DeleteTokenAsync(Address token, Action<IContext>? configure = null)
         {
             return DeleteTokenImplementationAsync(token, null, configure);
         }
@@ -55,25 +55,25 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteTokenAsync(TokenIdentifier token, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> DeleteTokenAsync(Address token, Signatory signatory, Action<IContext>? configure = null)
         {
             return DeleteTokenImplementationAsync(token, signatory, configure);
         }
         /// <summary>
         /// Internal implementation of delete token method.
         /// </summary>
-        private async Task<TransactionReceipt> DeleteTokenImplementationAsync(TokenIdentifier token, Signatory? signatory, Action<IContext>? configure)
+        private async Task<TransactionReceipt> DeleteTokenImplementationAsync(Address token, Signatory? signatory, Action<IContext>? configure)
         {
-            token = RequireInputParameter.TokenIdentifier(token);
+            token = RequireInputParameter.Token(token);
             await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
-            transactionBody.TokenDeletion = new TokenDeletion
+            transactionBody.TokenDeletion = new TokenDeleteTransactionBody
             {
-                Token = new TokenRef(token)
+                Token = new TokenID(token)
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);

@@ -19,6 +19,9 @@ namespace Hashgraph
         /// <param name="address">
         /// Address of the account holding the tokens to remove.
         /// </param>
+        /// <param name="amount">
+        /// The amount of coins to confiscate (of the divisible denomination)
+        /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
         /// the execution configuration for just this method call. 
@@ -32,10 +35,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        [Obsolete("The next release of this library will include an 'amount' parameter.")]
-        public Task<TransactionReceipt> ConfiscateTokensAsync(TokenIdentifier token, Address address, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> ConfiscateTokensAsync(Address token, Address address, ulong amount, Action<IContext>? configure = null)
         {
-            return ConfiscateTokensImplementationAsync<TransactionReceipt>(token, address, null, configure);
+            return ConfiscateTokensImplementationAsync<TransactionReceipt>(token, address, amount, null, configure);
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -52,6 +54,9 @@ namespace Hashgraph
         /// Additional signing key matching the administrative endorsements
         /// associated with this token (if not already added in the context).
         /// </param>
+        /// <param name="amount">
+        /// The amount of coins to confiscate (of the divisible denomination)
+        /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
         /// the execution configuration for just this method call. 
@@ -65,10 +70,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        [Obsolete("The next release of this library will include an 'amount' parameter.")]
-        public Task<TransactionReceipt> ConfiscateTokensAsync(TokenIdentifier token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionReceipt> ConfiscateTokensAsync(Address token, Address address, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return ConfiscateTokensImplementationAsync<TransactionReceipt>(token, address, signatory, configure);
+            return ConfiscateTokensImplementationAsync<TransactionReceipt>(token, address, amount, signatory, configure);
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -80,6 +84,9 @@ namespace Hashgraph
         /// </param>
         /// <param name="address">
         /// Address of the account holding the tokens to remove.
+        /// </param>
+        /// <param name="amount">
+        /// The amount of coins to confiscate (of the divisible denomination)
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -94,10 +101,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        [Obsolete("The next release of this library will include an 'amount' parameter.")]
-        public Task<TransactionRecord> ConfiscateTokensWithRecordAsync(TokenIdentifier token, Address address, Action<IContext>? configure = null)
+        public Task<TransactionRecord> ConfiscateTokensWithRecordAsync(Address token, Address address, ulong amount, Action<IContext>? configure = null)
         {
-            return ConfiscateTokensImplementationAsync<TransactionRecord>(token, address, null, configure);
+            return ConfiscateTokensImplementationAsync<TransactionRecord>(token, address, amount, null, configure);
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -114,6 +120,9 @@ namespace Hashgraph
         /// Additional signing key matching the administrative endorsements
         /// associated with this token (if not already added in the context).
         /// </param>
+        /// <param name="amount">
+        /// The amount of coins to confiscate (of the divisible denomination)
+        /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
         /// the execution configuration for just this method call. 
@@ -127,28 +136,29 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        [Obsolete("The next release of this library will include an 'amount' parameter.")]
-        public Task<TransactionRecord> ConfiscateTokensWithRecordAsync(TokenIdentifier token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TransactionRecord> ConfiscateTokensWithRecordAsync(Address token, Address address, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return ConfiscateTokensImplementationAsync<TransactionRecord>(token, address, signatory, configure);
+            return ConfiscateTokensImplementationAsync<TransactionRecord>(token, address, amount, signatory, configure);
         }
         /// <summary>
         /// Internal implementation of delete token method.
         /// </summary>
-        private async Task<TResult> ConfiscateTokensImplementationAsync<TResult>(TokenIdentifier token, Address address, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<TResult> ConfiscateTokensImplementationAsync<TResult>(Address token, Address address, ulong amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
         {
-            token = RequireInputParameter.TokenIdentifier(token);
+            token = RequireInputParameter.Token(token);
             address = RequireInputParameter.Address(address);
+            amount = RequireInputParameter.ConfiscateAmount(amount);
             await using var context = CreateChildContext(configure);
             RequireInContext.Gateway(context);
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context, signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
-            transactionBody.TokenWipe = new TokenWipeAccount
+            transactionBody.TokenWipe = new TokenWipeAccountTransactionBody
             {
-                Token = new TokenRef(token),
+                Token = new TokenID(token),
                 Account = new AccountID(address),
+                Amount = amount
             };
             var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
