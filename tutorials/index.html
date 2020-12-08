@@ -8,7 +8,7 @@
     <title>Hashgraph - .NET Client Library for Hedera Hashgraph | Hashgraph </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Hashgraph - .NET Client Library for Hedera Hashgraph | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -70,7 +70,7 @@
 <h1 id="what-is-hashgraph">What is Hashgraph?</h1>
 
 <p>Hashgraph provides access to the <a href="https://www.hedera.com/">Hedera Hashgraph</a> Network for the .NET platform.  It manages the communication details with participating <a href="https://docs.hedera.com/guides/mainnet/mainnet-nodes">network nodes</a> and provides an efficient set asynchronous interface methods for consumption by .NET programs.</p>
-<p>Hashgraph is built with <a href="https://docs.microsoft.com/en-us/dotnet/core/introduction">.NET Core</a> Version 3.x</p>
+<p>Hashgraph is built with <a href="https://docs.microsoft.com/en-us/dotnet/core/introduction">.NET Core</a> Version 5.x</p>
 <h2 id="how-do-i-install-it">How do I Install It?</h2>
 <p>Hashgraph is published in <a href="https://www.nuget.org/packages/Hashgraph/">NuGet</a>.  You can install it with your favorite NugGet client, for example from the command line:</p>
 <pre><code class="lang-sh">dotnet add package Hashgraph
@@ -103,7 +103,7 @@
     }
 }
 </code></pre>
-<p>Hashgraph provides access to the Hedera network via the <a class="xref" href="../api/Hashgraph.Client.html"><code>Client</code></a> object.  The <a class="xref" href="../api/Hashgraph.Client.html"><code>Client</code></a> object orchestrates the request construction and communication with the hedera network.   During creation, it requires a small amount of configuration.  At a minimum to retrieve an account balance, the client must be configured with a <a class="xref" href="../api/Hashgraph.Gateway.html"><code>Gateway</code></a>.  The <a class="xref" href="../api/Hashgraph.Gateway.html"><code>Gateway</code></a> object represents the internet network address and account for the node processing requests.  The <a class="xref" href="../api/Hashgraph.Address.html"><code>Address</code></a> is the identifier of the account to be queried.</p>
+<p>Hashgraph provides access to the Hedera network via the <a class="xref" href="../api/Hashgraph.Client.html"><code>Client</code></a> object.  The <a class="xref" href="../api/Hashgraph.Client.html"><code>Client</code></a> object orchestrates the request construction and communication with the hedera network.   During creation, it requires a small amount of configuration.  At a minimum to retrieve an account balance, the client must be configured with a <a href="xref:Hashgraph.Gateway"><code>Gateway</code></a>.  The <a href="xref:Hashgraph.Gateway"><code>Gateway</code></a> object represents the internet network address and account for the node processing requests.  The <a href="xref:Hashgraph.Address"><code>Address</code></a> is the identifier of the account to be queried.</p>
 <h2 id="how-do-i-learn-more">How do I learn more?</h2>
 <ul>
 <li><p><a href="crypto/balance.html">Examples</a>:  If you prefer to start with code you can copy then modify, we are working up simple examples for the major ways to interact with the network. So far we have examples for the following:</p>
@@ -142,7 +142,8 @@
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

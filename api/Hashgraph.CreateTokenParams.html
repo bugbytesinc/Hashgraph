@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CreateTokenParams
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -117,7 +117,7 @@
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Administrator.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Administrator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L52">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L56">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_Administrator_" data-uid="Hashgraph.CreateTokenParams.Administrator*"></a>
   <h4 id="Hashgraph_CreateTokenParams_Administrator" data-uid="Hashgraph.CreateTokenParams.Administrator">Administrator</h4>
@@ -148,13 +148,13 @@
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Circulation.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Circulation%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L40">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L44">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_Circulation_" data-uid="Hashgraph.CreateTokenParams.Circulation*"></a>
   <h4 id="Hashgraph_CreateTokenParams_Circulation" data-uid="Hashgraph.CreateTokenParams.Circulation">Circulation</h4>
-  <div class="markdown level1 summary"><p>The initial number of whole tokens to placed into the token treasury
-account upon creation of the token.  The Treasury will be given units
-in the smallest denomination <pre><code>(Circulation * 10 ^ Decimals)</code></pre>.</p>
+  <div class="markdown level1 summary"><p>The initial number of tokens to placed into the token treasury
+account upon creation of the token (specified in the smallest
+unit). The Treasury receivie the initial circulation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -181,7 +181,7 @@ in the smallest denomination <pre><code>(Circulation * 10 ^ Decimals)</code></pr
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_ConfiscateEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.ConfiscateEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L67">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L71">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_ConfiscateEndorsement_" data-uid="Hashgraph.CreateTokenParams.ConfiscateEndorsement*"></a>
   <h4 id="Hashgraph_CreateTokenParams_ConfiscateEndorsement" data-uid="Hashgraph.CreateTokenParams.ConfiscateEndorsement">ConfiscateEndorsement</h4>
@@ -213,7 +213,7 @@ from an crypto address.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Decimals.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Decimals%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L44">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L48">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_Decimals_" data-uid="Hashgraph.CreateTokenParams.Decimals*"></a>
   <h4 id="Hashgraph_CreateTokenParams_Decimals" data-uid="Hashgraph.CreateTokenParams.Decimals">Decimals</h4>
@@ -241,10 +241,41 @@ from an crypto address.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Expiration.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Expiration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L87">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateTokenParams_Expiration_" data-uid="Hashgraph.CreateTokenParams.Expiration*"></a>
+  <h4 id="Hashgraph_CreateTokenParams_Expiration" data-uid="Hashgraph.CreateTokenParams.Expiration">Expiration</h4>
+  <div class="markdown level1 summary"><p>Original expiration date for the token, fees will be charged as appropriate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DateTime Expiration { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_GrantKycEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.GrantKycEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L57">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L61">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_GrantKycEndorsement_" data-uid="Hashgraph.CreateTokenParams.GrantKycEndorsement*"></a>
   <h4 id="Hashgraph_CreateTokenParams_GrantKycEndorsement" data-uid="Hashgraph.CreateTokenParams.GrantKycEndorsement">GrantKycEndorsement</h4>
@@ -276,7 +307,7 @@ KYC status of an account.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_InitializeSuspended.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.InitializeSuspended%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L79">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L83">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_InitializeSuspended_" data-uid="Hashgraph.CreateTokenParams.InitializeSuspended*"></a>
   <h4 id="Hashgraph_CreateTokenParams_InitializeSuspended" data-uid="Hashgraph.CreateTokenParams.InitializeSuspended">InitializeSuspended</h4>
@@ -307,10 +338,115 @@ to an tradable/unfrozen relationship.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Name.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L34">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateTokenParams_Name_" data-uid="Hashgraph.CreateTokenParams.Name*"></a>
+  <h4 id="Hashgraph_CreateTokenParams_Name" data-uid="Hashgraph.CreateTokenParams.Name">Name</h4>
+  <div class="markdown level1 summary"><p>Name of the token, only ASCII characters are allowed, not required to be globally unique.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Name { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_RenewAccount.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.RenewAccount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L107">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateTokenParams_RenewAccount_" data-uid="Hashgraph.CreateTokenParams.RenewAccount*"></a>
+  <h4 id="Hashgraph_CreateTokenParams_RenewAccount" data-uid="Hashgraph.CreateTokenParams.RenewAccount">RenewAccount</h4>
+  <div class="markdown level1 summary"><p>Optional address of the account supporting the auto renewal of
+the token at expiration time.  The topic lifetime will be
+extended by the RenewPeriod at expiration time if this account
+contains sufficient funds.  The private key associated with
+this account must sign the transaction if RenewAccount is
+specified.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address? RenewAccount { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<span class="xref">Address</span>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_CreateTokenParams_RenewAccount_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If specified, an Administrator Endorsement must also be specified.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_RenewPeriod.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.RenewPeriod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L95">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateTokenParams_RenewPeriod_" data-uid="Hashgraph.CreateTokenParams.RenewPeriod*"></a>
+  <h4 id="Hashgraph_CreateTokenParams_RenewPeriod" data-uid="Hashgraph.CreateTokenParams.RenewPeriod">RenewPeriod</h4>
+  <div class="markdown level1 summary"><p>Interval of the topic and auto-renewal period. If
+the associated renewal account does not have sufficient funds to
+renew at the expiration time, it will be renewed for a period
+of time the remaining funds can support.  If no funds remain, the
+topic instance will be deleted.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TimeSpan? RenewPeriod { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L123">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_Signatory_" data-uid="Hashgraph.CreateTokenParams.Signatory*"></a>
   <h4 id="Hashgraph_CreateTokenParams_Signatory" data-uid="Hashgraph.CreateTokenParams.Signatory">Signatory</h4>
@@ -353,7 +489,7 @@ the transaction requesting the record.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_SupplyEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.SupplyEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L72">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L76">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_SupplyEndorsement_" data-uid="Hashgraph.CreateTokenParams.SupplyEndorsement*"></a>
   <h4 id="Hashgraph_CreateTokenParams_SupplyEndorsement" data-uid="Hashgraph.CreateTokenParams.SupplyEndorsement">SupplyEndorsement</h4>
@@ -385,7 +521,7 @@ tokens in the treasury account.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_SuspendEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.SuspendEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L62">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L66">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_SuspendEndorsement_" data-uid="Hashgraph.CreateTokenParams.SuspendEndorsement*"></a>
   <h4 id="Hashgraph_CreateTokenParams_SuspendEndorsement" data-uid="Hashgraph.CreateTokenParams.SuspendEndorsement">SuspendEndorsement</h4>
@@ -417,7 +553,7 @@ account's ability to transfer tokens.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Symbol.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Symbol%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L34">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L38">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_Symbol_" data-uid="Hashgraph.CreateTokenParams.Symbol*"></a>
   <h4 id="Hashgraph_CreateTokenParams_Symbol" data-uid="Hashgraph.CreateTokenParams.Symbol">Symbol</h4>
@@ -448,7 +584,7 @@ account's ability to transfer tokens.</p>
     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTokenParams_Treasury.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTokenParams.Treasury%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L48">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/CreateTokenParams.cs/#L52">View Source</a>
   </span>
   <a id="Hashgraph_CreateTokenParams_Treasury_" data-uid="Hashgraph.CreateTokenParams.Treasury*"></a>
   <h4 id="Hashgraph_CreateTokenParams_Treasury" data-uid="Hashgraph.CreateTokenParams.Treasury">Treasury</h4>
@@ -469,7 +605,7 @@ account's ability to transfer tokens.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td><span class="xref">Address</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -490,7 +626,8 @@ account's ability to transfer tokens.</p>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class AccountBalances
+    <title>Class TransferParams
    | Hashgraph </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class AccountBalances
+    <meta name="title" content="Class TransferParams
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -68,18 +68,22 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Hashgraph.AccountBalances">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.TransferParams">
   
   
-  <h1 id="Hashgraph_AccountBalances" data-uid="Hashgraph.AccountBalances" class="text-break">Class AccountBalances
+  <h1 id="Hashgraph_TransferParams" data-uid="Hashgraph.TransferParams" class="text-break">Class TransferParams
   </h1>
-  <div class="markdown level0 summary"><p>Extended Balance information for an Account, including Token Balances.</p>
+  <div class="markdown level0 summary"><p>Supports complex atomic multi-party multi-token and crypto transfers requests.
+Can support multi-account crypto transfers and/or multi-account token transfers
+in the same transaction.  The crypto transfer list or token transfer list may
+be null if not used, however at least one transfer of some type must be defined
+to be valid.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">AccountBalances</span></div>
+    <div class="level1"><span class="xref">TransferParams</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -107,27 +111,28 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
-  <h5 id="Hashgraph_AccountBalances_syntax">Syntax</h5>
+  <h5 id="Hashgraph_TransferParams_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class AccountBalances</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class TransferParams</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_AccountBalances_Address.md&amp;value=---%0Auid%3A%20Hashgraph.AccountBalances.Address%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransferParams_CryptoTransfers.md&amp;value=---%0Auid%3A%20Hashgraph.TransferParams.CryptoTransfers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/AccountBalances.cs/#L14">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/TransferParams.cs/#L18">View Source</a>
   </span>
-  <a id="Hashgraph_AccountBalances_Address_" data-uid="Hashgraph.AccountBalances.Address*"></a>
-  <h4 id="Hashgraph_AccountBalances_Address" data-uid="Hashgraph.AccountBalances.Address">Address</h4>
-  <div class="markdown level1 summary"><p>The Hedera address of this account.</p>
+  <a id="Hashgraph_TransferParams_CryptoTransfers_" data-uid="Hashgraph.TransferParams.CryptoTransfers*"></a>
+  <h4 id="Hashgraph_TransferParams_CryptoTransfers" data-uid="Hashgraph.TransferParams.CryptoTransfers">CryptoTransfers</h4>
+  <div class="markdown level1 summary"><p>Transfer tinybars from an arbitray set of accounts to
+another arbitrary set of accounts.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Address Address { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;KeyValuePair&lt;Address, long&gt;&gt; CryptoTransfers { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -139,26 +144,28 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<span class="xref">Address</span>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_AccountBalances_Crypto.md&amp;value=---%0Auid%3A%20Hashgraph.AccountBalances.Crypto%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransferParams_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.TransferParams.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/AccountBalances.cs/#L18">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/TransferParams.cs/#L38">View Source</a>
   </span>
-  <a id="Hashgraph_AccountBalances_Crypto_" data-uid="Hashgraph.AccountBalances.Crypto*"></a>
-  <h4 id="Hashgraph_AccountBalances_Crypto" data-uid="Hashgraph.AccountBalances.Crypto">Crypto</h4>
-  <div class="markdown level1 summary"><p>Account Crypto Balance in Tinybars</p>
+  <a id="Hashgraph_TransferParams_Signatory_" data-uid="Hashgraph.TransferParams.Signatory*"></a>
+  <h4 id="Hashgraph_TransferParams_Signatory" data-uid="Hashgraph.TransferParams.Signatory">Signatory</h4>
+  <div class="markdown level1 summary"><p>Additional private key, keys or signing callback method
+required to authorize the transfers.  Typically matches the
+Endorsement assigned to sending accounts.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ulong Crypto { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Signatory Signatory { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -170,26 +177,36 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
+  <h5 id="Hashgraph_TransferParams_Signatory_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Keys/callbacks added here will be combined with those already
+identified in the client object's context when signing this
+transaction to change the state of this account.  They will
+not be asked to sign transactions to retrieve the record
+if the &quot;WithRecord&quot; form of the method call is made.  The
+client will rely on the Signatory from the context to sign
+the transaction requesting the record.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_AccountBalances_Tokens.md&amp;value=---%0Auid%3A%20Hashgraph.AccountBalances.Tokens%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransferParams_TokenTransfers.md&amp;value=---%0Auid%3A%20Hashgraph.TransferParams.TokenTransfers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/AccountBalances.cs/#L22">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/TransferParams.cs/#L23">View Source</a>
   </span>
-  <a id="Hashgraph_AccountBalances_Tokens_" data-uid="Hashgraph.AccountBalances.Tokens*"></a>
-  <h4 id="Hashgraph_AccountBalances_Tokens" data-uid="Hashgraph.AccountBalances.Tokens">Tokens</h4>
-  <div class="markdown level1 summary"><p>Balances of tokens associated with this account.</p>
+  <a id="Hashgraph_TransferParams_TokenTransfers_" data-uid="Hashgraph.TransferParams.TokenTransfers*"></a>
+  <h4 id="Hashgraph_TransferParams_TokenTransfers" data-uid="Hashgraph.TransferParams.TokenTransfers">TokenTransfers</h4>
+  <div class="markdown level1 summary"><p>A list of tokens transfered from an arbitray set of accounts to
+another arbitrary set of accounts.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ReadOnlyDictionary&lt;Address, ulong&gt; Tokens { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;TokenTransfer&gt; TokenTransfers { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -201,7 +218,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.objectmodel.readonlydictionary-2">ReadOnlyDictionary</a>&lt;<a class="xref" href="Hashgraph.Address.html">Address</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<span class="xref">TokenTransfer</span>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -214,15 +231,16 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_AccountBalances.md&amp;value=---%0Auid%3A%20Hashgraph.AccountBalances%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransferParams.md&amp;value=---%0Auid%3A%20Hashgraph.TransferParams%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/AccountBalances.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Crypto/TransferParams.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

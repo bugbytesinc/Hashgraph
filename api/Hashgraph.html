@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Hashgraph
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -77,17 +77,6 @@
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
-      <h4><a class="xref" href="Hashgraph.AccountBalances.html">AccountBalances</a></h4>
-      <section><p>Extended Balance information for an Account, including Token Balances.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.AccountInfo.html">AccountInfo</a></h4>
-      <section><p>The information returned from the CreateAccountAsync Client method call.<br>
-It represents the details concerning a Hedera Network Account, including
-the public key value to use in smart contract interaction.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.Address.html">Address</a></h4>
-      <section><p>Represents a Hedera Network Account Address.</p>
-</section>
       <h4><a class="xref" href="Hashgraph.AppendFileParams.html">AppendFileParams</a></h4>
       <section><p>File content append parameters.</p>
 </section>
@@ -105,26 +94,15 @@ the public key value to use in smart contract interaction.</p>
 node but did not achieve network consensus before the expiration
 timeout of the transaction request occurred.</p>
 </section>
-      <h4><a class="xref" href="Hashgraph.ContractCallResult.html">ContractCallResult</a></h4>
-      <section><p>The results returned from a contract call.</p>
-</section>
       <h4><a class="xref" href="Hashgraph.ContractCallResultData.html">ContractCallResultData</a></h4>
       <section><p>Provides services to decode smart contract ABI data into .net primitives.
 Typically represents data returned from a smart contract invocation.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.ContractEvent.html">ContractEvent</a></h4>
-      <section><p>Represents the log events returned by a contract function call.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.ContractException.html">ContractException</a></h4>
       <section><p>Represents an error with a contract query that passed the gateway node
 pre-check and was processed by the gossip node but did not succeed.  It
 includes additional information returned by the hedera contract
 virtual machine.  Transaction fees will have been spent by this query.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.ContractInfo.html">ContractInfo</a></h4>
-      <section><p>The information returned from the GetContractInfoAsync Client method call.<br>
-It represents the details concerning a Hedera Network Contract instance, including
-the public key value to use in smart contract interaction.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.CreateAccountParams.html">CreateAccountParams</a></h4>
       <section><p>Account creation parameters.</p>
@@ -168,32 +146,14 @@ the public key value to use in smart contract interaction.</p>
       <section><p>Represents the key signing requirements for various
 transactions available within the network.</p>
 </section>
-      <h4><a class="xref" href="Hashgraph.ExchangeRate.html">ExchangeRate</a></h4>
-      <section><p>Exchange rate information as known by the
-hedera network.  Values returned in receipts.
-denominator.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.FileInfo.html">FileInfo</a></h4>
-      <section><p>Detailed description of a network file.</p>
-</section>
       <h4><a class="xref" href="Hashgraph.FileReceipt.html">FileReceipt</a></h4>
       <section><p>A transaction receipt containing information concerning the newly created file.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.FileRecord.html">FileRecord</a></h4>
       <section><p>A transaction record containing information concerning the newly created file.</p>
 </section>
-      <h4><a class="xref" href="Hashgraph.Gateway.html">Gateway</a></h4>
-      <section><p>Class representing the Network Address and Node
-Account address for gaining access to the Hedera Network.</p>
-</section>
       <h4><a class="xref" href="Hashgraph.Hex.html">Hex</a></h4>
       <section><p>Helper class for converting between bytes and Hex encoded string values.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.MessageSegmentInfo.html">MessageSegmentInfo</a></h4>
-      <section><p>Optional metadata that may be attached to an
-Segmented HCS message identifying the index
-of the segment and which parent message this
-segment correlates with.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.MirrorClient.html">MirrorClient</a></h4>
       <section><p>Hedera Network Client</p>
@@ -208,9 +168,6 @@ failed the pre-check validation by the network gateway node.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.QueryContractParams.html">QueryContractParams</a></h4>
       <section><p>Provides the details of the request to the client when invoking a contract local query function.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.SemanticVersion.html">SemanticVersion</a></h4>
-      <section><p>Represents a Semantic Version Number (major, minor, patch)</p>
 </section>
       <h4><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></h4>
       <section><p>Represents a keyholder or group of keyholders that
@@ -230,36 +187,10 @@ includes Segment Information.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.SubscribeTopicParams.html">SubscribeTopicParams</a></h4>
       <section></section>
-      <h4><a class="xref" href="Hashgraph.TokenAddressTransfer.html">TokenAddressTransfer</a></h4>
-      <section><p>Represents a token transfer (Token, Account, Amount)</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.TokenBalance.html">TokenBalance</a></h4>
-      <section><p>The token balance information associated with an account,
-including the amount of coins held, KYC status and Freeze status.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.TokenIdentifier.html">TokenIdentifier</a></h4>
-      <section><p>Identifies a Token instance, this can be via the</p>
-<pre><code>Address</code></pre> identifying the token, or it
-<p>can be the <pre><code>Symbol</code></pre>.  In general the</p>
-<pre><code>Address</code></pre> is preferred over the symbol
-<p>since the symbol can change over time for mutable
-token definitions, the Address will not.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.TokenInfo.html">TokenInfo</a></h4>
-      <section><p>The information returned from the GetTokenInfo Client
-method call.  It represents the details concerning a
-Hedera Fungable Token.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.TokenTransfer.html">TokenTransfer</a></h4>
-      <section><p>Represents a token transfer (Token (Address/Symbol), Account, Amount)</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.TopicInfo.html">TopicInfo</a></h4>
-      <section><p>The information returned from the GetTopicInfo Client
-method call.  It represents the details concerning a
-Hedera Network Consensus Topic.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.TopicMessage.html">TopicMessage</a></h4>
-      <section><p>Represents a Topic Message retrieved from a mirror node.</p>
+      <h4><a class="xref" href="Hashgraph.SuspendNetworkParams.html">SuspendNetworkParams</a></h4>
+      <section><p>Parameters to set the period of time where the network will suspened will stop
+creating events and accepting transactions. This can be used to safely shut down
+the platform for maintenance and for upgrades if the file information is included.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.TransactionException.html">TransactionException</a></h4>
       <section><p>Represents an error with a transaction that passed the gateway node
@@ -273,11 +204,12 @@ has been reached for a network request.</p>
       <section><p>The details returned from the network after consensus
 has been reached for a network request.</p>
 </section>
-      <h4><a class="xref" href="Hashgraph.TxId.html">TxId</a></h4>
-      <section><p>Represents the transaction id associated with a network request.<br>
-This is generated by the library automatically for each request.</p>
-<pre><code>TxId</code></pre> implements the equitable interface and can be 
-<p>compared to other transaction ids returned from the library.</p>
+      <h4><a class="xref" href="Hashgraph.TransferParams.html">TransferParams</a></h4>
+      <section><p>Supports complex atomic multi-party multi-token and crypto transfers requests.
+Can support multi-account crypto transfers and/or multi-account token transfers
+in the same transaction.  The crypto transfer list or token transfer list may
+be null if not used, however at least one transfer of some type must be defined
+to be valid.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.UpdateAccountParams.html">UpdateAccountParams</a></h4>
       <section><p>Represents the properties on an account that can be changed.
@@ -318,11 +250,6 @@ appropriately signed as described by the original
 <a class="xref" href="Hashgraph.CreateTopicParams.html#Hashgraph_CreateTopicParams_Administrator">Administrator</a> endorsement in order
 to make changes.  If there is no administrator endorsement specified,
 the topic is imutable and cannot be changed.</p>
-</section>
-      <h4><a class="xref" href="Hashgraph.VersionInfo.html">VersionInfo</a></h4>
-      <section><p>Contains version information identifying the Hedera
-Services version and API Protobuf version implemented
-by the node being queried.</p>
 </section>
     <h3 id="interfaces">Interfaces
   </h3>
@@ -383,7 +310,8 @@ the callback form.</p>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

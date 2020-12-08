@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Concepts | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Concepts | Hashgraph ">
+    <meta name="generator" content="docfx 2.56.5.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="concepts">Concepts</h1>
+
+<h2 id="address">Address</h2>
+<p>The first concept is the <strong>Address</strong>.  An address is an identifier for an Account, Contract, File, Consensus Topic or Hedera Token.  The identifier consists of three parts: Shard, Realm and Number.  Currently, the Hedera network only has one instance of a shard and realm; for the time being, these values will be zero.  The third identifier is the address number.  The network generates this number upon item creation.</p>
+<h2 id="gateway">Gateway</h2>
+<p>The <strong>Gateway</strong> is an object provided by the library for identifying an Hedera Gossip Network Node.  Each Hedera node has a public addressable internet endpoint and linked network Account address.  The internet endpoint represents the publicly available gRPC service hosted by the network node, this is the service the .NET library will connect to when making the balance request.  The account address represents the Hedera crypto account paired with the node that receives funds from transaction requests requiring payment.  Hedera lists the address book of gateways for the test networks at <a href="https://docs.hedera.com/guides/testnet/testnet-nodes">https://docs.hedera.com/guides/testnet/testnet-nodes</a>.</p>
+<h2 id="client">Client</h2>
+<p>The <strong>Client</strong> object orchestrates communication with the Hedera network.  It takes on the role of encoding messages, sending them to the gateway, waiting for a response and then decoding the results, returning normal .NET class objects.  It provides one or more methods relating to each possible network function; each following the standard .net async/await pattern.  The client is resilient to busy network responses and generally waits for network consensus before returning results.</p>
+<h2 id="context">Context</h2>
+<p>Some initial configuration is required when creating a Client object.  For example, for balance queries, the Client must know which Gateway to contact to ask for the information.  Each client instance maintains a <strong>Context</strong> representing the client’s configuration.  The client provides methods such as <em>configure</em> and <em>clone</em> enabling calling code to modify the client’s configuration.  These methods accept a callback method, that when called, receives the context represented as an <em>IContext</em> interface containing properties that may be changed.</p>
+<h2 id="payer">Payer</h2>
+<p>Whereas querying the Hedera network for balances is presently free other actions, particularly those changing network state, require the payment of a small fee to execute.  The .NET library refers to the account paying these transaction fees as the <strong>Payer</strong>.  The payer consists of two pieces of information, the <em>Account</em> identifying the payer, and a <em>Signatory</em> authorizing the spending of funds from the account.</p>
+<h2 id="signatory">Signatory</h2>
+<p>The <strong>Signatory</strong> is a private key, or callback method that can sign a transaction.  Typically, a signatory is an account holder’s private key.  The .NET framework will accept Ed25519 keys as signatories and use them to sign transactions.  It also accepts callback functions for advanced scenarios such as distributed cooperative systems coordinating the signatures of a sigle transaction.</p>
+<h2 id="endorsement">Endorsement</h2>
+<p>Most accounts are secured by a single private Ed25519 key.  The hedera network never sees these private keys but has been given the public key corresponding to each account's private key during creation.  Accounts are not the only thing protected by keys in the hedera network.  Contracts, Topics and Tokens can be administered (modified) by parties holding administrative keys assigned to these assets.  For example, when creating a Token, there is an opportunity to provide a public key enabling access to various administrative functions against the token.  The .NET SDK provides the Endorsement object to hold this public key value.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/docs/tutorials/concepts.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

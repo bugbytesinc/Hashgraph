@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Enum ResponseCode
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -103,10 +103,6 @@
 </td>
       </tr>
       <tr>
-        <td id="Hashgraph_ResponseCode_AccountHasNoTokenRelationship">AccountHasNoTokenRelationship</td>
-        <td></td>
-      </tr>
-      <tr>
         <td id="Hashgraph_ResponseCode_AccountIdDoesNotExist">AccountIdDoesNotExist</td>
         <td><p>the account id passed has not yet been created.</p>
 </td>
@@ -114,6 +110,11 @@
       <tr>
         <td id="Hashgraph_ResponseCode_AccountIsNotGenesisAccount">AccountIsNotGenesisAccount</td>
         <td><p>Special Account Operations should be performed by only Genesis account, return this code if it is not Genesis Account</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_AccountIsTreasury">AccountIsTreasury</td>
+        <td><p>An attempted operation is invalid because the account is a treasury</p>
 </td>
       </tr>
       <tr>
@@ -234,6 +235,16 @@
       <tr>
         <td id="Hashgraph_ResponseCode_EmptyQueryBody">EmptyQueryBody</td>
         <td><p>the query body is empty</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_EmptyTokenTransferAccountAmounts">EmptyTokenTransferAccountAmounts</td>
+        <td><p>TokenTransfersTransactionBody has a TokenTransferList with no AccountAmounts</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_EmptyTokenTransferBody">EmptyTokenTransferBody</td>
+        <td><p>TokenTransfersTransactionBody has no TokenTransferList</p>
 </td>
       </tr>
       <tr>
@@ -420,10 +431,6 @@
 </td>
       </tr>
       <tr>
-        <td id="Hashgraph_ResponseCode_InvalidInitialSupply">InvalidInitialSupply</td>
-        <td></td>
-      </tr>
-      <tr>
         <td id="Hashgraph_ResponseCode_InvalidKeyEncoding">InvalidKeyEncoding</td>
         <td><p>Provided key encoding was not supported by the system</p>
 </td>
@@ -516,23 +523,26 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenDecimals">InvalidTokenDecimals</td>
-        <td></td>
+        <td><p>Invalid token decimals</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenId">InvalidTokenId</td>
-        <td></td>
+        <td><p>The token is invalid or does not exist</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenInitialSupply">InvalidTokenInitialSupply</td>
+        <td><p>Invalid token initial supply</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenMintAmount">InvalidTokenMintAmount</td>
         <td></td>
       </tr>
       <tr>
-        <td id="Hashgraph_ResponseCode_InvalidTokenRef">InvalidTokenRef</td>
-        <td></td>
-      </tr>
-      <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenSymbol">InvalidTokenSymbol</td>
-        <td><p>Token Symbol is not UTF-8 alphanumeric uppercase string</p>
+        <td><p>Token Symbol is not UTF-8 capitalized alphabetical string</p>
 </td>
       </tr>
       <tr>
@@ -750,6 +760,11 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_TokenAlreadyAssociatedToAccount">TokenAlreadyAssociatedToAccount</td>
+        <td><p>An &lt;tt&gt;associateToken&lt;/tt&gt; operation specified a token already associated to the account</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_TokenHasNoFreezeKey">TokenHasNoFreezeKey</td>
         <td><p>Freeze key is not set on token</p>
 </td>
@@ -770,19 +785,23 @@
 </td>
       </tr>
       <tr>
-        <td id="Hashgraph_ResponseCode_TokenIsImmutablE">TokenIsImmutablE</td>
+        <td id="Hashgraph_ResponseCode_TokenIdRepeatedInTokenList">TokenIdRepeatedInTokenList</td>
+        <td><p>Same TokenIDs present in the token list</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenIsImmutable">TokenIsImmutable</td>
         <td><p>Token does not have Admin key set, thus update/delete transactions cannot be performed</p>
 </td>
       </tr>
       <tr>
-        <td id="Hashgraph_ResponseCode_TokenNameAlreadyInUse">TokenNameAlreadyInUse</td>
-        <td><p>Token Name is already used</p>
+        <td id="Hashgraph_ResponseCode_TokenNameTooLong">TokenNameTooLong</td>
+        <td><p>Token Name is too long</p>
 </td>
       </tr>
       <tr>
-        <td id="Hashgraph_ResponseCode_TokenNameTooLong">TokenNameTooLong</td>
-        <td><p>Token name is too long</p>
-</td>
+        <td id="Hashgraph_ResponseCode_TokenNotAssociatedToAccount">TokenNotAssociatedToAccount</td>
+        <td></td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_TokensPerAccountLimitExceeded">TokensPerAccountLimitExceeded</td>
@@ -790,13 +809,13 @@
 </td>
       </tr>
       <tr>
-        <td id="Hashgraph_ResponseCode_TokenSymbolAlreadyInUse">TokenSymbolAlreadyInUse</td>
-        <td><p>Token Symbol is already used</p>
+        <td id="Hashgraph_ResponseCode_TokenSymbolTooLong">TokenSymbolTooLong</td>
+        <td><p>Token Symbol is too long</p>
 </td>
       </tr>
       <tr>
-        <td id="Hashgraph_ResponseCode_TokenSymbolTooLong">TokenSymbolTooLong</td>
-        <td><p>Token Symbol is too long</p>
+        <td id="Hashgraph_ResponseCode_TokenTransferListSizeLimitExceeded">TokenTransferListSizeLimitExceeded</td>
+        <td><p>Exceeded the number of token transfers (both from and to) allowed for token transfer list</p>
 </td>
       </tr>
       <tr>
@@ -823,6 +842,11 @@ by HAPI.</p>
       <tr>
         <td id="Hashgraph_ResponseCode_TransactionOversize">TransactionOversize</td>
         <td><p>The size of the Transaction is greater than transactionMaxBytes</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TransactionRequiresZeroTokenBalances">TransactionRequiresZeroTokenBalances</td>
+        <td><p>An attempted operation is invalid until all token balances for the target account are zero</p>
 </td>
       </tr>
       <tr>
@@ -868,12 +892,13 @@ by HAPI.</p>
                     <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_ResponseCode.md&amp;value=---%0Auid%3A%20Hashgraph.ResponseCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/ResonseCode.cs/#L8" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/ResponseCode.cs/#L8" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>

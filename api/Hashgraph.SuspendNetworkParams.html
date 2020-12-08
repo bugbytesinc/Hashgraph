@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class MessageSegmentInfo
+    <title>Class SuspendNetworkParams
    | Hashgraph </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class MessageSegmentInfo
+    <meta name="title" content="Class SuspendNetworkParams
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.2.0">
+    <meta name="generator" content="docfx 2.56.5.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -68,21 +68,20 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="Hashgraph.MessageSegmentInfo">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.SuspendNetworkParams">
   
   
-  <h1 id="Hashgraph_MessageSegmentInfo" data-uid="Hashgraph.MessageSegmentInfo" class="text-break">Class MessageSegmentInfo
+  <h1 id="Hashgraph_SuspendNetworkParams" data-uid="Hashgraph.SuspendNetworkParams" class="text-break">Class SuspendNetworkParams
   </h1>
-  <div class="markdown level0 summary"><p>Optional metadata that may be attached to an
-Segmented HCS message identifying the index
-of the segment and which parent message this
-segment correlates with.</p>
+  <div class="markdown level0 summary"><p>Parameters to set the period of time where the network will suspened will stop
+creating events and accepting transactions. This can be used to safely shut down
+the platform for maintenance and for upgrades if the file information is included.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">MessageSegmentInfo</span></div>
+    <div class="level1"><span class="xref">SuspendNetworkParams</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -110,27 +109,27 @@ segment correlates with.</p>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
-  <h5 id="Hashgraph_MessageSegmentInfo_syntax">Syntax</h5>
+  <h5 id="Hashgraph_SuspendNetworkParams_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class MessageSegmentInfo</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class SuspendNetworkParams</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MessageSegmentInfo_Index.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo.Index%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SuspendNetworkParams_Duration.md&amp;value=---%0Auid%3A%20Hashgraph.SuspendNetworkParams.Duration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L26">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Network/SuspendNetworkParams.cs/#L20">View Source</a>
   </span>
-  <a id="Hashgraph_MessageSegmentInfo_Index_" data-uid="Hashgraph.MessageSegmentInfo.Index*"></a>
-  <h4 id="Hashgraph_MessageSegmentInfo_Index" data-uid="Hashgraph.MessageSegmentInfo.Index">Index</h4>
-  <div class="markdown level1 summary"><p>The index of this segment (one based).</p>
+  <a id="Hashgraph_SuspendNetworkParams_Duration_" data-uid="Hashgraph.SuspendNetworkParams.Duration*"></a>
+  <h4 id="Hashgraph_SuspendNetworkParams_Duration" data-uid="Hashgraph.SuspendNetworkParams.Duration">Duration</h4>
+  <div class="markdown level1 summary"><p>The period of time the network should remain deactivated.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Index { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TimeSpan Duration { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -142,29 +141,26 @@ segment correlates with.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MessageSegmentInfo_ParentTxId.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo.ParentTxId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SuspendNetworkParams_Starting.md&amp;value=---%0Auid%3A%20Hashgraph.SuspendNetworkParams.Starting%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L22">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Network/SuspendNetworkParams.cs/#L16">View Source</a>
   </span>
-  <a id="Hashgraph_MessageSegmentInfo_ParentTxId_" data-uid="Hashgraph.MessageSegmentInfo.ParentTxId*"></a>
-  <h4 id="Hashgraph_MessageSegmentInfo_ParentTxId" data-uid="Hashgraph.MessageSegmentInfo.ParentTxId">ParentTxId</h4>
-  <div class="markdown level1 summary"><p>The transaction the created the first segment
-of the message.  This acts as a correlation
-identifier to coalesce the segments of the
-message int one.</p>
+  <a id="Hashgraph_SuspendNetworkParams_Starting_" data-uid="Hashgraph.SuspendNetworkParams.Starting*"></a>
+  <h4 id="Hashgraph_SuspendNetworkParams_Starting" data-uid="Hashgraph.SuspendNetworkParams.Starting">Starting</h4>
+  <div class="markdown level1 summary"><p>The amount time to wait before the the network should deactivate.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TxId ParentTxId { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public TimeSpan Starting { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -176,27 +172,28 @@ message int one.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="Hashgraph.TxId.html">TxId</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MessageSegmentInfo_TotalSegmentCount.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo.TotalSegmentCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SuspendNetworkParams_UpdateFile.md&amp;value=---%0Auid%3A%20Hashgraph.SuspendNetworkParams.UpdateFile%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L31">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Network/SuspendNetworkParams.cs/#L26">View Source</a>
   </span>
-  <a id="Hashgraph_MessageSegmentInfo_TotalSegmentCount_" data-uid="Hashgraph.MessageSegmentInfo.TotalSegmentCount*"></a>
-  <h4 id="Hashgraph_MessageSegmentInfo_TotalSegmentCount" data-uid="Hashgraph.MessageSegmentInfo.TotalSegmentCount">TotalSegmentCount</h4>
-  <div class="markdown level1 summary"><p>The total number of segments making up
-the whole of the message when assembled.</p>
+  <a id="Hashgraph_SuspendNetworkParams_UpdateFile_" data-uid="Hashgraph.SuspendNetworkParams.UpdateFile*"></a>
+  <h4 id="Hashgraph_SuspendNetworkParams_UpdateFile" data-uid="Hashgraph.SuspendNetworkParams.UpdateFile">UpdateFile</h4>
+  <div class="markdown level1 summary"><p>Optional Address of the File to be loaded if this suspension is
+part of a maintanance update. (Typically the network will only
+accept a special well known file number.)</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int TotalSegmentCount { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public Address UpdateFile { get; set; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -208,7 +205,40 @@ the whole of the message when assembled.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="xref">Address</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SuspendNetworkParams_UpdateFileHash.md&amp;value=---%0Auid%3A%20Hashgraph.SuspendNetworkParams.UpdateFileHash%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Network/SuspendNetworkParams.cs/#L32">View Source</a>
+  </span>
+  <a id="Hashgraph_SuspendNetworkParams_UpdateFileHash_" data-uid="Hashgraph.SuspendNetworkParams.UpdateFileHash*"></a>
+  <h4 id="Hashgraph_SuspendNetworkParams_UpdateFileHash" data-uid="Hashgraph.SuspendNetworkParams.UpdateFileHash">UpdateFileHash</h4>
+  <div class="markdown level1 summary"><p>Hash value of the contents of the upgrade file (if included).
+The network relies on this hash to verify the file contents
+before performing the maintanance update.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlyMemory&lt;byte&gt; UpdateFileHash { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -221,15 +251,16 @@ the whole of the message when assembled.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MessageSegmentInfo.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SuspendNetworkParams.md&amp;value=---%0Auid%3A%20Hashgraph.SuspendNetworkParams%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Network/SuspendNetworkParams.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
               <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
-              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+                <h5>In This Article</h5>
+                <div></div>
               </nav>
             </div>
           </div>
