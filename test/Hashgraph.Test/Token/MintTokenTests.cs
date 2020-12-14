@@ -27,6 +27,7 @@ namespace Hashgraph.Test.Token
 
             var receipt = await fxToken.Client.MintTokenAsync(fxToken.Record.Token, fxToken.Params.Circulation, fxToken.SupplyPrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(fxToken.Params.Circulation * 2, receipt.Circulation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
@@ -58,6 +59,7 @@ namespace Hashgraph.Test.Token
 
             var receipt = await fxToken.Client.MintTokenAsync(fxToken.Record.Token, fxToken.Params.Circulation, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxToken.SupplyPrivateKey));
             Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(fxToken.Params.Circulation * 2, receipt.Circulation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
@@ -97,6 +99,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Equal(fxToken.Params.Circulation * 2, record.Circulation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
@@ -133,6 +136,7 @@ namespace Hashgraph.Test.Token
                 ctx.Signatory = fxAccount.PrivateKey;
             });
             Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(fxToken.Params.Circulation * 2, receipt.Circulation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
@@ -165,6 +169,7 @@ namespace Hashgraph.Test.Token
 
             var record = await fxToken.Client.MintTokenWithRecordAsync(fxToken.Record.Token, amountToCreate, fxToken.SupplyPrivateKey);
             Assert.Single(record.TokenTransfers);
+            Assert.Equal(expectedCirculation, record.Circulation);
 
             var xfer = record.TokenTransfers[0];
             Assert.Equal(fxToken.Record.Token, xfer.Token);

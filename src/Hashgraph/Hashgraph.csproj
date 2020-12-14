@@ -34,7 +34,7 @@
   </ItemGroup>  
 
   <ItemGroup>
-    <Protobuf Include="..\..\reference\hapi-v0.9.0-rc.2-279-g6ad52bb2\src\main\proto\*.proto" GrpcServices="Client">
+    <Protobuf Include="..\..\reference\hapi-v0.9.0-rc.2-423-g951f6fc1\src\main\proto\*.proto" GrpcServices="Client">
       <Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </Protobuf>
     <Protobuf Include="..\..\reference\hedera-mirror\proto\ConsensusService-Mirror.proto" GrpcServices="Client">

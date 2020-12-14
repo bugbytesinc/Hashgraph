@@ -35,9 +35,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> ConfiscateTokensAsync(Address token, Address address, ulong amount, Action<IContext>? configure = null)
+        public Task<TokenReceipt> ConfiscateTokensAsync(Address token, Address address, ulong amount, Action<IContext>? configure = null)
         {
-            return ConfiscateTokensImplementationAsync<TransactionReceipt>(token, address, amount, null, configure);
+            return ConfiscateTokensImplementationAsync<TokenReceipt>(token, address, amount, null, configure);
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -70,9 +70,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> ConfiscateTokensAsync(Address token, Address address, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TokenReceipt> ConfiscateTokensAsync(Address token, Address address, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return ConfiscateTokensImplementationAsync<TransactionReceipt>(token, address, amount, signatory, configure);
+            return ConfiscateTokensImplementationAsync<TokenReceipt>(token, address, amount, signatory, configure);
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -101,9 +101,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> ConfiscateTokensWithRecordAsync(Address token, Address address, ulong amount, Action<IContext>? configure = null)
+        public Task<TokenRecord> ConfiscateTokensWithRecordAsync(Address token, Address address, ulong amount, Action<IContext>? configure = null)
         {
-            return ConfiscateTokensImplementationAsync<TransactionRecord>(token, address, amount, null, configure);
+            return ConfiscateTokensImplementationAsync<TokenRecord>(token, address, amount, null, configure);
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -136,9 +136,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> ConfiscateTokensWithRecordAsync(Address token, Address address, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public Task<TokenRecord> ConfiscateTokensWithRecordAsync(Address token, Address address, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return ConfiscateTokensImplementationAsync<TransactionRecord>(token, address, amount, signatory, configure);
+            return ConfiscateTokensImplementationAsync<TokenRecord>(token, address, amount, signatory, configure);
         }
         /// <summary>
         /// Internal implementation of delete token method.
@@ -169,12 +169,12 @@ namespace Hashgraph
                 throw new TransactionException($"Unable to Confiscate Token, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             var result = new TResult();
-            if (result is TransactionRecord rec)
+            if (result is TokenRecord rec)
             {
                 var record = await GetTransactionRecordAsync(context, transactionId);
                 record.FillProperties(rec);
             }
-            else if (result is TransactionReceipt rcpt)
+            else if (result is TokenReceipt rcpt)
             {
                 receipt.FillProperties(transactionId, rcpt);
             }
