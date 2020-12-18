@@ -29,7 +29,9 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
-            await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
+            var receipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(expectedTreasury, receipt.Circulation);
 
             Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
@@ -49,7 +51,9 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
-            await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
+            var receipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(expectedTreasury, receipt.Circulation);
 
             Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
@@ -79,6 +83,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Equal(expectedTreasury, record.Circulation);
             Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
@@ -107,6 +112,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Equal(expectedTreasury, record.Circulation);
             Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
@@ -126,11 +132,13 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
-            await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey, ctx =>
+            var receipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey, ctx =>
             {
                 ctx.Payer = fxOther.Record.Address;
                 ctx.Signatory = fxOther.PrivateKey;
             });
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(expectedTreasury, receipt.Circulation);
 
             Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
@@ -176,6 +184,8 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
             var record = await fxToken.Client.ConfiscateTokensWithRecordAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.Equal(expectedTreasury, record.Circulation);
             Assert.Single(record.TokenTransfers);
 
             var xfer = record.TokenTransfers[0];

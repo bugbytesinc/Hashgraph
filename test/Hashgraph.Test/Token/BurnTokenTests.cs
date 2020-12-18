@@ -29,6 +29,8 @@ namespace Hashgraph.Test.Token
 
             var receipt = await fxToken.Client.BurnTokenAsync(fxToken, amountToDestory, fxToken.SupplyPrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(expectedCirculation, receipt.Circulation);
+
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
             Assert.Equal(fxToken.Record.Token, info.Token);
@@ -69,6 +71,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Equal(expectedCirculation, record.Circulation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
             Assert.Equal(fxToken.Record.Token, info.Token);
@@ -109,6 +112,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Equal(expectedCirculation, record.Circulation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
             Assert.Equal(fxToken.Record.Token, info.Token);
@@ -146,6 +150,7 @@ namespace Hashgraph.Test.Token
                 ctx.Signatory = fxAccount.PrivateKey;
             });
             Assert.Equal(ResponseCode.Success, receipt.Status);
+            Assert.Equal(expectedCirculation, receipt.Circulation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
             Assert.Equal(expectedCirculation, info.Circulation);
@@ -160,6 +165,7 @@ namespace Hashgraph.Test.Token
 
             var record = await fxToken.Client.BurnTokenWithRecordAsync(fxToken, amountToDestory, fxToken.SupplyPrivateKey);
             Assert.Single(record.TokenTransfers);
+            Assert.Equal(expectedCirculation, record.Circulation);
 
             var xfer = record.TokenTransfers[0];
             Assert.Equal(fxToken.Record.Token, xfer.Token);

@@ -29,6 +29,10 @@ namespace Proto
             {
                 return FillProperties(transactionId, new CreateTokenReceipt());
             }
+            else if (NewTotalSupply != 0)
+            {
+                return FillProperties(transactionId, new TokenReceipt());
+            }
             else if (!TopicRunningHash.IsEmpty)
             {
                 return FillProperties(transactionId, new SubmitMessageReceipt());
@@ -74,6 +78,12 @@ namespace Proto
         {
             FillCommonProperties(transactionId, receipt);
             receipt.Token = TokenID.ToAddress();
+            return receipt;
+        }
+        internal TokenReceipt FillProperties(TransactionID transactionId, TokenReceipt receipt)
+        {
+            FillCommonProperties(transactionId, receipt);
+            receipt.Circulation = NewTotalSupply;
             return receipt;
         }
         internal Hashgraph.TransactionReceipt FillProperties(TransactionID transactionId, Hashgraph.TransactionReceipt result)
