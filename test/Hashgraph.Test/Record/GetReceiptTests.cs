@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Extensions;
+using Hashgraph.Test.Fixtures;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -161,6 +162,77 @@ namespace Hashgraph.Test.Record
             Assert.Equal(fx.Record.CurrentExchangeRate, createReceipt.CurrentExchangeRate);
             Assert.Equal(fx.Record.NextExchangeRate, createReceipt.NextExchangeRate);
             Assert.Equal(fx.Record.Token, createReceipt.Token);
+        }
+        [Fact(DisplayName = "Get Receipt: Can get a TookenReceipt for Burn")]
+        public async Task CanGetTokenReceiptForBurn()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            Assert.NotNull(fxToken.Record);
+            Assert.NotNull(fxToken.Record.Token);
+            Assert.True(fxToken.Record.Token.AccountNum > 0);
+            Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+            var amountToDestory = fxToken.Params.Circulation / 3;
+            var expectedCirculation = fxToken.Params.Circulation - amountToDestory;
+
+            var originalReceipt = await fxToken.Client.BurnTokenAsync(fxToken, amountToDestory, fxToken.SupplyPrivateKey);
+            Assert.Equal(ResponseCode.Success, originalReceipt.Status);
+            Assert.Equal(expectedCirculation, originalReceipt.Circulation);
+
+            var copyReceipt = await fxToken.Client.GetReceiptAsync(originalReceipt.Id);
+            var tokenRecipt = Assert.IsType<TokenReceipt>(copyReceipt);
+            Assert.Equal(originalReceipt.Id, tokenRecipt.Id);
+            Assert.Equal(originalReceipt.Status, tokenRecipt.Status);
+            Assert.Equal(originalReceipt.CurrentExchangeRate, tokenRecipt.CurrentExchangeRate);
+            Assert.Equal(originalReceipt.NextExchangeRate, tokenRecipt.NextExchangeRate);
+            Assert.Equal(originalReceipt.Circulation, tokenRecipt.Circulation);
+        }
+        [Fact(DisplayName = "Get Receipt: Can get a TookenReceipt for Confiscate")]
+        public async Task CanGetTokenReceiptForConfiscate()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
+            var xferAmount = 2 * fxToken.Params.Circulation / (ulong)Generator.Integer(3, 5);
+            var expectedTreasury = fxToken.Params.Circulation - xferAmount;
+
+            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+
+            Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+            Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+            Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
+
+            var originalReceipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
+            Assert.Equal(ResponseCode.Success, originalReceipt.Status);
+            Assert.Equal(expectedTreasury, originalReceipt.Circulation);
+
+            var copyReceipt = await fxToken.Client.GetReceiptAsync(originalReceipt.Id);
+            var tokenReceipt = Assert.IsType<TokenReceipt>(copyReceipt);
+            Assert.Equal(originalReceipt.Id, tokenReceipt.Id);
+            Assert.Equal(originalReceipt.Status, tokenReceipt.Status);
+            Assert.Equal(originalReceipt.CurrentExchangeRate, tokenReceipt.CurrentExchangeRate);
+            Assert.Equal(originalReceipt.NextExchangeRate, tokenReceipt.NextExchangeRate);
+            Assert.Equal(originalReceipt.Circulation, tokenReceipt.Circulation);
+        }
+        [Fact(DisplayName = "Get Receipt: Can get a TookenReceipt for Mint")]
+        public async Task CanGetTokenReceiptForMint()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            Assert.NotNull(fxToken.Record);
+            Assert.NotNull(fxToken.Record.Token);
+            Assert.True(fxToken.Record.Token.AccountNum > 0);
+            Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+            var originalReceipt = await fxToken.Client.MintTokenAsync(fxToken.Record.Token, fxToken.Params.Circulation, fxToken.SupplyPrivateKey);
+            Assert.Equal(ResponseCode.Success, originalReceipt.Status);
+            Assert.Equal(fxToken.Params.Circulation * 2, originalReceipt.Circulation);
+
+            var copyReceipt = await fxToken.Client.GetReceiptAsync(originalReceipt.Id);
+            var tokenReceipt = Assert.IsType<TokenReceipt>(copyReceipt);
+            Assert.Equal(originalReceipt.Id, tokenReceipt.Id);
+            Assert.Equal(originalReceipt.Status, tokenReceipt.Status);
+            Assert.Equal(originalReceipt.CurrentExchangeRate, tokenReceipt.CurrentExchangeRate);
+            Assert.Equal(originalReceipt.NextExchangeRate, tokenReceipt.NextExchangeRate);
+            Assert.Equal(originalReceipt.Circulation, tokenReceipt.Circulation);
         }
     }
 }
