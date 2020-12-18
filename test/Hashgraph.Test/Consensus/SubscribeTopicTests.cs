@@ -295,7 +295,7 @@ namespace Hashgraph.Test.Topic
                     CancellationToken = cts.Token,
                     MaxCount = 2
                 });
-                cts.CancelAfter(5000);
+                cts.CancelAfter(10000);
                 await subscribeTask;
                 if (capture.CapturedList.Count == 0)
                 {

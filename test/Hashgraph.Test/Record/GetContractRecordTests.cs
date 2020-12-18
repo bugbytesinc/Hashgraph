@@ -22,14 +22,6 @@ namespace Hashgraph.Test.Record
             var records = await fxContract.Client.GetContractRecordsAsync(fxContract.ContractRecord.Contract);
             Assert.NotNull(records);
             Assert.Empty(records);
-            //Assert.Single(records);
-            //var record = records[0];
-            //Assert.Equal(ResponseCode.Success, record.Status);
-            //Assert.Equal(fxContract.ContractRecord.Id, record.Id);
-            //Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
-            //Assert.StartsWith("Stateful Contract Create: Instantiating Stateful Instance", record.Memo);
-            //Assert.NotNull(record.Concensus);
-            //Assert.False(record.Hash.IsEmpty);
         }
         [Fact(DisplayName = "Contract Records: Calling Contract Method no longer creates record that can be retrieved.")]
         public async Task CanRetrieveRecordsFromContractMethodCalls()
@@ -49,15 +41,6 @@ namespace Hashgraph.Test.Record
             var records = await fxContract.Client.GetContractRecordsAsync(fxContract.ContractRecord.Contract);
             Assert.NotNull(records);
             Assert.Empty(records);
-            //Assert.Equal(transactionCount + 1, records.Length);
-            //foreach (var record in records.Skip(1))
-            //{
-            //    Assert.Equal(ResponseCode.Success, record.Status);
-            //    Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
-            //    Assert.Empty(record.Memo);
-            //    Assert.NotNull(record.Concensus);
-            //    Assert.False(record.Hash.IsEmpty);
-            //}
         }
         [Fact(DisplayName = "Contract Records: Casting Account Address as Contract Raises an Error")]
         public async Task GetTransactionRecordsForAccountViaGetContractRecordsRaisesError()

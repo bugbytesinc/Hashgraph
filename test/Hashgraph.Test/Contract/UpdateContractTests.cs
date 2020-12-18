@@ -213,18 +213,22 @@ namespace Hashgraph.Test.Contract
         public async Task UpdatingContractWithoutAdminKeyRaisesError()
         {
             var (publicKey, privateKey) = Generator.KeyPair();
-            await using var fx = await GreetingContract.CreateAsync(_network, ctx =>
+            await using var fxContract = await GreetingContract.CreateAsync(_network, fx =>
             {
-                ctx.ContractParams.Administrator = publicKey;
-                ctx.Client.Configure(ctx => ctx.Signatory = new Signatory(ctx.Signatory, privateKey));
+                fx.ContractParams.Administrator = publicKey;
+                fx.Client.Configure(ctx =>
+                {
+                    ctx.Signatory = new Signatory(ctx.Signatory, privateKey);
+                    ctx.FeeLimit = 35_00_000_000;
+                });
             });
             // First, Remove admin key from Payer's Account
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                fx.Client.Configure(ctx => ctx.Signatory = new Signatory(_network.PrivateKey));
-                await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                fxContract.Client.Configure(ctx => ctx.Signatory = new Signatory(_network.PrivateKey));
+                await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
-                    Contract = fx.ContractRecord.Contract,
+                    Contract = fxContract.ContractRecord.Contract,
                     Memo = Generator.Code(50)
                 });
             });
@@ -232,10 +236,10 @@ namespace Hashgraph.Test.Contract
             Assert.StartsWith("Unable to update Contract, status: InvalidSignature", tex.Message);
 
             // Try again with the admin key to prove we have the keys right
-            var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+            var record = await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
                 Signatory = new Signatory(_network.PrivateKey, privateKey),
-                Contract = fx.ContractRecord.Contract,
+                Contract = fxContract.ContractRecord.Contract,
                 Memo = Generator.Code(50)
             });
             Assert.Equal(ResponseCode.Success, record.Status);

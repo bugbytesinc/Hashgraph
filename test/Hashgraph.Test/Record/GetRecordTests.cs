@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Extensions;
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;
 using System.Text;
@@ -298,6 +299,86 @@ namespace Hashgraph.Test.Record
             Assert.Equal(fx.Record.Memo, createRecord.Memo);
             Assert.Equal(fx.Record.Fee, createRecord.Fee);
             Assert.Equal(fx.Record.Token, createRecord.Token);
+        }
+        [Fact(DisplayName = "Get Record: Can get TokenRecord for Burn")]
+        public async Task CanGetTokenRecordForBurn()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            Assert.NotNull(fxToken.Record);
+            Assert.NotNull(fxToken.Record.Token);
+            Assert.True(fxToken.Record.Token.AccountNum > 0);
+            Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+            var amountToDestory = fxToken.Params.Circulation / 3;
+            var expectedCirculation = fxToken.Params.Circulation - amountToDestory;
+
+            var originalRecord = await fxToken.Client.BurnTokenWithRecordAsync(fxToken, amountToDestory, fxToken.SupplyPrivateKey);
+            Assert.Equal(ResponseCode.Success, originalRecord.Status);
+            Assert.Equal(expectedCirculation, originalRecord.Circulation);
+
+            var tokenRecord = Assert.IsType<TokenRecord>(originalRecord);
+            Assert.Equal(originalRecord.Id, tokenRecord.Id);
+            Assert.Equal(originalRecord.Status, tokenRecord.Status);
+            Assert.Equal(originalRecord.CurrentExchangeRate, tokenRecord.CurrentExchangeRate);
+            Assert.Equal(originalRecord.NextExchangeRate, tokenRecord.NextExchangeRate);
+            Assert.Equal(originalRecord.Hash.ToArray(), tokenRecord.Hash.ToArray());
+            Assert.Equal(originalRecord.Concensus, tokenRecord.Concensus);
+            Assert.Equal(originalRecord.Memo, tokenRecord.Memo);
+            Assert.Equal(originalRecord.Fee, tokenRecord.Fee);
+            Assert.Equal(originalRecord.Circulation, tokenRecord.Circulation);
+        }
+        [Fact(DisplayName = "Get Record: Can get TokenRecord for Confiscate")]
+        public async Task CanGetTokenRecordForConfiscate()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
+            var xferAmount = 2 * fxToken.Params.Circulation / (ulong)Generator.Integer(3, 5);
+            var expectedTreasury = fxToken.Params.Circulation - xferAmount;
+
+            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+
+            Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+            Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+            Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
+
+            var originalRecord = await fxToken.Client.ConfiscateTokensWithRecordAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
+            Assert.Equal(ResponseCode.Success, originalRecord.Status);
+            Assert.Equal(expectedTreasury, originalRecord.Circulation);
+
+            var tokenRecord = Assert.IsType<TokenRecord>(originalRecord);
+            Assert.Equal(originalRecord.Id, tokenRecord.Id);
+            Assert.Equal(originalRecord.Status, tokenRecord.Status);
+            Assert.Equal(originalRecord.CurrentExchangeRate, tokenRecord.CurrentExchangeRate);
+            Assert.Equal(originalRecord.NextExchangeRate, tokenRecord.NextExchangeRate);
+            Assert.Equal(originalRecord.Hash.ToArray(), tokenRecord.Hash.ToArray());
+            Assert.Equal(originalRecord.Concensus, tokenRecord.Concensus);
+            Assert.Equal(originalRecord.Memo, tokenRecord.Memo);
+            Assert.Equal(originalRecord.Fee, tokenRecord.Fee);
+            Assert.Equal(originalRecord.Circulation, tokenRecord.Circulation);
+        }
+        [Fact(DisplayName = "Get Record: Can get TokenRecord for Mint")]
+        public async Task CanGetTokenRecordForMint()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            Assert.NotNull(fxToken.Record);
+            Assert.NotNull(fxToken.Record.Token);
+            Assert.True(fxToken.Record.Token.AccountNum > 0);
+            Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+            var originalRecord = await fxToken.Client.MintTokenWithRecordAsync(fxToken.Record.Token, fxToken.Params.Circulation, fxToken.SupplyPrivateKey);
+            Assert.Equal(ResponseCode.Success, originalRecord.Status);
+            Assert.Equal(fxToken.Params.Circulation * 2, originalRecord.Circulation);
+
+            var tokenRecord = Assert.IsType<TokenRecord>(originalRecord);
+            Assert.Equal(originalRecord.Id, tokenRecord.Id);
+            Assert.Equal(originalRecord.Status, tokenRecord.Status);
+            Assert.Equal(originalRecord.CurrentExchangeRate, tokenRecord.CurrentExchangeRate);
+            Assert.Equal(originalRecord.NextExchangeRate, tokenRecord.NextExchangeRate);
+            Assert.Equal(originalRecord.Hash.ToArray(), tokenRecord.Hash.ToArray());
+            Assert.Equal(originalRecord.Concensus, tokenRecord.Concensus);
+            Assert.Equal(originalRecord.Memo, tokenRecord.Memo);
+            Assert.Equal(originalRecord.Fee, tokenRecord.Fee);
+            Assert.Equal(originalRecord.Circulation, tokenRecord.Circulation);
         }
     }
 }
