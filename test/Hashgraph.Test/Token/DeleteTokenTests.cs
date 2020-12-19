@@ -31,7 +31,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Token Delete: Anyone with Admin Key Can Delete Token")]
         public async Task AnyoneWithAdminKeyCanDeleteToken()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
 
             var record = await fxToken.Client.DeleteTokenAsync(fxToken.Record.Token, fxToken.AdminPrivateKey, ctx =>
@@ -192,8 +192,8 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Token Delete: Cannot Delete Treasury while Attached to Token")]
         public async Task CannotDeleteTreasuryWhileAttachedToToken()
         {
-            await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
-            await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
             var circulation = fxToken.Params.Circulation;
 

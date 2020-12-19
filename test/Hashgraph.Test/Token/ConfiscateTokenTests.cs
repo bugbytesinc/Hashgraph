@@ -120,7 +120,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Confiscate Tokens: Can Confiscate A Small Amount Token Coins from Any Account with Confiscate Key")]
         public async Task CanConfiscateASmallAmountTokenCoinsFromAnyAccountWithConfiscateKey()
         {
-            await using var fxOther = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxOther = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
             var xferAmount = 2ul;

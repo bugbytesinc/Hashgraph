@@ -53,7 +53,7 @@ namespace Hashgraph.Test.Fixtures
                 ctx.OnSendingRequest = OutputSendingRequest;
                 ctx.OnResponseReceived = OutputReceivResponse;
                 ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
-                ctx.FeeLimit = 35_00_000_000; // Testnet is getting pricey.
+                ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
             });
         }
         public MirrorClient NewMirror()
