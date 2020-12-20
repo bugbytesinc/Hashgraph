@@ -64,7 +64,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Associate Tokens: Can Associate token with Account (No Extra Signatory)")]
         public async Task CanAssociateTokenWithAccountNoExtraSignatory()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
 
             await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
@@ -86,7 +86,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Associate Tokens: Can Associate token with Account and get Record (No Extra Signatory)")]
         public async Task CanAssociateTokenWithAccountAndGetRecordNoExtraSignatory()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
 
             await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
@@ -184,7 +184,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Associate Tokens: Can Associate Multiple Token with Account (No Extra Signatory)")]
         public async Task CanAssociateMultipleTokensWithAccountNoExtraSignatory()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken1 = await TestToken.CreateAsync(_network);
             await using var fxToken2 = await TestToken.CreateAsync(_network);
 
@@ -217,7 +217,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Associate Tokens: Can Associate Multiple Token with Account and get Record (No Extra Signatory)")]
         public async Task CanAssociateMultipleTokensWithAccountAndGetRecordNoExtraSignatory()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken1 = await TestToken.CreateAsync(_network);
             await using var fxToken2 = await TestToken.CreateAsync(_network);
 

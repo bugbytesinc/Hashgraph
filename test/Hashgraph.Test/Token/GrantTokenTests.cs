@@ -89,7 +89,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Grant Tokens: Can Grant Token Coins from any Account with Grant Key")]
         public async Task CanGrantTokenCoinsFromWnyAccountWithGrantKey()
         {
-            await using var fxOther = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
+            await using var fxOther = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
             var circulation = fxToken.Params.Circulation;

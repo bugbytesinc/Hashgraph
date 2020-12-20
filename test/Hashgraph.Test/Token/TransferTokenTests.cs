@@ -625,7 +625,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Transfer Tokens: Can Move Coins by Moving the Treasury")]
         public async Task CanMoveCoinsByMovingTheTreasury()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
                 fx.Params.GrantKycEndorsement = null;

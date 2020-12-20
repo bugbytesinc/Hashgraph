@@ -348,7 +348,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Update Token: Any Account With Admin Key Can Update")]
         public async Task AnyAccountWithAdminKeyCanUpdate()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 60_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
             var newName = Generator.String(30, 50);
 
