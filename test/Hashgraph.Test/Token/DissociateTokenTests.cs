@@ -65,7 +65,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Dissociate Tokens: Can Dissociate token from Account (No Extra Signatory)")]
         public async Task CanDissociateTokenFromAccountNoExtraSignatory()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
             var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
@@ -87,7 +87,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Dissociate Tokens: Can Dissociate token from Account and get Record (No Extra Signatory)")]
         public async Task CanDissociateTokenFromAccountAndGetRecordNoExtraSignatory()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
             var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
@@ -163,7 +163,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Dissociate Tokens: Can Dissociate Multiple Token with Account (No Extra Signatory)")]
         public async Task CanDissociateMultipleTokensWithAccountNoExtraSignatory()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken1 = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxToken2 = await TestToken.CreateAsync(_network, null, fxAccount);
 
@@ -185,7 +185,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Dissociate Tokens: Can Dissociate Multiple Token with Account and get Record (No Extra Signatory)")]
         public async Task CanDissociateMultipleTokensWithAccountAndGetRecordNoExtraSignatory()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken1 = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxToken2 = await TestToken.CreateAsync(_network, null, fxAccount);
 
@@ -397,10 +397,10 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Token Delete: Can Delete Account Having Token Balance")]
         public async Task CanDeleteAccountHavingTokenBalance()
         {
-            await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
-            await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
-            var xferAmount = (long) fxToken.Params.Circulation;
+            var xferAmount = (long)fxToken.Params.Circulation;
 
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 0);
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);

@@ -116,7 +116,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Suspend Tokens: Can Suspend Token Coin Trading from Any Account with Suspend Key")]
         public async Task CanSuspendTokenCoinTradingFromAnyAccountWithSuspendKey()
         {
-            await using var fxOther = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 30_00_000_000);
+            await using var fxOther = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {

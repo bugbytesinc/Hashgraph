@@ -134,7 +134,7 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Burn Tokens: Can Burn Token Coins from Any Account with Supply Key")]
         public async Task CanBurnTokenCoinsFromAnyAccountWithSupplyKey()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 3_000_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 60_000_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
             Assert.NotNull(fxToken.Record);
             Assert.NotNull(fxToken.Record.Token);
