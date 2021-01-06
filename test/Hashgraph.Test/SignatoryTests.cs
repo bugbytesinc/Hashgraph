@@ -119,7 +119,7 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Signatories: Equivalent Complex Signatories are considered Equal")]
         public void EquivalentComplexSignatoriesAreConsideredEqual()
         {
-            Func<IInvoice,Task> callback = ctx => { return Task.FromResult(0); };
+            Func<IInvoice, Task> callback = ctx => { return Task.FromResult(0); };
             var (_, privateKey1) = Generator.KeyPair();
             var (_, privateKey2) = Generator.KeyPair();
             var (_, privateKey3) = Generator.KeyPair();
@@ -134,7 +134,7 @@ namespace Hashgraph.Tests
             Assert.Equal(signatory1, signatory2);
             Assert.True(signatory1 == signatory2);
             Assert.False(signatory1 != signatory2);
-            signatory1 = new Signatory(privateKey1, callback, new Signatory(privateKey2,privateKey3));
+            signatory1 = new Signatory(privateKey1, callback, new Signatory(privateKey2, privateKey3));
             signatory2 = new Signatory(privateKey1, callback, new Signatory(privateKey2, privateKey3));
             Assert.Equal(signatory1, signatory2);
             Assert.True(signatory1 == signatory2);

@@ -54,5 +54,14 @@ namespace Hashgraph.Test.Fixtures
 
             return association;
         }
+        public static Task CryptoBalanceAsync(TestAccount fxAccount, int expectedBalance)
+        {
+            return CryptoBalanceAsync(fxAccount, (ulong)expectedBalance);
+        }
+        public static async Task CryptoBalanceAsync(TestAccount fxAccount, ulong expectedBalance)
+        {
+            var balance = await fxAccount.Client.GetAccountBalanceAsync(fxAccount);
+            Assert.Equal(expectedBalance, balance);
+        }
     }
 }

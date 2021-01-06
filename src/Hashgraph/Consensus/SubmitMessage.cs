@@ -196,7 +196,7 @@ namespace Hashgraph
                 Message = ByteString.CopyFrom(message.Span),
                 ChunkInfo = isSegment ? createChunkInfo(transactionId, parentTx, segmentIndex, segmentTotalCount) : null
             };
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatories, context.SignaturePrefixTrimLimit);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck);
             var receipt = await GetReceiptAsync(context, transactionId);

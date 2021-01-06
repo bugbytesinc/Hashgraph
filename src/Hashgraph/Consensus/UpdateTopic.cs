@@ -97,7 +97,7 @@ namespace Hashgraph
             var transactionId = Transactions.GetOrCreateTransactionID(context);
             var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
             transactionBody.ConsensusUpdateTopic = updateTopicBody;
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatory, context.SignaturePrefixTrimLimit);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck);
             var receipt = await GetReceiptAsync(context, transactionId);

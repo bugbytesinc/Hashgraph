@@ -95,17 +95,17 @@ namespace Hashgraph
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             return new QueryHeader
             {
-                Payment = await SignTransactionAsync(transactionBody, signatory)
+                Payment = await SignTransactionAsync(transactionBody, signatory, context.SignaturePrefixTrimLimit)
             };
         }
-        internal static async Task<Transaction> SignTransactionAsync(TransactionBody transactionBody, ISignatory signatory)
+        internal static async Task<Transaction> SignTransactionAsync(TransactionBody transactionBody, ISignatory signatory, int prefixTrimLimit)
         {
             var invoice = new Invoice(transactionBody);
             await signatory.SignAsync(invoice);
             return new Transaction
             {
-                SignedTransactionBytes = invoice.GetSignedTransaction().ToByteString()
-            };          
+                SignedTransactionBytes = invoice.GetSignedTransaction(prefixTrimLimit).ToByteString()
+            };
         }
         internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
         {

@@ -47,7 +47,7 @@ namespace Hashgraph.Test.System
                 Memo = "Unsafe Test",
                 CryptoTransfer = new Proto.CryptoTransferTransactionBody { Transfers = transfers }
             };
-            var transaction = await Transactions.SignTransactionAsync(body, _network.Signatory);
+            var transaction = await Transactions.SignTransactionAsync(body, _network.Signatory, 6);
 
             var receipt = await client.SubmitUnsafeTransactionAsync(transaction.ToByteArray(), ctx => ctx.Payer = systemAddress);
             Assert.Equal(ResponseCode.Success, receipt.Status);
@@ -85,7 +85,7 @@ namespace Hashgraph.Test.System
                 Memo = "Unsafe Test",
                 CryptoTransfer = new Proto.CryptoTransferTransactionBody { Transfers = transfers }
             };
-            var transaction = await Transactions.SignTransactionAsync(body, _network.Signatory);
+            var transaction = await Transactions.SignTransactionAsync(body, _network.Signatory, 6);
 
             var record = await client.SubmitUnsafeTransactionWithRecordAsync(transaction.ToByteArray(), ctx => ctx.Payer = systemAddress);
             Assert.Equal(ResponseCode.Success, record.Status);

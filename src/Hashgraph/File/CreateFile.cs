@@ -75,7 +75,7 @@ namespace Hashgraph
                 Keys = new KeyList(createParameters.Endorsements),
                 Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
             };
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
+            var request = await Transactions.SignTransactionAsync(transactionBody, signatory, context.SignaturePrefixTrimLimit);
             var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck);
             var receipt = await GetReceiptAsync(context, transactionId);
