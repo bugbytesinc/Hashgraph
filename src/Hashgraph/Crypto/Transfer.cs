@@ -354,8 +354,7 @@ namespace Hashgraph
             {
                 transactionBody.CryptoTransfer.TokenTransfers.AddRange(tokenTransfers);
             }
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatories, context.SignaturePrefixTrimLimit);
-            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            var precheck = await Transactions.SignAndSubmitTransactionWithRetryAsync(transactionBody, signatories, context, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)

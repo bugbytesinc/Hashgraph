@@ -70,7 +70,7 @@ namespace Hashgraph
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.CryptogetAccountBalance.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
+                response = await Transactions.ExecuteSignedQueryWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
             }
             return response.CryptogetAccountBalance.ToAccountBalances();

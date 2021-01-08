@@ -46,7 +46,7 @@ namespace Hashgraph
             {
                 var transactionId = Transactions.GetOrCreateTransactionID(context);
                 query.CryptoGetAccountRecords.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
+                response = await Transactions.ExecuteSignedQueryWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
                 var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
                 if (precheckCode != ResponseCodeEnum.Ok)
                 {

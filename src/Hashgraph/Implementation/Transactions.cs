@@ -95,19 +95,10 @@ namespace Hashgraph
             transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
             return new QueryHeader
             {
-                Payment = await SignTransactionAsync(transactionBody, signatory, context.SignaturePrefixTrimLimit)
+                Payment = await transactionBody.SignAsync(signatory, context.SignaturePrefixTrimLimit)
             };
         }
-        internal static async Task<Transaction> SignTransactionAsync(TransactionBody transactionBody, ISignatory signatory, int prefixTrimLimit)
-        {
-            var invoice = new Invoice(transactionBody);
-            await signatory.SignAsync(invoice);
-            return new Transaction
-            {
-                SignedTransactionBytes = invoice.GetSignedTransaction(prefixTrimLimit).ToByteString()
-            };
-        }
-        internal async static Task<TResponse> ExecuteUnsignedAskRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
+        internal async static Task<Response> ExecuteUnsignedAskRequestWithRetryAsync(GossipContextStack context, Query request, Func<Channel, Func<Query, Task<Response>>> instantiateRequestMethod, Func<Response, ResponseHeader?> getResponseHeader)
         {
             var answer = await ExecuteNetworkRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
             var code = getResponseHeader(answer)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
@@ -117,23 +108,28 @@ namespace Hashgraph
             }
             return answer;
 
-            bool shouldRetryRequest(TResponse response)
+            bool shouldRetryRequest(Response response)
             {
                 return ResponseCodeEnum.Busy == getResponseHeader(response)?.NodeTransactionPrecheckCode;
             }
         }
 
-        internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseHeader?> getResponseHeader) where TRequest : IMessage where TResponse : IMessage
+        internal static Task<Response> ExecuteSignedQueryWithRetryAsync(GossipContextStack context, Query request, Func<Channel, Func<Query, Task<Response>>> instantiateRequestMethod, Func<Response, ResponseHeader?> getResponseHeader)
         {
-            return ExecuteSignedRequestWithRetryAsync(context, request, instantiateRequestMethod, getResponseCode);
+            return ExecuteSignedRequestWithRetryImplementationAsync(context, request, instantiateRequestMethod, getResponseCode);
 
-            ResponseCodeEnum getResponseCode(TResponse response)
+            ResponseCodeEnum getResponseCode(Response response)
             {
                 return getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             }
         }
+        internal static async Task<TransactionResponse> SignAndSubmitTransactionWithRetryAsync(TransactionBody transactionBody, ISignatory signatory, GossipContextStack context, Func<Channel, Func<Transaction, Task<TransactionResponse>>> instantiateRequestMethod, Func<TransactionResponse, ResponseCodeEnum> getResponseCode)
+        {
+            var request = await transactionBody.SignAsync(signatory, context.SignaturePrefixTrimLimit);
+            return await ExecuteSignedRequestWithRetryImplementationAsync(context, request, instantiateRequestMethod, getResponseCode);
+        }
 
-        internal static Task<TResponse> ExecuteSignedRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+        private static Task<TResponse> ExecuteSignedRequestWithRetryImplementationAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {
             var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
             var startingInstant = trackTimeDrift ? Epoch.UniqueClockNanos() : 0;

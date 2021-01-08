@@ -74,8 +74,7 @@ namespace Hashgraph
                 AutoRenewPeriod = new Duration(createParameters.RenewPeriod),
                 AutoRenewAccount = createParameters.RenewAccount is null ? null : new AccountID(createParameters.RenewAccount)
             };
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatory, context.SignaturePrefixTrimLimit);
-            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            var precheck = await Transactions.SignAndSubmitTransactionWithRetryAsync(transactionBody, signatory, context, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(transactionId, precheck);
             var receipt = await GetReceiptAsync(context, transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)

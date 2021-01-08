@@ -90,8 +90,7 @@ namespace Hashgraph
                 TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
                 UncheckedSubmit = new UncheckedSubmitBody { TransactionBytes = ByteString.CopyFrom(transaction.Span) }
             };
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatories, context.SignaturePrefixTrimLimit);
-            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            var precheck = await Transactions.SignAndSubmitTransactionWithRetryAsync(transactionBody, signatories, context, getRequestMethod, getResponseCode);
             ValidateResult.PreCheck(outerTransactionId, precheck);
             // NOTE: The outer transaction ID exists so that the administrative account has something to sign that
             // can be verified, however, the transaction never actually exists in the system so there will never be
