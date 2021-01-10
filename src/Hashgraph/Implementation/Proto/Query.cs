@@ -1,10 +1,17 @@
-﻿using System;
+﻿#pragma warning disable CS0612
+using Google.Protobuf;
+using Grpc.Core;
+using Hashgraph;
+using Hashgraph.Implementation;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Proto
 {
     public sealed partial class Query
     {
-        public QueryHeader? QueryHeader
+        internal QueryHeader? QueryHeader
         {
             get
             {
@@ -96,7 +103,102 @@ namespace Proto
                     default:
                         throw new InvalidOperationException("Query has No Type Set, unable to set Query Header of Unknown Query Type.");
                 };
+            }
+        }
 
+        internal Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> InstantiateNetworkRequestMethod(Channel channel)
+        {
+            return QueryCase switch
+            {
+                //QueryOneofCase.GetByKey => (query_ as GetByKeyQuery)?.Header,
+                //QueryOneofCase.GetBySolidityID => (query_ as GetBySolidityIDQuery)?.Header,
+                QueryOneofCase.ContractCallLocal => new SmartContractService.SmartContractServiceClient(channel).contractCallLocalMethodAsync,
+                QueryOneofCase.ContractGetInfo => new SmartContractService.SmartContractServiceClient(channel).getContractInfoAsync,
+                QueryOneofCase.ContractGetBytecode => new SmartContractService.SmartContractServiceClient(channel).ContractGetBytecodeAsync,
+                QueryOneofCase.ContractGetRecords => new SmartContractService.SmartContractServiceClient(channel).getTxRecordByContractIDAsync,
+                QueryOneofCase.CryptogetAccountBalance => new CryptoService.CryptoServiceClient(channel).cryptoGetBalanceAsync,
+                QueryOneofCase.CryptoGetAccountRecords => new CryptoService.CryptoServiceClient(channel).getAccountRecordsAsync,
+                QueryOneofCase.CryptoGetInfo => new CryptoService.CryptoServiceClient(channel).getAccountInfoAsync,
+                //QueryOneofCase.CryptoGetLiveHash => (query_ as CryptoGetLiveHashQuery)?.Header,
+                QueryOneofCase.CryptoGetProxyStakers => new CryptoService.CryptoServiceClient(channel).getStakersByAccountIDAsync,
+                QueryOneofCase.FileGetContents => new FileService.FileServiceClient(channel).getFileContentAsync,
+                QueryOneofCase.FileGetInfo => new FileService.FileServiceClient(channel).getFileInfoAsync,
+                QueryOneofCase.TransactionGetReceipt => new CryptoService.CryptoServiceClient(channel).getTransactionReceiptsAsync,
+                QueryOneofCase.TransactionGetRecord => new CryptoService.CryptoServiceClient(channel).getTxRecordByTxIDAsync,
+                //QueryOneofCase.TransactionGetFastRecord => (query_ as TransactionGetFastRecordQuery)?.Header,
+                QueryOneofCase.ConsensusGetTopicInfo => new ConsensusService.ConsensusServiceClient(channel).getTopicInfoAsync,
+                QueryOneofCase.NetworkGetVersionInfo => new NetworkService.NetworkServiceClient(channel).getVersionInfoAsync,
+                QueryOneofCase.TokenGetInfo => new TokenService.TokenServiceClient(channel).getTokenInfoAsync,
+                _ => throw new InvalidOperationException("Query has No Type Set, unable to find Network Request Method for Unknown Query Type.")
+            };
+        }
+
+        internal async Task<Response> SignAndExecuteWithRetryAsync(GossipContextStack context, long supplementalCost = 0)
+        {
+            QueryHeader = new QueryHeader
+            {
+                Payment = new Transaction { SignedTransactionBytes = ByteString.Empty },
+                ResponseType = ResponseType.CostAnswer
+            };
+            var response = await executeUnsignedAskRequestWithRetryAsync();
+            ulong cost = response.ResponseHeader?.Cost ?? 0UL;
+            if (cost > 0)
+            {
+                var transactionId = Transactions.GetOrCreateTransactionID(context);
+                QueryHeader = await createSignedQueryHeader((long)cost + supplementalCost, transactionId);
+                response = await executeSignedQueryWithRetryAsync();
+                response.Validate(transactionId);
+            }
+            return response;
+
+            async Task<QueryHeader> createSignedQueryHeader(long queryFee, TransactionID transactionId)
+            {
+                var gateway = RequireInContext.Gateway(context);
+                var payer = RequireInContext.Payer(context);
+                var signatory = RequireInContext.Signatory(context);
+                var fee = RequireInContext.QueryFee(context, queryFee);
+                TransactionBody transactionBody = new TransactionBody
+                {
+                    TransactionID = transactionId,
+                    NodeAccountID = new AccountID(gateway),
+                    TransactionFee = (ulong)context.FeeLimit,
+                    TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
+                    Memo = context.Memo ?? ""
+                };
+                var transfers = new TransferList();
+                transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(payer), Amount = -fee });
+                transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(gateway), Amount = fee });
+                transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
+                return new QueryHeader
+                {
+                    Payment = await transactionBody.SignAsync(signatory, context.SignaturePrefixTrimLimit)
+                };
+            }
+
+            async Task<Response> executeUnsignedAskRequestWithRetryAsync()
+            {
+                var answer = await Transactions.ExecuteNetworkRequestWithRetryAsync(context, this, InstantiateNetworkRequestMethod, shouldRetryRequest);
+                var code = answer.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                if (code != ResponseCodeEnum.Ok)
+                {
+                    throw new PrecheckException($"Transaction Failed Pre-Check: {code}", new TxId(), (ResponseCode)code, 0);
+                }
+                return answer;
+
+                static bool shouldRetryRequest(Response response)
+                {
+                    return ResponseCodeEnum.Busy == response.ResponseHeader?.NodeTransactionPrecheckCode;
+                }
+            }
+
+            Task<Response> executeSignedQueryWithRetryAsync()
+            {
+                return Transactions.ExecuteSignedRequestWithRetryImplementationAsync(context, this, InstantiateNetworkRequestMethod, getResponseCode);
+
+                ResponseCodeEnum getResponseCode(Response response)
+                {
+                    return response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+                }
             }
         }
     }

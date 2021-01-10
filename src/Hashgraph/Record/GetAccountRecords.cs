@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Linq;
@@ -36,35 +35,11 @@ namespace Hashgraph
             {
                 CryptoGetAccountRecords = new CryptoGetAccountRecordsQuery
                 {
-                    Header = Transactions.CreateAskCostHeader(),
                     AccountID = new AccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            long cost = (long)response.CryptoGetAccountRecords.Header.Cost;
-            if (cost > 0)
-            {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.QueryHeader = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedQueryWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-                if (precheckCode != ResponseCodeEnum.Ok)
-                {
-                    throw new TransactionException("Unable to retrieve transaction records.", transactionId.ToTxId(), (ResponseCode)precheckCode);
-                }
-            }
+            var response = await query.SignAndExecuteWithRetryAsync(context);
             return response.CryptoGetAccountRecords.Records.Select(record => record.ToTransactionRecord()).ToArray();
-
-            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
-            {
-                var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Query query) => (await client.getAccountRecordsAsync(query));
-            }
-
-            static ResponseHeader? getResponseHeader(Response response)
-            {
-                return response.CryptoGetAccountRecords?.Header;
-            }
         }
     }
 }

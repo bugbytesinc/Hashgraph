@@ -6,6 +6,7 @@ using Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -56,80 +57,8 @@ namespace Hashgraph
                 return new TransactionID(preExistingTransaction);
             }
         }
-        internal static TransactionBody CreateTransactionBody(GossipContextStack context, TransactionID transactionId)
-        {
-            return new TransactionBody
-            {
-                TransactionID = transactionId,
-                NodeAccountID = new AccountID(RequireInContext.Gateway(context)),
-                TransactionFee = (ulong)context.FeeLimit,
-                TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
-                Memo = context.Memo ?? ""
-            };
-        }
-        internal static QueryHeader CreateAskCostHeader()
-        {
-            return new QueryHeader
-            {
-                Payment = new Transaction { SignedTransactionBytes = ByteString.Empty },
-                ResponseType = ResponseType.CostAnswer
-            };
-        }
-        internal static async Task<QueryHeader> CreateAndSignQueryHeaderAsync(GossipContextStack context, long queryFee, TransactionID transactionId)
-        {
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatory = RequireInContext.Signatory(context);
-            var fee = RequireInContext.QueryFee(context, queryFee);
-            TransactionBody transactionBody = new TransactionBody
-            {
-                TransactionID = transactionId,
-                NodeAccountID = new AccountID(gateway),
-                TransactionFee = (ulong)context.FeeLimit,
-                TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
-                Memo = context.Memo ?? ""
-            };
-            var transfers = new TransferList();
-            transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(payer), Amount = -fee });
-            transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(gateway), Amount = fee });
-            transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
-            return new QueryHeader
-            {
-                Payment = await transactionBody.SignAsync(signatory, context.SignaturePrefixTrimLimit)
-            };
-        }
-        internal async static Task<Response> ExecuteUnsignedAskRequestWithRetryAsync(GossipContextStack context, Query request, Func<Channel, Func<Query, Task<Response>>> instantiateRequestMethod, Func<Response, ResponseHeader?> getResponseHeader)
-        {
-            var answer = await ExecuteNetworkRequestWithRetryAsync(context, request, instantiateRequestMethod, shouldRetryRequest);
-            var code = getResponseHeader(answer)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (code != ResponseCodeEnum.Ok)
-            {
-                throw new PrecheckException($"Transaction Failed Pre-Check: {code}", new TxId(), (ResponseCode)code, 0);
-            }
-            return answer;
 
-            bool shouldRetryRequest(Response response)
-            {
-                return ResponseCodeEnum.Busy == getResponseHeader(response)?.NodeTransactionPrecheckCode;
-            }
-        }
-
-        internal static Task<Response> ExecuteSignedQueryWithRetryAsync(GossipContextStack context, Query request, Func<Channel, Func<Query, Task<Response>>> instantiateRequestMethod, Func<Response, ResponseHeader?> getResponseHeader)
-        {
-            return ExecuteSignedRequestWithRetryImplementationAsync(context, request, instantiateRequestMethod, getResponseCode);
-
-            ResponseCodeEnum getResponseCode(Response response)
-            {
-                return getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            }
-        }
-        internal static async Task<TransactionResponse> SignAndSubmitTransactionWithRetryAsync(TransactionBody transactionBody, ISignatory signatory, GossipContextStack context, Func<Channel, Func<Transaction, Task<TransactionResponse>>> instantiateRequestMethod, Func<TransactionResponse, ResponseCodeEnum> getResponseCode)
-        {
-            var request = await transactionBody.SignAsync(signatory, context.SignaturePrefixTrimLimit);
-            return await ExecuteSignedRequestWithRetryImplementationAsync(context, request, instantiateRequestMethod, getResponseCode);
-        }
-
-        private static Task<TResponse> ExecuteSignedRequestWithRetryImplementationAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+        internal static Task<TResponse> ExecuteSignedRequestWithRetryImplementationAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {
             var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
             var startingInstant = trackTimeDrift ? Epoch.UniqueClockNanos() : 0;
@@ -148,7 +77,7 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
-        internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Task<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
+        internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
         {
             try
             {
@@ -163,7 +92,7 @@ namespace Hashgraph
                 {
                     try
                     {
-                        var tenativeResponse = await sendRequest(request);
+                        var tenativeResponse = await sendRequest(request, null, null, default);
                         callOnResponseReceivedHandlers(retryCount, tenativeResponse);
                         if (!shouldRetryRequest(tenativeResponse))
                         {
@@ -195,7 +124,7 @@ namespace Hashgraph
                     }
                     await Task.Delay(retryDelay * (retryCount + 1));
                 }
-                var finalResponse = await sendRequest(request);
+                var finalResponse = await sendRequest(request, null, null, default);
                 callOnResponseReceivedHandlers(maxRetries, finalResponse);
                 return finalResponse;
 
@@ -292,6 +221,51 @@ namespace Hashgraph
             }
             static void NoOp(int tryNumber, IMessage response)
             {
+            }
+        }
+        /// <summary>
+        /// Internal Helper function to retrieve receipt record provided by 
+        /// the network following network consensus regarding a query or transaction.
+        /// </summary>
+        internal static async Task<Proto.TransactionReceipt> GetReceiptAsync(GossipContextStack context, TransactionID transactionId)
+        {
+            var query = new Query
+            {
+                TransactionGetReceipt = new TransactionGetReceiptQuery
+                {
+                    TransactionID = transactionId
+                }
+            };
+            var response = await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
+            switch (responseCode)
+            {
+                case ResponseCodeEnum.Ok:
+                    break;
+                case ResponseCodeEnum.Busy:
+                    throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.ToTxId(), (ResponseCode)responseCode);
+                case ResponseCodeEnum.Unknown:
+                case ResponseCodeEnum.ReceiptNotFound:
+                    throw new TransactionException($"Network failed to return a transaction receipt, Status Code Returned: {responseCode}", transactionId.ToTxId(), (ResponseCode)responseCode);
+            }
+            var status = response.TransactionGetReceipt.Receipt.Status;
+            switch (status)
+            {
+                case ResponseCodeEnum.Unknown:
+                    throw new ConsensusException("Network failed to reach concensus within the configured retry time window, It is possible the network may still reach concensus for this transaction.", transactionId.ToTxId(), (ResponseCode)status);
+                case ResponseCodeEnum.TransactionExpired:
+                    throw new ConsensusException("Network failed to reach concensus before transaction request expired.", transactionId.ToTxId(), (ResponseCode)status);
+                case ResponseCodeEnum.RecordNotFound:
+                    throw new ConsensusException("Network failed to find a receipt for given transaction.", transactionId.ToTxId(), (ResponseCode)status);
+                default:
+                    return response.TransactionGetReceipt.Receipt;
+            }
+
+            static bool shouldRetry(Response response)
+            {
+                return
+                    response.TransactionGetReceipt?.Header?.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||
+                    response.TransactionGetReceipt?.Receipt?.Status == ResponseCodeEnum.Unknown;
             }
         }
     }

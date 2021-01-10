@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Collections.Generic;
@@ -39,31 +38,11 @@ namespace Hashgraph
             {
                 CryptoGetProxyStakers = new CryptoGetStakersQuery
                 {
-                    Header = Transactions.CreateAskCostHeader(),
                     AccountID = new AccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            long cost = (long)response.CryptoGetProxyStakers.Header.Cost;
-            if (cost > 0)
-            {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.QueryHeader = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedQueryWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
-            }
+            var response = await query.SignAndExecuteWithRetryAsync(context);
             return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => ps.AccountID.ToAddress(), ps => ps.Amount);
-
-            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
-            {
-                var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Query query) => (await client.getStakersByAccountIDAsync(query));
-            }
-
-            static ResponseHeader? getResponseHeader(Response response)
-            {
-                return response.CryptoGetProxyStakers?.Header;
-            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf;
-using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -68,16 +67,14 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
+            var transactionBody = new TransactionBody(context, transactionId);
             transactionBody.FileCreate = new FileCreateTransactionBody
             {
                 ExpirationTime = new Timestamp(createParameters.Expiration),
                 Keys = new KeyList(createParameters.Endorsements),
                 Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
             };
-            var precheck = await Transactions.SignAndSubmitTransactionWithRetryAsync(transactionBody, signatory, context, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, precheck);
-            var receipt = await GetReceiptAsync(context, transactionId);
+            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to create file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
@@ -93,17 +90,6 @@ namespace Hashgraph
                 receipt.FillProperties(transactionId, rcpt);
             }
             return result;
-
-            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
-            {
-                var client = new FileService.FileServiceClient(channel);
-                return async (Transaction transaction) => await client.createFileAsync(transaction);
-            }
-
-            static ResponseCodeEnum getResponseCode(TransactionResponse response)
-            {
-                return response.NodeTransactionPrecheckCode;
-            }
         }
     }
 }

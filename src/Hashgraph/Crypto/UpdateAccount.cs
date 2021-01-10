@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -95,11 +94,9 @@ namespace Hashgraph
             }
             var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
+            var transactionBody = new TransactionBody(context, transactionId);
             transactionBody.CryptoUpdateAccount = updateAccountBody;
-            var precheck = await Transactions.SignAndSubmitTransactionWithRetryAsync(transactionBody, signatory, context, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, precheck);
-            var receipt = await GetReceiptAsync(context, transactionId);
+            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to update account, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
@@ -115,17 +112,6 @@ namespace Hashgraph
                 receipt.FillProperties(transactionId, rcpt);
             }
             return result;
-
-            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
-            {
-                var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Transaction transaction) => await client.updateAccountAsync(transaction);
-            }
-
-            static ResponseCodeEnum getResponseCode(TransactionResponse response)
-            {
-                return response.NodeTransactionPrecheckCode;
-            }
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf;
-using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -81,11 +80,9 @@ namespace Hashgraph
                 updateFileBody.Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
             }
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
+            var transactionBody = new TransactionBody(context, transactionId);
             transactionBody.FileUpdate = updateFileBody;
-            var precheck = await Transactions.SignAndSubmitTransactionWithRetryAsync(transactionBody, signatory, context, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, precheck);
-            var receipt = await GetReceiptAsync(context, transactionId);
+            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to update file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
@@ -101,17 +98,6 @@ namespace Hashgraph
                 receipt.FillProperties(transactionId, rcpt);
             }
             return result;
-
-            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
-            {
-                var client = new FileService.FileServiceClient(channel);
-                return async (Transaction transaction) => await client.updateFileAsync(transaction);
-            }
-
-            static ResponseCodeEnum getResponseCode(TransactionResponse response)
-            {
-                return response.NodeTransactionPrecheckCode;
-            }
         }
     }
 }
