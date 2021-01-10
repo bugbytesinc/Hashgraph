@@ -1,5 +1,4 @@
 ﻿#pragma warning disable CS0612
-using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -37,31 +36,11 @@ namespace Hashgraph
             {
                 ContractGetRecords = new ContractGetRecordsQuery
                 {
-                    Header = Transactions.CreateAskCostHeader(),
                     ContractID = new ContractID(contract)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            long cost = (long)response.ContractGetRecordsResponse.Header.Cost;
-            if (cost > 0)
-            {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.ContractGetRecords.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
-            }
+            var response = await query.SignAndExecuteWithRetryAsync(context);
             return response.ContractGetRecordsResponse.Records.Select(record => record.ToTransactionRecord()).ToArray();
-
-            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
-            {
-                var client = new SmartContractService.SmartContractServiceClient(channel);
-                return async (Query query) => (await client.getTxRecordByContractIDAsync(query));
-            }
-
-            static ResponseHeader? getResponseHeader(Response response)
-            {
-                return response.ContractGetRecordsResponse?.Header;
-            }
         }
     }
 }

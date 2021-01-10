@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -33,31 +32,11 @@ namespace Hashgraph
             {
                 CryptoGetInfo = new CryptoGetInfoQuery
                 {
-                    Header = Transactions.CreateAskCostHeader(),
                     AccountID = new AccountID(address)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            long cost = (long)response.CryptoGetInfo.Header.Cost;
-            if (cost > 0)
-            {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.CryptoGetInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
-            }
+            var response = await query.SignAndExecuteWithRetryAsync(context);
             return response.CryptoGetInfo.AccountInfo.ToAccountInfo();
-
-            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
-            {
-                var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Query query) => (await client.getAccountInfoAsync(query));
-            }
-
-            static ResponseHeader? getResponseHeader(Response response)
-            {
-                return response.CryptoGetInfo?.Header;
-            }
         }
     }
 }

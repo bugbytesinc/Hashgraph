@@ -19,6 +19,7 @@ namespace Hashgraph.Implementation
         public TimeSpan TransactionDuration { get => get<TimeSpan>(nameof(TransactionDuration)); set => set(nameof(TransactionDuration), value); }
         public int RetryCount { get => get<int>(nameof(RetryCount)); set => set(nameof(RetryCount), value); }
         public TimeSpan RetryDelay { get => get<TimeSpan>(nameof(RetryDelay)); set => set(nameof(RetryDelay), value); }
+        public int SignaturePrefixTrimLimit { get => get<int>(nameof(SignaturePrefixTrimLimit)); set => set(nameof(SignaturePrefixTrimLimit), value); }
         public string? Memo { get => get<string>(nameof(Memo)); set => set(nameof(Memo), value); }
         public bool AdjustForLocalClockDrift { get => get<bool>(nameof(AdjustForLocalClockDrift)); set => set(nameof(AdjustForLocalClockDrift), value); }
         public TxId? Transaction { get => get<TxId>(nameof(Transaction)); set => set(nameof(Transaction), value); }
@@ -36,6 +37,7 @@ namespace Hashgraph.Implementation
                 case nameof(FeeLimit):
                 case nameof(RetryCount):
                 case nameof(RetryDelay):
+                case nameof(SignaturePrefixTrimLimit):
                 case nameof(TransactionDuration):
                 case nameof(Memo):
                 case nameof(AdjustForLocalClockDrift):

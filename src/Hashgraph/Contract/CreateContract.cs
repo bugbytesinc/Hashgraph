@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf;
-using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -69,7 +68,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
+            var transactionBody = new TransactionBody(context, transactionId);
             transactionBody.ContractCreateInstance = new ContractCreateTransactionBody
             {
                 FileID = new FileID(createParameters.File),
@@ -80,10 +79,7 @@ namespace Hashgraph
                 ConstructorParameters = ByteString.CopyFrom(Abi.EncodeArguments(createParameters.Arguments).ToArray()),
                 Memo = context.Memo ?? ""
             };
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatory);
-            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, precheck);
-            var receipt = await GetReceiptAsync(context, transactionId);
+            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to create contract, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
@@ -99,17 +95,6 @@ namespace Hashgraph
                 receipt.FillProperties(transactionId, rcpt);
             }
             return result;
-
-            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
-            {
-                var client = new SmartContractService.SmartContractServiceClient(channel);
-                return async (Transaction transaction) => await client.createContractAsync(transaction);
-            }
-
-            static ResponseCodeEnum getResponseCode(TransactionResponse response)
-            {
-                return response.NodeTransactionPrecheckCode;
-            }
         }
     }
 }

@@ -153,7 +153,7 @@ namespace Hashgraph.Implementation
 
         internal static (TransferList?, IEnumerable<TokenTransferList>?) CryptoAndTransferList(TransferParams transfers)
         {
-            if(transfers == null)
+            if (transfers == null)
             {
                 throw new ArgumentNullException(nameof(transfers), "The transfer parametes cannot not be null.");
             }

@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -43,51 +42,32 @@ namespace Hashgraph
             {
                 ContractCallLocal = new ContractCallLocalQuery
                 {
-                    Header = Transactions.CreateAskCostHeader(),
                     ContractID = new ContractID(queryParameters.Contract),
                     Gas = queryParameters.Gas,
                     FunctionParameters = Abi.EncodeFunctionWithArguments(queryParameters.FunctionName, queryParameters.FunctionArgs).ToByteString(),
                     MaxResultSize = queryParameters.MaxAllowedReturnSize
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            long cost = (long)response.ContractCallLocal.Header.Cost;
-            if (cost > 0)
+            var response = await query.SignAndExecuteWithRetryAsync(context, queryParameters.ReturnValueCharge);
+            var header = response.ResponseHeader;
+            if (header == null)
             {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.ContractCallLocal.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost + queryParameters.ReturnValueCharge, transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                var header = getResponseHeader(response);
-                if (header == null)
-                {
-                    throw new PrecheckException($"Transaction Failed to Produce a Response.", transactionId.ToTxId(), ResponseCode.Unknown, 0);
-                }
-                if(response.ContractCallLocal?.FunctionResult == null)
-                {
-                    throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", transactionId.ToTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
-                }
-                if (queryParameters.ThrowOnFail && header.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
-                {
-                    throw new ContractException(
-                        $"Contract Query Failed with Code: {header.NodeTransactionPrecheckCode}",
-                        transactionId.ToTxId(),
-                        (ResponseCode)header.NodeTransactionPrecheckCode,
-                        header.Cost,
-                        response.ContractCallLocal.FunctionResult.ToContractCallResult());
-                }
+                throw new PrecheckException($"Transaction Failed to Produce a Response.", query.QueryHeader!.getTransactionId()!.ToTxId(), ResponseCode.Unknown, 0);
+            }
+            if (response.ContractCallLocal?.FunctionResult == null)
+            {
+                throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", query.QueryHeader!.getTransactionId()!.ToTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
+            }
+            if (queryParameters.ThrowOnFail && header.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
+            {
+                throw new ContractException(
+                    $"Contract Query Failed with Code: {header.NodeTransactionPrecheckCode}",
+                    query.QueryHeader!.getTransactionId()!.ToTxId(),
+                    (ResponseCode)header.NodeTransactionPrecheckCode,
+                    header.Cost,
+                    response.ContractCallLocal.FunctionResult.ToContractCallResult());
             }
             return response.ContractCallLocal.FunctionResult.ToContractCallResult();
-
-            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
-            {
-                var client = new SmartContractService.SmartContractServiceClient(channel);
-                return async (Query query) => (await client.contractCallLocalMethodAsync(query));
-            }
-
-            static ResponseHeader? getResponseHeader(Response response)
-            {
-                return response.ContractCallLocal?.Header;
-            }
         }
     }
 }

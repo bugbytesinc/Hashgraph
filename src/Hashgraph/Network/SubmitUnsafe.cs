@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf;
-using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -90,15 +89,14 @@ namespace Hashgraph
                 TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
                 UncheckedSubmit = new UncheckedSubmitBody { TransactionBytes = ByteString.CopyFrom(transaction.Span) }
             };
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
-            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
+            var precheck = await transactionBody.SignAndSubmitWithRetryAsync(signatories, context);
             ValidateResult.PreCheck(outerTransactionId, precheck);
             // NOTE: The outer transaction ID exists so that the administrative account has something to sign that
             // can be verified, however, the transaction never actually exists in the system so there will never be
             // a receipt for this submission, however, there will be an attempt to execute the submitted transaction
             // as this method bypasses PRECHECK validations.  So, there will be a receipt for the inner traction, with
             // success or a failure code.  Therefore we return the receipt or record for the custom transaction.
-            var receipt = await GetReceiptAsync(context, innerTransactionId);
+            var receipt = await Transactions.GetReceiptAsync(context, innerTransactionId);
             // Retain standard behavior of throwing an exception if the receipt has an error code.
             if (receipt.Status != ResponseCodeEnum.Success)
             {
@@ -115,17 +113,6 @@ namespace Hashgraph
                 receipt.FillProperties(innerTransactionId, rcpt);
             }
             return result;
-
-            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
-            {
-                var client = new NetworkService.NetworkServiceClient(channel);
-                return async (Transaction transaction) => await client.uncheckedSubmitAsync(transaction);
-            }
-
-            static ResponseCodeEnum getResponseCode(TransactionResponse response)
-            {
-                return response.NodeTransactionPrecheckCode;
-            }
         }
     }
 }

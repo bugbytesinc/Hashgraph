@@ -71,6 +71,7 @@ namespace Hashgraph
                     TransactionDuration = TimeSpan.FromSeconds(120),
                     RetryCount = 5,
                     RetryDelay = TimeSpan.FromMilliseconds(200),
+                    SignaturePrefixTrimLimit = 0,
                     AdjustForLocalClockDrift = false
                 };
             }

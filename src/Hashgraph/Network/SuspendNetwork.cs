@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf;
-using Grpc.Core;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -39,7 +38,7 @@ namespace Hashgraph
             var payer = RequireInContext.Payer(context);
             var signatories = Transactions.GatherSignatories(context);
             var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = Transactions.CreateTransactionBody(context, transactionId);
+            var transactionBody = new TransactionBody(context, transactionId);
             var startDate = DateTime.UtcNow.Add(suspendParameters.Starting);
             var endDate = startDate.Add(suspendParameters.Duration);
             transactionBody.Freeze = new FreezeTransactionBody
@@ -54,26 +53,12 @@ namespace Hashgraph
                 transactionBody.Freeze.UpdateFile = new FileID(suspendParameters.UpdateFile);
                 transactionBody.Freeze.FileHash = ByteString.CopyFrom(suspendParameters.UpdateFileHash.Span);
             }
-            var request = await Transactions.SignTransactionAsync(transactionBody, signatories);
-            var precheck = await Transactions.ExecuteSignedRequestWithRetryAsync(context, request, getRequestMethod, getResponseCode);
-            ValidateResult.PreCheck(transactionId, precheck);
-            var receipt = await GetReceiptAsync(context, transactionId);
+            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Failed to submit suspend/freeze command, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
             }
             return receipt.FillProperties(transactionId, new TransactionReceipt());
-
-            static Func<Transaction, Task<TransactionResponse>> getRequestMethod(Channel channel)
-            {
-                var client = new FreezeService.FreezeServiceClient(channel);
-                return async (Transaction transaction) => await client.freezeAsync(transaction);
-            }
-
-            static ResponseCodeEnum getResponseCode(TransactionResponse response)
-            {
-                return response.NodeTransactionPrecheckCode;
-            }
         }
     }
 }

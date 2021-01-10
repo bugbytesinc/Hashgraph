@@ -101,6 +101,19 @@ namespace Hashgraph
         /// </summary>
         TimeSpan RetryDelay { get; set; }
         /// <summary>
+        /// The smallest desired signature map prefix value length.  
+        /// The client will trim the length of signature prefix identifiers 
+        /// in a signature map to the smallest value possible, but not less 
+        /// than this value.  If the value is set to 0 (the default) the 
+        /// minimum possible feasible value will be used when multiple 
+        /// signatures are added to a transaction, omitting the prefix 
+        /// completely if only one signature is provided.  This does not 
+        /// guarantee a minimum length of a signature prefix (a shorter 
+        /// value may be provided to the client by the signing algorithm) 
+        /// only that the client will not actively reduce the value beyond this limit.
+        /// </summary>
+        int SignaturePrefixTrimLimit { get; set; }
+        /// <summary>
         /// Override the automatic generation of a transaction ID and use 
         /// the given Transaction ID.  Can be useful for submitting the 
         /// same transaction to multiple client/gateways.

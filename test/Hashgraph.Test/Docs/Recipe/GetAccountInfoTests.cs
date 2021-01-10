@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿#pragma warning disable CS8892 //Main will not be used as an entry point
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;

@@ -2,6 +2,7 @@
 using Proto;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Hashgraph.Implementation
 {
@@ -26,7 +27,7 @@ namespace Hashgraph.Implementation
         {
             var key = ByteString.CopyFrom(publicPrefix.Span);
             var value = ByteString.CopyFrom(signature.Span);
-            var pair = new Proto.SignaturePair { PubKeyPrefix = key };
+            var pair = new Proto.SignaturePair();
             switch (type)
             {
                 case KeyType.Ed25519:
@@ -54,16 +55,48 @@ namespace Hashgraph.Implementation
                 _signatures.Add(key, pair);
             }
         }
-        internal SignedTransaction GetSignedTransaction()
+        internal SignedTransaction GetSignedTransaction(int prefixTrimLimit)
         {
-            if (_signatures.Count == 0)
+            var count = _signatures.Count;
+            if (count == 0)
             {
                 throw new InvalidOperationException("A transaction or query requires at least one signature, sometimes more.  None were found, did you forget to assign a Signatory to the context, transaction or query?");
             }
             var signatures = new SignatureMap();
-            foreach (var signature in _signatures.Values)
+            if (count == 1 && prefixTrimLimit < 1)
             {
-                signatures.SigPair.Add(signature);
+                signatures.SigPair.Add(_signatures.Values.First());
+            }
+            else
+            {
+                var list = _signatures.ToArray();
+                var keys = new byte[count][];
+                for (var length = Math.Max(1, prefixTrimLimit); true; length++)
+                {
+                    var unique = true;
+                    for (var i = 0; unique && i < count; i++)
+                    {
+                        var key = keys[i] = list[i].Key.Memory.Slice(0, Math.Min(list[i].Key.Length, length)).ToArray();
+                        for (var j = 0; j < i; j++)
+                        {
+                            if (Enumerable.SequenceEqual(key, keys[j]))
+                            {
+                                unique = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (unique)
+                    {
+                        break;
+                    }
+                }
+                for (var i = 0; i < count; i++)
+                {
+                    var sig = list[i].Value;
+                    sig.PubKeyPrefix = ByteString.CopyFrom(keys[i]);
+                    signatures.SigPair.Add(sig);
+                }
             }
             return new SignedTransaction
             {

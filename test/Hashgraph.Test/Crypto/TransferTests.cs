@@ -177,7 +177,7 @@ namespace Hashgraph.Test.Crypto
 
             Assert.Equal((ulong)transferAmount + fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
             Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
-            transfers =  new TransferParams
+            transfers = new TransferParams
             {
                 CryptoTransfers = new Dictionary<Address, long>
                 {
@@ -204,7 +204,8 @@ namespace Hashgraph.Test.Crypto
             var sig1 = new Signatory(fx1.PrivateKey);
             var sig2 = new Signatory(fx2.PrivateKey);
             var transferAmount = (long)Generator.Integer(100, 200);
-            var transfers = new TransferParams {
+            var transfers = new TransferParams
+            {
                 CryptoTransfers = new Dictionary<Address, long>
                 {
                     { payer, -transferAmount },

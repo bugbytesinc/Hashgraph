@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -33,31 +32,11 @@ namespace Hashgraph
             {
                 ConsensusGetTopicInfo = new ConsensusGetTopicInfoQuery
                 {
-                    Header = Transactions.CreateAskCostHeader(),
                     TopicID = new TopicID(topic)
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            long cost = (long)response.ConsensusGetTopicInfo.Header.Cost;
-            if (cost > 0)
-            {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.ConsensusGetTopicInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
-            }
+            var response = await query.SignAndExecuteWithRetryAsync(context);
             return response.ConsensusGetTopicInfo.TopicInfo.ToTopicInfo();
-
-            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
-            {
-                var client = new ConsensusService.ConsensusServiceClient(channel);
-                return async (Query query) => (await client.getTopicInfoAsync(query));
-            }
-
-            static ResponseHeader? getResponseHeader(Response response)
-            {
-                return response.ConsensusGetTopicInfo?.Header;
-            }
         }
     }
 }

@@ -222,9 +222,9 @@ namespace Hashgraph.Test.Fixtures
             await using var client = NewClient();
             try
             {
-                if (await client.GetAccountBalanceAsync(address) < 30_00_000_000)
+                if (await client.GetAccountBalanceAsync(address) < 75_00_000_000)
                 {
-                    await client.TransferAsync(Payer, address, 40_00_000_000);
+                    await client.TransferAsync(Payer, address, 150_00_000_000);
                 }
                 await client.GetAccountInfoAsync(address, ctx => ctx.Payer = address);
             }

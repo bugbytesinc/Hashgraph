@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
 using System.Threading.Tasks;
 using Xunit;
@@ -47,7 +48,12 @@ namespace Hashgraph.Test.System
                 Memo = "Unsafe Test",
                 CryptoTransfer = new Proto.CryptoTransferTransactionBody { Transfers = transfers }
             };
-            var transaction = await Transactions.SignTransactionAsync(body, _network.Signatory);
+            var invoice = new Invoice(body);
+            await (_network.Signatory as ISignatory).SignAsync(invoice);
+            var transaction = new Proto.Transaction
+            {
+                SignedTransactionBytes = invoice.GetSignedTransaction(6).ToByteString()
+            };
 
             var receipt = await client.SubmitUnsafeTransactionAsync(transaction.ToByteArray(), ctx => ctx.Payer = systemAddress);
             Assert.Equal(ResponseCode.Success, receipt.Status);
@@ -85,7 +91,12 @@ namespace Hashgraph.Test.System
                 Memo = "Unsafe Test",
                 CryptoTransfer = new Proto.CryptoTransferTransactionBody { Transfers = transfers }
             };
-            var transaction = await Transactions.SignTransactionAsync(body, _network.Signatory);
+            var invoice = new Invoice(body);
+            await (_network.Signatory as ISignatory).SignAsync(invoice);
+            var transaction = new Proto.Transaction
+            {
+                SignedTransactionBytes = invoice.GetSignedTransaction(6).ToByteString()
+            };
 
             var record = await client.SubmitUnsafeTransactionWithRecordAsync(transaction.ToByteArray(), ctx => ctx.Payer = systemAddress);
             Assert.Equal(ResponseCode.Success, record.Status);

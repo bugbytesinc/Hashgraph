@@ -96,13 +96,7 @@ namespace Hashgraph
                     TransactionID = transactionId
                 }
             };
-            await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, getServerMethod, shouldRetry);
-
-            static Func<Query, Task<Response>> getServerMethod(Channel channel)
-            {
-                var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Query query) => (await client.getTransactionReceiptsAsync(query));
-            }
+            await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, query.InstantiateNetworkRequestMethod, shouldRetry);
 
             static bool shouldRetry(Response response)
             {
@@ -129,37 +123,18 @@ namespace Hashgraph
             {
                 TransactionGetRecord = new TransactionGetRecordQuery
                 {
-                    Header = Transactions.CreateAskCostHeader(),
                     TransactionID = transactionRecordId,
                     IncludeDuplicates = includeDuplicates
                 }
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            long cost = (long)response.TransactionGetRecord.Header.Cost;
-            if (cost > 0)
+            var response = await query.SignAndExecuteWithRetryAsync(context);
+            // Note if we are retrieving the list, Not found is OK too.
+            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+            if (precheckCode != ResponseCodeEnum.Ok && !(includeDuplicates && precheckCode == ResponseCodeEnum.RecordNotFound))
             {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.TransactionGetRecord.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                var precheckCode = getResponseHeader(response)?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-                // Note if we are retrieving the list, Not found is OK too.
-                if (precheckCode != ResponseCodeEnum.Ok && !(includeDuplicates && precheckCode == ResponseCodeEnum.RecordNotFound))
-                {
-                    throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.ToTxId(), (ResponseCode)precheckCode);
-                }
+                throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.ToTxId(), (ResponseCode)precheckCode);
             }
             return response.TransactionGetRecord;
-
-            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
-            {
-                var client = new CryptoService.CryptoServiceClient(channel);
-                return async (Query query) => { return await client.getTxRecordByTxIDAsync(query); };
-            }
-
-            static ResponseHeader? getResponseHeader(Response response)
-            {
-                return response.TransactionGetRecord?.Header;
-            }
         }
     }
 }

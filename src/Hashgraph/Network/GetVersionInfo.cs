@@ -1,6 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -29,32 +27,10 @@ namespace Hashgraph
             await using var context = CreateChildContext(configure);
             var query = new Query
             {
-                NetworkGetVersionInfo = new NetworkGetVersionInfoQuery
-                {
-                    Header = Transactions.CreateAskCostHeader()
-                }
+                NetworkGetVersionInfo = new NetworkGetVersionInfoQuery()
             };
-            var response = await Transactions.ExecuteUnsignedAskRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-            var cost = (long)response.NetworkGetVersionInfo.Header.Cost;
-            if (cost > 0)
-            {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
-                query.NetworkGetVersionInfo.Header = await Transactions.CreateAndSignQueryHeaderAsync(context, cost, transactionId);
-                response = await Transactions.ExecuteSignedRequestWithRetryAsync(context, query, getRequestMethod, getResponseHeader);
-                ValidateResult.ResponseHeader(transactionId, getResponseHeader(response));
-            }
+            var response = await query.SignAndExecuteWithRetryAsync(context);
             return response.NetworkGetVersionInfo.ToVersionInfo();
-
-            static Func<Query, Task<Response>> getRequestMethod(Channel channel)
-            {
-                var client = new NetworkService.NetworkServiceClient(channel);
-                return async (Query query) => (await client.getVersionInfoAsync(query));
-            }
-
-            static ResponseHeader? getResponseHeader(Response response)
-            {
-                return response.NetworkGetVersionInfo?.Header;
-            }
         }
     }
 }
