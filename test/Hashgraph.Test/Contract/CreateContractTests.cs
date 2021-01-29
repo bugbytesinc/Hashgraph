@@ -106,8 +106,8 @@ namespace Hashgraph.Test.Contract
                     fx.ContractParams.RenewPeriod = TimeSpan.FromTicks(1);
                 });
             });
-            Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", ex.Message);
-            Assert.Equal(ResponseCode.AutorenewDurationNotInRange, ex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: InvalidRenewalPeriod", ex.Message);
+            Assert.Equal(ResponseCode.InvalidRenewalPeriod, ex.Status);
         }
         [Fact(DisplayName = "Create Contract: Can Create Without Admin Key")]
         public async Task CanCreateContractWithoutAdminKey()

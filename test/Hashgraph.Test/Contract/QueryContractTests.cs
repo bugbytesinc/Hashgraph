@@ -70,7 +70,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(qex);
             Assert.Equal(ResponseCode.InsufficientGas, qex.Status);
             Assert.NotNull(qex.TxId);
-            Assert.True(qex.RequiredFee > 0);
+            Assert.Equal(0ul, qex.RequiredFee);
             Assert.NotNull(qex.CallResult);
             Assert.Equal("Not enough gas for 'PUSH1' cause spending: invokeGas[1], gas[3], usedGas[0];", qex.CallResult.Error);
             Assert.True(qex.CallResult.Bloom.IsEmpty);

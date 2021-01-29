@@ -292,6 +292,22 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.InvalidContractId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);
         }
+        [Fact(DisplayName = "Contract Update: Updating negative duration raises error.")]
+        public async Task UpdateWithNegativeDurationRaisesError()
+        {
+            await using var fx = await GreetingContract.CreateAsync(_network);
+            var newMemo = Generator.Code(50);
+            var tex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    RenewPeriod = TimeSpan.FromDays(Generator.Integer(-90, -60))
+                }); ;
+            });
+            Assert.Equal(ResponseCode.InvalidRenewalPeriod, tex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: InvalidRenewalPeriod", tex.Message);
+        }
         [Fact(DisplayName = "Contract Update: Updating invalid duration raises error.")]
         public async Task UpdateWithInvalidDurationRaisesError()
         {
@@ -302,7 +318,7 @@ namespace Hashgraph.Test.Contract
                 await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    RenewPeriod = TimeSpan.FromDays(Generator.Integer(-90, -60))
+                    RenewPeriod = TimeSpan.FromMinutes(Generator.Integer(90, 120))
                 }); ;
             });
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Status);
