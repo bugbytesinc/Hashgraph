@@ -44,8 +44,8 @@ namespace Hashgraph.Test.Token
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.True(info.Deleted);
         }
-        [Fact(DisplayName = "Token Delete: Deleting Removes All Token Records")]
-        public async Task DeletingRemovesAllTokenRecords()
+        [Fact(DisplayName = "Token Delete: Deleting Does Not Remove Token Records")]
+        public async Task DeletingDoesNotRemoveTokenRecords()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
@@ -58,15 +58,37 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.Success, record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.True(info.Deleted);
 
             var accountInfo = await fxToken.Client.GetAccountInfoAsync(fxAccount.Record.Address);
             var token = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
-            Assert.Null(token);
+            Assert.NotNull(token);
+            Assert.Equal(fxToken.Record.Token, token.Token);
+            Assert.Equal(fxToken.Params.Symbol, token.Symbol);
+            Assert.Equal(xferAmount, token.Balance);
+            Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
+            Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
 
             var treasuryInfo = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
             token = treasuryInfo.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
-            Assert.Null(token);
+            Assert.NotNull(token);
+            Assert.Equal(fxToken.Record.Token, token.Token);
+            Assert.Equal(fxToken.Params.Symbol, token.Symbol);
+            Assert.Equal(totalTinytokens - xferAmount, token.Balance);
+            Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
+            Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
         }
         [Fact(DisplayName = "Token Delete: Deleting Token Prevents Token Transfers")]
         public async Task DeletingTokenPreventsTokenTransfers()
@@ -84,6 +106,28 @@ namespace Hashgraph.Test.Token
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
                 await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
+            });
+            Assert.Equal(ResponseCode.TokenWasDeleted, tex.Status);
+            Assert.StartsWith("Unable to execute transfers, status: TokenWasDeleted", tex.Message);
+        }
+        [Fact(DisplayName = "Token Delete: Deleting Token Prevents Token Transfers Amongst Third Parties")]
+        public async Task DeletingTokenPreventsTokenTransfersAmongstThirdParties()
+        {
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
+            var totalTinytokens = fxToken.Params.Circulation;
+            var xferAmount = totalTinytokens / 3;
+
+            await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxAccount1.Record.Address, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
+            await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxAccount2.Record.Address, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
+
+            var record = await fxAccount1.Client.DeleteTokenAsync(fxToken.Record.Token, fxToken.AdminPrivateKey);
+            Assert.Equal(ResponseCode.Success, record.Status);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxAccount1.Record.Address, fxAccount2.Record.Address, (long)xferAmount, fxAccount1.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenWasDeleted, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenWasDeleted", tex.Message);

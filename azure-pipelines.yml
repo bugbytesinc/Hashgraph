@@ -17,9 +17,9 @@ jobs:
     timeoutInMinutes: 360
     steps:
     - task: DotNetCoreInstaller@0
-      displayName: 'Ensure .Net Core 3.1'  
+      displayName: 'Ensure .Net Core 5.0'
       inputs:
-        version: '3.1.100'
+        version: '5.0.103'
 
     - task: DotNetCoreCLI@2
       displayName: Restore Dependencies  

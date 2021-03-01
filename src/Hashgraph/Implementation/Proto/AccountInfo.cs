@@ -1,4 +1,6 @@
-﻿namespace Proto
+﻿using Hashgraph;
+
+namespace Proto
 {
     public sealed partial class CryptoGetInfoResponse
     {
@@ -13,7 +15,7 @@
                         Address = AccountID.ToAddress(),
                         SmartContractId = ContractAccountID,
                         Deleted = Deleted,
-                        Proxy = ProxyAccountID.ToAddress(),
+                        Proxy = ProxyAccountID?.ToAddress() ?? Address.None,
                         ProxiedToAccount = ProxyReceived,
                         Endorsement = Key.ToEndorsement(),
                         Balance = Balance,
