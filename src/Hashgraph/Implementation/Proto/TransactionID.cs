@@ -12,15 +12,11 @@ namespace Proto
                 Seconds = transaction.ValidStartSeconds,
                 Nanos = transaction.ValidStartNanos
             };
+            Scheduled = transaction.Pending;
         }
         internal TxId ToTxId()
         {
-            return new TxId
-            {
-                Address = AccountID.ToAddress(),
-                ValidStartSeconds = TransactionValidStart.Seconds,
-                ValidStartNanos = TransactionValidStart.Nanos
-            };
+            return new TxId(AccountID.ToAddress(), TransactionValidStart.Seconds, TransactionValidStart.Nanos, Scheduled);
         }
     }
 }

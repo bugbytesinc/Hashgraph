@@ -52,7 +52,8 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "TxId: Empty Transaction exposes all zeros")]
         public void EmptyTransaction()
         {
-            var empty = new TxId();
+            var empty = TxId.None;
+            Assert.Equal(Address.None, empty.Address);
             Assert.Equal(new Address(0, 0, 0), empty.Address);
             Assert.Equal(0, empty.ValidStartSeconds);
             Assert.Equal(0, empty.ValidStartNanos);

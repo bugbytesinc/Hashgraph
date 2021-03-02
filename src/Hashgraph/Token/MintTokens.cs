@@ -29,9 +29,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TokenReceipt> MintTokenAsync(Address token, ulong amount, Action<IContext>? configure = null)
+        public async Task<TokenReceipt> MintTokenAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
-            return MintTokenImplementationAsync<TokenReceipt>(token, amount, null, configure);
+            return new TokenReceipt(await MintTokenImplementationAsync(token, amount, null, configure, false));
         }
         /// <summary>
         /// Adds token coins to the treasury.
@@ -59,9 +59,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TokenReceipt> MintTokenAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TokenReceipt> MintTokenAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return MintTokenImplementationAsync<TokenReceipt>(token, amount, signatory, configure);
+            return new TokenReceipt(await MintTokenImplementationAsync(token, amount, signatory, configure, false));
         }
         /// <summary>
         /// Adds token coins to the treasury.
@@ -85,9 +85,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TokenRecord> MintTokenWithRecordAsync(Address token, ulong amount, Action<IContext>? configure = null)
+        public async Task<TokenRecord> MintTokenWithRecordAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
-            return MintTokenImplementationAsync<TokenRecord>(token, amount, null, configure);
+            return new TokenRecord(await MintTokenImplementationAsync(token, amount, null, configure, true));
         }
         /// <summary>
         /// Adds token coins to the treasury.
@@ -115,44 +115,27 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TokenRecord> MintTokenWithRecordAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TokenRecord> MintTokenWithRecordAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return MintTokenImplementationAsync<TokenRecord>(token, amount, signatory, configure);
+            return new TokenRecord(await MintTokenImplementationAsync(token, amount, signatory, configure, true));
         }
         /// <summary>
         /// Internal implementation of mint token method.
         /// </summary>
-        private async Task<TResult> MintTokenImplementationAsync<TResult>(Address token, ulong amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> MintTokenImplementationAsync(Address token, ulong amount, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             token = RequireInputParameter.Token(token);
             amount = RequireInputParameter.TokenAmount(amount);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.TokenMint = new TokenMintTransactionBody
+            var transactionBody = new TransactionBody
             {
-                Token = new TokenID(token),
-                Amount = amount
+                TokenMint = new TokenMintTransactionBody
+                {
+                    Token = new TokenID(token),
+                    Amount = amount
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to Mint Token Coins, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TokenRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TokenReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to Mint Token Coins, status: {0}", signatory);
         }
     }
 }

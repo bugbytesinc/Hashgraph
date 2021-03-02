@@ -31,9 +31,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<SubmitMessageReceipt> SubmitMessageAsync(Address topic, ReadOnlyMemory<byte> message, Action<IContext>? configure = null)
+        public async Task<SubmitMessageReceipt> SubmitMessageAsync(Address topic, ReadOnlyMemory<byte> message, Action<IContext>? configure = null)
         {
-            return SubmitMessageImplementationAsync<SubmitMessageReceipt>(topic, message, false, null, 0, 0, null, configure);
+            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, null, configure, false));
         }
         /// <summary>
         /// Sends a message to the network for a given consensus topic.
@@ -62,9 +62,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<SubmitMessageReceipt> SubmitMessageAsync(Address topic, ReadOnlyMemory<byte> message, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<SubmitMessageReceipt> SubmitMessageAsync(Address topic, ReadOnlyMemory<byte> message, Signatory signatory, Action<IContext>? configure = null)
         {
-            return SubmitMessageImplementationAsync<SubmitMessageReceipt>(topic, message, false, null, 0, 0, signatory, configure);
+            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, signatory, configure, false));
         }
         /// <summary>
         /// Sends a segment of a message to the network for a given consensus topic.
@@ -89,9 +89,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<SubmitMessageReceipt> SubmitMessageAsync(SubmitMessageParams submitParams, Action<IContext>? configure = null)
+        public async Task<SubmitMessageReceipt> SubmitMessageAsync(SubmitMessageParams submitParams, Action<IContext>? configure = null)
         {
-            return SubmitMessageImplementationAsync<SubmitMessageReceipt>(submitParams.Topic, submitParams.Segment, true, submitParams.ParentTxId, submitParams.Index, submitParams.TotalSegmentCount, submitParams.Signatory, configure);
+            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(submitParams.Topic, submitParams.Segment, true, submitParams.ParentTxId, submitParams.Index, submitParams.TotalSegmentCount, submitParams.Signatory, configure, false));
         }
         /// <summary>
         /// Sends a message to the network for a given consensus topic.
@@ -116,9 +116,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(Address topic, ReadOnlyMemory<byte> message, Action<IContext>? configure = null)
+        public async Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(Address topic, ReadOnlyMemory<byte> message, Action<IContext>? configure = null)
         {
-            return SubmitMessageImplementationAsync<SubmitMessageRecord>(topic, message, false, null, 0, 0, null, configure);
+            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, null, configure, true));
         }
         /// <summary>
         /// Sends a message to the network for a given consensus topic.
@@ -147,9 +147,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(Address topic, ReadOnlyMemory<byte> message, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(Address topic, ReadOnlyMemory<byte> message, Signatory signatory, Action<IContext>? configure = null)
         {
-            return SubmitMessageImplementationAsync<SubmitMessageRecord>(topic, message, false, null, 0, 0, signatory, configure);
+            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, signatory, configure, true));
         }
         /// <summary>
         /// Sends a message to the network for a given consensus topic.
@@ -172,47 +172,53 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(SubmitMessageParams submitParams, Action<IContext>? configure = null)
+        public async Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(SubmitMessageParams submitParams, Action<IContext>? configure = null)
         {
-            return SubmitMessageImplementationAsync<SubmitMessageRecord>(submitParams.Topic, submitParams.Segment, true, submitParams.ParentTxId, submitParams.Index, submitParams.TotalSegmentCount, submitParams.Signatory, configure);
+            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(submitParams.Topic, submitParams.Segment, true, submitParams.ParentTxId, submitParams.Index, submitParams.TotalSegmentCount, submitParams.Signatory, configure, true));
         }
         /// <summary>
         /// Internal implementation of the submit message call.
         /// </summary>
-        private async Task<TResult> SubmitMessageImplementationAsync<TResult>(Address topic, ReadOnlyMemory<byte> message, bool isSegment, TxId? parentTx, int segmentIndex, int segmentTotalCount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> SubmitMessageImplementationAsync(Address topic, ReadOnlyMemory<byte> message, bool isSegment, TxId? parentTx, int segmentIndex, int segmentTotalCount, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             topic = RequireInputParameter.Topic(topic);
             message = RequireInputParameter.Message(message);
             await using var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.ConsensusSubmitMessage = new ConsensusSubmitMessageTransactionBody
+            var transactionBody = new TransactionBody
             {
-                TopicID = new TopicID(topic),
-                Message = ByteString.CopyFrom(message.Span),
-                ChunkInfo = isSegment ? createChunkInfo(transactionId, parentTx, segmentIndex, segmentTotalCount) : null
+                ConsensusSubmitMessage = new ConsensusSubmitMessageTransactionBody
+                {
+                    TopicID = new TopicID(topic),
+                    Message = ByteString.CopyFrom(message.Span),
+                    ChunkInfo = isSegment ? createChunkInfo(parentTx, segmentIndex, segmentTotalCount) : null
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
+            if(isSegment && segmentIndex == 1 )
             {
-                throw new TransactionException($"Submit Message failed, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
+                // Smelly Workaround due to necesity to embed the
+                // same transaction ID in the middle of the message
+                // as the envelope for the case of the first segment
+                // of a segmented message.
+                var initialChunkTransactionId = context.GetOrCreateTransactionID();
+                await using var subContext = new GossipContextStack(context);
+                subContext.Transaction = initialChunkTransactionId.ToTxId();
+                transactionBody.ConsensusSubmitMessage.ChunkInfo!.InitialTransactionID = initialChunkTransactionId;
+                var result = await transactionBody.SignAndExecuteWithRetryAsync(subContext, false, "Submit Message failed, status: {0}", signatory);
+                if (includeRecord)
+                {
+                    // Note: we use the original context here, because we 
+                    // don't want to re-use the transaction ID that was pinned
+                    // to the subContext, would cause the paying TX to fail as a duplicate.
+                    result.Record = await context.GetTransactionRecordAsync(result.TransactionID);
+                }
+                return result;
             }
-            var result = new TResult();
-            if (result is SubmitMessageRecord rec)
+            else
             {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
+                return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Submit Message failed, status: {0}", signatory);
             }
-            else if (result is SubmitMessageReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
 
-            static ConsensusMessageChunkInfo createChunkInfo(TransactionID transactionId, TxId? parentTx, int segmentIndex, int segmentTotalCount)
+            static ConsensusMessageChunkInfo createChunkInfo(TxId? parentTx, int segmentIndex, int segmentTotalCount)
             {
                 if (segmentTotalCount < 1)
                 {
@@ -232,7 +238,9 @@ namespace Hashgraph
                     {
                         Total = segmentTotalCount,
                         Number = segmentIndex,
-                        InitialTransactionID = transactionId
+                        // This is done elsewhere, 
+                        // requires smelly edge case workaround
+                        //InitialTransactionID = transactionId
                     };
                 }
                 if (parentTx is null)

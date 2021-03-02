@@ -15,19 +15,19 @@ namespace Hashgraph
     /// Internal helper class providing protobuf message construction 
     /// helpers and communication with the remote GRPC server.
     /// </summary>
-    internal static class Transactions
+    internal static class GossipContextStackExtensions
     {
-        internal static Signatory GatherSignatories(GossipContextStack context, params Signatory?[] extraSignatories)
+        internal static ISignatory GatherSignatories(this GossipContextStack context, params Signatory?[] extraSignatories)
         {
             var signatories = new List<Signatory>(1 + extraSignatories.Length);
             var contextSignatory = context.Signatory;
-            if (!(contextSignatory is null))
+            if (contextSignatory is not null)
             {
                 signatories.Add(contextSignatory);
             }
             foreach (var extraSignatory in extraSignatories)
             {
-                if (!(extraSignatory is null))
+                if (extraSignatory is not null)
                 {
                     signatories.Add(extraSignatory);
                 }
@@ -36,29 +36,37 @@ namespace Hashgraph
                 signatories[0] :
                 new Signatory(signatories.ToArray());
         }
-        internal static TransactionID GetOrCreateTransactionID(GossipContextStack context)
+        internal static TransactionID GetOrCreateTransactionID(this GossipContextStack context)
         {
             var preExistingTransaction = context.Transaction;
             if (preExistingTransaction is null)
             {
-                var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(context.AdjustForLocalClockDrift);
-                return new TransactionID
-                {
-                    AccountID = new AccountID(RequireInContext.Payer(context)),
-                    TransactionValidStart = new Proto.Timestamp
-                    {
-                        Seconds = seconds,
-                        Nanos = nanos
-                    }
-                };
+                return CreateTransactionID(context, RequireInContext.Payer(context));
+            }
+            else if (preExistingTransaction.Pending)
+            {
+                throw new ArgumentException("Can not set the context's Transaction ID's Pending field of a transaction to true.", nameof(context.Transaction));
             }
             else
             {
                 return new TransactionID(preExistingTransaction);
             }
         }
+        internal static TransactionID CreateTransactionID(this GossipContextStack context, Address payer)
+        {
+            var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(context.AdjustForLocalClockDrift);
+            return new TransactionID
+            {
+                AccountID = new AccountID(payer),
+                TransactionValidStart = new Proto.Timestamp
+                {
+                    Seconds = seconds,
+                    Nanos = nanos
+                }
+            };
+        }
 
-        internal static Task<TResponse> ExecuteSignedRequestWithRetryImplementationAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+        internal static Task<TResponse> ExecuteSignedRequestWithRetryImplementationAsync<TRequest, TResponse>(this GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {
             var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
             var startingInstant = trackTimeDrift ? Epoch.UniqueClockNanos() : 0;
@@ -77,7 +85,7 @@ namespace Hashgraph
                     code == ResponseCodeEnum.InvalidTransactionStart;
             }
         }
-        internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
+        internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(this GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
         {
             try
             {
@@ -174,11 +182,11 @@ namespace Hashgraph
                 var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ChannelState.Connecting ?
                     $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
                     $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
-                throw new PrecheckException(message, new TxId(), ResponseCode.RpcError, 0, rpcex);
+                throw new PrecheckException(message, TxId.None, ResponseCode.RpcError, 0, rpcex);
             }
         }
 
-        private static Action<IMessage> InstantiateOnSendingRequestHandler(GossipContextStack context)
+        private static Action<IMessage> InstantiateOnSendingRequestHandler(this GossipContextStack context)
         {
             var handlers = context.GetAll<Action<IMessage>>(nameof(context.OnSendingRequest)).Where(h => h != null).ToArray();
             if (handlers.Length > 0)
@@ -201,7 +209,7 @@ namespace Hashgraph
             {
             }
         }
-        private static Action<int, IMessage> InstantiateOnResponseReceivedHandler(GossipContextStack context)
+        private static Action<int, IMessage> InstantiateOnResponseReceivedHandler(this GossipContextStack context)
         {
             var handlers = context.GetAll<Action<int, IMessage>>(nameof(context.OnResponseReceived)).Where(h => h != null).ToArray();
             if (handlers.Length > 0)
@@ -227,7 +235,7 @@ namespace Hashgraph
         /// Internal Helper function to retrieve receipt record provided by 
         /// the network following network consensus regarding a query or transaction.
         /// </summary>
-        internal static async Task<Proto.TransactionReceipt> GetReceiptAsync(GossipContextStack context, TransactionID transactionId)
+        internal static async Task<Proto.TransactionReceipt> GetReceiptAsync(this GossipContextStack context, TransactionID transactionId)
         {
             var query = new Query
             {
@@ -236,7 +244,7 @@ namespace Hashgraph
                     TransactionID = transactionId
                 }
             };
-            var response = await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            var response = await context.ExecuteNetworkRequestWithRetryAsync(query, query.InstantiateNetworkRequestMethod, shouldRetry);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             switch (responseCode)
             {
@@ -267,6 +275,37 @@ namespace Hashgraph
                     response.TransactionGetReceipt?.Header?.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||
                     response.TransactionGetReceipt?.Receipt?.Status == ResponseCodeEnum.Unknown;
             }
+        }
+        /// <summary>
+        /// Internal Helper function to retrieve the transaction record provided 
+        /// by the network following network consensus regarding a query or transaction.
+        /// </summary>
+        internal static async Task<Proto.TransactionRecord> GetTransactionRecordAsync(this GossipContextStack context, TransactionID transactionRecordId)
+        {
+            return (await GetTransactionRecordResponseAsync(context, transactionRecordId, false)).TransactionRecord;
+        }
+        /// <summary>
+        /// Internal Helper function to retrieve the transaction record or list of duplicate records provided 
+        /// by the network following network consensus regarding a query or transaction.
+        /// </summary>
+        internal static async Task<TransactionGetRecordResponse> GetTransactionRecordResponseAsync(this GossipContextStack context, TransactionID transactionRecordId, bool includeDuplicates)
+        {
+            var query = new Query
+            {
+                TransactionGetRecord = new TransactionGetRecordQuery
+                {
+                    TransactionID = transactionRecordId,
+                    IncludeDuplicates = includeDuplicates
+                }
+            };
+            var response = await query.SignAndExecuteWithRetryAsync(context);
+            // Note if we are retrieving the list, Not found is OK too.
+            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+            if (precheckCode != ResponseCodeEnum.Ok && !(includeDuplicates && precheckCode == ResponseCodeEnum.RecordNotFound))
+            {
+                throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.ToTxId(), (ResponseCode)precheckCode);
+            }
+            return response.TransactionGetRecord;
         }
     }
 }

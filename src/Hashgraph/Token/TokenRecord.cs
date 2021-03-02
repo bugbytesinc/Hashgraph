@@ -1,4 +1,4 @@
-﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
+﻿using Hashgraph.Implementation;
 
 namespace Hashgraph
 {
@@ -7,12 +7,23 @@ namespace Hashgraph
     /// new token coin balance, typically returned from methods
     /// that can affect a change on the total circulation supply.
     /// </summary>
-    public sealed class TokenRecord : TransactionRecord
+    public sealed record TokenRecord : TransactionRecord
     {
         /// <summary>
         /// The current (new) total balance of tokens 
         /// in all accounts (the whole denomination).
         /// </summary>
-        public ulong Circulation { get; internal set; }
+        /// <remarks>
+        /// The value will be <code>0</code> if the update
+        /// was scheduled as a pending transaction.
+        /// </remarks>
+        public ulong Circulation { get; internal init; }
+        /// <summary>
+        /// Internal Constructor of the record.
+        /// </summary>
+        internal TokenRecord(NetworkResult result) : base(result)
+        {
+            Circulation = result.Record!.Receipt.NewTotalSupply;
+        }
     }
 }

@@ -35,10 +35,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token has already been dissociated.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DissociateTokenAsync(Address token, Address account, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DissociateTokenAsync(Address token, Address account, Action<IContext>? configure = null)
         {
             var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return DissociateTokenImplementationAsync<TransactionReceipt>(list, account, null, configure);
+            return new TransactionReceipt(await DissociateTokenImplementationAsync(list, account, null, configure, false));
         }
         /// <summary>
         /// Removes Storage associated with the Account for maintaining token balances 
@@ -67,10 +67,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token has already been dissociated.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DissociateTokensAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DissociateTokensAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
         {
             var list = RequireInputParameter.Tokens(tokens);
-            return DissociateTokenImplementationAsync<TransactionReceipt>(list, account, null, configure);
+            return new TransactionReceipt(await DissociateTokenImplementationAsync(list, account, null, configure, false));
         }
         /// <summary>
         /// Removes Storage associated with the Account for maintaining token balances 
@@ -103,10 +103,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DissociateTokenAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DissociateTokenAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
             var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return DissociateTokenImplementationAsync<TransactionReceipt>(list, account, signatory, configure);
+            return new TransactionReceipt(await DissociateTokenImplementationAsync(list, account, signatory, configure, false));
         }
         /// <summary>
         /// Removes Storage associated with the Account for maintaining token balances 
@@ -139,10 +139,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DissociateTokensAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DissociateTokensAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
             var list = RequireInputParameter.Tokens(tokens);
-            return DissociateTokenImplementationAsync<TransactionReceipt>(list, account, signatory, configure);
+            return new TransactionReceipt(await DissociateTokenImplementationAsync(list, account, signatory, configure, false));
         }
         /// <summary>
         /// Removes Storage associated with the Account for maintaining token balances 
@@ -171,10 +171,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> DissociateTokenWithRecordAsync(Address token, Address account, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> DissociateTokenWithRecordAsync(Address token, Address account, Action<IContext>? configure = null)
         {
             var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return DissociateTokenImplementationAsync<TransactionRecord>(list, account, null, configure);
+            return new TransactionRecord(await DissociateTokenImplementationAsync(list, account, null, configure, true));
         }
         /// <summary>
         /// Removes Storage associated with the Account for maintaining token balances 
@@ -203,10 +203,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> DissociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> DissociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
         {
             var list = RequireInputParameter.Tokens(tokens);
-            return DissociateTokenImplementationAsync<TransactionRecord>(list, account, null, configure);
+            return new TransactionRecord(await DissociateTokenImplementationAsync(list, account, null, configure, true));
         }
         /// <summary>
         /// Removes Storage associated with the Account for maintaining token balances 
@@ -239,10 +239,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> DissociateTokenWithRecordAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> DissociateTokenWithRecordAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
             var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return DissociateTokenImplementationAsync<TransactionRecord>(list, account, signatory, configure);
+            return new TransactionRecord(await DissociateTokenImplementationAsync(list, account, signatory, configure, true));
         }
         /// <summary>
         /// Removes Storage associated with the Account for maintaining token balances 
@@ -275,44 +275,27 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> DissociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> DissociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
             var list = RequireInputParameter.Tokens(tokens);
-            return DissociateTokenImplementationAsync<TransactionRecord>(list, account, signatory, configure);
+            return new TransactionRecord(await DissociateTokenImplementationAsync(list, account, signatory, configure, true));
         }
         /// <summary>
         /// Internal implementation of dissociate method.
         /// </summary>
-        private async Task<TResult> DissociateTokenImplementationAsync<TResult>(TokenID[] tokens, Address account, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> DissociateTokenImplementationAsync(TokenID[] tokens, Address account, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             account = RequireInputParameter.Account(account);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.TokenDissociate = new TokenDissociateTransactionBody
+            var transactionBody = new TransactionBody
             {
-                Account = new AccountID(account)
+                TokenDissociate = new TokenDissociateTransactionBody
+                {
+                    Account = new AccountID(account)
+                }
             };
             transactionBody.TokenDissociate.Tokens.AddRange(tokens);
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to Dissociate Token from Account, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to Dissociate Token from Account, status: {0}", signatory);
         }
     }
 }

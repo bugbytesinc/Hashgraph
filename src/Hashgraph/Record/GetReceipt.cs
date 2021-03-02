@@ -16,6 +16,13 @@ namespace Hashgraph
         /// <param name="transaction">
         /// Transaction identifier of the receipt.
         /// </param>
+        /// <param name="pending">
+        /// Flag indicating to return the pending or "scheduled" version of
+        /// the transaction.  If set to true, the network will look for
+        /// the receipt of an executed pending transaction.  The TxID is
+        /// the ID of the tranaction that "created" the pending (scheduled) 
+        /// transaction.
+        /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
         /// the execution configuration for just this method call. 
@@ -32,12 +39,16 @@ namespace Hashgraph
             transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
-            var receipt = await Transactions.GetReceiptAsync(context, transactionId);
+            var receipt = await context.GetReceiptAsync(transactionId);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to retreive receipt, status: {receipt.Status}", transaction, (ResponseCode)receipt.Status);
             }
-            return receipt.ToTransactionReceipt(transactionId);
+            return new NetworkResult
+            {
+                TransactionID = transactionId,
+                Receipt = receipt
+            }.ToReceipt();
         }
         /// <summary>
         /// Retreives all known receipts from the network having the given
@@ -73,7 +84,7 @@ namespace Hashgraph
                     IncludeDuplicates = true
                 }
             };
-            var response = await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            var response = await context.ExecuteNetworkRequestWithRetryAsync(query, query.InstantiateNetworkRequestMethod, shouldRetry);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             if (responseCode == ResponseCodeEnum.Busy)
             {

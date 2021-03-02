@@ -31,6 +31,7 @@ namespace Proto
                     ResponseOneofCase.ConsensusGetTopicInfo => (response_ as ConsensusGetTopicInfoResponse)?.Header,
                     ResponseOneofCase.NetworkGetVersionInfo => (response_ as NetworkGetVersionInfoResponse)?.Header,
                     ResponseOneofCase.TokenGetInfo => (response_ as TokenGetInfoResponse)?.Header,
+                    ResponseOneofCase.ScheduleGetInfo => (response_ as ScheduleGetInfoResponse)?.Header,
                     _ => null
                 };
             }
@@ -160,6 +161,9 @@ namespace Proto
                     break;
                 case ResponseOneofCase.TokenGetInfo:
                     defaultValidate(transactionId, ((TokenGetInfoResponse)response_).Header);
+                    break;
+                case ResponseOneofCase.ScheduleGetInfo:
+                    defaultValidate(transactionId, ((ScheduleGetInfoResponse)response_).Header);
                     break;
                 default:
                     throw new InvalidOperationException("Query has No Type Set, unable to set Query Header of Unknown Query Type.");

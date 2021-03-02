@@ -15,11 +15,11 @@ namespace Hashgraph
         /// The address of the account paying the
         /// transaction processing fee.
         /// </summary>
-        public Address Address { get; internal init; }
+        public Address Address { get; private init; }
         /// <summary>
         /// The number of whole seconds since the Epoch.
         /// </summary>
-        public long ValidStartSeconds { get; internal init; }
+        public long ValidStartSeconds { get; private init; }
         /// <summary>
         /// The number of nanoseconds added to the 
         /// <see cref="ValidStartSeconds"/> value to 
@@ -32,7 +32,27 @@ namespace Hashgraph
         /// nano-seconds.  Therefore it is necessary to
         /// represent the date time in this manner.
         /// </remarks>
-        public int ValidStartNanos { get; internal init; }
+        public int ValidStartNanos { get; private init; }
+        /// <summary>
+        /// This transaction ID represents a pending or 
+        /// "scheduled" transaction that may or may not
+        /// have been executed.
+        /// </summary>
+        /// <remarks>
+        /// When a transaction is created as a pending transaction,
+        /// the network assigns the final "executed" ID of the 
+        /// transaction as the same Transaction ID as the envelope
+        /// transaction that created the pending transaction.  But,
+        /// it is necessary to discern between the transaction that
+        /// created the pending transaction and the pending transaction
+        /// itself.  Therefore the "pending" transaction receives a
+        /// Pending (Scheduled) flag as a part of its definition.
+        /// NOTE: You can not manually create a transaction and use it
+        /// to as the transaction ID when executing a transaction (this
+        /// is done via the context), the network will fail the transaction
+        /// if the pending flag is set.
+        /// </remarks>
+        public bool Pending { get; private set; }
         /// <summary>
         /// Public constructor.
         /// </summary>
@@ -48,11 +68,19 @@ namespace Hashgraph
         /// Total number of nanoseconds elapsed past the
         /// seconds past the Epoch.
         /// </param>
-        public TxId(Address address, long seconds, int nanos)
+        /// <param name="pending">
+        /// Flag indicating that this transaction ID represents
+        /// a pending transaction and not the transaction that
+        /// scheduled it.  Useful for retrieving receipts and
+        /// records, but cannot be set to true for creating new
+        /// transactions (via setting it in the context).
+        /// </param>
+        public TxId(Address address, long seconds, int nanos, bool pending = false)
         {
             Address = address;
             ValidStartSeconds = seconds;
             ValidStartNanos = nanos;
+            Pending = pending;
         }
         /// <summary>
         /// Convenience constructor converting the
@@ -68,20 +96,43 @@ namespace Hashgraph
         /// The Date & Time stamp associated with the
         /// transaction.
         /// </param>
-        public TxId(Address address, DateTime dateTime)
+        /// <param name="pending">
+        /// Flag indicating that this transaction ID represents
+        /// a pending transaction and not the transaction that
+        /// scheduled it.  Useful for retrieving receipts and
+        /// records, but cannot be set to true for creating new
+        /// transactions (via setting it in the context).
+        /// </param>
+        public TxId(Address address, DateTime dateTime, bool pending = false)
         {
             Address = address;
             (ValidStartSeconds, ValidStartNanos) = Epoch.FromDate(dateTime);
+            Pending = pending;
         }
         /// <summary>
-        /// Internal Constructor, for now limit creation
-        /// of the uninitialized TxId to the library itself.
+        /// A special designation of an transaction id that can't be created.
+        /// It represents the absence of a transaction id.
         /// </summary>
-        internal TxId()
+        public static TxId None { get; } = new TxId();
+        /// <summary>
+        /// Internal Constructor representing the "None" 
+        /// version of an transaction id.
+        /// </summary>
+        private TxId()
         {
             // Because we don't want to set
             // this property to nullable
-            Address = new Address(0, 0, 0);
+            Address = Address.None;
+        }
+        /// <summary>
+        /// Convenience method converting this transaction ID to its 
+        /// "Pending" form.  This is useful for querying for receipts
+        /// and records of executed pending transactions.
+        /// </summary>
+        /// <returns></returns>
+        public TxId AsPending()
+        {
+            return new TxId(Address, ValidStartSeconds, ValidStartNanos, true);
         }
     }
 }

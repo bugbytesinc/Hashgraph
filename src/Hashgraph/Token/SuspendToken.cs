@@ -30,9 +30,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> SuspendTokenAsync(Address token, Address address, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SuspendTokenAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return SuspendTokenImplementationAsync<TransactionReceipt>(token, address, null, configure);
+            return new TransactionReceipt(await SuspendTokenImplementationAsync(token, address, null, configure, false));
         }
         /// <summary>
         /// Suspends the associated account's ability to send or
@@ -61,9 +61,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> SuspendTokenAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SuspendTokenAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return SuspendTokenImplementationAsync<TransactionReceipt>(token, address, signatory, configure);
+            return new TransactionReceipt(await SuspendTokenImplementationAsync(token, address, signatory, configure, false));
         }
         /// <summary>
         /// Suspends the associated account's ability to send or
@@ -88,9 +88,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> SuspendTokenWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> SuspendTokenWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return SuspendTokenImplementationAsync<TransactionRecord>(token, address, null, configure);
+            return new TransactionRecord(await SuspendTokenImplementationAsync(token, address, null, configure, true));
         }
         /// <summary>
         /// Suspends the associated account's ability to send or
@@ -119,44 +119,27 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> SuspendTokenWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> SuspendTokenWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return SuspendTokenImplementationAsync<TransactionRecord>(token, address, signatory, configure);
+            return new TransactionRecord(await SuspendTokenImplementationAsync(token, address, signatory, configure, true));
         }
         /// <summary>
         /// Internal implementation of delete token method.
         /// </summary>
-        private async Task<TResult> SuspendTokenImplementationAsync<TResult>(Address token, Address address, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> SuspendTokenImplementationAsync(Address token, Address address, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             token = RequireInputParameter.Token(token);
             address = RequireInputParameter.Address(address);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.TokenFreeze = new TokenFreezeAccountTransactionBody
+            var transactionBody = new TransactionBody
             {
-                Token = new TokenID(token),
-                Account = new AccountID(address)
+                TokenFreeze = new TokenFreezeAccountTransactionBody
+                {
+                    Token = new TokenID(token),
+                    Account = new AccountID(address)
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to Suspend Token, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to Suspend Token, status: {0}", signatory);
         }
     }
 }

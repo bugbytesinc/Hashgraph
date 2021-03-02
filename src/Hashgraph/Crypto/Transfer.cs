@@ -40,9 +40,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferAsync(Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> TransferAsync(Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransactionReceipt>(fromAddress, toAddress, amount, null, configure);
+            return new TransactionReceipt(await TransferImplementationAsync(fromAddress, toAddress, amount, null, configure, false));
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -76,9 +76,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferAsync(Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> TransferAsync(Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransactionReceipt>(fromAddress, toAddress, amount, signatory, configure);
+            return new TransactionReceipt(await TransferImplementationAsync(fromAddress, toAddress, amount, signatory, configure, false));
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -108,9 +108,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferWithRecordAsync(Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> TransferWithRecordAsync(Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransactionRecord>(fromAddress, toAddress, amount, null, configure);
+            return new TransactionRecord(await TransferImplementationAsync(fromAddress, toAddress, amount, null, configure, true));
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -144,9 +144,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferWithRecordAsync(Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> TransferWithRecordAsync(Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return TransferImplementationAsync<TransactionRecord>(fromAddress, toAddress, amount, signatory, configure);
+            return new TransactionRecord(await TransferImplementationAsync(fromAddress, toAddress, amount, signatory, configure, true));
         }
         /// <summary>
         /// Transfer tinybars from an arbitray set of accounts to
@@ -173,10 +173,10 @@ namespace Hashgraph
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         [Obsolete("TransferAsync accepting only a dictionary of crypto transfers is depricated, please use TransferAsync accepting the TransferParams instead.")]
-        public Task<TransactionReceipt> TransferAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> TransferAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Action<IContext>? configure = null)
         {
             var cryptoTransfers = RequireInputParameter.CryptoTransferList(transfers);
-            return TransferImplementationAsync<TransactionReceipt>(cryptoTransfers, null, null, configure);
+            return new TransactionReceipt(await TransferImplementationAsync(cryptoTransfers, null, null, configure, false));
         }
         /// <summary>
         /// Transfer tinybars from an arbitray set of accounts to
@@ -207,10 +207,10 @@ namespace Hashgraph
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         [Obsolete("TransferAsync accepting only a dictionary of crypto transfers is depricated, please use TransferAsync accepting the TransferParams instead.")]
-        public Task<TransactionReceipt> TransferAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> TransferAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Signatory signatory, Action<IContext>? configure = null)
         {
             var cryptoTransfers = RequireInputParameter.CryptoTransferList(transfers);
-            return TransferImplementationAsync<TransactionReceipt>(cryptoTransfers, null, signatory, configure);
+            return new TransactionReceipt(await TransferImplementationAsync(cryptoTransfers, null, signatory, configure, false));
         }
         /// <summary>
         /// Transfer tinybars from an arbitray set of accounts to
@@ -233,10 +233,10 @@ namespace Hashgraph
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         [Obsolete("TransferWithRecordAsync accepting only a dictionary of crypto transfers is depricated, please use TransferWithRecordAsync accepting the TransferParams instead.")]
-        public Task<TransactionRecord> TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Action<IContext>? configure = null)
         {
             var cryptoTransfers = RequireInputParameter.CryptoTransferList(transfers);
-            return TransferImplementationAsync<TransactionRecord>(cryptoTransfers, null, null, configure);
+            return new TransactionRecord(await TransferImplementationAsync(cryptoTransfers, null, null, configure, true));
         }
         /// <summary>
         /// Transfer tinybars from an arbitray set of accounts to
@@ -267,10 +267,10 @@ namespace Hashgraph
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         [Obsolete("TransferWithRecordAsync accepting only a dictionary of crypto transfers is depricated, please use TransferWithRecordAsync accepting the TransferParams instead.")]
-        public Task<TransactionRecord> TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> TransferWithRecordAsync(IEnumerable<KeyValuePair<Address, long>> transfers, Signatory signatory, Action<IContext>? configure = null)
         {
             var cryptoTransfers = RequireInputParameter.CryptoTransferList(transfers);
-            return TransferImplementationAsync<TransactionRecord>(cryptoTransfers, null, signatory, configure);
+            return new TransactionRecord(await TransferImplementationAsync(cryptoTransfers, null, signatory, configure, true));
         }
         /// <summary>
         /// Transfer cryptocurrency and tokens in the same transaction atomically among multiple hedera accounts and contracts.
@@ -291,10 +291,10 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferAsync(TransferParams transfers, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> TransferAsync(TransferParams transfers, Action<IContext>? configure = null)
         {
             var (cryptoTransfers, tokenTransfers) = RequireInputParameter.CryptoAndTransferList(transfers);
-            return TransferImplementationAsync<TransactionReceipt>(cryptoTransfers, tokenTransfers, transfers.Signatory, configure);
+            return new TransactionReceipt(await TransferImplementationAsync(cryptoTransfers, tokenTransfers, transfers.Signatory, configure, false));
         }
         /// <summary>
         /// Transfer cryptocurrency and tokens in the same transaction atomically among multiple hedera accounts and contracts.
@@ -315,36 +315,35 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferWithRecordAsync(TransferParams transfers, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> TransferWithRecordAsync(TransferParams transfers, Action<IContext>? configure = null)
         {
             var (cryptoTransfers, tokenTransfers) = RequireInputParameter.CryptoAndTransferList(transfers);
-            return TransferImplementationAsync<TransactionRecord>(cryptoTransfers, tokenTransfers, transfers.Signatory, configure);
+            return new TransactionRecord(await TransferImplementationAsync(cryptoTransfers, tokenTransfers, transfers.Signatory, configure, true));
         }
         /// <summary>
         /// Internal implementation for Transfer Crypto.
         /// Returns either a receipt or record or throws
         /// an exception.
         /// </summary>
-        private async Task<TResult> TransferImplementationAsync<TResult>(Address fromAddress, Address toAddress, long amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private Task<NetworkResult> TransferImplementationAsync(Address fromAddress, Address toAddress, long amount, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             fromAddress = RequireInputParameter.FromAddress(fromAddress);
             toAddress = RequireInputParameter.ToAddress(toAddress);
             amount = RequireInputParameter.Amount(amount);
             var cryptoTransfers = RequireInputParameter.CryptoTransferList(new[] { KeyValuePair.Create(fromAddress, -amount), KeyValuePair.Create(toAddress, amount) });
-            return await TransferImplementationAsync<TResult>(cryptoTransfers, null, signatory, configure);
+            return TransferImplementationAsync(cryptoTransfers, null, signatory, configure, includeRecord);
         }
         /// <summary>
         /// Internal implementation for Multi Account Transfer Crypto and Tokens.
         /// Returns either a receipt or record or throws an exception.
         /// </summary>
-        private async Task<TResult> TransferImplementationAsync<TResult>(TransferList? cryptoTransfers, IEnumerable<TokenTransferList>? tokenTransfers, Signatory? signatory, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> TransferImplementationAsync(TransferList? cryptoTransfers, IEnumerable<TokenTransferList>? tokenTransfers, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.CryptoTransfer = new CryptoTransferTransactionBody();
+            var transactionBody = new TransactionBody
+            {
+                CryptoTransfer = new CryptoTransferTransactionBody()
+            };
             if (cryptoTransfers != null)
             {
                 transactionBody.CryptoTransfer.Transfers = cryptoTransfers;
@@ -353,22 +352,7 @@ namespace Hashgraph
             {
                 transactionBody.CryptoTransfer.TokenTransfers.AddRange(tokenTransfers);
             }
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to execute transfers, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to execute transfers, status: {0}", signatory);
         }
     }
 }

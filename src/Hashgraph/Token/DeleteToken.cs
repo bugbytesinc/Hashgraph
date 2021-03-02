@@ -65,21 +65,14 @@ namespace Hashgraph
         {
             token = RequireInputParameter.Token(token);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.TokenDeletion = new TokenDeleteTransactionBody
+            var transactionBody = new TransactionBody
             {
-                Token = new TokenID(token)
+                TokenDeletion = new TokenDeleteTransactionBody
+                {
+                    Token = new TokenID(token)
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to Delete Token, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            return receipt.FillProperties(transactionId, new TransactionReceipt());
+            return new TransactionReceipt(await transactionBody.SignAndExecuteWithRetryAsync(context, false, "Unable to Delete Token, status: {0}", signatory));
         }
     }
 }

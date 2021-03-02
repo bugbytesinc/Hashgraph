@@ -100,6 +100,9 @@ namespace Proto
                     case QueryOneofCase.TokenGetInfo:
                         ((TokenGetInfoQuery)query_).Header = value;
                         break;
+                    case QueryOneofCase.ScheduleGetInfo:
+                        ((ScheduleGetInfoQuery)query_).Header = value;
+                        break;
                     default:
                         throw new InvalidOperationException("Query has No Type Set, unable to set Query Header of Unknown Query Type.");
                 };
@@ -129,6 +132,7 @@ namespace Proto
                 QueryOneofCase.ConsensusGetTopicInfo => new ConsensusService.ConsensusServiceClient(channel).getTopicInfoAsync,
                 QueryOneofCase.NetworkGetVersionInfo => new NetworkService.NetworkServiceClient(channel).getVersionInfoAsync,
                 QueryOneofCase.TokenGetInfo => new TokenService.TokenServiceClient(channel).getTokenInfoAsync,
+                QueryOneofCase.ScheduleGetInfo => new ScheduleService.ScheduleServiceClient(channel).getScheduleInfoAsync,
                 _ => throw new InvalidOperationException("Query has No Type Set, unable to find Network Request Method for Unknown Query Type.")
             };
         }
@@ -144,7 +148,7 @@ namespace Proto
             ulong cost = response.ResponseHeader?.Cost ?? 0UL;
             if (cost > 0)
             {
-                var transactionId = Transactions.GetOrCreateTransactionID(context);
+                var transactionId = context.GetOrCreateTransactionID();
                 QueryHeader = await createSignedQueryHeader((long)cost + supplementalCost, transactionId);
                 response = await executeSignedQueryWithRetryAsync();
                 response.Validate(transactionId);
@@ -171,17 +175,17 @@ namespace Proto
                 transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
                 return new QueryHeader
                 {
-                    Payment = await transactionBody.SignAsync(signatory, context.SignaturePrefixTrimLimit)
+                    Payment = await transactionBody.CreateSignedTransaction(signatory, context.SignaturePrefixTrimLimit)
                 };
             }
 
             async Task<Response> executeUnsignedAskRequestWithRetryAsync()
             {
-                var answer = await Transactions.ExecuteNetworkRequestWithRetryAsync(context, this, InstantiateNetworkRequestMethod, shouldRetryRequest);
+                var answer = await context.ExecuteNetworkRequestWithRetryAsync(this, InstantiateNetworkRequestMethod, shouldRetryRequest);
                 var code = answer.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
                 if (code != ResponseCodeEnum.Ok)
                 {
-                    throw new PrecheckException($"Transaction Failed Pre-Check: {code}", new TxId(), (ResponseCode)code, 0);
+                    throw new PrecheckException($"Transaction Failed Pre-Check: {code}", TxId.None, (ResponseCode)code, 0);
                 }
                 return answer;
 
@@ -193,7 +197,7 @@ namespace Proto
 
             Task<Response> executeSignedQueryWithRetryAsync()
             {
-                return Transactions.ExecuteSignedRequestWithRetryImplementationAsync(context, this, InstantiateNetworkRequestMethod, getResponseCode);
+                return context.ExecuteSignedRequestWithRetryImplementationAsync(this, InstantiateNetworkRequestMethod, getResponseCode);
 
                 ResponseCodeEnum getResponseCode(Response response)
                 {

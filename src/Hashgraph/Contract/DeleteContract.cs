@@ -31,9 +31,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the contract is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
-            return DeleteContractImplementationAsync(contractToDelete, transferToAddress, null, configure);
+            return new TransactionReceipt(await DeleteContractImplementationAsync(contractToDelete, transferToAddress, null, configure, false));
         }
         /// <summary>
         /// Deletes a contract instance from the network returning the remaining 
@@ -63,34 +63,27 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the contract is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Signatory signatory, Action<IContext>? configure = null)
         {
-            return DeleteContractImplementationAsync(contractToDelete, transferToAddress, signatory, configure);
+            return new TransactionReceipt(await DeleteContractImplementationAsync(contractToDelete, transferToAddress, signatory, configure, false));
         }
         /// <summary>
         /// Internal Helper implementation
         /// </summary>
-        private async Task<TransactionReceipt> DeleteContractImplementationAsync(Address contractToDelete, Address transferToAddress, Signatory? signatory, Action<IContext>? configure)
+        private async Task<NetworkResult> DeleteContractImplementationAsync(Address contractToDelete, Address transferToAddress, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             contractToDelete = RequireInputParameter.ContractToDelete(contractToDelete);
             transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.ContractDeleteInstance = new ContractDeleteTransactionBody
+            var transactionBody = new TransactionBody
             {
-                ContractID = new ContractID(contractToDelete),
-                TransferAccountID = new AccountID(transferToAddress)
+                ContractDeleteInstance = new ContractDeleteTransactionBody
+                {
+                    ContractID = new ContractID(contractToDelete),
+                    TransferAccountID = new AccountID(transferToAddress)
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to delete contract, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            return receipt.FillProperties(transactionId, new TransactionReceipt());
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete contract, status: {0}", signatory);
         }
     }
 }

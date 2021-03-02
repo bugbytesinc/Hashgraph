@@ -291,7 +291,8 @@ namespace Hashgraph.Test.Token
         public async Task CanUpdateExpiration()
         {
             await using var fxToken = await TestToken.CreateAsync(_network);
-            var newExpiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddDays(90));
+
+            var newExpiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddDays(365));
 
             var updateParams = new UpdateTokenParams
             {

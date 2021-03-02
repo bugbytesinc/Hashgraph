@@ -1,15 +1,26 @@
-﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
+﻿using Hashgraph.Implementation;
 
 namespace Hashgraph
 {
     /// <summary>
     /// Receipt produced from creating a new token.
     /// </summary>
-    public sealed class CreateTokenReceipt : TransactionReceipt
+    public sealed record CreateTokenReceipt : TransactionReceipt
     {
         /// <summary>
         /// The newly created token address.
         /// </summary>
-        public Address Token { get; internal set; }
+        /// <remarks>
+        /// The value will be <code>None</code> if the create topic
+        /// method was scheduled as a pending transaction.
+        /// </remarks>
+        public Address Token { get; internal init; }
+        /// <summary>
+        /// Internal Constructor of the receipt.
+        /// </summary>
+        internal CreateTokenReceipt(NetworkResult result) : base(result)
+        {
+            Token = result.Receipt.TokenID?.ToAddress() ?? Address.None;
+        }
     }
 }

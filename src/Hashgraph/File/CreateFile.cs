@@ -28,9 +28,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<FileReceipt> CreateFileAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
+        public async Task<FileReceipt> CreateFileAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateFileImplementationAsync<FileReceipt>(createParameters, configure);
+            return new FileReceipt(await CreateFileImplementationAsync(createParameters, configure, false));
         }
         /// <summary>
         /// Creates a new file with the given content.
@@ -52,44 +52,27 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<FileRecord> CreateFileWithRecordAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
+        public async Task<FileRecord> CreateFileWithRecordAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateFileImplementationAsync<FileRecord>(createParameters, configure);
+            return new FileRecord(await CreateFileImplementationAsync(createParameters, configure, true));
         }
         /// <summary>
         /// Internal implementation of the Create File service.
         /// </summary>
-        public async Task<TResult> CreateFileImplementationAsync<TResult>(CreateFileParams createParameters, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> CreateFileImplementationAsync(CreateFileParams createParameters, Action<IContext>? configure, bool includeRecord)
         {
             createParameters = RequireInputParameter.CreateParameters(createParameters);
             await using var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, createParameters.Signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.FileCreate = new FileCreateTransactionBody
+            var transactionBody = new TransactionBody
             {
-                ExpirationTime = new Timestamp(createParameters.Expiration),
-                Keys = new KeyList(createParameters.Endorsements),
-                Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
+                FileCreate = new FileCreateTransactionBody
+                {
+                    ExpirationTime = new Timestamp(createParameters.Expiration),
+                    Keys = new KeyList(createParameters.Endorsements),
+                    Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to create file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is FileRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is FileReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create file, status: {0}", createParameters.Signatory);
         }
     }
 }

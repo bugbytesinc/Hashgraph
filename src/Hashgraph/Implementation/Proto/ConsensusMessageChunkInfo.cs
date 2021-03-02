@@ -6,7 +6,7 @@
         {
             return new Hashgraph.MessageSegmentInfo
             {
-                ParentTxId = InitialTransactionID?.ToTxId() ?? new Hashgraph.TxId(),
+                ParentTxId = InitialTransactionID?.ToTxId() ?? Hashgraph.TxId.None,
                 Index = Number,
                 TotalSegmentCount = Total
             };

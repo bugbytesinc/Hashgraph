@@ -39,7 +39,8 @@ namespace Hashgraph
                 }
             };
             var response = await query.SignAndExecuteWithRetryAsync(context);
-            return response.CryptoGetAccountRecords.Records.Select(record => record.ToTransactionRecord()).ToArray();
+
+            return response.CryptoGetAccountRecords.Records.ToTransactionRecordList(null).ToArray();
         }
     }
 }

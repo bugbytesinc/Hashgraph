@@ -29,9 +29,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> UpdateAccountAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> UpdateAccountAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateAccountImplementationAsync<TransactionReceipt>(updateParameters, configure);
+            return new TransactionReceipt(await UpdateAccountImplementationAsync(updateParameters, configure, false));
         }
         /// <summary>
         /// Updates the changeable properties of a hedera network account.
@@ -55,19 +55,17 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> UpdateAccountWithRecordAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> UpdateAccountWithRecordAsync(UpdateAccountParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateAccountImplementationAsync<TransactionRecord>(updateParameters, configure);
+            return new TransactionRecord(await UpdateAccountImplementationAsync(updateParameters, configure, true));
         }
         /// <summary>
         /// Internal implementation of the update account functionality.
         /// </summary>
-        private async Task<TResult> UpdateAccountImplementationAsync<TResult>(UpdateAccountParams updateParameters, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> UpdateAccountImplementationAsync(UpdateAccountParams updateParameters, Action<IContext>? configure, bool includeRecord)
         {
             updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
             var updateAccountBody = new CryptoUpdateTransactionBody
             {
                 AccountIDToUpdate = new AccountID(updateParameters.Address)
@@ -92,26 +90,11 @@ namespace Hashgraph
             {
                 updateAccountBody.ProxyAccountID = new AccountID(updateParameters.Proxy);
             }
-            var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.CryptoUpdateAccount = updateAccountBody;
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
+            var transactionBody = new TransactionBody
             {
-                throw new TransactionException($"Unable to update account, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+                CryptoUpdateAccount = updateAccountBody
+            };
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to update account, status: {0}", updateParameters.Signatory);
         }
     }
 }

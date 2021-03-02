@@ -16,6 +16,13 @@ namespace Hashgraph
         /// <param name="transaction">
         /// Transaction identifier of the record
         /// </param>
+        /// <param name="pending">
+        /// Flag indicating to return the pending or "scheduled" version of
+        /// the transaction.  If set to true, the network will look for
+        /// the receipt of an executed pending transaction.  The TxID is
+        /// the ID of the tranaction that "created" the pending (scheduled) 
+        /// transaction.
+        /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
         /// the execution configuration for just this method call. 
@@ -45,9 +52,13 @@ namespace Hashgraph
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
             await WaitForConsensusReceipt(context, transactionId);
-            var record = await GetTransactionRecordAsync(context, transactionId);
-            return record.ToTransactionRecord();
-
+            var record = await context.GetTransactionRecordAsync(transactionId);
+            return new NetworkResult
+            {
+                TransactionID = transactionId,
+                Receipt = record.Receipt,
+                Record = record
+            }.ToRecord();
         }
         /// <summary>
         /// Retrieves all records having the given transaction ID, including duplicates
@@ -78,7 +89,7 @@ namespace Hashgraph
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
             await WaitForConsensusReceipt(context, transactionId);
-            var record = await GetTransactionRecordResponseAsync(context, transactionId, true);
+            var record = await context.GetTransactionRecordResponseAsync(transactionId, true);
             return record.DuplicateTransactionRecords.ToTransactionRecordList(record.TransactionRecord);
         }
         /// <summary>
@@ -96,7 +107,7 @@ namespace Hashgraph
                     TransactionID = transactionId
                 }
             };
-            await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            await context.ExecuteNetworkRequestWithRetryAsync(query, query.InstantiateNetworkRequestMethod, shouldRetry);
 
             static bool shouldRetry(Response response)
             {
@@ -104,37 +115,6 @@ namespace Hashgraph
                     response.TransactionGetReceipt?.Header?.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||
                     response.TransactionGetReceipt?.Receipt?.Status == ResponseCodeEnum.Unknown;
             }
-        }
-        /// <summary>
-        /// Internal Helper function to retrieve the transaction record provided 
-        /// by the network following network consensus regarding a query or transaction.
-        /// </summary>
-        private async Task<Proto.TransactionRecord> GetTransactionRecordAsync(GossipContextStack context, TransactionID transactionRecordId)
-        {
-            return (await GetTransactionRecordResponseAsync(context, transactionRecordId, false)).TransactionRecord;
-        }
-        /// <summary>
-        /// Internal Helper function to retrieve the transaction record or list of duplicate records provided 
-        /// by the network following network consensus regarding a query or transaction.
-        /// </summary>
-        private async Task<Proto.TransactionGetRecordResponse> GetTransactionRecordResponseAsync(GossipContextStack context, TransactionID transactionRecordId, bool includeDuplicates)
-        {
-            var query = new Query
-            {
-                TransactionGetRecord = new TransactionGetRecordQuery
-                {
-                    TransactionID = transactionRecordId,
-                    IncludeDuplicates = includeDuplicates
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            // Note if we are retrieving the list, Not found is OK too.
-            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (precheckCode != ResponseCodeEnum.Ok && !(includeDuplicates && precheckCode == ResponseCodeEnum.RecordNotFound))
-            {
-                throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.ToTxId(), (ResponseCode)precheckCode);
-            }
-            return response.TransactionGetRecord;
         }
     }
 }

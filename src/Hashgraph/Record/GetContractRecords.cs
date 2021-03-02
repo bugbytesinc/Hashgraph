@@ -40,7 +40,7 @@ namespace Hashgraph
                 }
             };
             var response = await query.SignAndExecuteWithRetryAsync(context);
-            return response.ContractGetRecordsResponse.Records.Select(record => record.ToTransactionRecord()).ToArray();
+            return response.ContractGetRecordsResponse.Records.ToTransactionRecordList(null).ToArray();
         }
     }
 }

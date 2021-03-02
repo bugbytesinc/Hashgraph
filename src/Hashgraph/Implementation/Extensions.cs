@@ -11,7 +11,7 @@ namespace Hashgraph.Implementation
     {
         internal static ByteString ToByteString(this ReadOnlyMemory<byte> data)
         {
-            return ByteString.CopyFrom(data.ToArray());
+            return ByteString.CopyFrom(data.Span);
         }
 
         internal static bool IsNullOrNone([AllowNull] this Address address)

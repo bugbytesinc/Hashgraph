@@ -29,9 +29,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> UpdateTopicAsync(UpdateTopicParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> UpdateTopicAsync(UpdateTopicParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateTopicImplementationAsync<TransactionReceipt>(updateParameters, configure);
+            return new TransactionReceipt(await UpdateTopicImplementationAsync(updateParameters, configure, false));
         }
         /// <summary>
         /// Updates the changeable properties of a hedera network Topic.
@@ -55,20 +55,17 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> UpdateTopicWithRecordAsync(UpdateTopicParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> UpdateTopicWithRecordAsync(UpdateTopicParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateTopicImplementationAsync<TransactionRecord>(updateParameters, configure);
+            return new TransactionRecord(await UpdateTopicImplementationAsync(updateParameters, configure, true));
         }
         /// <summary>
         /// Internal implementation of the update Topic functionality.
         /// </summary>
-        private async Task<TResult> UpdateTopicImplementationAsync<TResult>(UpdateTopicParams updateParameters, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> UpdateTopicImplementationAsync(UpdateTopicParams updateParameters, Action<IContext>? configure, bool includeRecord)
         {
             updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var updateTopicBody = new ConsensusUpdateTopicTransactionBody
             {
                 TopicID = new TopicID(updateParameters.Topic)
@@ -93,25 +90,11 @@ namespace Hashgraph
             {
                 updateTopicBody.AutoRenewAccount = new AccountID(updateParameters.RenewAccount);
             }
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.ConsensusUpdateTopic = updateTopicBody;
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
+            var transactionBody = new TransactionBody
             {
-                throw new TransactionException($"Unable to update Topic, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+                ConsensusUpdateTopic = updateTopicBody
+            };
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to update Topic, status: {0}", updateParameters.Signatory);
         }
     }
 }

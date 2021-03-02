@@ -10,27 +10,7 @@ namespace Proto
 {
     public sealed partial class TransactionBody
     {
-        internal TransactionBody(GossipContextStack context, TransactionID transactionId)
-        {
-            OnConstruction();
-            TransactionID = transactionId;
-            NodeAccountID = new AccountID(RequireInContext.Gateway(context));
-            TransactionFee = (ulong)context.FeeLimit;
-            TransactionValidDuration = new Proto.Duration(context.TransactionDuration);
-            Memo = context.Memo ?? "";
-        }
-
-        internal async Task<Transaction> SignAsync(ISignatory signatory, int prefixTrimLimit)
-        {
-            var invoice = new Invoice(this);
-            await signatory.SignAsync(invoice);
-            return new Transaction
-            {
-                SignedTransactionBytes = invoice.GetSignedTransaction(prefixTrimLimit).ToByteString()
-            };
-        }
-
-        internal Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> InstantiateNetworkRequestMethod(Channel channel)
+        private Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> InstantiateNetworkRequestMethod(Channel channel)
         {
             return dataCase_ switch
             {
@@ -70,25 +50,66 @@ namespace Proto
                 DataOneofCase.TokenWipe => new TokenService.TokenServiceClient(channel).wipeTokenAccountAsync,
                 DataOneofCase.TokenAssociate => new TokenService.TokenServiceClient(channel).associateTokensAsync,
                 DataOneofCase.TokenDissociate => new TokenService.TokenServiceClient(channel).dissociateTokensAsync,
+                DataOneofCase.ScheduleCreate => new ScheduleService.ScheduleServiceClient(channel).createScheduleAsync,
+                DataOneofCase.ScheduleDelete => new ScheduleService.ScheduleServiceClient(channel).deleteScheduleAsync,
+                DataOneofCase.ScheduleSign => new ScheduleService.ScheduleServiceClient(channel).signScheduleAsync,
                 _ => throw new InvalidOperationException("Transaction has No Type Set, unable to find Network Request Method for Unknown Transaction Type.")
             };
         }
-        internal async Task<TransactionReceipt> SignAndExecuteWithRetryAsync(ISignatory signatory, GossipContextStack context)
+        internal async Task<NetworkResult> SignAndExecuteWithRetryAsync(GossipContextStack context, bool includeRecord, string errorMessage, params Signatory?[] extraSignatories)
         {
+            var result = new NetworkResult();
+            var signatory = context.GatherSignatories(extraSignatories);
+            var schedule = signatory.GetSchedule();
+            TransactionFee = (ulong)context.FeeLimit;
+            NodeAccountID = new AccountID(RequireInContext.Gateway(context));
+            if (schedule is not null)
+            {
+                var sigMap = await Invoice.TryGenerateSignatureMapAsync(this, extraSignatories.Consolidate(), context.SignaturePrefixTrimLimit);
+                ScheduleCreate = new ScheduleCreateTransactionBody
+                {
+                    TransactionBody = result.BodyBytes = this.ToByteString(),
+                    AdminKey = schedule.Administrator is null ? null : new Key(schedule.Administrator),
+                    PayerAccountID = schedule.PendingPayer is null ? null : new AccountID(schedule.PendingPayer),
+                    SigMap = sigMap,
+                    Memo = schedule.Memo ?? ""
+                };
+                signatory = context.GatherSignatories(schedule.Signatory);
+            }
+            TransactionID = result.TransactionID = context.GetOrCreateTransactionID();
+            TransactionValidDuration = new Duration(context.TransactionDuration);
+            Memo = context.Memo ?? "";
             var precheck = await SignAndSubmitWithRetryAsync(signatory, context);
             ValidateResult.PreCheck(TransactionID, precheck);
-            var receipt = await Transactions.GetReceiptAsync(context, TransactionID);
-            return receipt;
+            var receipt = result.Receipt = await context.GetReceiptAsync(TransactionID);
+            if (receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format(errorMessage, receipt.Status), TransactionID.ToTxId(), (ResponseCode)receipt.Status);
+            }
+            if (includeRecord)
+            {
+                result.Record = await context.GetTransactionRecordAsync(TransactionID);
+            }
+            return result;
         }
         internal async Task<TransactionResponse> SignAndSubmitWithRetryAsync(ISignatory signatory, GossipContextStack context)
         {
-            var request = await SignAsync(signatory, context.SignaturePrefixTrimLimit);
-            return await Transactions.ExecuteSignedRequestWithRetryImplementationAsync(context, request, InstantiateNetworkRequestMethod, getResponseCode);
+            var request = await CreateSignedTransaction(signatory, context.SignaturePrefixTrimLimit);
+            return await context.ExecuteSignedRequestWithRetryImplementationAsync(request, InstantiateNetworkRequestMethod, getResponseCode);
 
             static ResponseCodeEnum getResponseCode(TransactionResponse response)
             {
                 return response.NodeTransactionPrecheckCode;
             }
+        }
+        internal async Task<Transaction> CreateSignedTransaction(ISignatory signatory, int prefixTrimLimit)
+        {
+            var invoice = new Invoice(this);
+            await signatory.SignAsync(invoice);
+            return new Transaction
+            {
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(prefixTrimLimit).ToByteString()
+            };
         }
     }
 }

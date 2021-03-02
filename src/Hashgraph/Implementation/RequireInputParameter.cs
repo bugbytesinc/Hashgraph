@@ -70,6 +70,14 @@ namespace Hashgraph.Implementation
             }
             return token;
         }
+        internal static Address Pending(Address pending)
+        {
+            if (pending.IsNullOrNone())
+            {
+                throw new ArgumentNullException(nameof(pending), "Pending Transaction ID is missing. Please check that it is not null or empty.");
+            }
+            return pending;
+        }
         internal static Address File(Address file)
         {
             if (file is null)
@@ -102,6 +110,28 @@ namespace Hashgraph.Implementation
             }
             return contractToDelete;
         }
+
+        internal static SignPendingTransactionParams SigningParams(SignPendingTransactionParams signingParams)
+        {
+            if (signingParams is null)
+            {
+                throw new ArgumentNullException(nameof(signingParams), "Signing Parameters argument is missing. Please check that it is not null.");
+            }
+            if (signingParams.Pending.IsNullOrNone())
+            {
+                throw new ArgumentNullException(nameof(signingParams.Pending), "Pending Transaciton ID is missing. Please check that it is not null.");
+            }
+            if (signingParams.TransactionBody.IsEmpty)
+            {
+                throw new ArgumentNullException(nameof(signingParams.TransactionBody), "The Pending Transaction Bytes are missing, they are needed to create signatures.");
+            }
+            if((signingParams.Signatory as ISignatory)?.GetSchedule() is not null)
+            {
+                throw new ArgumentException(nameof(signingParams.Signatory), "Future Scheduled Signatories are not allowed when explicitly signing a pending transaction.  Please place the context instead.");
+            }
+            return signingParams;
+        }
+
         internal static Address ContractToRestore(Address contractToRestore)
         {
             if (contractToRestore is null)

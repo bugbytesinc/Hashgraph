@@ -460,7 +460,13 @@ namespace Hashgraph
         /// The Topic ID specified is not in the system.
         /// </summary>
         [Description("INVALID_TOPIC_ID")] InvalidTopicId = 150,
+        /// <summary>
+        /// A provided admin key was invalid.
+        /// </summary>
         [Description("INVALID_ADMIN_KEY")] InvalidAdminKey = 155,
+        /// <summary>
+        /// A provided submit key was invalid.
+        /// </summary>
         [Description("INVALID_SUBMIT_KEY")] InvalidSubmitKey = 156,
         /// <summary>
         /// An attempted operation was not authorized (ie - a deleteTopic for a topic with no adminKey).
@@ -497,7 +503,7 @@ namespace Hashgraph
         /// </summary>
         [Description("ACCOUNT_FROZEN_FOR_TOKEN")] AccountFrozenForToken = 165,
         /// <summary>
-        /// Maximum number of token relations for agiven account is exceeded
+        /// An involved account already has more than &lt;tt>tokens.maxPerAccount&lt;/tt> associations with non-deleted tokens.
         /// </summary>
         [Description("TOKENS_PER_ACCOUNT_LIMIT_EXCEEDED")] TokensPerAccountLimitExceeded = 166,
         /// <summary>
@@ -529,11 +535,11 @@ namespace Hashgraph
         /// </summary>
         [Description("TRANSFERS_NOT_ZERO_SUM_FOR_TOKEN")] TransfersNotZeroSumForToken = 173,
         /// <summary>
-        /// Token Symbol is not provided
+        /// A token symbol was not provided
         /// </summary>
         [Description("MISSING_TOKEN_SYMBOL")] MissingTokenSymbol = 174,
         /// <summary>
-        /// Token Symbol is too long
+        /// The provided token symbol was too long
         /// </summary>
         [Description("TOKEN_SYMBOL_TOO_LONG")] TokenSymbolTooLong = 175,
         /// <summary>
@@ -560,16 +566,37 @@ namespace Hashgraph
         /// Wipe key is not set on token
         /// </summary>
         [Description("TOKEN_HAS_NO_WIPE_KEY")] TokenHasNoWipeKey = 181,
+        /// <summary>
+        /// The requested token mint amount would cause an invalid total supply
+        /// </summary>
         [Description("INVALID_TOKEN_MINT_AMOUNT")] InvalidTokenMintAmount = 182,
+        /// <summary>
+        /// The requested token burn amount would cause an invalid total supply
+        /// </summary>
         [Description("INVALID_TOKEN_BURN_AMOUNT")] InvalidTokenBurnAmount = 183,
+        /// <summary>
+        /// A required token-account relationship is missing
+        /// </summary>
         [Description("TOKEN_NOT_ASSOCIATED_TO_ACCOUNT")] TokenNotAssociatedToAccount = 184,
         /// <summary>
-        /// Cannot execute wipe operation on treasury account
+        /// The target of a wipe operation was the token treasury account
         /// </summary>
         [Description("CANNOT_WIPE_TOKEN_TREASURY_ACCOUNT")] CannotWipeTokenTreasuryAccount = 185,
+        /// <summary>
+        /// The provided KYC key was invalid.
+        /// </summary>
         [Description("INVALID_KYC_KEY")] InvalidKycKey = 186,
+        /// <summary>
+        /// The provided wipe key was invalid.
+        /// </summary>
         [Description("INVALID_WIPE_KEY")] InvalidWipeKey = 187,
+        /// <summary>
+        /// The provided freeze key was invalid.
+        /// </summary>
         [Description("INVALID_FREEZE_KEY")] InvalidFreezeKey = 188,
+        /// <summary>
+        /// The provided supply key was invalid.
+        /// </summary>
         [Description("INVALID_SUPPLY_KEY")] InvalidSupplyKey = 189,
         /// <summary>
         /// Token Name is not provided
@@ -615,5 +642,45 @@ namespace Hashgraph
         /// TokenTransfersTransactionBody has a TokenTransferList with no AccountAmounts
         /// </summary>
         [Description("EMPTY_TOKEN_TRANSFER_ACCOUNT_AMOUNTS")] EmptyTokenTransferAccountAmounts = 200,
+        /// <summary>
+        /// The Scheduled entity does not exist; or has now expired, been deleted, or been executed
+        /// </summary>
+        [Description("INVALID_SCHEDULE_ID")] InvalidScheduleId = 201,
+        /// <summary>
+        /// The Scheduled entity cannot be modified. Admin key not set
+        /// </summary>
+        [Description("SCHEDULE_IS_IMMUTABLE")] ScheduleIsImmutable = 202,
+        /// <summary>
+        /// The provided Scheduled Payer does not exist
+        /// </summary>
+        [Description("INVALID_SCHEDULE_PAYER_ID")] InvalidSchedulePayerId = 203,
+        /// <summary>
+        /// The Schedule Create Transaction TransactionID account does not exist
+        /// </summary>
+        [Description("INVALID_SCHEDULE_ACCOUNT_ID")] InvalidScheduleAccountId = 204,
+        /// <summary>
+        /// The provided sig map did not contain any new valid signatures from required signers of the scheduled transaction
+        /// </summary>
+        [Description("NO_NEW_VALID_SIGNATURES")] NoNewValidSignatures = 205,
+        /// <summary>
+        /// The required signers for a scheduled transaction cannot be resolved, for example because they do not exist or have been deleted
+        /// </summary>
+        [Description("UNRESOLVABLE_REQUIRED_SIGNERS")] UnresolvableRequiredSigners = 206,
+        /// <summary>
+        /// The bytes allegedly representing a transaction to be scheduled could not be parsed
+        /// </summary>
+        [Description("UNPARSEABLE_SCHEDULED_TRANSACTION")] UnparseableScheduledTransaction = 207,
+        /// <summary>
+        /// ScheduleCreate and ScheduleSign transactions cannot be scheduled
+        /// </summary>
+        [Description("UNSCHEDULABLE_TRANSACTION")] UnschedulableTransaction = 208,
+        /// <summary>
+        /// At least one of the signatures in the provided sig map did not represent a valid signature for any required signer
+        /// </summary>
+        [Description("SOME_SIGNATURES_WERE_INVALID")] SomeSignaturesWereInvalid = 209,
+        /// <summary>
+        /// The &lt;tt>scheduled&lt;/tt> and &lt;tt>nonce&lt;/tt> fields in the &lt;tt>TransactionID&lt;/tt> may not be set in a top-level transaction
+        /// </summary>
+        [Description("TRANSACTION_ID_FIELD_NOT_ALLOWED")] TransactionIdFieldNotAllowed = 210,
     }
 }

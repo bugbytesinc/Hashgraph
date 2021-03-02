@@ -63,6 +63,12 @@ namespace Hashgraph
             /// </summary>
             List = 5,
             /// <summary>
+            /// This signatory holds information delaying the immediate execution of
+            /// the transaction upon submission and instead causing the transaction 
+            /// to be scheduled instead.
+            /// </summary>
+            Pending = 6,
+            /// <summary>
             /// This represnts legacy signing features in the library that are slated
             /// for removal over time, such as the Ed25519 key(s) embedded in the
             /// <see cref="Account"/> object.  At some point in the future 
@@ -79,8 +85,8 @@ namespace Hashgraph
         /// <summary>
         /// Internal union of the types of data this Signatory may hold.
         /// The contents are a function of the <code>Type</code>.  It can be a 
-        /// list of other signatories, a reference to a callback method, or an 
-        /// Ed25519 private key.
+        /// list of other signatories, a reference to a callback method, 
+        /// pending transaction schedule information or an  Ed25519 private key.
         /// </summary>
         private readonly object _data;
         /// <summary>
@@ -170,6 +176,27 @@ namespace Hashgraph
             _data = RequireInputParameter.SigningCallback(signingCallback);
         }
         /// <summary>
+        /// Creates a signatory that indicates the transaction should be 
+        /// scheduled and not immediately executed.  The params include
+        /// optional details on how to schedule the transaction.
+        /// </summary> 
+        /// <param name="scheduleParams">
+        /// The scheduling details of the pending transaction.
+        /// </param>
+        public Signatory(ScheduleParams scheduleParams)
+        {
+            if(scheduleParams is null)
+            {
+                throw new ArgumentNullException(nameof(scheduleParams), "Pending Parameters object cannot be null.");
+            }
+            else if((scheduleParams.Signatory as ISignatory)?.GetSchedule() is not null)
+            {
+                throw new ArgumentException("Nested Scheduling Signatories is not allowed.", nameof(scheduleParams));
+            }
+            _type = Type.Pending;
+            _data = scheduleParams;
+        }
+        /// <summary>
         /// Convenience implict cast for creating a <code>Signatory</code> 
         /// directly from an Ed25519 private key.
         /// </summary>
@@ -195,6 +222,17 @@ namespace Hashgraph
         public static implicit operator Signatory(Func<IInvoice, Task> signingCallback)
         {
             return new Signatory(signingCallback);
+        }
+        /// <summary>
+        /// Convenience implicit cast for creating a <code>Signatory</code>
+        /// directly from a <see cref="ScheduleParams"/> object.
+        /// </summary>
+        /// <param name="pendingParams">
+        /// The scheduling details of the pending transaction.
+        /// </param>
+        public static implicit operator Signatory(ScheduleParams pendingParams)
+        {
+            return new Signatory(pendingParams);
         }
         /// <summary>
         /// Equality implementation.
@@ -240,6 +278,10 @@ namespace Hashgraph
                     break;
                 case Type.Callback:
                     return ReferenceEquals(_data, other._data);
+                case Type.Pending:
+                    var thisPending = (ScheduleParams)_data;
+                    var otherPending = (ScheduleParams)other._data;
+                    return thisPending.Equals(otherPending);
             }
             return false;
         }
@@ -388,8 +430,41 @@ namespace Hashgraph
                 case Type.OtherSigner:
                     await ((ISignatory)_data).SignAsync(invoice);
                     break;
+                case Type.Pending:
+                    // This will be called to sign the to-be-scheduled
+                    // transaction. In this context, we do nothing.
+                    break;
                 default:
                     throw new InvalidOperationException("Not a presently supported Signatory key type, please consider the callback signatory as an alternative.");
+            }
+        }
+
+        ScheduleParams? ISignatory.GetSchedule()
+        {
+            switch (_type)
+            {
+                case Type.Pending:
+                    return (ScheduleParams)_data;
+                case Type.List:
+                    ScheduleParams? result = null;
+                    foreach (ISignatory signer in (Signatory[])_data)
+                    {
+                        var schedule = signer.GetSchedule();
+                        if(schedule is not null)
+                        {
+                            if(result is null)
+                            {
+                                result = schedule;
+                            }                            
+                            else if(!result.Equals(schedule))
+                            {
+                                throw new InvalidOperationException("Found Multiple Schedules in Signatory, do not know which one to choose.");
+                            }
+                        }
+                    }
+                    return result;
+                default:
+                    return null;
             }
         }
     }

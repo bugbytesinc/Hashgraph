@@ -27,9 +27,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the topic is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteTopicAsync(Address topicToDelete, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteTopicAsync(Address topicToDelete, Action<IContext>? configure = null)
         {
-            return DeleteTopicImplementationAsync(topicToDelete, null, configure);
+            return await DeleteTopicImplementationAsync(topicToDelete, null, configure);
         }
         /// <summary>
         /// Deletes a topic instance from the network. Must be signed 
@@ -55,9 +55,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the topic is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteTopicAsync(Address topicToDelete, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteTopicAsync(Address topicToDelete, Signatory signatory, Action<IContext>? configure = null)
         {
-            return DeleteTopicImplementationAsync(topicToDelete, signatory, configure);
+            return await DeleteTopicImplementationAsync(topicToDelete, signatory, configure);
         }
         /// <summary>
         /// Internal implementation of delete topic method.
@@ -66,21 +66,14 @@ namespace Hashgraph
         {
             topicToDelete = RequireInputParameter.AddressToDelete(topicToDelete);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.ConsensusDeleteTopic = new ConsensusDeleteTopicTransactionBody
+            var transactionBody = new TransactionBody
             {
-                TopicID = new TopicID(topicToDelete)
+                ConsensusDeleteTopic = new ConsensusDeleteTopicTransactionBody
+                {
+                    TopicID = new TopicID(topicToDelete)
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to Delete Topic, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            return receipt.FillProperties(transactionId, new TransactionReceipt());
+            return new TransactionReceipt(await transactionBody.SignAndExecuteWithRetryAsync(context, false, "Unable to Delete Topic, status: {0}", signatory));
         }
     }
 }

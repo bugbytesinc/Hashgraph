@@ -31,9 +31,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
-            return DeleteAccountImplementationAsync(addressToDelete, transferToAddress, null, configure);
+            return new TransactionReceipt(await DeleteAccountImplementationAsync(addressToDelete, transferToAddress, null, configure, false));
         }
         /// <summary>
         /// Deletes an account from the network returning the remaining 
@@ -64,34 +64,27 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Signatory signatory, Action<IContext>? configure = null)
         {
-            return DeleteAccountImplementationAsync(addressToDelete, transferToAddress, signatory, configure);
+            return new TransactionReceipt(await DeleteAccountImplementationAsync(addressToDelete, transferToAddress, signatory, configure, false));
         }
         /// <summary>
         /// Internal implementation of delete account method.
         /// </summary>
-        private async Task<TransactionReceipt> DeleteAccountImplementationAsync(Address addressToDelete, Address transferToAddress, Signatory? signatory, Action<IContext>? configure)
+        private async Task<NetworkResult> DeleteAccountImplementationAsync(Address addressToDelete, Address transferToAddress, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             addressToDelete = RequireInputParameter.AddressToDelete(addressToDelete);
             transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.CryptoDelete = new CryptoDeleteTransactionBody
+            var transactionBody = new TransactionBody
             {
-                DeleteAccountID = new AccountID(addressToDelete),
-                TransferAccountID = new AccountID(transferToAddress)
+                CryptoDelete = new CryptoDeleteTransactionBody
+                {
+                    DeleteAccountID = new AccountID(addressToDelete),
+                    TransferAccountID = new AccountID(transferToAddress)
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to delete account, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            return receipt.FillProperties(transactionId, new TransactionReceipt());
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete account, status: {0}", signatory);
         }
     }
 }

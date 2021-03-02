@@ -29,9 +29,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> UpdateContractAsync(UpdateContractParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> UpdateContractAsync(UpdateContractParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateContractImplementationAsync<TransactionReceipt>(updateParameters, configure);
+            return new TransactionReceipt(await UpdateContractImplementationAsync(updateParameters, configure, false));
         }
         /// <summary>
         /// Updates the changeable properties of a hedera network Contract.
@@ -55,20 +55,17 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> UpdateContractWithRecordAsync(UpdateContractParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> UpdateContractWithRecordAsync(UpdateContractParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateContractImplementationAsync<TransactionRecord>(updateParameters, configure);
+            return new TransactionRecord(await UpdateContractImplementationAsync(updateParameters, configure, true));
         }
         /// <summary>
         /// Internal implementation of the update Contract functionality.
         /// </summary>
-        private async Task<TResult> UpdateContractImplementationAsync<TResult>(UpdateContractParams updateParameters, Action<IContext>? configure) where TResult : new()
+        private async Task<NetworkResult> UpdateContractImplementationAsync(UpdateContractParams updateParameters, Action<IContext>? configure, bool includeRecord)
         {
             updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
             var updateContractBody = new ContractUpdateTransactionBody
             {
                 ContractID = new ContractID(updateParameters.Contract)
@@ -93,25 +90,11 @@ namespace Hashgraph
             {
                 updateContractBody.Memo = updateParameters.Memo;
             }
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.ContractUpdateInstance = updateContractBody;
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
+            var transactionBody = new TransactionBody
             {
-                throw new TransactionException($"Unable to update Contract, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+                ContractUpdateInstance = updateContractBody
+            };
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to update Contract, status: {0}", updateParameters.Signatory);
         }
     }
 }

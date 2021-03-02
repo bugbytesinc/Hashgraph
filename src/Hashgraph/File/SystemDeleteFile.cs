@@ -26,9 +26,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> SystemDeleteFileAsync(Address fileToDelete, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SystemDeleteFileAsync(Address fileToDelete, Action<IContext>? configure = null)
         {
-            return SystemDeleteFileImplementationAsync<TransactionReceipt>(fileToDelete, null, configure);
+            return new TransactionReceipt(await SystemDeleteFileImplementationAsync(fileToDelete, null, configure, false));
         }
         /// <summary>
         /// Removes a file from the network via Administrative Delete
@@ -54,9 +54,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> SystemDeleteFileAsync(Address fileToDelete, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SystemDeleteFileAsync(Address fileToDelete, Signatory signatory, Action<IContext>? configure = null)
         {
-            return SystemDeleteFileImplementationAsync<TransactionReceipt>(fileToDelete, signatory, configure);
+            return new TransactionReceipt(await SystemDeleteFileImplementationAsync(fileToDelete, signatory, configure, false));
         }
         /// <summary>
         /// Removes a file from the network via Administrative Delete
@@ -78,9 +78,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> SystemDeleteFileWithRecordAsync(Address fileToDelete, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> SystemDeleteFileWithRecordAsync(Address fileToDelete, Action<IContext>? configure = null)
         {
-            return SystemDeleteFileImplementationAsync<TransactionRecord>(fileToDelete, null, configure);
+            return new TransactionRecord(await SystemDeleteFileImplementationAsync(fileToDelete, null, configure, true));
         }
         /// <summary>
         /// Removes a file from the network via Administrative Delete
@@ -107,42 +107,25 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> SystemDeleteFileWithRecordAsync(Address fileToDelete, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> SystemDeleteFileWithRecordAsync(Address fileToDelete, Signatory signatory, Action<IContext>? configure = null)
         {
-            return SystemDeleteFileImplementationAsync<TransactionRecord>(fileToDelete, signatory, configure);
+            return new TransactionRecord(await SystemDeleteFileImplementationAsync(fileToDelete, signatory, configure, true));
         }
         /// <summary>
         /// Internal helper function implementing the file delete functionality.
         /// </summary>
-        public async Task<TResult> SystemDeleteFileImplementationAsync<TResult>(Address fileToDelete, Signatory? signatory, Action<IContext>? configure = null) where TResult : new()
+        private async Task<NetworkResult> SystemDeleteFileImplementationAsync(Address fileToDelete, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
             fileToDelete = RequireInputParameter.FileToDelete(fileToDelete);
             await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.SystemDelete = new SystemDeleteTransactionBody
+            var transactionBody = new TransactionBody
             {
-                FileID = new FileID(fileToDelete)
+                SystemDelete = new SystemDeleteTransactionBody
+                {
+                    FileID = new FileID(fileToDelete)
+                }
             };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to delete file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete file, status: {receipt.Status}", signatory);
         }
     }
 }

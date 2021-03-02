@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Implementation;
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -151,6 +152,127 @@ namespace Hashgraph.Tests
             Assert.NotEqual(signatory1, signatory2);
             Assert.False(signatory1 == signatory2);
             Assert.True(signatory1 != signatory2);
+        }
+        [Fact(DisplayName = "Signatories: Null PendingParams raises an Error")]
+        public void NullPendingParamsRaisesAnError()
+        {
+            var exception = Assert.Throws<ArgumentNullException>(() =>
+            {
+                new Signatory((ScheduleParams)null);
+            });
+            Assert.Equal("scheduleParams", exception.ParamName);
+            Assert.StartsWith("Pending Parameters object cannot be null.", exception.Message);
+        }
+        [Fact(DisplayName = "Signatories: Empty Scheduled Signatories Are Considered Equal")]
+        public void EmptyScheduledSignatoriesAreConsideredEqual()
+        {
+            var schedule1 = new ScheduleParams();
+            var schedule2 = new ScheduleParams();
+
+            var signatory1 = new Signatory(schedule1);
+            var signatory2 = new Signatory(schedule2);
+            Assert.Equal(signatory1, signatory2);
+            Assert.True(signatory1 == signatory2);
+            Assert.False(signatory1 != signatory2);
+        }
+        [Fact(DisplayName = "Signatories: Dissimilar Signatory Schedules Are Considered Not Equal")]
+        public void DissimilarSignatorySchedulesAreConsideredNotEqual()
+        {
+            var schedule1 = new ScheduleParams
+            {
+                Memo = "memo 1"
+            };
+            var schedule2 = new ScheduleParams
+            {
+                Memo = "Memo 2"
+            };
+
+            var signatory1 = new Signatory(schedule1);
+            var signatory2 = new Signatory(schedule2);
+            Assert.NotEqual(signatory1, signatory2);
+            Assert.False(signatory1 == signatory2);
+            Assert.True(signatory1 != signatory2);
+        }
+        [Fact(DisplayName = "Signatories: Similar Signatory Schedules Are Considered Not Equal")]
+        public void SimilarSignatorySchedulesAreConsideredNotEqual()
+        {
+            var schedule1 = new ScheduleParams
+            {
+                Memo = "memo 1"
+            };
+            var schedule2 = new ScheduleParams
+            {
+                Memo = "memo 1"
+            };
+
+            var signatory1 = new Signatory(schedule1);
+            var signatory2 = new Signatory(schedule2);
+            Assert.Equal(signatory1, signatory2);
+            Assert.True(signatory1 == signatory2);
+            Assert.False(signatory1 != signatory2);
+        }
+        [Fact(DisplayName = "Signatories: Can Retrieve Schedule Params From Signatory")]
+        public void CanRetrieveScheduleParamsFromSignatory()
+        {
+            var schedule = new ScheduleParams
+            {
+                Memo = Generator.Code(20)
+            };
+            var signatory = new Signatory(schedule);
+            var retrieved = ((ISignatory)signatory).GetSchedule();
+            Assert.Equal(schedule, retrieved);
+        }
+        [Fact(DisplayName = "Signatories: Can Retrieve Nested Schedule Params From Signatory")]
+        public void CanRetrieveNestedScheduleParamsFromSignatory()
+        {
+            var (_, randomKey) = Generator.KeyPair();
+            var schedule = new ScheduleParams
+            {
+                Memo = Generator.Code(20)
+            };
+            var signatory = new Signatory(new Signatory(new Signatory(new Signatory(schedule))), randomKey);
+            var retrieved = ((ISignatory)signatory).GetSchedule();
+            Assert.Equal(schedule, retrieved);
+        }
+        [Fact(DisplayName = "Signatories: Multiple Schedules Accepted when Identical")]
+        public void MultipleSchedulesAcceptedWhenIdentical()
+        {
+            var memo = Generator.Code(50);
+            var (_, randomKey) = Generator.KeyPair();
+            var schedule1 = new ScheduleParams { Memo = memo };
+            var schedule2 = new ScheduleParams { Memo = memo };
+            var signatory = new Signatory(new Signatory(new Signatory(new Signatory(schedule1)), schedule2), randomKey);
+            var retrieved = ((ISignatory)signatory).GetSchedule();
+            Assert.Equal(schedule1, retrieved);
+            Assert.Equal(schedule1, schedule2);
+        }
+        [Fact(DisplayName = "Signatories: Multiple Dissimilar Schedules Raises an Error On Retrieval")]
+        public void MultipleDissimilarSchedulesRaisesAnErrorOnRetrieval()
+        {
+            var (_, randomKey) = Generator.KeyPair();
+            var schedule1 = new ScheduleParams { Memo = Generator.Code(50) };
+            var schedule2 = new ScheduleParams { Memo = Generator.Code(50) };
+            var signatory = new Signatory(new Signatory(new Signatory(new Signatory(schedule1)), schedule2), randomKey);
+            var exception = Assert.Throws<InvalidOperationException>(() =>
+            {
+                ((ISignatory)signatory).GetSchedule();
+            });
+            Assert.Equal("Found Multiple Schedules in Signatory, do not know which one to choose.", exception.Message);
+        }
+        [Fact(DisplayName = "Signatories: Nesting Schedules Raises an Error On Creation")]
+        public void NestingSchedulesRaisesAnErrorOnCreation()
+        {
+            var (_, randomKey) = Generator.KeyPair();
+            var schedule = new ScheduleParams { 
+                Memo = Generator.Code(50),
+                Signatory = new Signatory(new ScheduleParams())
+            };
+            var exception = Assert.Throws<ArgumentException>(() =>
+            {
+                new Signatory(schedule);
+            });
+            Assert.Equal("scheduleParams", exception.ParamName);
+            Assert.StartsWith("Nested Scheduling Signatories is not allowed.", exception.Message);
         }
     }
 }
