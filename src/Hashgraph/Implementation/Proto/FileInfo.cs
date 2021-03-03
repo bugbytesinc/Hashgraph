@@ -12,7 +12,7 @@ namespace Proto
                 {
                     return new Hashgraph.FileInfo
                     {
-                        File = FileID.ToAddress(),
+                        File = FileID.AsAddress(),
                         Size = Size,
                         Expiration = ExpirationTime.ToDateTime(),
                         Endorsements = Keys?.ToEndorsements() ?? Array.Empty<Hashgraph.Endorsement>(),

@@ -25,7 +25,7 @@ namespace Hashgraph
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        public async Task<PendingTransactionInfo> GetPendingTransactionInfo(Address pending, Action<IContext>? configure = null)
+        public async Task<PendingTransactionInfo> GetPendingTransactionInfoAsync(Address pending, Action<IContext>? configure = null)
         {
             pending = RequireInputParameter.Pending(pending);
             await using var context = CreateChildContext(configure);

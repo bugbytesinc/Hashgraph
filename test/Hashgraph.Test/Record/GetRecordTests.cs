@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
+using Proto;
 using System;
 using System.Linq;
 using System.Text;
@@ -64,7 +65,7 @@ namespace Hashgraph.Test.Record
             async Task InvalidTransactionIdThrowsError()
             {
                 await using var client = _network.NewClient();
-                var txId = new Proto.TransactionID { AccountID = new Proto.AccountID(_network.Payer), TransactionValidStart = new Proto.Timestamp { Seconds = 500, Nanos = 100 } }.ToTxId();
+                var txId = new Proto.TransactionID { AccountID = new Proto.AccountID(_network.Payer), TransactionValidStart = new Proto.Timestamp { Seconds = 500, Nanos = 100 } }.AsTxId();
                 var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
                     await client.GetTransactionRecordAsync(txId);

@@ -21,7 +21,7 @@ namespace Hashgraph.Test.Token
             await using var fx = await TestPendingTransfer.CreateAsync(_network);
             Assert.Equal(ResponseCode.Success, fx.Record.Status);
 
-            var info = await fx.PayingAccount.Client.GetPendingTransactionInfo(fx.Record.Pending.Pending);
+            var info = await fx.PayingAccount.Client.GetPendingTransactionInfoAsync(fx.Record.Pending.Pending);
             Assert.Equal(fx.Record.Pending.Pending, info.Pending);
             Assert.Equal(fx.PayingAccount, info.Payer);
             Assert.Equal(_network.Payer, info.Creator);

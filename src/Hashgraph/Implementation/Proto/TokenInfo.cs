@@ -6,10 +6,10 @@
         {
             return new Hashgraph.TokenInfo
             {
-                Token = TokenId.ToAddress(),
+                Token = TokenId.AsAddress(),
                 Symbol = Symbol,
                 Name = Name,
-                Treasury = Treasury.ToAddress(),
+                Treasury = Treasury.AsAddress(),
                 Circulation = TotalSupply,
                 Decimals = Decimals,
                 Administrator = AdminKey?.ToEndorsement(),
@@ -21,7 +21,7 @@
                 KycStatus = (Hashgraph.TokenKycStatus)DefaultKycStatus,
                 Expiration = Expiry.ToDateTime(),
                 RenewPeriod = AutoRenewPeriod?.ToTimeSpan(),
-                RenewAccount = AutoRenewAccount?.ToAddress(),
+                RenewAccount = AutoRenewAccount?.AsAddress(),
                 Deleted = Deleted
             };
         }

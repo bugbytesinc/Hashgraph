@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Implementation;
+using Proto;
 
 namespace Hashgraph
 {
@@ -20,7 +21,7 @@ namespace Hashgraph
         /// </summary>
         internal FileReceipt(NetworkResult result) : base(result)
         {
-            File = result.Receipt.FileID?.ToAddress() ?? Address.None;
+            File = result.Receipt.FileID.AsAddress();
         }
     }
 }

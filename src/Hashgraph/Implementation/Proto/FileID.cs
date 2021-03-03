@@ -10,9 +10,17 @@ namespace Proto
             RealmNum = address.RealmNum;
             FileNum = address.AccountNum;
         }
-        internal Address ToAddress()
+    }
+
+    internal static class FileIDExtensions
+    {
+        internal static Address AsAddress(this FileID? id)
         {
-            return new Address(ShardNum, RealmNum, FileNum);
+            if (id is not null)
+            {
+                return new Address(id.ShardNum, id.RealmNum, id.FileNum);
+            }
+            return Address.None;
         }
     }
 }

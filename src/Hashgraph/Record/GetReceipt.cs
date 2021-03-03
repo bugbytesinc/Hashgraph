@@ -88,7 +88,7 @@ namespace Hashgraph
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             if (responseCode == ResponseCodeEnum.Busy)
             {
-                throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.ToTxId(), (ResponseCode)responseCode);
+                throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.AsTxId(), (ResponseCode)responseCode);
             }
             return response.TransactionGetReceipt.DuplicateTransactionReceipts.ToTransactionReceiptList(response.TransactionGetReceipt.Receipt, transactionId);
 

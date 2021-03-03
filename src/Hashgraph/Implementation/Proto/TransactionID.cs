@@ -14,9 +14,21 @@ namespace Proto
             };
             Scheduled = transaction.Pending;
         }
-        internal TxId ToTxId()
+    }
+
+    internal static class TransactionIDExtensions
+    {
+        internal static TxId AsTxId(this TransactionID? id)
         {
-            return new TxId(AccountID.ToAddress(), TransactionValidStart.Seconds, TransactionValidStart.Nanos, Scheduled);
+            if(id is not null)
+            {
+                var timestamp = id.TransactionValidStart;
+                if(timestamp is not null)
+                {
+                    return new TxId(id.AccountID.AsAddress(), timestamp.Seconds, timestamp.Nanos, id.Scheduled);
+                }
+            }
+            return TxId.None;
         }
     }
 }

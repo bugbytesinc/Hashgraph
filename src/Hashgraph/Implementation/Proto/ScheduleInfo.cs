@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Proto
+﻿namespace Proto
 {
     public sealed partial class ScheduleInfo
     {
@@ -9,8 +7,8 @@ namespace Proto
             return new Hashgraph.PendingTransactionInfo
             {
                 Pending = ScheduleID.ToAddress(),
-                Creator = CreatorAccountID.ToAddress(),
-                Payer = PayerAccountID.ToAddress(),
+                Creator = CreatorAccountID.AsAddress(),
+                Payer = PayerAccountID.AsAddress(),
                 TransactionBody = TransactionBody.ToByteArray(),
                 Endorsements = Signatories.ToEndorsements(),
                 Administrator = AdminKey?.ToEndorsement(),

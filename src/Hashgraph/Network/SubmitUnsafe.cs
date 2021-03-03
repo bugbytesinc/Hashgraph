@@ -99,7 +99,7 @@ namespace Hashgraph
             // Retain standard behavior of throwing an exception if the receipt has an error code.
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException($"Submit Unsafe Transaction failed, status: {receipt.Status}", innerTransactionId.ToTxId(), (ResponseCode)receipt.Status);
+                throw new TransactionException($"Submit Unsafe Transaction failed, status: {receipt.Status}", innerTransactionId.AsTxId(), (ResponseCode)receipt.Status);
             }
             if (includeRecord)
             {

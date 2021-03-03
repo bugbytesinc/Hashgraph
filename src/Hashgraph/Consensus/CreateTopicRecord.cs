@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Implementation;
+using Proto;
 
 namespace Hashgraph
 {
@@ -20,7 +21,7 @@ namespace Hashgraph
         /// </summary>
         internal CreateTopicRecord(NetworkResult result) : base(result)
         {
-            Topic = result.Receipt.TopicID?.ToAddress() ?? Address.None;
+            Topic = result.Receipt.TopicID.AsAddress();
         }
     }
 }

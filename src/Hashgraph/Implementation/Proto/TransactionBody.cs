@@ -65,6 +65,10 @@ namespace Proto
             NodeAccountID = new AccountID(RequireInContext.Gateway(context));
             if (schedule is not null)
             {
+                if (!schedule.Nonce.IsEmpty)
+                {
+                    TransactionID = new TransactionID { Nonce = schedule.Nonce.ToByteString() };
+                }
                 var sigMap = await Invoice.TryGenerateSignatureMapAsync(this, extraSignatories.Consolidate(), context.SignaturePrefixTrimLimit);
                 ScheduleCreate = new ScheduleCreateTransactionBody
                 {
@@ -84,7 +88,7 @@ namespace Proto
             var receipt = result.Receipt = await context.GetReceiptAsync(TransactionID);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
-                throw new TransactionException(string.Format(errorMessage, receipt.Status), TransactionID.ToTxId(), (ResponseCode)receipt.Status);
+                throw new TransactionException(string.Format(errorMessage, receipt.Status), TransactionID.AsTxId(), (ResponseCode)receipt.Status);
             }
             if (includeRecord)
             {

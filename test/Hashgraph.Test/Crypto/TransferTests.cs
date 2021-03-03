@@ -543,7 +543,7 @@ namespace Hashgraph.Test.Crypto
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await fxPayer.Client.GetPendingTransactionInfo(receipt.Pending.Pending);
+                await fxPayer.Client.GetPendingTransactionInfoAsync(receipt.Pending.Pending);
             });
             Assert.Equal(ResponseCode.InvalidScheduleId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidScheduleId", pex.Message);

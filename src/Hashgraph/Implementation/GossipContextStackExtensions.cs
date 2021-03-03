@@ -251,20 +251,20 @@ namespace Hashgraph
                 case ResponseCodeEnum.Ok:
                     break;
                 case ResponseCodeEnum.Busy:
-                    throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.ToTxId(), (ResponseCode)responseCode);
+                    throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.AsTxId(), (ResponseCode)responseCode);
                 case ResponseCodeEnum.Unknown:
                 case ResponseCodeEnum.ReceiptNotFound:
-                    throw new TransactionException($"Network failed to return a transaction receipt, Status Code Returned: {responseCode}", transactionId.ToTxId(), (ResponseCode)responseCode);
+                    throw new TransactionException($"Network failed to return a transaction receipt, Status Code Returned: {responseCode}", transactionId.AsTxId(), (ResponseCode)responseCode);
             }
             var status = response.TransactionGetReceipt.Receipt.Status;
             switch (status)
             {
                 case ResponseCodeEnum.Unknown:
-                    throw new ConsensusException("Network failed to reach concensus within the configured retry time window, It is possible the network may still reach concensus for this transaction.", transactionId.ToTxId(), (ResponseCode)status);
+                    throw new ConsensusException("Network failed to reach concensus within the configured retry time window, It is possible the network may still reach concensus for this transaction.", transactionId.AsTxId(), (ResponseCode)status);
                 case ResponseCodeEnum.TransactionExpired:
-                    throw new ConsensusException("Network failed to reach concensus before transaction request expired.", transactionId.ToTxId(), (ResponseCode)status);
+                    throw new ConsensusException("Network failed to reach concensus before transaction request expired.", transactionId.AsTxId(), (ResponseCode)status);
                 case ResponseCodeEnum.RecordNotFound:
-                    throw new ConsensusException("Network failed to find a receipt for given transaction.", transactionId.ToTxId(), (ResponseCode)status);
+                    throw new ConsensusException("Network failed to find a receipt for given transaction.", transactionId.AsTxId(), (ResponseCode)status);
                 default:
                     return response.TransactionGetReceipt.Receipt;
             }
@@ -303,7 +303,7 @@ namespace Hashgraph
             var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (precheckCode != ResponseCodeEnum.Ok && !(includeDuplicates && precheckCode == ResponseCodeEnum.RecordNotFound))
             {
-                throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.ToTxId(), (ResponseCode)precheckCode);
+                throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.AsTxId(), (ResponseCode)precheckCode);
             }
             return response.TransactionGetRecord;
         }

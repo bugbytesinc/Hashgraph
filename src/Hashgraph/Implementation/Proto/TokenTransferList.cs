@@ -15,10 +15,10 @@ namespace Proto
                 var collector = new Dictionary<(Address, Address), long>();
                 foreach (var xferList in list)
                 {
-                    var token = xferList.Token.ToAddress();
+                    var token = xferList.Token.AsAddress();
                     foreach (var xfer in xferList.Transfers)
                     {
-                        var key = (token, xfer.AccountID.ToAddress());
+                        var key = (token, xfer.AccountID.AsAddress());
                         collector.TryGetValue(key, out long amount);
                         collector[key] = amount + xfer.Amount;
                     }

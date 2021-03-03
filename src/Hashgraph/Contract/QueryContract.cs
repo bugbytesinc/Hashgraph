@@ -52,17 +52,17 @@ namespace Hashgraph
             var header = response.ResponseHeader;
             if (header == null)
             {
-                throw new PrecheckException($"Transaction Failed to Produce a Response.", query.QueryHeader!.getTransactionId()!.ToTxId(), ResponseCode.Unknown, 0);
+                throw new PrecheckException($"Transaction Failed to Produce a Response.", query.QueryHeader!.getTransactionId().AsTxId(), ResponseCode.Unknown, 0);
             }
             if (response.ContractCallLocal?.FunctionResult == null)
             {
-                throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", query.QueryHeader!.getTransactionId()!.ToTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
+                throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", query.QueryHeader!.getTransactionId().AsTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
             }
             if (queryParameters.ThrowOnFail && header.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
             {
                 throw new ContractException(
                     $"Contract Query Failed with Code: {header.NodeTransactionPrecheckCode}",
-                    query.QueryHeader!.getTransactionId()!.ToTxId(),
+                    query.QueryHeader!.getTransactionId().AsTxId(),
                     (ResponseCode)header.NodeTransactionPrecheckCode,
                     header.Cost,
                     response.ContractCallLocal.FunctionResult.ToContractCallResult());

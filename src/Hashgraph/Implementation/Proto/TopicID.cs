@@ -10,9 +10,17 @@ namespace Proto
             RealmNum = address.RealmNum;
             TopicNum = address.AccountNum;
         }
-        internal Address ToAddress()
+    }
+
+    internal static class TopicIDExtensions
+    {
+        internal static Address AsAddress(this TopicID? id)
         {
-            return new Address(ShardNum, RealmNum, TopicNum);
+            if (id is not null)
+            {
+                return new Address(id.ShardNum, id.RealmNum, id.TopicNum);
+            }
+            return Address.None;
         }
     }
 }

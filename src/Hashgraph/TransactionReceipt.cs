@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Implementation;
+using Proto;
 using System;
 
 namespace Hashgraph
@@ -51,7 +52,7 @@ namespace Hashgraph
         internal TransactionReceipt(NetworkResult result)
         {
             var receipt = result.Receipt;
-            Id = result.TransactionID.ToTxId();
+            Id = result.TransactionID.AsTxId();
             Status = (ResponseCode)receipt.Status;
             if (receipt.ExchangeRate is not null)
             {

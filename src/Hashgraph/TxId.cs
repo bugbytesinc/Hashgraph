@@ -52,7 +52,7 @@ namespace Hashgraph
         /// is done via the context), the network will fail the transaction
         /// if the pending flag is set.
         /// </remarks>
-        public bool Pending { get; private set; }
+        public bool Pending { get; private init; }
         /// <summary>
         /// Public constructor.
         /// </summary>

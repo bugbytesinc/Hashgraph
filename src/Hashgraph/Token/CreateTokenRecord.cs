@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
 
 using Hashgraph.Implementation;
+using Proto;
 
 namespace Hashgraph
 {
@@ -22,7 +23,7 @@ namespace Hashgraph
         /// </summary>
         internal CreateTokenRecord(NetworkResult result) : base(result)
         {
-            Token = result.Receipt.TokenID?.ToAddress() ?? Address.None;
+            Token = result.Receipt.TokenID.AsAddress();
         }
     }
 }

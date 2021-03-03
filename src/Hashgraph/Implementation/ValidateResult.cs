@@ -14,7 +14,7 @@ namespace Hashgraph.Implementation
                 return;
             }
             var responseCode = (ResponseCode)response.NodeTransactionPrecheckCode;
-            throw new PrecheckException($"Transaction Failed Pre-Check: {responseCode}", transactionId.ToTxId(), responseCode, response.Cost);
+            throw new PrecheckException($"Transaction Failed Pre-Check: {responseCode}", transactionId.AsTxId(), responseCode, response.Cost);
         }
     }
 }

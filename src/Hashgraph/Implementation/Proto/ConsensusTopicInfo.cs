@@ -15,7 +15,7 @@ namespace Proto
                 Administrator = AdminKey?.ToEndorsement(),
                 Participant = SubmitKey?.ToEndorsement(),
                 AutoRenewPeriod = AutoRenewPeriod.ToTimeSpan(),
-                RenewAccount = AutoRenewAccount?.ToAddress()
+                RenewAccount = AutoRenewAccount?.AsAddress()
             };
         }
     }

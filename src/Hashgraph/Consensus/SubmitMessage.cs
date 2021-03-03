@@ -201,7 +201,7 @@ namespace Hashgraph
                 // of a segmented message.
                 var initialChunkTransactionId = context.GetOrCreateTransactionID();
                 await using var subContext = new GossipContextStack(context);
-                subContext.Transaction = initialChunkTransactionId.ToTxId();
+                subContext.Transaction = initialChunkTransactionId.AsTxId();
                 transactionBody.ConsensusSubmitMessage.ChunkInfo!.InitialTransactionID = initialChunkTransactionId;
                 var result = await transactionBody.SignAndExecuteWithRetryAsync(subContext, false, "Submit Message failed, status: {0}", signatory);
                 if (includeRecord)

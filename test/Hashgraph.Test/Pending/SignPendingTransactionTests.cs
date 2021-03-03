@@ -73,7 +73,7 @@ namespace Hashgraph.Test.Schedule
                     Memo = fx.Memo
                 };
             });
-            var info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfo(pendingFx.Record.Pending.Pending);
+            var info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Pending);
             Assert.Empty(info.Endorsements);
 
             await pendingFx.Client.SignPendingTransactionWithRecordAsync(new SignPendingTransactionParams
@@ -82,7 +82,7 @@ namespace Hashgraph.Test.Schedule
                 TransactionBody = pendingFx.Record.Pending.TransactionBody,
                 Signatory = pendingFx.SendingAccount.PrivateKey
             });
-            info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfo(pendingFx.Record.Pending.Pending);
+            info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Pending);
             Assert.Single(info.Endorsements);
 
             await pendingFx.Client.SignPendingTransactionWithRecordAsync(new SignPendingTransactionParams
@@ -94,7 +94,7 @@ namespace Hashgraph.Test.Schedule
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await pendingFx.PayingAccount.Client.GetPendingTransactionInfo(pendingFx.Record.Pending.Pending);
+                await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Pending);
             });
             Assert.Equal(ResponseCode.InvalidScheduleId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidScheduleId", pex.Message);

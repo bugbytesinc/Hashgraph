@@ -10,7 +10,7 @@ namespace Proto
             var results = new Dictionary<Hashgraph.Address, long>();
             foreach (var xfer in AccountAmounts)
             {
-                var account = xfer.AccountID.ToAddress();
+                var account = xfer.AccountID.AsAddress();
                 results.TryGetValue(account, out long amount);
                 results[account] = amount + xfer.Amount;
             }

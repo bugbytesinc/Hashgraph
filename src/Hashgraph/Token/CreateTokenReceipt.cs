@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Implementation;
+using Proto;
 
 namespace Hashgraph
 {
@@ -20,7 +21,7 @@ namespace Hashgraph
         /// </summary>
         internal CreateTokenReceipt(NetworkResult result) : base(result)
         {
-            Token = result.Receipt.TokenID?.ToAddress() ?? Address.None;
+            Token = result.Receipt.TokenID.AsAddress();
         }
     }
 }

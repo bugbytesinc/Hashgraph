@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Implementation;
+using Proto;
 
 namespace Hashgraph
 {
@@ -20,7 +21,7 @@ namespace Hashgraph
         /// </summary>
         internal CreateContractReceipt(NetworkResult result) : base(result)
         {
-            Contract = result.Receipt.ContractID?.ToAddress() ?? Address.None;
+            Contract = result.Receipt.ContractID.AsAddress();
         }
     }
 }

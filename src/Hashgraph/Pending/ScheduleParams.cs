@@ -1,4 +1,6 @@
-﻿namespace Hashgraph
+﻿using System;
+
+namespace Hashgraph
 {
     /// <summary>
     /// Pending (Scheduled) Transaction Parameters.  Used for creating
@@ -9,6 +11,11 @@
     /// </summary>
     public sealed record ScheduleParams
     {
+        /// <summary>
+        /// Optional Unique Identifier used when scheduling what 
+        /// otherwise would appear to be identical transactions.
+        /// </summary>
+        public ReadOnlyMemory<byte> Nonce { get; init; }
         /// <summary>
         /// An optional endorsement that can be used to cancel or delete the 
         /// scheduling of the pending transaction if it has not already been 

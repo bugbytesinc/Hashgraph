@@ -19,7 +19,7 @@ namespace Hashgraph.Implementation
         ReadOnlyMemory<byte> IInvoice.TxBytes { get { return _txBytes; } }
         internal Invoice(TransactionBody transactionBody)
         {
-            _txId = transactionBody.TransactionID?.ToTxId() ?? TxId.None;
+            _txId = transactionBody.TransactionID.AsTxId();
             _memo = transactionBody.Memo;
             _txBytes = transactionBody.ToByteArray();
             _signatures = new Dictionary<ByteString, SignaturePair>();
@@ -76,7 +76,7 @@ namespace Hashgraph.Implementation
         internal SignatureMap? TryGenerateMapFromCollectedSignatures(int prefixTrimLimit)
         {
             var count = _signatures.Count;
-            if(count == 0)
+            if (count == 0)
             {
                 return null;
             }
@@ -121,7 +121,7 @@ namespace Hashgraph.Implementation
 
         internal static async Task<SignatureMap?> TryGenerateSignatureMapAsync(TransactionBody transactionBody, ISignatory? signatory, int signaturePrefixTrimLimit)
         {
-            if(signatory is not null)
+            if (signatory is not null)
             {
                 var invoice = new Invoice(transactionBody);
                 await signatory.SignAsync(invoice);

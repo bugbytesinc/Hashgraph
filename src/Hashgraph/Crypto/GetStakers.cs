@@ -42,7 +42,7 @@ namespace Hashgraph
                 }
             };
             var response = await query.SignAndExecuteWithRetryAsync(context);
-            return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => ps.AccountID.ToAddress(), ps => ps.Amount);
+            return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => ps.AccountID.AsAddress(), ps => ps.Amount);
         }
     }
 }

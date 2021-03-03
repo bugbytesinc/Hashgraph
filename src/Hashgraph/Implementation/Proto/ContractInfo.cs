@@ -10,8 +10,8 @@
                 {
                     return new Hashgraph.ContractInfo
                     {
-                        Contract = ContractID.ToAddress(),
-                        Address = AccountID.ToAddress(),
+                        Contract = ContractID.AsAddress(),
+                        Address = AccountID.AsAddress(),
                         SmartContractId = ContractAccountID,
                         Administrator = AdminKey?.ToEndorsement(),
                         Expiration = ExpirationTime.ToDateTime(),

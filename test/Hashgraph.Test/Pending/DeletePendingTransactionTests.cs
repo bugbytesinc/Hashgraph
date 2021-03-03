@@ -32,7 +32,7 @@ namespace Hashgraph.Test.Token
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await fx.Client.GetPendingTransactionInfo(fx.Record.Pending.Pending);
+                await fx.Client.GetPendingTransactionInfoAsync(fx.Record.Pending.Pending);
             });
             Assert.Equal(ResponseCode.InvalidScheduleId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidScheduleId", pex.Message);

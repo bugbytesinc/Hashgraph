@@ -15,12 +15,12 @@ namespace Proto
                 Gas = GasUsed,
                 Events = LogInfo?.Select(log => new Hashgraph.ContractEvent
                 {
-                    Contract = log.ContractID.ToAddress(),
+                    Contract = log.ContractID.AsAddress(),
                     Bloom = log.Bloom.ToArray(),
                     Topic = log.Topic.Select(bs => new ReadOnlyMemory<byte>(bs.ToArray())).ToArray(),
                     Data = new Hashgraph.ContractCallResultData(log.Data.ToArray()),
                 }).ToArray() ?? new Hashgraph.ContractEvent[0],
-                CreatedContracts = CreatedContractIDs?.Select(id => id.ToAddress()).ToArray() ?? new Hashgraph.Address[0]
+                CreatedContracts = CreatedContractIDs?.Select(id => id.AsAddress()).ToArray() ?? new Hashgraph.Address[0]
             };
         }
     }

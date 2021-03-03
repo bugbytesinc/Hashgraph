@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
+using Proto;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -28,7 +29,7 @@ namespace Hashgraph.Test.Internals
                 {
                     AccountID = new Proto.AccountID(_network.Payer),
                     TransactionValidStart = new Proto.Timestamp(DateTime.UtcNow.AddSeconds(6))
-                }.ToTxId();
+                }.AsTxId();
             });
             var duration = Epoch.UniqueClockNanos() - startInstant;
             Assert.InRange(duration, 4_000_000_000L, 240_000_000_000L);

@@ -10,7 +10,7 @@ namespace Proto
         {
             return new Hashgraph.AccountBalances
             {
-                Address = AccountID.ToAddress(),
+                Address = AccountID.AsAddress(),
                 Crypto = Balance,
                 Tokens = FromTokenBalances(TokenBalances)
             };
@@ -21,7 +21,7 @@ namespace Proto
             var results = new Dictionary<Hashgraph.Address, ulong>();
             foreach (var entry in tokenBalances)
             {
-                var account = entry.TokenId.ToAddress();
+                var account = entry.TokenId.AsAddress();
                 results.TryGetValue(account, out ulong amount);
                 results[account] = amount + entry.Balance;
             }

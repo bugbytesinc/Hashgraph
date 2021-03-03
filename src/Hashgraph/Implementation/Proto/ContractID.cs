@@ -10,9 +10,17 @@ namespace Proto
             RealmNum = address.RealmNum;
             ContractNum = address.AccountNum;
         }
-        internal Address ToAddress()
+    }
+
+    internal static class ContractIDExtensions
+    {
+        internal static Address AsAddress(this ContractID? id)
         {
-            return new Address(ShardNum, RealmNum, ContractNum);
+            if (id is not null)
+            {
+                return new Address(id.ShardNum, id.RealmNum, id.ContractNum);
+            }
+            return Address.None;
         }
     }
 }
