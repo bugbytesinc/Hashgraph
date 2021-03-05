@@ -823,6 +823,37 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
         }
+        [Fact(DisplayName = "Update Token: Can Not Change Treasury to Unassociated Account")]
+        public async Task CanChangeTreasuryToUnassociatedAccount()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+            {
+                fx.Params.ConfiscateEndorsement = null;
+                fx.Params.SuspendEndorsement = null;
+                fx.Params.GrantKycEndorsement = null;
+            });
+            var totalCirculation = fxToken.Params.Circulation;
+
+            Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+            Assert.Equal(totalCirculation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+
+            // Returns A Failure
+            var tex = await Assert.ThrowsAnyAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
+                {
+                    Token = fxToken.Record.Token,
+                    Treasury = fxAccount.Record.Address,
+                    Signatory = new Signatory(fxToken.AdminPrivateKey, fxAccount.PrivateKey)
+                });
+            });
+            Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
+
+            // Confirm it did not change the Treasury Account
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+        }
         [Fact(DisplayName = "Update Token: Can Not Schedule Update Token")]
         public async Task CanNotScheduleUpdateToken()
         {

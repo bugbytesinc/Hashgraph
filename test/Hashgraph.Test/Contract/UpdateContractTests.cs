@@ -324,6 +324,27 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", tex.Message);
         }
+        [Fact(DisplayName = "Contract Update: Can not make mutable contract imutable.")]
+        async Task CanNotMakeMutableContractImutable()
+        {
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxContract.Client.UpdateContractAsync(new UpdateContractParams
+                {
+                    Contract = fxContract.ContractRecord.Contract,
+                    Administrator = Endorsement.None,
+                    Signatory = fxContract.PrivateKey
+                });
+            });
+            Assert.Equal(ResponseCode.InvalidAdminKey, tex.Status);
+            Assert.StartsWith("Unable to update Contract, status: InvalidAdminKey", tex.Message);
+
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(fxContract.PublicKey, info.Administrator);
+        }
         [Fact(DisplayName = "Contract Update: Can Not Schedule Update.")]
         public async Task CanNotScheduleUpdate()
         {

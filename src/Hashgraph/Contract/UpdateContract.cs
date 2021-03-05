@@ -88,7 +88,7 @@ namespace Hashgraph
             }
             if (!string.IsNullOrWhiteSpace(updateParameters.Memo))
             {
-                updateContractBody.Memo = updateParameters.Memo;
+                updateContractBody.MemoWrapper = updateParameters.Memo;
             }
             var transactionBody = new TransactionBody
             {
