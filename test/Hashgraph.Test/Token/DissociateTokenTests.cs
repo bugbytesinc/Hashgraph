@@ -430,5 +430,27 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, fxToken.Params.Circulation);
             await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, 0);
         }
+        [Fact(DisplayName = "Dissociate Tokens: Can Not Schedule Dissociate token from Account")]
+        public async Task CanNotScheduleDissociateTokenFromAccount()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
+            await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAccount.Client.DissociateTokenAsync(
+                    fxToken.Record.Token,
+                    fxAccount.Record.Address,
+                    new Signatory(
+                        fxAccount.PrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to Dissociate Token from Account, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

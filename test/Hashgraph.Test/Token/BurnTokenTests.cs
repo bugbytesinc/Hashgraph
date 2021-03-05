@@ -242,5 +242,26 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
         }
+        [Fact(DisplayName = "Burn Tokens: Can Not Schedule Burn Token Coins")]
+        public async Task CanNotScheduleBurnTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var amountToDestory = fxToken.Params.Circulation / 3;
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.BurnTokenAsync(
+                    fxToken,
+                    amountToDestory,
+                    new Signatory(
+                        fxToken.SupplyPrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to Burn Token Coins, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

@@ -192,13 +192,14 @@ namespace Hashgraph.Test.Topic
         public async Task ThrowsErrorIfRunOutOfCrypto()
         {
             await using var fxTopic = await TestTopic.CreateAsync(_network);
-            await using var fxAccount = await TestAccount.CreateAsync(_network, a => a.CreateParams.InitialBalance = 1_200_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network, a => a.CreateParams.InitialBalance = 500_000);
             var message = Encoding.ASCII.GetBytes(Generator.String(1200, 1990));
             var segmentSize = Generator.Integer(100, 200);
             var expectedCount = message.Length / segmentSize + 1;
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                await fxTopic.Client.SubmitLargeMessageAsync(fxTopic.Record.Topic, message, segmentSize, fxTopic.ParticipantPrivateKey, ctx => {
+                await fxTopic.Client.SubmitLargeMessageAsync(fxTopic.Record.Topic, message, segmentSize, fxTopic.ParticipantPrivateKey, ctx =>
+                {
                     ctx.Payer = fxAccount.Record.Address;
                     ctx.Signatory = fxAccount.PrivateKey;
                 });
@@ -211,7 +212,7 @@ namespace Hashgraph.Test.Topic
         {
             await using var fx = await TestTopic.CreateAsync(_network);
             var segmentSize = Generator.Integer(100, 200);
-            var expectedCount = Generator.Integer(3, 10);            
+            var expectedCount = Generator.Integer(3, 10);
             var message = Encoding.ASCII.GetBytes(Generator.Code(segmentSize * expectedCount));
             var receipts = await fx.Client.SubmitLargeMessageAsync(fx.Record.Topic, message, segmentSize, fx.ParticipantPrivateKey);
             Assert.Equal(expectedCount, receipts.Length);
@@ -400,6 +401,54 @@ namespace Hashgraph.Test.Topic
                 _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RECEIVE TOPIC CREATE IN ALLOWED TIME");
                 return;
             }
+        }
+        [Fact(DisplayName = "Submit Large Message: Can Schedule A Submit Large Segmented Message")]
+        public async Task CanScheduleASubmitLargeSegmentedMessage()
+        {
+            await using var fxTopic = await TestTopic.CreateAsync(_network);
+            var message = Encoding.ASCII.GetBytes(Generator.String(1200, 1990));
+            var segmentSize = Generator.Integer(100, 200);
+            var expectedCount = message.Length / segmentSize + 1;
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000 * (ulong)expectedCount);
+            var receipts = await fxTopic.Client.SubmitLargeMessageAsync(
+                fxTopic.Record.Topic,
+                message,
+                segmentSize,
+                new Signatory(
+                    fxTopic.ParticipantPrivateKey,
+                    new ScheduleParams
+                    {
+                        PendingPayer = fxPayer
+                    }));
+            Assert.Equal(expectedCount, receipts.Length);
+            for (int i = 0; i < expectedCount; i++)
+            {
+                var receipt = receipts[i];
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+                Assert.Equal(0UL, receipt.SequenceNumber);
+                Assert.True(receipt.RunningHash.IsEmpty);
+                Assert.Equal(0ul, receipt.RunningHashVersion);
+                Assert.NotNull(receipt.Pending);
+                Assert.False(receipt.Pending.TransactionBody.IsEmpty);
+                var executed = await fxPayer.Client.SignPendingTransactionAsync(new SignPendingTransactionParams { 
+                    Pending = receipt.Pending.Pending,
+                    TransactionBody = receipt.Pending.TransactionBody,
+                    Signatory = fxPayer
+                });
+                Assert.Equal(ResponseCode.Success, executed.Status);
+                var record = await fxPayer.Client.GetTransactionRecordAsync(receipt.Id.AsPending());
+                Assert.Equal(ResponseCode.Success, record.Status);
+            }
+
+            var info = await fxTopic.Client.GetTopicInfoAsync(fxTopic.Record.Topic);
+            Assert.Equal(fxTopic.Memo, info.Memo);
+            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.Equal((ulong)expectedCount, info.SequenceNumber);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(new Endorsement(fxTopic.AdminPublicKey), info.Administrator);
+            Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
+            Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+            Assert.Equal(fxTopic.TestAccount.Record.Address, info.RenewAccount);
         }
     }
 }

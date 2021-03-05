@@ -211,5 +211,23 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(fx.ContractRecord.Memo);
             Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
         }
+        [Fact(DisplayName = "Create Contract: Can Not Schedule Create")]
+        public async Task CanNotScheduleCreate()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await GreetingContract.CreateAsync(_network, fx =>
+                {
+                    fx.ContractParams.Signatory = new Signatory(
+                        fx.ContractParams.Signatory,
+                        new ScheduleParams { PendingPayer = fxPayer }
+                    );
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to create contract, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

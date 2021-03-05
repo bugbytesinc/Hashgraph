@@ -111,5 +111,19 @@ namespace Hashgraph.Test.Topic
             Assert.Equal("addressToDelete", ane.ParamName);
             Assert.StartsWith("Address to Delete is missing. Please check that it is not null.", ane.Message);
         }
+        [Fact(DisplayName = "Topic Delete: Can Not Schedule a Delete Topic")]
+        public async Task CanNotScheduleADeleteTopic()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxTopic = await TestTopic.CreateAsync(_network);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxTopic.Client.DeleteTopicAsync(fxTopic.Record.Topic, new Signatory(fxTopic.AdminPrivateKey, new ScheduleParams {
+                    PendingPayer = fxPayer,
+                }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to Delete Topic, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

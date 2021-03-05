@@ -327,5 +327,20 @@ namespace Hashgraph.Test.Token
             var receipt = await fx.Client.DeleteAccountAsync(fx.TreasuryAccount.Record.Address, _network.Payer, fx.TreasuryAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
         }
+        [Fact(DisplayName = "Token Delete: Can Not Schedule a Delete Token")]
+        public async Task CanNotScheduleADeleteToken()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.DeleteTokenAsync(fxToken.Record.Token, new Signatory(fxToken.AdminPrivateKey, new ScheduleParams
+                {
+                    PendingPayer = fxPayer,
+                }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to Delete Token, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

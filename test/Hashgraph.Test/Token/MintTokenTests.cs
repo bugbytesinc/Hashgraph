@@ -217,5 +217,25 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
         }
+        [Fact(DisplayName = "Mint Tokens: Can Not Schedule Mint Token Coins")]
+        public async Task CanNotScheduleMintTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.MintTokenAsync(
+                    fxToken.Record.Token,
+                    fxToken.Params.Circulation,
+                    new Signatory(
+                        fxToken.SupplyPrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to Mint Token Coins, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

@@ -324,5 +324,26 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", tex.Message);
         }
+        [Fact(DisplayName = "Contract Update: Can Not Schedule Update.")]
+        public async Task CanNotScheduleUpdate()
+        {
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            var newMemo = Generator.Code(50);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                {
+                    Contract = fxContract.ContractRecord.Contract,
+                    Memo = newMemo,
+                    Signatory = new Signatory(
+                        fxContract.PrivateKey,
+                        new ScheduleParams { PendingPayer = fxPayer }
+                    )
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to update Contract, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

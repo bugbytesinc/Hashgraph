@@ -125,7 +125,7 @@ namespace Hashgraph
                     FileID = new FileID(fileToRestore)
                 }
             };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete file, status: {0}", signatory);
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to restore file, status: {0}", signatory);
         }
     }
 }

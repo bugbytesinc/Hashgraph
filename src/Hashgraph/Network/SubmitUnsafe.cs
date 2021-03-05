@@ -89,7 +89,11 @@ namespace Hashgraph
                 UncheckedSubmit = new UncheckedSubmitBody { TransactionBytes = ByteString.CopyFrom(transaction.Span) }
             };
             var precheck = await transactionBody.SignAndSubmitWithRetryAsync(signatories, context);
-            ValidateResult.PreCheck(outerTransactionId, precheck);
+            if (precheck.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
+            {
+                var responseCode = (ResponseCode)precheck.NodeTransactionPrecheckCode;
+                throw new PrecheckException($"Transaction Failed Pre-Check: {responseCode}", transactionBody.TransactionID.AsTxId(), responseCode, precheck.Cost);
+            }
             // NOTE: The outer transaction ID exists so that the administrative account has something to sign that
             // can be verified, however, the transaction never actually exists in the system so there will never be
             // a receipt for this submission, however, there will be an attempt to execute the submitted transaction

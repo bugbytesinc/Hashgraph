@@ -250,5 +250,33 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
         }
+        [Fact(DisplayName = "Suspend Tokens: Can Not Schedule Suspend Token Coin Trading")]
+        public async Task CanNotScheduleSuspendTokenCoinTrading()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+            {
+                fx.Params.GrantKycEndorsement = null;
+                fx.Params.InitializeSuspended = false;
+            }, fxAccount);
+            var circulation = fxToken.Params.Circulation;
+            var xferAmount = circulation / 3;
+            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.SuspendTokenAsync(
+                    fxToken.Record.Token,
+                    fxAccount,
+                    new Signatory(
+                        fxToken.SuspendPrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to Suspend Token, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

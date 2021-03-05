@@ -82,5 +82,27 @@ namespace Hashgraph.Test.File
             });
             Assert.StartsWith("Unable to append to file, status: FileDeleted", exception.Message);
         }
+        [Fact(DisplayName = "File Append: Can Not Schedule File Append")]
+        public async Task CanNotScheduleFileAppend()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxFile = await TestFile.CreateAsync(_network);
+            var appendedContent = Encoding.Unicode.GetBytes(Generator.Code(50));
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxFile.Client.AppendFileAsync(new AppendFileParams
+                {
+                    File = fxFile.Record.File,
+                    Contents = appendedContent,
+                    Signatory = new Signatory(
+                        fxFile.CreateParams.Signatory,
+                        new ScheduleParams { PendingPayer = fxPayer }
+                    )
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to append to file, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

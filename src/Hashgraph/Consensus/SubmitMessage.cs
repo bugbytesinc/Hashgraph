@@ -193,7 +193,7 @@ namespace Hashgraph
                     ChunkInfo = isSegment ? createChunkInfo(parentTx, segmentIndex, segmentTotalCount) : null
                 }
             };
-            if(isSegment && segmentIndex == 1 )
+            if (isSegment && segmentIndex == 1)
             {
                 // Smelly Workaround due to necesity to embed the
                 // same transaction ID in the middle of the message
@@ -202,7 +202,19 @@ namespace Hashgraph
                 var initialChunkTransactionId = context.GetOrCreateTransactionID();
                 await using var subContext = new GossipContextStack(context);
                 subContext.Transaction = initialChunkTransactionId.AsTxId();
-                transactionBody.ConsensusSubmitMessage.ChunkInfo!.InitialTransactionID = initialChunkTransactionId;
+                if (subContext.GatherSignatories(signatory).GetSchedule() is null)
+                {
+                    transactionBody.ConsensusSubmitMessage.ChunkInfo!.InitialTransactionID = initialChunkTransactionId;
+                }
+                else
+                {
+                    // Even more smell, we need to check to see if this is a
+                    // scheduled transaction.  If this is, the initial chunk 
+                    // transaction should have the "scheduled" flag set.
+                    var scheduledChunkTransactionId = new TransactionID(initialChunkTransactionId);
+                    scheduledChunkTransactionId.Scheduled = true;
+                    transactionBody.ConsensusSubmitMessage.ChunkInfo!.InitialTransactionID = scheduledChunkTransactionId;
+                }
                 var result = await transactionBody.SignAndExecuteWithRetryAsync(subContext, false, "Submit Message failed, status: {0}", signatory);
                 if (includeRecord)
                 {

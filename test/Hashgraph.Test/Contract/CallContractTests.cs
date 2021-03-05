@@ -176,5 +176,24 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.ContractDeleted, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: ContractDeleted", pex.Message);
         }
+        [Fact(DisplayName = "Call Contract: Can Not Schedule Call Contract")]
+        public async Task CanNotScheduleCallContract()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxContract = await StatefulContract.CreateAsync(_network);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
+                {
+                    Contract = fxContract.ContractRecord.Contract,
+                    Gas = await _network.TinybarsFromGas(400),
+                    FunctionName = "get_message",
+                    Signatory = new ScheduleParams { PendingPayer = fxPayer }
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Contract call failed, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

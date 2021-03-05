@@ -34,6 +34,37 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.InvalidFileId, tex.Status);
             Assert.StartsWith("Unable to restore contract, status: InvalidFileId", tex.Message);
         }
+        [Fact(DisplayName = "System Contract Restore: Can Not Schedule Restore.")]
+        public async Task CanNotScheduleRestore()
+        {
+            var systemAddress = await _network.GetSystemDeleteAdminAddress();
+            if (systemAddress is null)
+            {
+                _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
+                return;
+            }
+
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+            await fxContract.Client.DeleteContractAsync(fxContract, _network.Payer, fxContract.PrivateKey);
+
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxContract.Client.SystemRestoreContractAsync(
+                    fxContract.ContractRecord.Contract,
+                    ctx =>
+                    {
+                        ctx.Payer = systemAddress;
+                        ctx.Signatory = new Signatory(
+                            _network.PrivateKey,
+                            new ScheduleParams { PendingPayer = fxPayer }
+                        );
+                    });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to restore contract, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }
 

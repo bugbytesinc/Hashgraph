@@ -125,7 +125,7 @@ namespace Hashgraph
                     FileID = new FileID(fileToDelete)
                 }
             };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete file, status: {receipt.Status}", signatory);
+            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete file, status: {0}", signatory);
         }
     }
 }

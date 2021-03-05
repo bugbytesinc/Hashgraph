@@ -171,5 +171,27 @@ namespace Hashgraph.Test.Contract
             var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
             Assert.NotNull(info);
         }
+        [Fact(DisplayName = "Contract Delete: Can Not Schedule Delete.")]
+        public async Task CanNotScheduleDelete()
+        {
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxContract.Client.DeleteContractAsync(
+                    fxContract.ContractRecord.Contract,
+                    _network.Payer,
+                    ctx => ctx.Signatory = new Signatory(
+                        _network.PrivateKey,
+                        fxContract.PrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to delete contract, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

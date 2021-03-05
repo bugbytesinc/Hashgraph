@@ -299,5 +299,27 @@ namespace Hashgraph.Test.Crypto
             var newBalance = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(5ul, newBalance);
         }
+        [Fact(DisplayName = "Update Account: Can Not Schedule Update Account")]
+        public async Task CanNotScheduleUpdateAccount()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            var newValue = !fxAccount.CreateParams.RequireReceiveSignature;
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAccount.Client.UpdateAccountAsync(new UpdateAccountParams
+                {
+                    Address = fxAccount,
+                    RequireReceiveSignature = newValue,
+                    Signatory = new Signatory(
+                        fxAccount,
+                        new ScheduleParams {  PendingPayer = fxPayer }
+                    )
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to update account, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

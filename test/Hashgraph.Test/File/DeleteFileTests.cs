@@ -37,7 +37,7 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var result = await test.Client.DeleteFileWithRecordAsync(test.Record.File, ctx => ctx.Signatory = new Signatory(_network.PrivateKey,test.CreateParams.Signatory));
+            var result = await test.Client.DeleteFileWithRecordAsync(test.Record.File, ctx => ctx.Signatory = new Signatory(_network.PrivateKey, test.CreateParams.Signatory));
             Assert.NotNull(result);
             Assert.Equal(ResponseCode.Success, result.Status);
 
@@ -52,7 +52,8 @@ namespace Hashgraph.Test.File
         [Fact(DisplayName = "Delete File: Cannot Delete and Imutable File")]
         public async Task CanNotDeleteAnImutableFileAsync()
         {
-            await using var test = await TestFile.CreateAsync(_network, fx => {
+            await using var test = await TestFile.CreateAsync(_network, fx =>
+            {
                 fx.CreateParams.Endorsements = Array.Empty<Endorsement>();
             });
 
@@ -70,6 +71,25 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Empty(info.Endorsements);
             Assert.False(info.Deleted);
+        }
+        [Fact(DisplayName = "Delete File: Can Not Schedule a Delete File")]
+        public async Task CanNotScheduleADeleteFile()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxFile = await TestFile.CreateAsync(_network);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxFile.Client.DeleteFileAsync(
+                    fxFile.Record.File,
+                    new Signatory(
+                        fxFile.PrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to delete file, status: UnschedulableTransaction", tex.Message);
         }
     }
 }

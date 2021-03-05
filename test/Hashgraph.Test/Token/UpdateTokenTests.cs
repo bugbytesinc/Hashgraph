@@ -823,5 +823,28 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
         }
+        [Fact(DisplayName = "Update Token: Can Not Schedule Update Token")]
+        public async Task CanNotScheduleUpdateToken()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var newSymbol = Generator.UppercaseAlphaCode(20);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
+                {
+                    Token = fxToken.Record.Token,
+                    Symbol = newSymbol,
+                    Signatory = new Signatory(
+                        fxToken.AdminPrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        })
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to update Token, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

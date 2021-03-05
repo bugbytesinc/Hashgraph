@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -156,6 +155,43 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
+        }
+        [Fact(DisplayName = "System Restore File: Can Not Schedule Restore.")]
+        public async Task CanNotScheduleRestore()
+        {
+            var deleteAddress = await _network.GetSystemDeleteAdminAddress();
+            if (deleteAddress is null)
+            {
+                _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
+                return;
+            }
+            var restoreAddress = await _network.GetSystemUndeleteAdminAddress();
+            if (restoreAddress is null)
+            {
+                _network.Output?.WriteLine("TEST SKIPPED: No access to System Restore Administrator Account.");
+                return;
+            }
+
+            await using var fxFile = await TestFile.CreateAsync(_network);
+            await fxFile.Client.DeleteFileAsync(fxFile, fxFile.PrivateKey);
+
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxFile.Client.SystemRestoreFileAsync(
+                    fxFile.Record.File,
+                    ctx =>
+                    {
+                        ctx.Payer = restoreAddress;
+                        ctx.Signatory = new Signatory(
+                            _network.PrivateKey,
+                            new ScheduleParams { PendingPayer = fxPayer }
+                        );
+                    });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to restore file, status: UnschedulableTransaction", tex.Message);
         }
     }
 }

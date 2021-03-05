@@ -84,7 +84,11 @@ namespace Proto
             TransactionValidDuration = new Duration(context.TransactionDuration);
             Memo = context.Memo ?? "";
             var precheck = await SignAndSubmitWithRetryAsync(signatory, context);
-            ValidateResult.PreCheck(TransactionID, precheck);
+            if (precheck.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
+            {
+                var responseCode = (ResponseCode)precheck.NodeTransactionPrecheckCode;
+                throw new PrecheckException($"Transaction Failed Pre-Check: {responseCode}", TransactionID.AsTxId(), responseCode, precheck.Cost);
+            }
             var receipt = result.Receipt = await context.GetReceiptAsync(TransactionID);
             if (receipt.Status != ResponseCodeEnum.Success)
             {

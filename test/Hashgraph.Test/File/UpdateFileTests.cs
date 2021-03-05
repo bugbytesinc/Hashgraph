@@ -240,5 +240,26 @@ namespace Hashgraph.Test.File
             Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
             Assert.True(info.Deleted);
         }
+        [Fact(DisplayName = "File Update: Can Not Schedule Update.")]
+        public async Task CanNotScheduleUpdate()
+        {
+            await using var fxFile = await TestFile.CreateAsync(_network);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxFile.Client.UpdateFileAsync(new UpdateFileParams
+                {
+                    File = fxFile.Record.File,
+                    Contents = newContents,
+                    Signatory = new Signatory(
+                        fxFile.PrivateKey,
+                        new ScheduleParams { PendingPayer = fxPayer }
+                    )
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to update file, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

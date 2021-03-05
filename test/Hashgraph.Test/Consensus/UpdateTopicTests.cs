@@ -309,5 +309,28 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
             Assert.StartsWith("Unable to update Topic, status: InvalidSignature", tex.Message);
         }
+        [Fact(DisplayName = "Update Topic: Can Not Schedule Update Memo")]
+        public async Task CanNotScheduleUpdate()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxTopic = await TestTopic.CreateAsync(_network);
+            var newMemo = Generator.String(10, 100);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxTopic.Client.UpdateTopicAsync(new UpdateTopicParams
+                {
+                    Topic = fxTopic.Record.Topic,
+                    Memo = newMemo,
+                    Signatory = new Signatory(
+                        fxTopic.AdminPrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        })
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to update Topic, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

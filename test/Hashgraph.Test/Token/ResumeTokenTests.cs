@@ -240,5 +240,31 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
         }
+        [Fact(DisplayName = "Resume Tokens: Can Not Schedule Reume Token Coin Trading")]
+        public async Task CanNotScheduleReumeTokenCoinTrading()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+            {
+                fx.Params.GrantKycEndorsement = null;
+                fx.Params.InitializeSuspended = true;
+            }, fxAccount);
+            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.ResumeTokenAsync(
+                    fxToken.Record.Token,
+                    fxAccount,
+                    new Signatory(
+                        fxToken.SuspendPrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to Resume Token, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

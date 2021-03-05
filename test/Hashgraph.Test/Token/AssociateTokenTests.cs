@@ -411,5 +411,29 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
         }
+        [Fact(DisplayName = "Associate Tokens: Can Not Schedule Associate token with Account")]
+        public async Task CanNotScheduleAssociateTokenWithAccount()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+
+            await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAccount.Client.AssociateTokenAsync(
+                    fxToken.Record.Token,
+                    fxAccount.Record.Address,
+                    new Signatory(
+                        fxAccount.PrivateKey,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to associate Token with Account, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

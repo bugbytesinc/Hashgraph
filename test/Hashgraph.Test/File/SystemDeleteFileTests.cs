@@ -125,5 +125,34 @@ namespace Hashgraph.Test.File
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.True(info.Deleted);
         }
+        [Fact(DisplayName = "System Delete File: Can Not Schedule Delete.")]
+        public async Task CanNotScheduleDelete()
+        {
+            var systemAddress = await _network.GetSystemDeleteAdminAddress();
+            if (systemAddress is null)
+            {
+                _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
+                return;
+            }
+
+            await using var fxFile = await TestFile.CreateAsync(_network);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxFile.Client.SystemDeleteFileAsync(
+                    fxFile.Record.File,
+                    ctx =>
+                    {
+                        ctx.Payer = systemAddress;
+                        ctx.Signatory = new Signatory(
+                            _network.PrivateKey,
+                            new ScheduleParams { PendingPayer = fxPayer }
+                        );
+                    });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to delete file, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

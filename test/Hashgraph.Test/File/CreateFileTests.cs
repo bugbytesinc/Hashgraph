@@ -22,5 +22,24 @@ namespace Hashgraph.Test.File
             Assert.NotNull(test.Record.File);
             Assert.Equal(ResponseCode.Success, test.Record.Status);
         }
+        [Fact(DisplayName = "Create File: Can Not Schedule a Create File")]
+        public async Task CanNotScheduleACreateFile()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await TestFile.CreateAsync(_network, fx =>
+                {
+                    fx.CreateParams.Signatory = new Signatory(
+                        fx.CreateParams.Signatory,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer,
+                        });
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to create file, status: UnschedulableTransaction", tex.Message);
+        }
     }
 }

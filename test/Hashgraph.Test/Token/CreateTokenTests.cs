@@ -2,7 +2,6 @@
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -720,7 +719,8 @@ namespace Hashgraph.Test.Token
         [Fact(DisplayName = "Create Token: Can Create without Renewal Information")]
         public async Task CanCreateWithoutRenewalInformation()
         {
-            await using var fxToken = await TestToken.CreateAsync(_network, fx=> {
+            await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+            {
                 fx.Params.RenewAccount = null;
                 fx.Params.RenewPeriod = default;
             });
@@ -757,6 +757,25 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Circulation, tokens.Balance);
             Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
+        }
+        [Fact(DisplayName = "Create Token: Can Not Schedule a Create Token")]
+        public async Task CanNotScheduleACreateToken()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await TestToken.CreateAsync(_network, fx =>
+                {
+                    fx.Params.Signatory = new Signatory(
+                        fx.Params.Signatory,
+                        new ScheduleParams
+                        {
+                            PendingPayer = fxPayer,
+                        });
+                });
+            });
+            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
+            Assert.StartsWith("Unable to create Token, status: UnschedulableTransaction", tex.Message);
         }
     }
 }

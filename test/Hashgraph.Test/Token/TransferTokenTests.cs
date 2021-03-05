@@ -682,5 +682,50 @@ namespace Hashgraph.Test.Token
             Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
             Assert.Equal(circulation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
+        [Fact(DisplayName = "Transfer Tokens: Can Schedule Multi-Transfer Token Coins")]
+        public async Task CanScheduleMultiTransferTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
+            var xferAmount = fxToken.Params.Circulation / 3;
+            var expectedTreasury = fxToken.Params.Circulation - 2 * xferAmount;
+            var transfers = new TransferParams
+            {
+                TokenTransfers = new TokenTransfer[]
+                {
+                    new TokenTransfer(fxToken,fxAccount1,(long)xferAmount),
+                    new TokenTransfer(fxToken,fxAccount2,(long)xferAmount),
+                    new TokenTransfer(fxToken,fxToken.TreasuryAccount,-2*(long)xferAmount)
+                },
+                Signatory = new Signatory(
+                    fxToken.TreasuryAccount.PrivateKey,
+                    new ScheduleParams
+                    {
+                        PendingPayer = fxPayer
+                    })
+            };
+            var schedulingReceipt = await fxToken.Client.TransferAsync(transfers);
+            Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+
+            Assert.Equal(0UL, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
+            Assert.Equal(0UL, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
+            Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+
+            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(new SignPendingTransactionParams { 
+                Pending = schedulingReceipt.Pending.Pending,
+                TransactionBody = schedulingReceipt.Pending.TransactionBody,
+                Signatory = fxPayer
+            });
+            Assert.Equal(ResponseCode.Success, counterReceipt.Status);
+
+            var transferReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Id.AsPending());
+            Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+
+            Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
+            Assert.Equal(xferAmount, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
+            Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        }
     }
 }
