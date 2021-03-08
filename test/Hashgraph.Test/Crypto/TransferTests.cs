@@ -563,7 +563,9 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.Success, executedRecord.Status);
             Assert.Equal(receipt.Id.AsPending(), executedRecord.Id);
             Assert.InRange(executedRecord.Fee, 0UL, ulong.MaxValue);
-            Assert.Equal(5, executedRecord.Transfers.Count);
+            Assert.Equal(executedRecord.Transfers[fxSender], -(long)transferAmount);
+            Assert.Equal(executedRecord.Transfers[fxReceiver], (long)transferAmount);
+            Assert.True(executedRecord.Transfers[fxPayer]<0);
             Assert.Empty(executedRecord.TokenTransfers);
             Assert.False(executedRecord.Hash.IsEmpty);
             Assert.NotNull(executedRecord.Concensus);

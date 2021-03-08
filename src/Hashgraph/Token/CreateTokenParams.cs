@@ -121,5 +121,9 @@ namespace Hashgraph
         /// the transaction requesting the record.
         /// </remarks>
         public Signatory? Signatory { get; set; }
+        /// <summary>
+        /// Additional Short description of the token, not checked for uniqueness.
+        /// </summary>
+        public string Memo { get; set; }
     }
 }

@@ -95,5 +95,9 @@ namespace Hashgraph
         /// Flag indicating the token has been deleted.
         /// </summary>
         public bool Deleted { get; internal init; }
+        /// <summary>
+        /// The memo associated with the token instance.
+        /// </summary>
+        public string Memo { get; internal init; }
     }
 }

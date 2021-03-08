@@ -78,7 +78,8 @@ namespace Hashgraph
                     FreezeDefault = createParameters.InitializeSuspended,
                     Expiry = new Timestamp(createParameters.Expiration),
                     AutoRenewAccount = createParameters.RenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.RenewAccount),
-                    AutoRenewPeriod = createParameters.RenewPeriod.HasValue ? new Duration(createParameters.RenewPeriod.Value) : null
+                    AutoRenewPeriod = createParameters.RenewPeriod.HasValue ? new Duration(createParameters.RenewPeriod.Value) : null,
+                    Memo = createParameters.Memo
                 }
             };
             return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create Token, status: {0}", createParameters.Signatory);

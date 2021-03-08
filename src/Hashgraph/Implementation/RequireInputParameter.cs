@@ -403,7 +403,8 @@ namespace Hashgraph.Implementation
                 string.IsNullOrWhiteSpace(updateParameters.Name) &&
                 !updateParameters.Expiration.HasValue &&
                 !updateParameters.RenewPeriod.HasValue &&
-                updateParameters.RenewAccount is null)
+                updateParameters.RenewAccount is null &&
+                updateParameters.Memo is null)
             {
                 throw new ArgumentException("The Topic Updates contain no update properties, it is blank.", nameof(updateParameters));
             }
@@ -441,6 +442,13 @@ namespace Hashgraph.Implementation
                 if (updateParameters.RenewPeriod.Value.TotalSeconds < 1)
                 {
                     throw new ArgumentOutOfRangeException(nameof(updateParameters.RenewPeriod), "The renew period must be non negative.");
+                }
+            }
+            if (updateParameters.Memo is not null)
+            {
+                if (updateParameters.Memo.Trim().Length != updateParameters.Memo.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.Memo), "The new token memo cannot contain leading or trailing white space.");
                 }
             }
             return updateParameters;
@@ -678,6 +686,13 @@ namespace Hashgraph.Implementation
             if (createParameters.RenewAccount.IsNullOrNone() == createParameters.RenewPeriod.HasValue)
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters.RenewPeriod), "Both the renew account and period must be specified, or not at all.");
+            }
+            if (!string.IsNullOrEmpty(createParameters.Memo))
+            {
+                if (createParameters.Memo.Trim().Length != createParameters.Memo.Length)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(createParameters.Memo), "The token memo cannot contain leading or trailing white space.");
+                }
             }
             return createParameters;
         }

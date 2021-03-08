@@ -22,7 +22,8 @@
                 Expiration = Expiry.ToDateTime(),
                 RenewPeriod = AutoRenewPeriod?.ToTimeSpan(),
                 RenewAccount = AutoRenewAccount?.AsAddress(),
-                Deleted = Deleted
+                Deleted = Deleted,
+                Memo = Memo
             };
         }
     }

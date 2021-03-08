@@ -71,6 +71,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.True(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var accountInfo = await fxToken.Client.GetAccountInfoAsync(fxAccount.Record.Address);
             var token = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
@@ -284,6 +285,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             // Move the Treasury, hmm...don't need treasury key?
             await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
@@ -312,6 +314,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Token Delete: Can Delete Treasury after Deleting Token")]
         public async Task CanDeleteTreasuryAfterDeletingToken()

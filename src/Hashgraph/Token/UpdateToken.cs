@@ -114,6 +114,10 @@ namespace Hashgraph
             {
                 updateTokenBody.AutoRenewAccount = new AccountID(updateParameters.RenewAccount);
             }
+            if (!(updateParameters.Memo is null))
+            {
+                updateTokenBody.Memo = updateParameters.Memo;
+            }
             var transactionBody = new TransactionBody
             {
                 TokenUpdate = updateTokenBody

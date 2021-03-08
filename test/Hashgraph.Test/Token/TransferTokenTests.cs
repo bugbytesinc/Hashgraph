@@ -41,6 +41,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -97,6 +98,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -153,6 +155,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -669,6 +672,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             // Move the treasury back
             await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams

@@ -59,7 +59,8 @@ namespace Hashgraph.Test.Fixtures
                 Expiration = Generator.TruncatedFutureDate(2000, 3000),
                 RenewAccount = fx.RenewAccount.Record.Address,
                 RenewPeriod = TimeSpan.FromDays(90),
-                Signatory = new Signatory(fx.AdminPrivateKey, fx.RenewAccount.PrivateKey, fx.TreasuryAccount.PrivateKey)
+                Signatory = new Signatory(fx.AdminPrivateKey, fx.RenewAccount.PrivateKey, fx.TreasuryAccount.PrivateKey),
+                Memo = "Test Token: " + Generator.Code(20)
             };
             customize?.Invoke(fx);
             fx.Record = await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
