@@ -20,7 +20,8 @@
                         Tokens = TokenRelationships.ToBalances(),
                         ReceiveSignatureRequired = ReceiverSigRequired,
                         AutoRenewPeriod = AutoRenewPeriod.ToTimeSpan(),
-                        Expiration = ExpirationTime.ToDateTime()
+                        Expiration = ExpirationTime.ToDateTime(),
+                        Memo = Memo
                     };
                 }
             }

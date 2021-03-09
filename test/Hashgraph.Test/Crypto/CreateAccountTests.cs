@@ -137,7 +137,24 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.KeyRequired, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: KeyRequired", pex.Message);
         }
+        [Fact(DisplayName = "Create Account: Can Set Memo")]
+        public async Task CanSetMemo()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();
+            var memo = Generator.Code(20);
+            await using var client = _network.NewClient();
+            var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
+            {
+                InitialBalance = 1,
+                Endorsement = publicKey,
+                Signatory = privateKey,
+                Memo = memo
+            });
+            Assert.Equal(ResponseCode.Success, createResult.Status);
 
+            var info = await client.GetAccountInfoAsync(createResult.Address);
+            Assert.Equal(memo, info.Memo);
+        }
         [Fact(DisplayName = "Create Account: Can Schedule Create Account")]
         public async Task CanScheduleCreateAccount()
         {

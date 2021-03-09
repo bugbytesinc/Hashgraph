@@ -68,5 +68,9 @@ namespace Hashgraph
         /// to renew if sufficient funds remain in the account.
         /// </summary>
         public DateTime Expiration { get; internal init; }
+        /// <summary>
+        /// A short description associated with the account.
+        /// </summary>
+        public string Memo { get; internal init; }
     }
 }

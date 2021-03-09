@@ -77,6 +77,53 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(new Endorsement(updatedPublicKey), updatedInfo.Endorsement);
         }
+        [Fact(DisplayName = "Update Account: Can Update Memo")]
+        public async Task CanUpdateMemo()
+        {
+            var newMemo = Generator.String(20, 40);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+            {
+                Address = fxAccount,
+                Memo = newMemo,
+                Signatory = fxAccount
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.Equal(newMemo, info.Memo);
+        }
+        [Fact(DisplayName = "Update Account: Can Update Memo to Empty")]
+        public async Task CanUpdateMemoToEmpty()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+            {
+                Address = fxAccount,
+                Memo = string.Empty,
+                Signatory = fxAccount
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.Empty(info.Memo);
+        }
         [Fact(DisplayName = "Update Account: Can Update Require Receive Signature")]
         public async Task CanUpdateRequireReceiveSignature()
         {
@@ -320,6 +367,43 @@ namespace Hashgraph.Test.Crypto
             });
             Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
             Assert.StartsWith("Unable to update account, status: UnschedulableTransaction", tex.Message);
+        }
+        [Fact(DisplayName = "Update Account: Can Update Multiple Properties at Once")]
+        public async Task CanUpdateMultiplePropertiesAtOnce()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxTempate = await TestAccount.CreateAsync(_network);
+            var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+            {
+                Address = fxAccount,
+                Signatory = new Signatory(fxAccount, fxTempate),
+                Endorsement = fxTempate.CreateParams.Endorsement,
+                RequireReceiveSignature = fxTempate.CreateParams.RequireReceiveSignature,                
+                Proxy = fxTempate,
+                Memo = fxTempate.CreateParams.Memo                
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.Equal(fxAccount.Record.Address, info.Address);
+            Assert.NotNull(info.SmartContractId);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxTempate.Record.Address, info.Proxy);
+            Assert.Equal(0, info.ProxiedToAccount);
+            Assert.Equal(fxTempate.PublicKey, info.Endorsement);
+            Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
+            Assert.Equal(fxTempate.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
+            Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(fxTempate.CreateParams.Memo, info.Memo);
         }
     }
 }

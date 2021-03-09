@@ -326,7 +326,7 @@ namespace Hashgraph.Implementation
             {
                 throw new ArgumentNullException(nameof(updateParameters.Address), "Account is missing. Please check that it is not null.");
             }
-            if (Hashgraph.Endorsement.None.Equals(updateParameters.Endorsement))
+            if (Endorsement.None.Equals(updateParameters.Endorsement))
             {
                 throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsement), "Endorsement can not be 'None', it must contain at least one key requirement.");
             }
@@ -334,7 +334,8 @@ namespace Hashgraph.Implementation
                 updateParameters.RequireReceiveSignature is null &&
                 updateParameters.Expiration is null &&
                 updateParameters.AutoRenewPeriod is null &&
-                updateParameters.Proxy is null)
+                updateParameters.Proxy is null &&
+                updateParameters.Memo is null)
             {
                 throw new ArgumentException(nameof(updateParameters), "The Account Updates contains no update properties, it is blank.");
             }

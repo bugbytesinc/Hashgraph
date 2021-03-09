@@ -90,6 +90,10 @@ namespace Hashgraph
             {
                 updateAccountBody.ProxyAccountID = new AccountID(updateParameters.Proxy);
             }
+            if (!(updateParameters.Memo is null))
+            {
+                updateAccountBody.Memo = updateParameters.Memo;
+            }
             var transactionBody = new TransactionBody
             {
                 CryptoUpdateAccount = updateAccountBody

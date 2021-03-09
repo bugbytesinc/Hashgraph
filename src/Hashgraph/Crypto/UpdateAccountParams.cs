@@ -69,5 +69,9 @@ namespace Hashgraph
         /// proxy staked to a node chosen by the network without earning payments.
         /// </summary>
         public Address? Proxy { get; set; }
+        /// <summary>
+        /// If not null, a new description of the account.
+        /// </summary>
+        public string? Memo { get; set; }
     }
 }
