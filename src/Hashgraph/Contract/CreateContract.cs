@@ -74,7 +74,7 @@ namespace Hashgraph
                     InitialBalance = createParameters.InitialBalance,
                     AutoRenewPeriod = new Duration(createParameters.RenewPeriod),
                     ConstructorParameters = ByteString.CopyFrom(Abi.EncodeArguments(createParameters.Arguments).ToArray()),
-                    Memo = context.Memo ?? ""
+                    Memo = createParameters.Memo ?? ""
                 }
             };
             return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create contract, status: {0}", createParameters.Signatory);

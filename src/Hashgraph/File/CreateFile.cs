@@ -70,6 +70,7 @@ namespace Hashgraph
                     ExpirationTime = new Timestamp(createParameters.Expiration),
                     Keys = new KeyList(createParameters.Endorsements),
                     Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
+                    Memo = createParameters.Memo ?? ""
                 }
             };
             return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create file, status: {0}", createParameters.Signatory);

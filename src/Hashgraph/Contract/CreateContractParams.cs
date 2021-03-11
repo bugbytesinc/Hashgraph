@@ -54,5 +54,9 @@ namespace Hashgraph
         /// the transaction requesting the record.
         /// </remarks>
         public Signatory? Signatory { get; set; }
+        /// <summary>
+        /// Short description of the contract, limit to 100 bytes.
+        /// </summary>
+        public string? Memo { get; set; }
     }
 }

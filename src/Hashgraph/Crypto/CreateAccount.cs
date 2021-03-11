@@ -76,7 +76,7 @@ namespace Hashgraph
                     ReceiverSigRequired = createParameters.RequireReceiveSignature,
                     AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod),
                     ProxyAccountID = createParameters.Proxy is null ? null : new AccountID(createParameters.Proxy),
-                    Memo = createParameters.Memo
+                    Memo = createParameters.Memo ?? string.Empty
                 }
             };
             return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create account, status: {0}", createParameters.Signatory);

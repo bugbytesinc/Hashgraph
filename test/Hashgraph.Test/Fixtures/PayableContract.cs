@@ -47,6 +47,7 @@ namespace Hashgraph.Test.Fixtures
                 Gas = await networkCredentials.TinybarsFromGas(200),
                 InitialBalance = 1_000_000,
                 RenewPeriod = TimeSpan.FromSeconds(7890000),
+                Memo = "Payable Contract " + Generator.Code(10)
             };
             customize?.Invoke(fx);
             fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>

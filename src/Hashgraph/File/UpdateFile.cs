@@ -76,6 +76,10 @@ namespace Hashgraph
             {
                 updateFileBody.Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
             }
+            if (!(updateParameters.Memo is null))
+            {
+                updateFileBody.Memo = updateParameters.Memo;
+            }
             var transactionBody = new TransactionBody
             {
                 FileUpdate = updateFileBody

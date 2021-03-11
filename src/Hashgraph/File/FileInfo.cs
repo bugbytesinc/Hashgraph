@@ -13,6 +13,10 @@ namespace Hashgraph
         /// </summary>
         public Address File { get; internal init; }
         /// <summary>
+        /// A short description of the file.
+        /// </summary>
+        public string Memo { get; set; }
+        /// <summary>
         /// The size of the file in bytes (plus 30 extra for overhead).
         /// </summary>
         public long Size { get; internal init; }

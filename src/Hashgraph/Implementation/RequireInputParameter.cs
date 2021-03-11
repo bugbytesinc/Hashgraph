@@ -747,7 +747,8 @@ namespace Hashgraph.Implementation
                 throw new ArgumentNullException(nameof(updateParameters.File), "File identifier is missing. Please check that it is not null.");
             }
             if (updateParameters.Endorsements is null &&
-                updateParameters.Contents is null)
+                updateParameters.Contents is null &&
+                updateParameters.Memo is null)
             {
                 throw new ArgumentException(nameof(updateParameters), "The File Update parameters contain no update properties, it is blank.");
             }

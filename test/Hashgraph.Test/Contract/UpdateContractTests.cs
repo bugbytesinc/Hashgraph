@@ -99,7 +99,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(newExpiration, info.Expiration);
             Assert.Equal(fx.PublicKey, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
 
@@ -122,7 +122,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(newEndorsement, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
 
@@ -148,7 +148,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Contract Update: Can Update Memo.")]

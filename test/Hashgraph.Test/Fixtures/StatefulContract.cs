@@ -43,6 +43,7 @@ namespace Hashgraph.Test.Fixtures
                 File = fx.FileRecord.File,
                 Administrator = fx.PublicKey,
                 Signatory = fx.PrivateKey,
+                Memo = "Stateful Contract " + Generator.Code(10),
                 Gas = await networkCredentials.TinybarsFromGas(200),
                 RenewPeriod = TimeSpan.FromSeconds(7890000),
                 Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }

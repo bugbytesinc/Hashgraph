@@ -13,6 +13,7 @@ namespace Proto
                     return new Hashgraph.FileInfo
                     {
                         File = FileID.AsAddress(),
+                        Memo = Memo,
                         Size = Size,
                         Expiration = ExpirationTime.ToDateTime(),
                         Endorsements = Keys?.ToEndorsements() ?? Array.Empty<Hashgraph.Endorsement>(),

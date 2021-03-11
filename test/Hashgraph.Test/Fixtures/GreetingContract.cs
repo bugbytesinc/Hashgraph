@@ -50,6 +50,7 @@ namespace Hashgraph.Test.Fixtures
                 Signatory = fx.PrivateKey,
                 Gas = await networkCredentials.TinybarsFromGas(200),
                 RenewPeriod = TimeSpan.FromSeconds(7890000),
+                Memo = "Greeting Contract " + Generator.Code(10)
             };
             customize?.Invoke(fx);
             fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>

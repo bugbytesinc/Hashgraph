@@ -23,6 +23,7 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(test.CreateParams.Memo, info.Memo);
             Assert.Equal(test.CreateParams.Contents.Length, info.Size);
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
@@ -38,6 +39,7 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(test.CreateParams.Memo, info.Memo);
             Assert.Equal(test.CreateParams.Contents.Length, info.Size);
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Empty(info.Endorsements);
@@ -53,6 +55,7 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(test.CreateParams.Memo, info.Memo);
             Assert.Equal(0, info.Size);
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
@@ -69,6 +72,7 @@ namespace Hashgraph.Test.File
             var info = await test.Client.GetFileInfoAsync(test.Record.File);
             Assert.NotNull(info);
             Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(test.CreateParams.Memo, info.Memo);
             Assert.Equal(0, info.Size);
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Empty(info.Endorsements);

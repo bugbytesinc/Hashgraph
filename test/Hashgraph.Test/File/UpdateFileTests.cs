@@ -55,6 +55,52 @@ namespace Hashgraph.Test.File
             var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
             Assert.Equal(newContents, retrievedContents.ToArray());
         }
+        [Fact(DisplayName = "File Update: Can Update Memo")]
+        public async Task CanUpdateMemo()
+        {
+            await using var test = await TestFile.CreateAsync(_network);
+
+            var newMemo = Generator.Code(30);            
+
+            var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Memo = newMemo,
+                Signatory = test.CreateParams.Signatory
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(newMemo, info.Memo);
+            Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
+            Assert.False(info.Deleted);
+        }
+        [Fact(DisplayName = "File Update: Can Update Memo to Empty")]
+        public async Task CanUpdateMemoToEmpty()
+        {
+            await using var test = await TestFile.CreateAsync(_network);
+
+            var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Memo = string.Empty,
+                Signatory = test.CreateParams.Signatory
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Empty(info.Memo);
+            Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
+            Assert.False(info.Deleted);
+        }
         [Fact(DisplayName = "File Update: Cannot Replace Contents of deleted file")]
         public async Task CanUpdateFileContentsOfDeletedFile()
         {
