@@ -27,6 +27,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(0UL, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
 
@@ -45,6 +46,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(0UL, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
 
@@ -72,6 +74,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(0UL, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
 
@@ -94,6 +97,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(0UL, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
 
@@ -223,6 +227,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(0UL, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
 
@@ -241,6 +246,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(0UL, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
 
@@ -255,6 +261,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(0UL, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
         }
@@ -375,6 +382,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(0UL, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
 

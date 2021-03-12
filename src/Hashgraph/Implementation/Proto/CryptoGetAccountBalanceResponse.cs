@@ -16,16 +16,29 @@ namespace Proto
             };
         }
 
-        private static ReadOnlyDictionary<Hashgraph.Address, ulong> FromTokenBalances(RepeatedField<TokenBalance> tokenBalances)
+        private static ReadOnlyDictionary<Hashgraph.Address, Hashgraph.CryptoBalance> FromTokenBalances(RepeatedField<TokenBalance> tokenBalances)
         {
-            var results = new Dictionary<Hashgraph.Address, ulong>();
+            var results = new Dictionary<Hashgraph.Address, Hashgraph.CryptoBalance>();
             foreach (var entry in tokenBalances)
             {
                 var account = entry.TokenId.AsAddress();
-                results.TryGetValue(account, out ulong amount);
-                results[account] = amount + entry.Balance;
+                if (results.TryGetValue(account, out Hashgraph.CryptoBalance? crypto))
+                {
+                    results[account] = crypto with
+                    {
+                        Balance = crypto.Balance + entry.Balance
+                    };
+                }
+                else
+                {
+                    results[account] = new Hashgraph.CryptoBalance
+                    {
+                        Balance = entry.Balance,
+                        Decimals = entry.Decimals
+                    };
+                }
             }
-            return new ReadOnlyDictionary<Hashgraph.Address, ulong>(results);
+            return new ReadOnlyDictionary<Hashgraph.Address, Hashgraph.CryptoBalance>(results);
         }
     }
 }

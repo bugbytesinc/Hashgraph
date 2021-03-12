@@ -54,6 +54,8 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
             Assert.Single(balances.Tokens);
             Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
+            Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
         }
         [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins and Get Record")]
         public async Task CanTransferTokensAndGetRecord()
@@ -111,6 +113,8 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
             Assert.Single(balances.Tokens);
             Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
+            Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
         }
         [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins and Get Record with signatories in context param")]
         public async Task CanTransferTokensAndGetRecordWithSignatoriesInContextParam()
@@ -168,6 +172,8 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
             Assert.Single(balances.Tokens);
             Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
+            Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
         }
         [Fact(DisplayName = "Transfer Tokens: Can Execute Multi-Transfer Token Coins")]
         public async Task CanExecuteMultiTransferTokens()
@@ -588,6 +594,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(xferAmount, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
         }

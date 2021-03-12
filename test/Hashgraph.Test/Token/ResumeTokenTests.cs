@@ -144,12 +144,14 @@ namespace Hashgraph.Test.Token
 
             var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
             Assert.Equal(0Ul, info.Balance);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
             info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
             Assert.Equal(xferAmount, info.Balance);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         }
         [Fact(DisplayName = "Resume Tokens: Can Resume a Suspended Account")]
@@ -201,6 +203,7 @@ namespace Hashgraph.Test.Token
 
             var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
             Assert.Equal(0Ul, info.Balance);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
             Assert.Equal(TokenTradableStatus.Suspended, info.TradableStatus);
 
             tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -234,6 +237,7 @@ namespace Hashgraph.Test.Token
 
             var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
             Assert.Equal(0Ul, info.Balance);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
             Assert.Equal(TokenTradableStatus.NotApplicable, info.TradableStatus);
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);

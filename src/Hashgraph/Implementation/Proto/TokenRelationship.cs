@@ -19,7 +19,8 @@ namespace Proto
                         Symbol = entry.Symbol,
                         Balance = entry.Balance,
                         KycStatus = (Hashgraph.TokenKycStatus)entry.KycStatus,
-                        TradableStatus = (Hashgraph.TokenTradableStatus)entry.FreezeStatus
+                        TradableStatus = (Hashgraph.TokenTradableStatus)entry.FreezeStatus, 
+                        Decimals = entry.Decimals
                     });
                 }
             }

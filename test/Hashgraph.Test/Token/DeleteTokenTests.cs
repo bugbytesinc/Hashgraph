@@ -79,6 +79,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, token.Token);
             Assert.Equal(fxToken.Params.Symbol, token.Symbol);
             Assert.Equal(xferAmount, token.Balance);
+            Assert.Equal(fxToken.Params.Decimals, token.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
 
@@ -88,6 +89,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, token.Token);
             Assert.Equal(fxToken.Params.Symbol, token.Symbol);
             Assert.Equal(totalTinytokens - xferAmount, token.Balance);
+            Assert.Equal(fxToken.Params.Decimals, token.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
         }

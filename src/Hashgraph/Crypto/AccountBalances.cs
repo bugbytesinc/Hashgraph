@@ -19,6 +19,6 @@ namespace Hashgraph
         /// <summary>
         /// Balances of tokens associated with this account.
         /// </summary>
-        public ReadOnlyDictionary<Address, ulong> Tokens { get; internal init; }
+        public ReadOnlyDictionary<Address, CryptoBalance> Tokens { get; internal init; }
     }
 }
