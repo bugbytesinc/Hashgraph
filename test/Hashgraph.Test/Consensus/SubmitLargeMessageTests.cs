@@ -188,24 +188,6 @@ namespace Hashgraph.Test.Topic
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal((ulong)expectedCount, info.SequenceNumber);
         }
-        [Fact(DisplayName = "Submit Large Message: Throws Error if Run out of Crypto")]
-        public async Task ThrowsErrorIfRunOutOfCrypto()
-        {
-            await using var fxTopic = await TestTopic.CreateAsync(_network);
-            await using var fxAccount = await TestAccount.CreateAsync(_network, a => a.CreateParams.InitialBalance = 800_000);
-            var message = Encoding.ASCII.GetBytes(Generator.String(1200, 1990));
-            var segmentSize = Generator.Integer(100, 200);
-            var expectedCount = message.Length / segmentSize + 1;
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await fxTopic.Client.SubmitLargeMessageAsync(fxTopic.Record.Topic, message, segmentSize, fxTopic.ParticipantPrivateKey, ctx => {
-                    ctx.Payer = fxAccount.Record.Address;
-                    ctx.Signatory = fxAccount.PrivateKey;
-                });
-            });
-            Assert.Equal(ResponseCode.InsufficientPayerBalance, pex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: InsufficientPayerBalance", pex.Message);
-        }
         [Fact(DisplayName = "Submit Large Message: Can Submit Large Segmented Message with Even Boundary")]
         public async Task CanSubmitLargeSegmentedMessageWithEvenBoundary()
         {
