@@ -69,7 +69,7 @@ namespace Hashgraph.Test.Fixtures
             // agu = Arbitrary Gas Unit - we really have no idea, some 'relative' unit of work.
             // agc = Arbitrary Gas Constant - Well, we know this is not linear with the exchange rate so we have to keep changing it.
             // Change the agc when the gas price goes up/down whatever.
-            long agc = 500;
+            long agc = 600;
             if (_exchangeRate == null)
             {
                 await using var client = NewClient();
