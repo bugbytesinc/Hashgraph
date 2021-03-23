@@ -32,14 +32,14 @@ namespace Hashgraph.Test.File
                 {
                     fx.CreateParams.Signatory = new Signatory(
                         fx.CreateParams.Signatory,
-                        new ScheduleParams
+                        new PendingParams
                         {
                             PendingPayer = fxPayer,
                         });
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to create file, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

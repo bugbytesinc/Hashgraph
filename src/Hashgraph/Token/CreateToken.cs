@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS8604
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -29,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateTokenReceipt> CreateTokenAsync(CreateTokenParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateTokenReceipt(await CreateTokenImplementationAsync(createParameters, configure, false));
+            return new CreateTokenReceipt(await ExecuteTransactionAsync(new TokenCreateTransactionBody(createParameters), configure, false, createParameters.Signatory));
         }
         /// <summary>
         /// Creates a new token instance with the given create parameters.
@@ -52,37 +50,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateTokenRecord> CreateTokenWithRecordAsync(CreateTokenParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateTokenRecord(await CreateTokenImplementationAsync(createParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of the Create Token service.
-        /// </summary>
-        private async Task<NetworkResult> CreateTokenImplementationAsync(CreateTokenParams createParameters, Action<IContext>? configure, bool includeRecord)
-        {
-            createParameters = RequireInputParameter.CreateParameters(createParameters);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                TokenCreation = new TokenCreateTransactionBody
-                {
-                    Name = createParameters.Name,
-                    Symbol = createParameters.Symbol,
-                    InitialSupply = createParameters.Circulation,
-                    Decimals = createParameters.Decimals,
-                    Treasury = new AccountID(createParameters.Treasury),
-                    AdminKey = createParameters.Administrator.IsNullOrNone() ? null : new Key(createParameters.Administrator),
-                    KycKey = createParameters.GrantKycEndorsement.IsNullOrNone() ? null : new Key(createParameters.GrantKycEndorsement),
-                    FreezeKey = createParameters.SuspendEndorsement.IsNullOrNone() ? null : new Key(createParameters.SuspendEndorsement),
-                    WipeKey = createParameters.ConfiscateEndorsement.IsNullOrNone() ? null : new Key(createParameters.ConfiscateEndorsement),
-                    SupplyKey = createParameters.SupplyEndorsement.IsNullOrNone() ? null : new Key(createParameters.SupplyEndorsement),
-                    FreezeDefault = createParameters.InitializeSuspended,
-                    Expiry = new Timestamp(createParameters.Expiration),
-                    AutoRenewAccount = createParameters.RenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.RenewAccount),
-                    AutoRenewPeriod = createParameters.RenewPeriod.HasValue ? new Duration(createParameters.RenewPeriod.Value) : null,
-                    Memo = createParameters.Memo
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create Token, status: {0}", createParameters.Signatory);
+            return new CreateTokenRecord(await ExecuteTransactionAsync(new TokenCreateTransactionBody(createParameters), configure, true, createParameters.Signatory));
         }
     }
 }

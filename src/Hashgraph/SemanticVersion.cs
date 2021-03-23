@@ -1,4 +1,4 @@
-﻿using Hashgraph.Implementation;
+﻿using System;
 
 namespace Hashgraph
 {
@@ -54,9 +54,34 @@ namespace Hashgraph
         /// </param>
         public SemanticVersion(int major, int minor, int patch)
         {
-            Major = RequireInputParameter.MajorNumber(major);
-            Minor = RequireInputParameter.MinorNumber(minor);
-            Patch = RequireInputParameter.PatchNumber(patch);
+            if (major < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(major), "Major Version Number cannot be negative.");
+            }
+            if (minor < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(minor), "Minor Version Number cannot be negative.");
+            }
+            if (patch < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(patch), "Patch Version Number cannot be negative.");
+            }
+            Major = major;
+            Minor = minor;
+            Patch = patch;
+        }
+        /// <summary>
+        /// Internal constructor from Raw Results
+        /// </summary>
+        internal SemanticVersion(Proto.SemanticVersion semanticVersion)
+        {
+            if (semanticVersion is not null)
+            {
+                Major = semanticVersion.Major;
+                Minor = semanticVersion.Minor;
+                Patch = semanticVersion.Patch;
+            }
+            // Defaults to NONE otherwise.
         }
     }
 }

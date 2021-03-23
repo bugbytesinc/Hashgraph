@@ -97,12 +97,12 @@ namespace Hashgraph.Test.File
                     Contents = appendedContent,
                     Signatory = new Signatory(
                         fxFile.CreateParams.Signatory,
-                        new ScheduleParams { PendingPayer = fxPayer }
+                        new PendingParams { PendingPayer = fxPayer }
                     )
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to append to file, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

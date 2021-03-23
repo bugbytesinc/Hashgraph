@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -26,17 +25,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<TokenInfo> GetTokenInfoAsync(Address token, Action<IContext>? configure = null)
         {
-            token = RequireInputParameter.Token(token);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                TokenGetInfo = new TokenGetInfoQuery
-                {
-                    Token = new TokenID(token)
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            return response.TokenGetInfo.TokenInfo.ToTokenInfo();
+            return new TokenInfo(await ExecuteQueryAsync(new TokenGetInfoQuery(token), configure));
         }
     }
 }

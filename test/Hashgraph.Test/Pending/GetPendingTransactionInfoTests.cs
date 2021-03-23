@@ -21,16 +21,19 @@ namespace Hashgraph.Test.Token
             await using var fx = await TestPendingTransfer.CreateAsync(_network);
             Assert.Equal(ResponseCode.Success, fx.Record.Status);
 
-            var info = await fx.PayingAccount.Client.GetPendingTransactionInfoAsync(fx.Record.Pending.Pending);
-            Assert.Equal(fx.Record.Pending.Pending, info.Pending);
-            Assert.Equal(fx.PayingAccount, info.Payer);
+            var info = await fx.PayingAccount.Client.GetPendingTransactionInfoAsync(fx.Record.Pending.Id);
+            Assert.Equal(fx.Record.Pending.Id, info.Id);
+            Assert.Equal(fx.Record.Pending.TxId, info.TxId);
             Assert.Equal(_network.Payer, info.Creator);
-            Assert.False(info.TransactionBody.IsEmpty);
+            Assert.Equal(fx.PayingAccount, info.Payer);
             Assert.Single(info.Endorsements);
-            Assert.Equal(new Endorsement(fx.PayingAccount.PublicKey),info.Endorsements[0]);
+            Assert.Equal(new Endorsement(fx.PayingAccount.PublicKey), info.Endorsements[0]);
             Assert.Equal(new Endorsement(fx.PublicKey), info.Administrator);
             Assert.Equal(fx.Memo, info.Memo);
             Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Null(info.Executed);
+            Assert.Null(info.Deleted);
+            Assert.False(info.PendingTransactionBody.IsEmpty);
         }
     }
 }

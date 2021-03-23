@@ -185,13 +185,13 @@ namespace Hashgraph.Test.Contract
                     ctx => ctx.Signatory = new Signatory(
                         _network.PrivateKey,
                         fxContract.PrivateKey,
-                        new ScheduleParams
+                        new PendingParams
                         {
                             PendingPayer = fxPayer
                         }));
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to delete contract, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

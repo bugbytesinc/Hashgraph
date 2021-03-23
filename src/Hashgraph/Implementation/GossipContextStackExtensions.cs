@@ -41,7 +41,12 @@ namespace Hashgraph
             var preExistingTransaction = context.Transaction;
             if (preExistingTransaction is null)
             {
-                return CreateTransactionID(context, RequireInContext.Payer(context));
+                var payer = context.Payer;
+                if (payer is null)
+                {
+                    throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.");
+                }
+                return CreateTransactionID(context, payer);
             }
             else if (preExistingTransaction.Pending)
             {
@@ -65,7 +70,6 @@ namespace Hashgraph
                 }
             };
         }
-
         internal static Task<TResponse> ExecuteSignedRequestWithRetryImplementationAsync<TRequest, TResponse>(this GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
         {
             var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
@@ -237,14 +241,8 @@ namespace Hashgraph
         /// </summary>
         internal static async Task<Proto.TransactionReceipt> GetReceiptAsync(this GossipContextStack context, TransactionID transactionId)
         {
-            var query = new Query
-            {
-                TransactionGetReceipt = new TransactionGetReceiptQuery
-                {
-                    TransactionID = transactionId
-                }
-            };
-            var response = await context.ExecuteNetworkRequestWithRetryAsync(query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            var query = new TransactionGetReceiptQuery(transactionId) as INetworkQuery;
+            var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             switch (responseCode)
             {
@@ -275,37 +273,6 @@ namespace Hashgraph
                     response.TransactionGetReceipt?.Header?.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||
                     response.TransactionGetReceipt?.Receipt?.Status == ResponseCodeEnum.Unknown;
             }
-        }
-        /// <summary>
-        /// Internal Helper function to retrieve the transaction record provided 
-        /// by the network following network consensus regarding a query or transaction.
-        /// </summary>
-        internal static async Task<Proto.TransactionRecord> GetTransactionRecordAsync(this GossipContextStack context, TransactionID transactionRecordId)
-        {
-            return (await GetTransactionRecordResponseAsync(context, transactionRecordId, false)).TransactionRecord;
-        }
-        /// <summary>
-        /// Internal Helper function to retrieve the transaction record or list of duplicate records provided 
-        /// by the network following network consensus regarding a query or transaction.
-        /// </summary>
-        internal static async Task<TransactionGetRecordResponse> GetTransactionRecordResponseAsync(this GossipContextStack context, TransactionID transactionRecordId, bool includeDuplicates)
-        {
-            var query = new Query
-            {
-                TransactionGetRecord = new TransactionGetRecordQuery
-                {
-                    TransactionID = transactionRecordId,
-                    IncludeDuplicates = includeDuplicates
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            // Note if we are retrieving the list, Not found is OK too.
-            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (precheckCode != ResponseCodeEnum.Ok && !(includeDuplicates && precheckCode == ResponseCodeEnum.RecordNotFound))
-            {
-                throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.AsTxId(), (ResponseCode)precheckCode);
-            }
-            return response.TransactionGetRecord;
         }
     }
 }

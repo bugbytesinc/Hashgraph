@@ -4,10 +4,10 @@ using System;
 namespace Hashgraph
 {
     /// <summary>
-    /// The identifer of a pending transaction, includes the address
-    /// ID identifying the transaction within the network and the 
-    /// body bytes of the transaction that must be signed by the
-    /// appropriate signatories to invoke execution.
+    /// Information identifying a pending transaction, includes the
+    /// address of the pending transaction record, plus the transaction
+    /// id that will exist representing the executed transaction if it
+    /// is ultimately executed (and not timed out or delted).
     /// </summary>
     public record PendingTransaction
     {
@@ -15,11 +15,10 @@ namespace Hashgraph
         /// The identifier of the pending transaction 
         /// record held by the network.
         /// </summary>
-        public Address Pending { get; internal init; }
+        public Address Id { get; internal init; }
         /// <summary>
-        /// The body of the pending transaciton, serialized
-        /// into the binary protobuf message format.
+        /// The ID of the pending transaction, should it be executed.
         /// </summary>
-        public ReadOnlyMemory<byte> TransactionBody { get; internal init; }
+        public TxId TxId { get; internal init; }
     }
 }

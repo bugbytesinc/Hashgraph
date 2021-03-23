@@ -159,20 +159,16 @@ namespace Hashgraph.Test.Crypto
         public async Task CanScheduleCreateAccount()
         {
             await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
-            var fxAccount = await TestAccount.CreateAsync(_network, fx => {
-                fx.CreateParams.Signatory = new ScheduleParams
+            var fxAccount = await TestAccount.CreateAsync(_network, fx =>
+            {
+                fx.CreateParams.Signatory = new PendingParams
                 {
                     PendingPayer = fxPayer
                 };
             });
 
-            var transactionReceipt = await fxPayer.Client.SignPendingTransactionAsync(new SignPendingTransactionParams { 
-                Pending = fxAccount.Record.Pending.Pending,
-                TransactionBody = fxAccount.Record.Pending.TransactionBody,
-                Signatory = fxPayer
-            });
-
-            var pendingReceipt = await fxPayer.Client.GetReceiptAsync(fxAccount.Record.Id.AsPending());
+            var transactionReceipt = await fxPayer.Client.SignPendingTransactionAsync(fxAccount.Record.Pending.Id, fxPayer);
+            var pendingReceipt = await fxPayer.Client.GetReceiptAsync(fxAccount.Record.Pending.TxId);
             Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
 
             var createReceipt = Assert.IsType<CreateAccountReceipt>(pendingReceipt);

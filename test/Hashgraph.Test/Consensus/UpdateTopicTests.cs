@@ -28,8 +28,8 @@ namespace Hashgraph.Test.Topic
                     Memo = newMemo,
                 });
             });
-            Assert.Equal("Topic", ane.ParamName);
-            Assert.StartsWith("Topic address is missing", ane.Message);
+            Assert.Equal("topic", ane.ParamName);
+            Assert.StartsWith("Topic Address is missing", ane.Message);
         }
         [Fact(DisplayName = "Update Topic: Call to Update With No Changes Raises Error")]
         public async Task UpdateWitnoutChangesRaisesError()
@@ -323,14 +323,14 @@ namespace Hashgraph.Test.Topic
                     Memo = newMemo,
                     Signatory = new Signatory(
                         fxTopic.AdminPrivateKey,
-                        new ScheduleParams
+                        new PendingParams
                         {
                             PendingPayer = fxPayer
                         })
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to update Topic, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

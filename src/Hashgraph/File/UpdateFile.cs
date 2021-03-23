@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -30,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> UpdateFileAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await UpdateFileImplementationAsync(updateParameters, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FileUpdateTransactionBody(updateParameters), configure, false, updateParameters.Signatory));
         }
         /// <summary>
         /// Updates the properties or contents of an existing file stored in the network.
@@ -55,36 +53,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> UpdateFileWithRecordAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await UpdateFileImplementationAsync(updateParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal helper method implementing the file update service.
-        /// </summary>
-        private async Task<NetworkResult> UpdateFileImplementationAsync(UpdateFileParams updateParameters, Action<IContext>? configure, bool includeRecord)
-        {
-            updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
-            await using var context = CreateChildContext(configure);
-            var updateFileBody = new FileUpdateTransactionBody
-            {
-                FileID = new FileID(updateParameters.File)
-            };
-            if (!(updateParameters.Endorsements is null))
-            {
-                updateFileBody.Keys = new KeyList(updateParameters.Endorsements);
-            }
-            if (updateParameters.Contents.HasValue)
-            {
-                updateFileBody.Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
-            }
-            if (!(updateParameters.Memo is null))
-            {
-                updateFileBody.Memo = updateParameters.Memo;
-            }
-            var transactionBody = new TransactionBody
-            {
-                FileUpdate = updateFileBody
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to update file, status: {0}", updateParameters.Signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(new FileUpdateTransactionBody(updateParameters), configure, true, updateParameters.Signatory));
         }
     }
 }

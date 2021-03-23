@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -34,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> CallContractAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await CallContractImplementationAsync(callParameters, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ContractCallTransactionBody(callParameters), configure, false, callParameters.Signatory));
         }
         /// <summary>
         /// Calls a smart contract returning if successful.  The CallContractReceipt 
@@ -61,26 +59,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CallContractRecord> CallContractWithRecordAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return new CallContractRecord(await CallContractImplementationAsync(callParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of the contract call method.
-        /// </summary>
-        private async Task<NetworkResult> CallContractImplementationAsync(CallContractParams callParmeters, Action<IContext>? configure, bool includeRecord)
-        {
-            callParmeters = RequireInputParameter.CallContractParameters(callParmeters);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                ContractCall = new ContractCallTransactionBody
-                {
-                    ContractID = new ContractID(callParmeters.Contract),
-                    Gas = callParmeters.Gas,
-                    Amount = callParmeters.PayableAmount,
-                    FunctionParameters = Abi.EncodeFunctionWithArguments(callParmeters.FunctionName, callParmeters.FunctionArgs).ToByteString()
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Contract call failed, status: {0}", callParmeters.Signatory);
+            return new CallContractRecord(await ExecuteTransactionAsync(new ContractCallTransactionBody(callParameters), configure, true, callParameters.Signatory));
         }
     }
 }

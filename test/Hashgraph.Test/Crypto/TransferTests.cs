@@ -217,7 +217,7 @@ namespace Hashgraph.Test.Crypto
             {
                 await fx1.Client.TransferWithRecordAsync(transfers);
             });
-            Assert.Equal("cryptoTransfers", aor.ParamName);
+            Assert.Equal("CryptoTransfers", aor.ParamName);
             Assert.StartsWith("The sum of crypto sends and receives does not balance.", aor.Message);
         }
         [Fact(DisplayName = "Transfer: net values of aero are not allowed in transfers.")]
@@ -244,7 +244,7 @@ namespace Hashgraph.Test.Crypto
             {
                 await fx1.Client.TransferWithRecordAsync(transfers);
             });
-            Assert.Equal("cryptoTransfers", aor.ParamName);
+            Assert.Equal("CryptoTransfers", aor.ParamName);
             Assert.StartsWith($"The amount to transfer crypto to/from 0.0.{account1.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.", aor.Message);
 
             Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
@@ -277,7 +277,7 @@ namespace Hashgraph.Test.Crypto
             {
                 await fx1.Client.TransferWithRecordAsync(transfers);
             });
-            Assert.Equal("cryptoTransfers", aor.ParamName);
+            Assert.Equal("CryptoTransfers", aor.ParamName);
             Assert.StartsWith("The dictionary of crypto transfers can not be empty", aor.Message);
         }
         [Fact(DisplayName = "Transfer: Transaction ID Information Makes Sense for Receipt")]
@@ -490,7 +490,7 @@ namespace Hashgraph.Test.Crypto
             var transferAmount = initialBalance / 2;
             await using var fxSendingAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
             await using var fxReceivingAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
-            var contextSignatory = new Signatory(_network.PrivateKey, new ScheduleParams());
+            var contextSignatory = new Signatory(_network.PrivateKey, new PendingParams());
             await fxSendingAccount.Client.TransferAsync(fxSendingAccount, fxReceivingAccount, (long)transferAmount, ctx => ctx.Signatory = contextSignatory);
         }
         [Fact(DisplayName = "Transfer: Can Schedule A Transfer Between Two Accounts Using Params Signatory")]
@@ -500,7 +500,7 @@ namespace Hashgraph.Test.Crypto
             var transferAmount = initialBalance / 2;
             await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
             await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
-            var paramsSignatory = new Signatory(new ScheduleParams());
+            var paramsSignatory = new Signatory(new PendingParams());
             await fxAccount1.Client.TransferAsync(fxAccount1, fxAccount2, (long)transferAmount, paramsSignatory);
         }
         [Fact(DisplayName = "Transfer: Can Schedule A Transfer Between Two Accounts Using Context Signatory With Private Key")]
@@ -511,7 +511,7 @@ namespace Hashgraph.Test.Crypto
             await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
             await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
 
-            var contextSignatory = new ScheduleParams { Signatory = _network.PrivateKey };
+            var contextSignatory = new Signatory(_network.PrivateKey, new PendingParams());
             await fxAccount1.Client.TransferAsync(fxAccount1, fxAccount2, (long)transferAmount, ctx => ctx.Signatory = contextSignatory);
         }
         [Fact(DisplayName = "Transfer: Can Schedule A Transfer Between Two Accounts With Third Party Payer")]
@@ -523,7 +523,7 @@ namespace Hashgraph.Test.Crypto
             await using var fxReceiver = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
             await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 10_00_000_000);
 
-            var contextSignatory = new Signatory(fxPayer.PrivateKey, new ScheduleParams { Signatory = _network.PrivateKey, PendingPayer = _network.Payer });
+            var contextSignatory = new Signatory(fxPayer.PrivateKey, _network.PrivateKey, new PendingParams { PendingPayer = _network.Payer });
             var contextPayer = fxPayer.Record.Address;
 
             await fxSender.Client.TransferAsync(fxSender, fxReceiver, (long)transferAmount, ctx => { ctx.Payer = contextPayer; ctx.Signatory = contextSignatory; });
@@ -537,35 +537,42 @@ namespace Hashgraph.Test.Crypto
             await using var fxReceiver = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
             await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
 
-            var pendingSignatory = new Signatory(fxPayer.PrivateKey, fxSender.PrivateKey, new ScheduleParams { PendingPayer = fxPayer });
+            var pendingSignatory = new Signatory(fxPayer.PrivateKey, fxSender.PrivateKey, new PendingParams { PendingPayer = fxPayer });
 
-            var receipt = await fxSender.Client.TransferWithRecordAsync(fxSender, fxReceiver, (long)transferAmount, pendingSignatory);
+            var record = await fxSender.Client.TransferWithRecordAsync(fxSender, fxReceiver, (long)transferAmount, pendingSignatory);
 
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await fxPayer.Client.GetPendingTransactionInfoAsync(receipt.Pending.Pending);
-            });
-            Assert.Equal(ResponseCode.InvalidScheduleId, pex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: InvalidScheduleId", pex.Message);
+            var info = await fxPayer.Client.GetPendingTransactionInfoAsync(record.Pending.Id);
+            Assert.Equal(record.Pending.Id, info.Id);
+            Assert.Equal(record.Pending.TxId, info.TxId);
+            Assert.Equal(_network.Payer, info.Creator);
+            Assert.Equal(fxPayer.Record.Address, info.Payer);
+            Assert.Equal(2,info.Endorsements.Length);
+            Assert.Equal(new Endorsement(fxPayer.PublicKey), info.Endorsements[0]);
+            Assert.Null(info.Administrator);
+            Assert.Empty(info.Memo);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.True(record.Concensus <= info.Executed);
+            Assert.Null(info.Deleted);
+            Assert.False(info.PendingTransactionBody.IsEmpty);
 
             await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
             await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
             Assert.True(await fxPayer.Client.GetAccountBalanceAsync(fxPayer) < fxPayer.CreateParams.InitialBalance);
 
-            var executedReceipt = await fxPayer.Client.GetReceiptAsync(receipt.Id.AsPending());
+            var executedReceipt = await fxPayer.Client.GetReceiptAsync(record.Pending.TxId);
             Assert.Equal(ResponseCode.Success, executedReceipt.Status);
-            Assert.Equal(receipt.Id.AsPending(), executedReceipt.Id);
+            Assert.Equal(record.Pending.TxId, executedReceipt.Id);
             Assert.NotNull(executedReceipt.CurrentExchangeRate);
             Assert.NotNull(executedReceipt.NextExchangeRate);
             Assert.Null(executedReceipt.Pending);
 
-            var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(receipt.Id.AsPending());
+            var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(record.Pending.TxId);
             Assert.Equal(ResponseCode.Success, executedRecord.Status);
-            Assert.Equal(receipt.Id.AsPending(), executedRecord.Id);
+            Assert.Equal(record.Pending.TxId, executedRecord.Id);
             Assert.InRange(executedRecord.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(executedRecord.Transfers[fxSender], -(long)transferAmount);
             Assert.Equal(executedRecord.Transfers[fxReceiver], (long)transferAmount);
-            Assert.True(executedRecord.Transfers[fxPayer]<0);
+            Assert.True(executedRecord.Transfers[fxPayer] < 0);
             Assert.Empty(executedRecord.TokenTransfers);
             Assert.False(executedRecord.Hash.IsEmpty);
             Assert.NotNull(executedRecord.Concensus);

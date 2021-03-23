@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -33,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await DeleteContractImplementationAsync(contractToDelete, transferToAddress, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ContractDeleteTransactionBody(contractToDelete, transferToAddress), configure, false));
         }
         /// <summary>
         /// Deletes a contract instance from the network returning the remaining 
@@ -65,25 +64,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await DeleteContractImplementationAsync(contractToDelete, transferToAddress, signatory, configure, false));
-        }
-        /// <summary>
-        /// Internal Helper implementation
-        /// </summary>
-        private async Task<NetworkResult> DeleteContractImplementationAsync(Address contractToDelete, Address transferToAddress, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            contractToDelete = RequireInputParameter.ContractToDelete(contractToDelete);
-            transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                ContractDeleteInstance = new ContractDeleteTransactionBody
-                {
-                    ContractID = new ContractID(contractToDelete),
-                    TransferAccountID = new AccountID(transferToAddress)
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete contract, status: {0}", signatory);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ContractDeleteTransactionBody(contractToDelete, transferToAddress), configure, false, signatory));
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -30,7 +29,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateAccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateAccountReceipt(await CreateAccountImplementationAsync(createParameters, configure, false));
+            return new CreateAccountReceipt(await ExecuteTransactionAsync(new CryptoCreateTransactionBody(createParameters), configure, false, createParameters.Signatory));
         }
         /// <summary>
         /// Creates a new network account with a given initial balance
@@ -56,30 +55,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateAccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateAccountRecord(await CreateAccountImplementationAsync(createParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation for Create Account
-        /// Returns either a receipt or record or throws
-        /// an exception.
-        /// </summary>
-        private async Task<NetworkResult> CreateAccountImplementationAsync(CreateAccountParams createParameters, Action<IContext>? configure, bool includeRecord)
-        {
-            var publicKey = RequireInputParameter.KeysFromEndorsements(createParameters);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                CryptoCreateAccount = new CryptoCreateTransactionBody
-                {
-                    Key = publicKey,
-                    InitialBalance = createParameters.InitialBalance,
-                    ReceiverSigRequired = createParameters.RequireReceiveSignature,
-                    AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod),
-                    ProxyAccountID = createParameters.Proxy is null ? null : new AccountID(createParameters.Proxy),
-                    Memo = createParameters.Memo ?? string.Empty
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create account, status: {0}", createParameters.Signatory);
+            return new CreateAccountRecord(await ExecuteTransactionAsync(new CryptoCreateTransactionBody(createParameters), configure, true, createParameters.Signatory));
         }
     }
 }

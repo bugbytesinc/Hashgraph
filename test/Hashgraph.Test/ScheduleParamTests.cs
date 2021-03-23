@@ -8,32 +8,29 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Schedule Params: Can Create Valid PendingParams Object")]
         public void CreateValidPendingParamsObject()
         {
-            var pending = new ScheduleParams();
+            var pending = new PendingParams();
             Assert.Null(pending.PendingPayer);
             Assert.Null(pending.Administrator);
             Assert.Null(pending.Memo);
-            Assert.Null(pending.Signatory);
-            Assert.Equal(pending, new ScheduleParams());
+            Assert.Equal(pending, new PendingParams());
         }
         [Fact(DisplayName = "Schedule Params: Equivalent PendingParams are considered Equal")]
         public void EquivalentPendingParamsAreConsideredEqual()
         {
             var payer = new Address(Generator.Integer(1, 5), Generator.Integer(1, 5), Generator.Integer(1, 5));
-            var (adminKey, signatoryKey) = Generator.KeyPair();
+            var (adminKey, _) = Generator.KeyPair();
             var memo = Generator.String(5, 75);
-            var pendingParam1 = new ScheduleParams
+            var pendingParam1 = new PendingParams
             {
                 PendingPayer = payer,
                 Administrator = adminKey,
-                Memo = memo,
-                Signatory = signatoryKey
+                Memo = memo
             };
-            var pendingParam2 = new ScheduleParams
+            var pendingParam2 = new PendingParams
             {
                 PendingPayer = payer,
                 Administrator = adminKey,
-                Memo = memo,
-                Signatory = signatoryKey
+                Memo = memo
             };
 
             Assert.Equal(pendingParam1, pendingParam2);
@@ -52,62 +49,47 @@ namespace Hashgraph.Tests
         public void DisimilarPendingParamsAreNotConsideredEqual()
         {
             var payer = new Address(Generator.Integer(1, 5), Generator.Integer(1, 5), Generator.Integer(1, 5));
-            var (adminKey, signatoryKey) = Generator.KeyPair();
+            var (adminKey, _) = Generator.KeyPair();
             var memo = Generator.String(5, 75);
-            var pendingParams1 = new ScheduleParams
+            var pendingParams1 = new PendingParams
             {
                 PendingPayer = payer,
                 Administrator = adminKey,
-                Memo = memo,
-                Signatory = signatoryKey
+                Memo = memo
             };
 
-            var pendingParams2 = new ScheduleParams
+            var pendingParams2 = new PendingParams
             {
                 Administrator = adminKey,
-                Memo = memo,
-                Signatory = signatoryKey
+                Memo = memo
             };
             Assert.NotEqual(pendingParams1, pendingParams2);
             Assert.False(pendingParams1 == pendingParams2);
             Assert.True(pendingParams1 != pendingParams2);
 
-            pendingParams2 = new ScheduleParams
+            pendingParams2 = new PendingParams
             {
                 PendingPayer = payer,
-                Memo = memo,
-                Signatory = signatoryKey
+                Memo = memo
             };
             Assert.NotEqual(pendingParams1, pendingParams2);
             Assert.False(pendingParams1 == pendingParams2);
             Assert.True(pendingParams1 != pendingParams2);
 
-            pendingParams2 = new ScheduleParams
+            pendingParams2 = new PendingParams
             {
                 PendingPayer = payer,
-                Administrator = adminKey,
-                Signatory = signatoryKey
+                Administrator = adminKey
             };
             Assert.NotEqual(pendingParams1, pendingParams2);
             Assert.False(pendingParams1 == pendingParams2);
             Assert.True(pendingParams1 != pendingParams2);
 
-            pendingParams2 = new ScheduleParams
+            pendingParams2 = new PendingParams
             {
                 PendingPayer = payer,
                 Administrator = adminKey,
-                Memo = memo,
-            };
-            Assert.NotEqual(pendingParams1, pendingParams2);
-            Assert.False(pendingParams1 == pendingParams2);
-            Assert.True(pendingParams1 != pendingParams2);
-
-            pendingParams2 = new ScheduleParams
-            {
-                PendingPayer = payer,
-                Administrator = adminKey,
-                Memo = Generator.Code(80),
-                Signatory = signatoryKey
+                Memo = Generator.Code(80)
             };
             Assert.NotEqual(pendingParams1, pendingParams2);
             Assert.False(pendingParams1 == pendingParams2);

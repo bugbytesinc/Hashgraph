@@ -9,6 +9,6 @@ namespace Hashgraph.Implementation
     internal interface ISignatory
     {
         Task SignAsync(IInvoice invoice);
-        ScheduleParams? GetSchedule();
+        PendingParams? GetSchedule();
     }
 }

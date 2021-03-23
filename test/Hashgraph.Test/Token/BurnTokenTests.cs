@@ -258,13 +258,13 @@ namespace Hashgraph.Test.Token
                     amountToDestory,
                     new Signatory(
                         fxToken.SupplyPrivateKey,
-                        new ScheduleParams
+                        new PendingParams
                         {
                             PendingPayer = fxPayer
                         }));
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to Burn Token Coins, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

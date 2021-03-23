@@ -187,14 +187,14 @@ namespace Hashgraph.Test.Topic
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
                 await TestTopic.CreateAsync(_network, fx => {
-                    fx.Params.Signatory = new Signatory(fx.Signatory, new ScheduleParams
+                    fx.Params.Signatory = new Signatory(fx.Signatory, new PendingParams
                     {
                         PendingPayer = fxPayer,
                     });
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to create Consensus Topic, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

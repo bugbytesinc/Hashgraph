@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -33,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await DeleteAccountImplementationAsync(addressToDelete, transferToAddress, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoDeleteTransactionBody(addressToDelete, transferToAddress), configure, false));
         }
         /// <summary>
         /// Deletes an account from the network returning the remaining 
@@ -66,25 +65,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await DeleteAccountImplementationAsync(addressToDelete, transferToAddress, signatory, configure, false));
-        }
-        /// <summary>
-        /// Internal implementation of delete account method.
-        /// </summary>
-        private async Task<NetworkResult> DeleteAccountImplementationAsync(Address addressToDelete, Address transferToAddress, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            addressToDelete = RequireInputParameter.AddressToDelete(addressToDelete);
-            transferToAddress = RequireInputParameter.TransferToAddress(transferToAddress);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                CryptoDelete = new CryptoDeleteTransactionBody
-                {
-                    DeleteAccountID = new AccountID(addressToDelete),
-                    TransferAccountID = new AccountID(transferToAddress)
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete account, status: {0}", signatory);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoDeleteTransactionBody(addressToDelete, transferToAddress), configure, false, signatory));
         }
     }
 }

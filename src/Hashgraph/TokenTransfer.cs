@@ -1,4 +1,9 @@
-﻿namespace Hashgraph
+﻿using Google.Protobuf.Collections;
+using Proto;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+namespace Hashgraph
 {
     /// <summary>
     /// Represents a token transfer (Token, Account, Amount)
@@ -49,6 +54,34 @@
             Token = token;
             Address = address;
             Amount = amount;
+        }
+    }
+    internal static class TokenTransferExtensions
+    {
+        private static ReadOnlyCollection<TokenTransfer> EMPTY_RESULT = new List<TokenTransfer>().AsReadOnly();
+        internal static ReadOnlyCollection<TokenTransfer> Create(RepeatedField<Proto.TokenTransferList> list)
+        {
+            if (list != null && list.Count > 0)
+            {
+                var collector = new Dictionary<(Address, Address), long>();
+                foreach (var xferList in list)
+                {
+                    var token = xferList.Token.AsAddress();
+                    foreach (var xfer in xferList.Transfers)
+                    {
+                        var key = (token, xfer.AccountID.AsAddress());
+                        collector.TryGetValue(key, out long amount);
+                        collector[key] = amount + xfer.Amount;
+                    }
+                }
+                var result = new List<TokenTransfer>(collector.Count);
+                foreach (var entry in collector)
+                {
+                    result.Add(new TokenTransfer(entry.Key.Item1, entry.Key.Item2, entry.Value));
+                }
+                return result.AsReadOnly();
+            }
+            return EMPTY_RESULT;
         }
     }
 }

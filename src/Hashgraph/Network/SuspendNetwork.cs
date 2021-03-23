@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -32,26 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SuspendNetworkAsync(SuspendNetworkParams suspendParameters, Action<IContext>? configure = null)
         {
-            suspendParameters = RequireInputParameter.SuspendNetworkParams(suspendParameters);
-            await using var context = CreateChildContext(configure);
-            var startDate = DateTime.UtcNow.Add(suspendParameters.Starting);
-            var endDate = startDate.Add(suspendParameters.Duration);
-            var transactionBody = new TransactionBody
-            {
-                Freeze = new FreezeTransactionBody
-                {
-                    StartHour = startDate.Hour,
-                    StartMin = startDate.Minute,
-                    EndHour = endDate.Hour,
-                    EndMin = endDate.Minute,
-                }
-            };
-            if (!suspendParameters.UpdateFile.IsNullOrNone())
-            {
-                transactionBody.Freeze.UpdateFile = new FileID(suspendParameters.UpdateFile);
-                transactionBody.Freeze.FileHash = ByteString.CopyFrom(suspendParameters.UpdateFileHash.Span);
-            }
-            return new TransactionReceipt(await transactionBody.SignAndExecuteWithRetryAsync(context, false, "Failed to submit suspend/freeze command, status: {0}"));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FreezeTransactionBody(suspendParameters), configure, false));
         }
     }
 }

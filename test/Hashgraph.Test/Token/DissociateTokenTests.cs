@@ -309,14 +309,14 @@ namespace Hashgraph.Test.Token
                 await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, null);
             });
             Assert.Equal("account", ane.ParamName);
-            Assert.StartsWith("Account Address is missing. Please check that it is not null or empty", ane.Message);
+            Assert.StartsWith("Account Address is missing. Please check that it is not null.", ane.Message);
 
-            ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
                 await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, Address.None);
             });
-            Assert.Equal("account", ane.ParamName);
-            Assert.StartsWith("Account Address is missing. Please check that it is not null or empty", ane.Message);
+            Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
+            Assert.StartsWith("Unable to Dissociate Token from Account, status: InvalidAccountId", tex.Message);
         }
         [Fact(DisplayName = "Dissociate Tokens: Dissociating with Deleted Account Raises Error")]
         public async Task DissociatingWithDeletedAccountRaisesError()
@@ -452,13 +452,13 @@ namespace Hashgraph.Test.Token
                     fxAccount.Record.Address,
                     new Signatory(
                         fxAccount.PrivateKey,
-                        new ScheduleParams
+                        new PendingParams
                         {
                             PendingPayer = fxPayer
                         }));
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to Dissociate Token from Account, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

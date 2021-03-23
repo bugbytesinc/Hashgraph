@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -29,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AppendFileAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await AppendFileImplementationAsync(appendParameters, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FileAppendTransactionBody(appendParameters), configure, false, appendParameters.Signatory));
         }
         /// <summary>
         /// Appends content to an existing file.
@@ -52,25 +50,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AppendFileWithRecordAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await AppendFileImplementationAsync(appendParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal helper function implementing file append services.
-        /// </summary>
-        private async Task<NetworkResult> AppendFileImplementationAsync(AppendFileParams appendParameters, Action<IContext>? configure, bool includeRecord)
-        {
-            appendParameters = RequireInputParameter.AppendParameters(appendParameters);
-            await using var context = CreateChildContext(configure);
-            var appendFileBody = new FileAppendTransactionBody
-            {
-                FileID = new FileID(appendParameters.File),
-                Contents = ByteString.CopyFrom(appendParameters.Contents.ToArray())
-            };
-            var transactionBody = new TransactionBody
-            {
-                FileAppend = appendFileBody
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to append to file, status: {0}", appendParameters.Signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(new FileAppendTransactionBody(appendParameters), configure, true, appendParameters.Signatory));
         }
     }
 }

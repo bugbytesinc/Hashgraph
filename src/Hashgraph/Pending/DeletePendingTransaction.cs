@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -27,9 +26,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeletePendingTransactionAsync(Address pending, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeletePendingTransactionAsync(Address pending, Action<IContext>? configure = null)
         {
-            return DeletePendingTransactionImplementationAsync(pending, null, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ScheduleDeleteTransactionBody(pending), configure, false));
         }
         /// <summary>
         /// Deletes a token from the network. Must be signed by the admin key.
@@ -54,25 +53,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeletePendingTransactionAsync(Address pending, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeletePendingTransactionAsync(Address pending, Signatory signatory, Action<IContext>? configure = null)
         {
-            return DeletePendingTransactionImplementationAsync(pending, signatory, configure);
-        }
-        /// <summary>
-        /// Internal implementation of delete token method.
-        /// </summary>
-        private async Task<TransactionReceipt> DeletePendingTransactionImplementationAsync(Address pending, Signatory? signatory, Action<IContext>? configure)
-        {
-            pending = RequireInputParameter.Pending(pending);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                ScheduleDelete = new ScheduleDeleteTransactionBody
-                {
-                    ScheduleID = new ScheduleID(pending)
-                }
-            };
-            return new TransactionReceipt(await transactionBody.SignAndExecuteWithRetryAsync(context, false, "Unable to Delete Pending Transaction, status: {0}", signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ScheduleDeleteTransactionBody(pending), configure, false, signatory));
         }
     }
 }

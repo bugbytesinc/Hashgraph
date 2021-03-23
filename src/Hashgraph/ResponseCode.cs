@@ -667,20 +667,36 @@ namespace Hashgraph
         /// </summary>
         [Description("UNRESOLVABLE_REQUIRED_SIGNERS")] UnresolvableRequiredSigners = 206,
         /// <summary>
-        /// The bytes allegedly representing a transaction to be scheduled could not be parsed
+        /// Only whitelisted transaction types may be scheduled
         /// </summary>
-        [Description("UNPARSEABLE_SCHEDULED_TRANSACTION")] UnparseableScheduledTransaction = 207,
-        /// <summary>
-        /// ScheduleCreate and ScheduleSign transactions cannot be scheduled
-        /// </summary>
-        [Description("UNSCHEDULABLE_TRANSACTION")] UnschedulableTransaction = 208,
+        [Description("SCHEDULED_TRANSACTION_NOT_IN_WHITELIST")] ScheduledTransactionNotInWhitelist = 207,
         /// <summary>
         /// At least one of the signatures in the provided sig map did not represent a valid signature for any required signer
         /// </summary>
-        [Description("SOME_SIGNATURES_WERE_INVALID")] SomeSignaturesWereInvalid = 209,
+        [Description("SOME_SIGNATURES_WERE_INVALID")] SomeSignaturesWereInvalid = 208,
         /// <summary>
-        /// The &lt;tt>scheduled&lt;/tt> and &lt;tt>nonce&lt;/tt> fields in the &lt;tt>TransactionID&lt;/tt> may not be set in a top-level transaction
+        /// The scheduled field in the TransactionID may not be set to true
         /// </summary>
-        [Description("TRANSACTION_ID_FIELD_NOT_ALLOWED")] TransactionIdFieldNotAllowed = 210,
+        [Description("TRANSACTION_ID_FIELD_NOT_ALLOWED")] TransactionIdFieldNotAllowed = 209,
+        /// <summary>
+        /// A schedule already exists with the same identifying fields of an attempted ScheduleCreate (that is, all fields other than scheduledPayerAccountID)
+        /// </summary>
+        [Description("IDENTICAL_SCHEDULE_ALREADY_CREATED")] IdenticalScheduleAlreadyCreated = 210,
+        /// <summary>
+        /// A string field in the transaction has a UTF-8 encoding with the prohibited zero byte
+        /// </summary>
+        [Description("INVALID_ZERO_BYTE_IN_STRING")] InvalidZeroByteInString = 211,
+        /// <summary>
+        /// A schedule being signed or deleted has already been deleted
+        /// </summary>
+        [Description("SCHEDULE_ALREADY_DELETED")] ScheduleAlreadyDeleted = 212,
+        /// <summary>
+        /// A schedule being signed or deleted has already been executed
+        /// </summary>
+        [Description("SCHEDULE_ALREADY_EXECUTED")] ScheduleAlreadyExecuted = 213,
+        /// <summary>
+        /// ConsensusSubmitMessage request's message size is larger than allowed.
+        /// </summary>
+        [Description("MESSAGE_SIZE_TOO_LARGE")] MessageSizeTooLarge = 214,
     }
 }

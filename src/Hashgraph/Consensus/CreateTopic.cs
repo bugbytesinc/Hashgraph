@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -28,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateTopicReceipt> CreateTopicAsync(CreateTopicParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateTopicReceipt(await CreateTopicImplementationAsync(createParameters, configure, false));
+            return new CreateTopicReceipt(await ExecuteTransactionAsync(new ConsensusCreateTopicTransactionBody(createParameters), configure, false, createParameters.Signatory));
         }
         /// <summary>
         /// Creates a new topic instance with the given create parameters.
@@ -51,27 +50,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateTopicRecord> CreateTopicWithRecordAsync(CreateTopicParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateTopicRecord(await CreateTopicImplementationAsync(createParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of the Create ConsensusTopic service.
-        /// </summary>
-        private async Task<NetworkResult> CreateTopicImplementationAsync(CreateTopicParams createParameters, Action<IContext>? configure, bool includeRecord)
-        {
-            createParameters = RequireInputParameter.CreateParameters(createParameters);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                ConsensusCreateTopic = new ConsensusCreateTopicTransactionBody
-                {
-                    Memo = createParameters.Memo,
-                    AdminKey = createParameters.Administrator is null ? null : new Key(createParameters.Administrator),
-                    SubmitKey = createParameters.Participant is null ? null : new Key(createParameters.Participant),
-                    AutoRenewPeriod = new Duration(createParameters.RenewPeriod),
-                    AutoRenewAccount = createParameters.RenewAccount is null ? null : new AccountID(createParameters.RenewAccount)
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create Consensus Topic, status: {0}", createParameters.Signatory);
+            return new CreateTopicRecord(await ExecuteTransactionAsync(new ConsensusCreateTopicTransactionBody(createParameters), configure, true, createParameters.Signatory));
         }
     }
 }

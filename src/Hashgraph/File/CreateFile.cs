@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -30,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<FileReceipt> CreateFileAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
         {
-            return new FileReceipt(await CreateFileImplementationAsync(createParameters, configure, false));
+            return new FileReceipt(await ExecuteTransactionAsync(new FileCreateTransactionBody(createParameters), configure, false, createParameters.Signatory));
         }
         /// <summary>
         /// Creates a new file with the given content.
@@ -54,26 +52,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<FileRecord> CreateFileWithRecordAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
         {
-            return new FileRecord(await CreateFileImplementationAsync(createParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of the Create File service.
-        /// </summary>
-        private async Task<NetworkResult> CreateFileImplementationAsync(CreateFileParams createParameters, Action<IContext>? configure, bool includeRecord)
-        {
-            createParameters = RequireInputParameter.CreateParameters(createParameters);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                FileCreate = new FileCreateTransactionBody
-                {
-                    ExpirationTime = new Timestamp(createParameters.Expiration),
-                    Keys = new KeyList(createParameters.Endorsements),
-                    Contents = ByteString.CopyFrom(createParameters.Contents.ToArray()),
-                    Memo = createParameters.Memo ?? ""
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create file, status: {0}", createParameters.Signatory);
+            return new FileRecord(await ExecuteTransactionAsync(new FileCreateTransactionBody(createParameters), configure, true, createParameters.Signatory));
         }
     }
 }

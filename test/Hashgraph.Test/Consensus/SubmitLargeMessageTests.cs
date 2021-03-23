@@ -416,7 +416,7 @@ namespace Hashgraph.Test.Topic
                 segmentSize,
                 new Signatory(
                     fxTopic.ParticipantPrivateKey,
-                    new ScheduleParams
+                    new PendingParams
                     {
                         PendingPayer = fxPayer
                     }));
@@ -429,14 +429,9 @@ namespace Hashgraph.Test.Topic
                 Assert.True(receipt.RunningHash.IsEmpty);
                 Assert.Equal(0ul, receipt.RunningHashVersion);
                 Assert.NotNull(receipt.Pending);
-                Assert.False(receipt.Pending.TransactionBody.IsEmpty);
-                var executed = await fxPayer.Client.SignPendingTransactionAsync(new SignPendingTransactionParams { 
-                    Pending = receipt.Pending.Pending,
-                    TransactionBody = receipt.Pending.TransactionBody,
-                    Signatory = fxPayer
-                });
+                var executed = await fxPayer.Client.SignPendingTransactionAsync(receipt.Pending.Id, fxPayer);
                 Assert.Equal(ResponseCode.Success, executed.Status);
-                var record = await fxPayer.Client.GetTransactionRecordAsync(receipt.Id.AsPending());
+                var record = await fxPayer.Client.GetTransactionRecordAsync(receipt.Pending.TxId);
                 Assert.Equal(ResponseCode.Success, record.Status);
             }
 

@@ -74,21 +74,33 @@ namespace Hashgraph
         private async Task<NetworkResult> SubmitUnsafeTransactionImplementationAsync(ReadOnlyMemory<byte> transaction, Action<IContext>? configure, bool includeRecord)
         {
             var result = new NetworkResult();
-            var innerTransactionId = result.TransactionID = RequireInputParameter.IdFromTransactionBytes(transaction);
+            var innerTransactionId = result.TransactionID = idFromTransactionBytes(transaction);
             await using var context = CreateChildContext(configure);
+            var gateway = context.Gateway;
+            if (gateway is null)
+            {
+                throw new InvalidOperationException("The Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
+            }
             var signatories = context.GatherSignatories();
             var outerTransactionId = context.GetOrCreateTransactionID();
+            var uncheckedSubmitBody = new UncheckedSubmitBody(transaction);
             // Note: custom transaction body, does not carry a max fee since 
             // the inner transaction is the transaction to process, it still 
             // must be signed however.
             var transactionBody = new TransactionBody
             {
                 TransactionID = outerTransactionId,
-                NodeAccountID = new AccountID(RequireInContext.Gateway(context)),
+                NodeAccountID = new AccountID(gateway),
                 TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
-                UncheckedSubmit = new UncheckedSubmitBody { TransactionBytes = ByteString.CopyFrom(transaction.Span) }
+                UncheckedSubmit = uncheckedSubmitBody
             };
-            var precheck = await transactionBody.SignAndSubmitWithRetryAsync(signatories, context);
+            var invoice = new Invoice(transactionBody);
+            await signatories.SignAsync(invoice);
+            var signedTransaction = new Transaction
+            {
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(context.SignaturePrefixTrimLimit).ToByteString()
+            };
+            var precheck = await context.ExecuteSignedRequestWithRetryImplementationAsync(signedTransaction, (uncheckedSubmitBody as INetworkTransaction).InstantiateNetworkRequestMethod, getResponseCode);
             if (precheck.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
             {
                 var responseCode = (ResponseCode)precheck.NodeTransactionPrecheckCode;
@@ -107,9 +119,62 @@ namespace Hashgraph
             }
             if (includeRecord)
             {
-                result.Record = await context.GetTransactionRecordAsync(innerTransactionId);
+                result.Record = await GetTransactionRecordAsync(context, innerTransactionId);
             }
             return result!;
+
+            static ResponseCodeEnum getResponseCode(TransactionResponse response)
+            {
+                return response.NodeTransactionPrecheckCode;
+            }
+
+            static TransactionID idFromTransactionBytes(ReadOnlyMemory<byte> transaction)
+            {
+                Transaction decodedTransaction;
+                SignedTransaction decodedSignedTransaction;
+                TransactionBody decodedTransactionBody;
+                if (transaction.IsEmpty)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(transaction), "Missing Transaction Bytes (was empty.)");
+                }
+                try
+                {
+                    decodedTransaction = Transaction.Parser.ParseFrom(transaction.ToArray());
+                }
+                catch (Exception pe)
+                {
+                    throw new ArgumentException(nameof(transaction), "The submitted bytes do not appear to belong to a transaction.", pe);
+                }
+                if (decodedTransaction.SignedTransactionBytes.IsEmpty)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(transaction), "Missing Signed Transaction Bytes on Transaction (was empty.)");
+                }
+                try
+                {
+                    decodedSignedTransaction = Proto.SignedTransaction.Parser.ParseFrom(decodedTransaction.SignedTransactionBytes);
+                }
+                catch (Exception pe)
+                {
+                    throw new ArgumentException(nameof(transaction), "The submitted transaction does not appear to have a parsable signed transaction byte array.", pe);
+                }
+                try
+                {
+                    decodedTransactionBody = Proto.TransactionBody.Parser.ParseFrom(decodedSignedTransaction.BodyBytes);
+                }
+                catch (Exception pe)
+                {
+                    throw new ArgumentException(nameof(transaction), "The submitted bytes do not appear to have a transaction body.", pe);
+                }
+                if (decodedTransactionBody is null)
+                {
+                    throw new ArgumentException(nameof(transaction), "The submitted bytes do not appear to have a transaction body.");
+                }
+                if (decodedTransactionBody.TransactionID is null)
+                {
+                    throw new ArgumentException(nameof(transaction), "The submitted transaction bytes do not appear to contain a transaction id.");
+                }
+                return decodedTransactionBody.TransactionID;
+            }
         }
     }
 }

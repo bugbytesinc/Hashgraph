@@ -339,13 +339,13 @@ namespace Hashgraph.Test.Token
             await using var fxToken = await TestToken.CreateAsync(_network);
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fxToken.Client.DeleteTokenAsync(fxToken.Record.Token, new Signatory(fxToken.AdminPrivateKey, new ScheduleParams
+                await fxToken.Client.DeleteTokenAsync(fxToken.Record.Token, new Signatory(fxToken.AdminPrivateKey, new PendingParams
                 {
                     PendingPayer = fxPayer,
                 }));
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to Delete Token, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

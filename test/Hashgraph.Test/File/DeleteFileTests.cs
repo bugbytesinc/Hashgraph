@@ -83,13 +83,13 @@ namespace Hashgraph.Test.File
                     fxFile.Record.File,
                     new Signatory(
                         fxFile.PrivateKey,
-                        new ScheduleParams
+                        new PendingParams
                         {
                             PendingPayer = fxPayer
                         }));
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to delete file, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

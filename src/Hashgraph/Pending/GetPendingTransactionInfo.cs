@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -27,17 +26,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<PendingTransactionInfo> GetPendingTransactionInfoAsync(Address pending, Action<IContext>? configure = null)
         {
-            pending = RequireInputParameter.Pending(pending);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                ScheduleGetInfo = new ScheduleGetInfoQuery
-                {
-                    ScheduleID = new ScheduleID(pending)
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            return response.ScheduleGetInfo.ScheduleInfo.ToPendingTransactionInfo();
+            return new PendingTransactionInfo(await ExecuteQueryAsync(new ScheduleGetInfoQuery(pending), configure));
         }
     }
 }

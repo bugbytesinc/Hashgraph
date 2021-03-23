@@ -1,7 +1,5 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -41,7 +39,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> TransferTokensAsync(Address token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await TransferTokenImplementationAsync(token, fromAddress, toAddress, amount, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(token, fromAddress, toAddress, amount), configure, false));
         }
         /// <summary>
         /// Transfer tokens from one account to another.
@@ -80,7 +78,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> TransferTokensAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await TransferTokenImplementationAsync(token, fromAddress, toAddress, amount, signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(token, fromAddress, toAddress, amount), configure, false, signatory));
         }
         /// <summary>
         /// Transfer tokens from one account to another.
@@ -115,7 +113,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> TransferTokensWithRecordAsync(Address token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await TransferTokenImplementationAsync(token, fromAddress, toAddress, amount, null, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(token, fromAddress, toAddress, amount), configure, true));
         }
         /// <summary>
         /// Transfer tokens from one account to another.
@@ -154,33 +152,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> TransferTokensWithRecordAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await TransferTokenImplementationAsync(token, fromAddress, toAddress, amount, signatory, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation for Single Transfer Crypto
-        /// Returns either a receipt or record or throws
-        /// an exception.
-        /// </summary>
-        private async Task<NetworkResult> TransferTokenImplementationAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            amount = RequireInputParameter.Amount(amount);
-            var transactions = new List<TokenTransferList>(1);
-            var xferList = new TokenTransferList
-            {
-                Token = new TokenID(RequireInputParameter.Token(token))
-            };
-            xferList.Transfers.Add(new AccountAmount
-            {
-                AccountID = new AccountID(RequireInputParameter.FromAddress(fromAddress)),
-                Amount = -amount
-            });
-            xferList.Transfers.Add(new AccountAmount
-            {
-                AccountID = new AccountID(RequireInputParameter.ToAddress(toAddress)),
-                Amount = amount
-            });
-            transactions.Add(xferList);
-            return await TransferImplementationAsync(null, transactions, signatory, configure, includeRecord);
+            return new TransactionRecord(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(token, fromAddress, toAddress, amount), configure, true, signatory));
         }
     }
 }

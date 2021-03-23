@@ -45,7 +45,7 @@ namespace Hashgraph.Test.Record
             {
                 await client.GetAccountRecordsAsync(null);
             });
-            Assert.Equal("address", ane.ParamName);
+            Assert.Equal("account", ane.ParamName);
             Assert.StartsWith("Account Address is missing. Please check that it is not null.", ane.Message);
         }
         [Fact(DisplayName = "Account Records: Get with Deleted Account raises Error.")]

@@ -1,4 +1,4 @@
-﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
+﻿using Proto;
 using System;
 
 namespace Hashgraph
@@ -13,64 +13,64 @@ namespace Hashgraph
         /// <summary>
         /// The Hedera address of this token.
         /// </summary>
-        public Address Token { get; internal init; }
+        public Address Token { get; private init; }
         /// <summary>
         /// The string symbol representing this token.
         /// </summary>
-        public string Symbol { get; internal init; }
+        public string Symbol { get; private init; }
         /// <summary>
         /// Name of this token
         /// </summary>
-        public string Name { get; internal init; }
+        public string Name { get; private init; }
         /// <summary>
         /// The treasury account holding uncirculated tokens.
         /// </summary>
-        public Address Treasury { get; internal init; }
+        public Address Treasury { get; private init; }
         /// <summary>
         /// The total balance of tokens in all accounts (the whole denomination).
         /// </summary>
-        public ulong Circulation { get; internal init; }
+        public ulong Circulation { get; private init; }
         /// <summary>
         /// The number of decimal places which each token may be subdivided.
         /// </summary>
-        public uint Decimals { get; internal init; }
+        public uint Decimals { get; private init; }
         /// <summary>
         /// Administrator key for signing transactions modifying this token's properties.
         /// </summary>
-        public Endorsement? Administrator { get; internal init; }
+        public Endorsement? Administrator { get; private init; }
         /// <summary>
         /// Administrator key for signing transactions updating the grant or revoke 
         /// KYC status of an account.
         /// </summary>
-        public Endorsement? GrantKycEndorsement { get; internal init; }
+        public Endorsement? GrantKycEndorsement { get; private init; }
         /// <summary>
         /// Administrator key for signing transactions for freezing or unfreezing an 
         /// account's ability to transfer tokens.
         /// </summary>
-        public Endorsement? SuspendEndorsement { get; internal init; }
+        public Endorsement? SuspendEndorsement { get; private init; }
         /// <summary>
         /// Administrator key for signing transaction that completely remove tokens
         /// from an crypto address.
         /// </summary>
-        public Endorsement? ConfiscateEndorsement { get; internal init; }
+        public Endorsement? ConfiscateEndorsement { get; private init; }
         /// <summary>
         /// Administrator key for signing transactions for minting or unminting 
         /// tokens in the treasury account.
         /// </summary>
-        public Endorsement? SupplyEndorsement { get; internal init; }
+        public Endorsement? SupplyEndorsement { get; private init; }
         /// <summary>
         /// The current default suspended/frozen status of the token.
         /// </summary>
-        public TokenTradableStatus TradableStatus { get; internal init; }
+        public TokenTradableStatus TradableStatus { get; private init; }
         /// <summary>
         /// The current default KYC status of the token.
         /// </summary>
-        public TokenKycStatus KycStatus { get; internal init; }
+        public TokenKycStatus KycStatus { get; private init; }
         /// <summary>
         /// Expiration date for the token.  Will renew as determined by the
         /// renew period and balance of auto renew account.
         /// </summary>
-        public DateTime Expiration { get; internal init; }
+        public DateTime Expiration { get; private init; }
         /// <summary>
         /// Interval of the topic and auto-renewal period. If
         /// the associated renewal account does not have sufficient funds to 
@@ -78,7 +78,7 @@ namespace Hashgraph
         /// of time the remaining funds can support.  If no funds remain, the
         /// topic instance will be deleted.
         /// </summary>
-        public TimeSpan? RenewPeriod { get; internal init; }
+        public TimeSpan? RenewPeriod { get; private init; }
         /// <summary>
         /// Optional address of the account supporting the auto renewal of 
         /// the token at expiration time.  The topic lifetime will be
@@ -90,14 +90,36 @@ namespace Hashgraph
         /// <remarks>
         /// If specified, an Administrator Endorsement must also be specified.
         /// </remarks>
-        public Address? RenewAccount { get; internal init; }
+        public Address? RenewAccount { get; private init; }
         /// <summary>
         /// Flag indicating the token has been deleted.
         /// </summary>
-        public bool Deleted { get; internal init; }
+        public bool Deleted { get; private init; }
         /// <summary>
         /// The memo associated with the token instance.
         /// </summary>
-        public string Memo { get; internal init; }
+        public string Memo { get; private init; }
+        internal TokenInfo(Response response)
+        {
+            var info = response.TokenGetInfo.TokenInfo;
+            Token = info.TokenId.AsAddress();
+            Symbol = info.Symbol;
+            Name = info.Name;
+            Treasury = info.Treasury.AsAddress();
+            Circulation = info.TotalSupply;
+            Decimals = info.Decimals;
+            Administrator = info.AdminKey?.ToEndorsement();
+            GrantKycEndorsement = info.KycKey?.ToEndorsement();
+            SuspendEndorsement = info.FreezeKey?.ToEndorsement();
+            ConfiscateEndorsement = info.WipeKey?.ToEndorsement();
+            SupplyEndorsement = info.SupplyKey?.ToEndorsement();
+            TradableStatus = (TokenTradableStatus)info.DefaultFreezeStatus;
+            KycStatus = (TokenKycStatus)info.DefaultKycStatus;
+            Expiration = info.Expiry.ToDateTime();
+            RenewPeriod = info.AutoRenewPeriod?.ToTimeSpan();
+            RenewAccount = info.AutoRenewAccount?.AsAddress();
+            Deleted = info.Deleted;
+            Memo = info.Memo;
+        }
     }
 }

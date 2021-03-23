@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -23,9 +22,9 @@ namespace Hashgraph
         /// account in addition to a list of all tokens held by the account
         /// with their balances.
         /// </returns>
-        public Task<AccountBalances> GetAccountBalancesAsync(Address address, Action<IContext>? configure = null)
+        public async Task<AccountBalances> GetAccountBalancesAsync(Address address, Action<IContext>? configure = null)
         {
-            return GetAccountBalancesImplementationAsync(address, configure);
+            return new AccountBalances(await ExecuteQueryAsync(CryptoGetAccountBalanceQuery.ForAccount(address), configure));
         }
         /// <summary>
         /// Retrieves the balance in tinybars from the network for a given address.
@@ -46,24 +45,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<ulong> GetAccountBalanceAsync(Address address, Action<IContext>? configure = null)
         {
-            return (await GetAccountBalancesImplementationAsync(address, configure)).Crypto;
-        }
-        /// <summary>
-        /// Internal Implementation of the Get Account Balances.
-        /// </summary>
-        private async Task<AccountBalances> GetAccountBalancesImplementationAsync(Address address, Action<IContext>? configure)
-        {
-            address = RequireInputParameter.Address(address);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                CryptogetAccountBalance = new CryptoGetAccountBalanceQuery
-                {
-                    AccountID = new AccountID(address)
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            return response.CryptogetAccountBalance.ToAccountBalances();
+            return new AccountBalances(await ExecuteQueryAsync(CryptoGetAccountBalanceQuery.ForAccount(address), configure)).Crypto;
         }
     }
 }

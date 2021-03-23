@@ -222,12 +222,12 @@ namespace Hashgraph.Test.Contract
                 {
                     fx.ContractParams.Signatory = new Signatory(
                         fx.ContractParams.Signatory,
-                        new ScheduleParams { PendingPayer = fxPayer }
+                        new PendingParams { PendingPayer = fxPayer }
                     );
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to create contract, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

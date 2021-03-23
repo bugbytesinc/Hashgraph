@@ -361,12 +361,12 @@ namespace Hashgraph.Test.Crypto
                     RequireReceiveSignature = newValue,
                     Signatory = new Signatory(
                         fxAccount,
-                        new ScheduleParams {  PendingPayer = fxPayer }
+                        new PendingParams {  PendingPayer = fxPayer }
                     )
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to update account, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
         [Fact(DisplayName = "Update Account: Can Update Multiple Properties at Once")]
         public async Task CanUpdateMultiplePropertiesAtOnce()

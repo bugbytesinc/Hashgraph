@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Test.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,12 +21,7 @@ namespace Hashgraph.Test.Schedule
             await using var pendingFx = await TestPendingTransfer.CreateAsync(_network);
             Assert.Equal(ResponseCode.Success, pendingFx.Record.Status);
 
-            var receipt = await pendingFx.Client.SignPendingTransactionAsync(new SignPendingTransactionParams
-            {
-                Pending = pendingFx.Record.Pending.Pending,
-                TransactionBody = pendingFx.Record.Pending.TransactionBody,
-                Signatory = pendingFx.SendingAccount.PrivateKey
-            });
+            var receipt = await pendingFx.Client.SignPendingTransactionAsync(pendingFx.Record.Pending.Id, pendingFx.SendingAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
             Assert.NotEqual(TxId.None, receipt.Id);
             Assert.Null(receipt.Pending);
@@ -42,12 +36,7 @@ namespace Hashgraph.Test.Schedule
             await using var pendingFx = await TestPendingTransfer.CreateAsync(_network);
             Assert.Equal(ResponseCode.Success, pendingFx.Record.Status);
 
-            var record = await pendingFx.Client.SignPendingTransactionWithRecordAsync(new SignPendingTransactionParams
-            {
-                Pending = pendingFx.Record.Pending.Pending,
-                TransactionBody = pendingFx.Record.Pending.TransactionBody,
-                Signatory = pendingFx.SendingAccount.PrivateKey
-            });
+            var record = await pendingFx.Client.SignPendingTransactionWithRecordAsync(pendingFx.Record.Pending.Id, pendingFx.SendingAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.NotEqual(TxId.None, record.Id);
             Assert.Null(record.Pending);
@@ -65,39 +54,27 @@ namespace Hashgraph.Test.Schedule
         {
             await using var pendingFx = await TestPendingTransfer.CreateAsync(_network, fx =>
             {
-                fx.TransferParams.Signatory = new ScheduleParams
-                {
-                    PendingPayer = fx.PayingAccount,
-                    Administrator = fx.PublicKey,
-                    Signatory = fx.PrivateKey,
-                    Memo = fx.Memo
-                };
+                fx.TransferParams.Signatory = new Signatory(
+                    fx.PrivateKey,
+                    new PendingParams
+                    {
+                        PendingPayer = fx.PayingAccount,
+                        Administrator = fx.PublicKey,
+                        Memo = fx.Memo,
+                    });
             });
-            var info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Pending);
+            var info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
             Assert.Empty(info.Endorsements);
 
-            await pendingFx.Client.SignPendingTransactionWithRecordAsync(new SignPendingTransactionParams
-            {
-                Pending = pendingFx.Record.Pending.Pending,
-                TransactionBody = pendingFx.Record.Pending.TransactionBody,
-                Signatory = pendingFx.SendingAccount.PrivateKey
-            });
-            info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Pending);
+            await pendingFx.Client.SignPendingTransactionWithRecordAsync(pendingFx.Record.Pending.Id, pendingFx.SendingAccount.PrivateKey);
+            info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
             Assert.Single(info.Endorsements);
+            Assert.Null(info.Executed);
 
-            await pendingFx.Client.SignPendingTransactionWithRecordAsync(new SignPendingTransactionParams
-            {
-                Pending = pendingFx.Record.Pending.Pending,
-                TransactionBody = pendingFx.Record.Pending.TransactionBody,
-                Signatory = pendingFx.PayingAccount.PrivateKey
-            });
-
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Pending);
-            });
-            Assert.Equal(ResponseCode.InvalidScheduleId, pex.Status);
-            Assert.StartsWith("Transaction Failed Pre-Check: InvalidScheduleId", pex.Message);
+            await pendingFx.Client.SignPendingTransactionWithRecordAsync(pendingFx.Record.Pending.Id, pendingFx.PayingAccount.PrivateKey);
+            info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
+            Assert.Equal(2, info.Endorsements.Length);
+            Assert.NotNull(info.Executed);
         }
 
         // todo add the delete to the cleanup

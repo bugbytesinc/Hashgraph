@@ -39,11 +39,11 @@ namespace Hashgraph.Test.Fixtures
                 },
                 Signatory = new Signatory(
                     fx.PayingAccount.PrivateKey,
-                    new ScheduleParams
+                    fx.PrivateKey,
+                    new PendingParams
                     {
                         PendingPayer = fx.PayingAccount,
                         Administrator = fx.PublicKey,
-                        Signatory = fx.PrivateKey,
                         Memo = fx.Memo
                     })
             };
@@ -61,7 +61,7 @@ namespace Hashgraph.Test.Fixtures
             {
                 if (!PrivateKey.IsEmpty)
                 {
-                    await Client.DeletePendingTransactionAsync(Record.Pending.Pending, PrivateKey, ctx =>
+                    await Client.DeletePendingTransactionAsync(Record.Pending.Id, PrivateKey, ctx =>
                     {
                         ctx.Memo = "TestPendingTransfer Teardown: Delete Pending TX (may already be deleted)";
                     });

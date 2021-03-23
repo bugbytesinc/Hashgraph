@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,18 +28,8 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<TransactionRecord[]> GetAccountRecordsAsync(Address address, Action<IContext>? configure = null)
         {
-            address = RequireInputParameter.Address(address);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                CryptoGetAccountRecords = new CryptoGetAccountRecordsQuery
-                {
-                    AccountID = new AccountID(address)
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-
-            return response.CryptoGetAccountRecords.Records.ToTransactionRecordList(null).ToArray();
+            var response = await ExecuteQueryAsync(new CryptoGetAccountRecordsQuery(address), configure);
+            return TransactionRecordExtensions.Create(response.CryptoGetAccountRecords.Records, null).ToArray();
         }
     }
 }

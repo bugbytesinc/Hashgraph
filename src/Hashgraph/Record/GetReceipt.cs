@@ -1,5 +1,4 @@
-﻿#pragma warning disable IDE0066
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Collections.ObjectModel;
@@ -36,7 +35,6 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network has no record of the transaction or request has invalid or had missing data.</exception>
         public async Task<TransactionReceipt> GetReceiptAsync(TxId transaction, Action<IContext>? configure = null)
         {
-            transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
             var receipt = await context.GetReceiptAsync(transactionId);
@@ -73,24 +71,16 @@ namespace Hashgraph
         /// respond.</exception>
         public async Task<ReadOnlyCollection<TransactionReceipt>> GetAllReceiptsAsync(TxId transaction, Action<IContext>? configure = null)
         {
-            transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
-            var query = new Query
-            {
-                TransactionGetReceipt = new TransactionGetReceiptQuery
-                {
-                    TransactionID = transactionId,
-                    IncludeDuplicates = true
-                }
-            };
-            var response = await context.ExecuteNetworkRequestWithRetryAsync(query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            var query = new TransactionGetReceiptQuery(transactionId, true) as INetworkQuery;
+            var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             if (responseCode == ResponseCodeEnum.Busy)
             {
                 throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.AsTxId(), (ResponseCode)responseCode);
             }
-            return response.TransactionGetReceipt.DuplicateTransactionReceipts.ToTransactionReceiptList(response.TransactionGetReceipt.Receipt, transactionId);
+            return TransactionReceiptExtensions.Create(response.TransactionGetReceipt.DuplicateTransactionReceipts, response.TransactionGetReceipt.Receipt, transactionId);
 
             static bool shouldRetry(Response response)
             {

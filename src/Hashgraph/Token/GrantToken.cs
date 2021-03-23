@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -31,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> GrantTokenKycAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await GrantTokenKycImplementationAsync(token, address, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenGrantKycTransactionBody(token, address), configure, false));
         }
         /// <summary>
         /// Grants KYC status to the associated account's relating to the specified token.
@@ -61,7 +60,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> GrantTokenKycAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await GrantTokenKycImplementationAsync(token, address, signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenGrantKycTransactionBody(token, address), configure, false, signatory));
         }
         /// <summary>
         /// Grants KYC status to the associated account's relating to the specified token.
@@ -87,7 +86,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> GrantTokenKycWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await GrantTokenKycImplementationAsync(token, address, null, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenGrantKycTransactionBody(token, address), configure, true));
         }
         /// <summary>
         /// Grants KYC status to the associated account's relating to the specified token.
@@ -117,25 +116,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> GrantTokenKycWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await GrantTokenKycImplementationAsync(token, address, signatory, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of delete token method.
-        /// </summary>
-        private async Task<NetworkResult> GrantTokenKycImplementationAsync(Address token, Address address, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            token = RequireInputParameter.Token(token);
-            address = RequireInputParameter.Address(address);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                TokenGrantKyc = new TokenGrantKycTransactionBody
-                {
-                    Token = new TokenID(token),
-                    Account = new AccountID(address)
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to Grant Token, status: {0}", signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenGrantKycTransactionBody(token, address), configure, true, signatory));
         }
     }
 }

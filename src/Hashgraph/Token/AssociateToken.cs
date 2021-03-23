@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -37,8 +36,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AssociateTokenAsync(Address token, Address account, Action<IContext>? configure = null)
         {
-            var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return new TransactionReceipt(await AssociateTokenImplementationAsync(list, account, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -69,8 +67,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AssociateTokensAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
         {
-            var list = RequireInputParameter.Tokens(tokens);
-            return new TransactionReceipt(await AssociateTokenImplementationAsync(list, account, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -105,8 +102,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AssociateTokenAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return new TransactionReceipt(await AssociateTokenImplementationAsync(list, account, signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, false, signatory));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -141,8 +137,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AssociateTokensAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            var list = RequireInputParameter.Tokens(tokens);
-            return new TransactionReceipt(await AssociateTokenImplementationAsync(list, account, signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, false, signatory));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -173,8 +168,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AssociateTokenWithRecordAsync(Address token, Address account, Action<IContext>? configure = null)
         {
-            var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return new TransactionRecord(await AssociateTokenImplementationAsync(list, account, null, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, true));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -205,8 +199,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AssociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
         {
-            var list = RequireInputParameter.Tokens(tokens);
-            return new TransactionRecord(await AssociateTokenImplementationAsync(list, account, null, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, true));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -241,8 +234,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AssociateTokenWithRecordAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return new TransactionRecord(await AssociateTokenImplementationAsync(list, account, signatory, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, true, signatory));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -277,25 +269,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AssociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            var list = RequireInputParameter.Tokens(tokens);
-            return new TransactionRecord(await AssociateTokenImplementationAsync(list, account, signatory, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of associate method.
-        /// </summary>
-        private async Task<NetworkResult> AssociateTokenImplementationAsync(TokenID[] tokens, Address account, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            account = RequireInputParameter.Account(account);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                TokenAssociate = new TokenAssociateTransactionBody
-                {
-                    Account = new AccountID(account)
-                }
-            };
-            transactionBody.TokenAssociate.Tokens.AddRange(tokens);
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to associate Token with Account, status: {0}", signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, true, signatory));
         }
     }
 }

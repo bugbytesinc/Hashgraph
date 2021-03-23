@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -31,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> UpdateContractAsync(UpdateContractParams updateParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await UpdateContractImplementationAsync(updateParameters, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ContractUpdateTransactionBody(updateParameters), configure, false, updateParameters.Signatory));
         }
         /// <summary>
         /// Updates the changeable properties of a hedera network Contract.
@@ -57,44 +56,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> UpdateContractWithRecordAsync(UpdateContractParams updateParameters, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await UpdateContractImplementationAsync(updateParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of the update Contract functionality.
-        /// </summary>
-        private async Task<NetworkResult> UpdateContractImplementationAsync(UpdateContractParams updateParameters, Action<IContext>? configure, bool includeRecord)
-        {
-            updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
-            await using var context = CreateChildContext(configure);
-            var updateContractBody = new ContractUpdateTransactionBody
-            {
-                ContractID = new ContractID(updateParameters.Contract)
-            };
-            if (updateParameters.Expiration.HasValue)
-            {
-                updateContractBody.ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
-            }
-            if (!(updateParameters.Administrator is null))
-            {
-                updateContractBody.AdminKey = new Key(updateParameters.Administrator);
-            }
-            if (updateParameters.RenewPeriod.HasValue)
-            {
-                updateContractBody.AutoRenewPeriod = new Duration(updateParameters.RenewPeriod.Value);
-            }
-            if (!(updateParameters.File is null))
-            {
-                updateContractBody.FileID = new FileID(updateParameters.File);
-            }
-            if (!string.IsNullOrWhiteSpace(updateParameters.Memo))
-            {
-                updateContractBody.MemoWrapper = updateParameters.Memo;
-            }
-            var transactionBody = new TransactionBody
-            {
-                ContractUpdateInstance = updateContractBody
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to update Contract, status: {0}", updateParameters.Signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(new ContractUpdateTransactionBody(updateParameters), configure, true, updateParameters.Signatory));
         }
     }
 }

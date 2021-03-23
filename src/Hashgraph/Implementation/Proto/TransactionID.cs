@@ -1,4 +1,5 @@
 ﻿using Hashgraph;
+using System;
 
 namespace Proto
 {
@@ -6,6 +7,10 @@ namespace Proto
     {
         internal TransactionID(TxId transaction) : this()
         {
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction), "Transaction is missing. Please check that it is not null.");
+            }
             AccountID = new AccountID(transaction.Address);
             TransactionValidStart = new Timestamp
             {

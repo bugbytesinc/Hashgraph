@@ -59,12 +59,12 @@ namespace Hashgraph.Test.Contract
                         ctx.Payer = systemAddress;
                         ctx.Signatory = new Signatory(
                             _network.PrivateKey,
-                            new ScheduleParams { PendingPayer = fxPayer }
+                            new PendingParams { PendingPayer = fxPayer }
                         );
                     });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to delete contract, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

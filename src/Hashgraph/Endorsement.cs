@@ -126,9 +126,28 @@ namespace Hashgraph
         /// greater than tne number of endorsements</exception>
         public Endorsement(uint requiredCount, params Endorsement[] endorsements)
         {
+            if (endorsements is null)
+            {
+                throw new ArgumentNullException(nameof(endorsements), "The list of endorsements may not be null.");
+            }
+            else if (endorsements.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(endorsements), "At least one endorsement in a list is required.");
+            }
+            for (int i = 0; i < endorsements.Length; i++)
+            {
+                if (endorsements[i] is null)
+                {
+                    throw new ArgumentNullException(nameof(endorsements), "No endorsement within the list may be null.");
+                }
+            }
+            if (requiredCount > endorsements.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(requiredCount), "The required number of keys for a valid signature cannot exceed the number of public keys provided.");
+            }
             Type = KeyType.List;
-            _data = RequireInputParameter.Endorsements(endorsements);
-            RequiredCount = RequireInputParameter.RequiredCount(requiredCount, endorsements.Length);
+            _data = endorsements;
+            RequiredCount = requiredCount;
         }
         /// <summary>
         /// Creates an endorsement representing a single key of a
@@ -320,6 +339,13 @@ namespace Hashgraph
         public static bool operator !=(Endorsement left, Endorsement right)
         {
             return !(left == right);
+        }
+    }
+    internal static class EndorsementExtensions
+    {
+        internal static bool IsNullOrNone(this Endorsement? endorsement)
+        {
+            return endorsement is null || endorsement == Endorsement.None;
         }
     }
 }

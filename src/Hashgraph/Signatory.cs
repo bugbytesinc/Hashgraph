@@ -110,10 +110,25 @@ namespace Hashgraph
         /// One or more signatories that when combined can form a
         /// multi key signature for the transaction.
         /// </param>
-        public Signatory(params Signatory[] Signatories)
+        public Signatory(params Signatory[] signatories)
         {
+            if (signatories is null)
+            {
+                throw new ArgumentNullException(nameof(signatories), "The list of signatories may not be null.");
+            }
+            else if (signatories.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(signatories), "At least one Signatory in a list is required.");
+            }
+            for (int i = 0; i < signatories.Length; i++)
+            {
+                if (signatories[i] is null)
+                {
+                    throw new ArgumentNullException(nameof(signatories), "No signatory within the list may be null.");
+                }
+            }
             _type = Type.List;
-            _data = RequireInputParameter.Signatories(Signatories);
+            _data = signatories;
         }
         /// <summary>
         /// Create a signatory having a private key of the specified type.
@@ -172,29 +187,29 @@ namespace Hashgraph
         /// </remarks>
         public Signatory(Func<IInvoice, Task> signingCallback)
         {
+            if (signingCallback is null)
+            {
+                throw new ArgumentNullException(nameof(signingCallback), "The signing callback must not be null.");
+            }
             _type = Type.Callback;
-            _data = RequireInputParameter.SigningCallback(signingCallback);
+            _data = signingCallback;
         }
         /// <summary>
         /// Creates a signatory that indicates the transaction should be 
         /// scheduled and not immediately executed.  The params include
         /// optional details on how to schedule the transaction.
         /// </summary> 
-        /// <param name="scheduleParams">
+        /// <param name="pendingParams">
         /// The scheduling details of the pending transaction.
         /// </param>
-        public Signatory(ScheduleParams scheduleParams)
+        public Signatory(PendingParams pendingParams)
         {
-            if(scheduleParams is null)
+            if (pendingParams is null)
             {
-                throw new ArgumentNullException(nameof(scheduleParams), "Pending Parameters object cannot be null.");
-            }
-            else if((scheduleParams.Signatory as ISignatory)?.GetSchedule() is not null)
-            {
-                throw new ArgumentException("Nested Scheduling Signatories is not allowed.", nameof(scheduleParams));
+                throw new ArgumentNullException(nameof(pendingParams), "Pending Parameters object cannot be null.");
             }
             _type = Type.Pending;
-            _data = scheduleParams;
+            _data = pendingParams;
         }
         /// <summary>
         /// Convenience implict cast for creating a <code>Signatory</code> 
@@ -225,12 +240,12 @@ namespace Hashgraph
         }
         /// <summary>
         /// Convenience implicit cast for creating a <code>Signatory</code>
-        /// directly from a <see cref="ScheduleParams"/> object.
+        /// directly from a <see cref="PendingParams"/> object.
         /// </summary>
         /// <param name="pendingParams">
         /// The scheduling details of the pending transaction.
         /// </param>
-        public static implicit operator Signatory(ScheduleParams pendingParams)
+        public static implicit operator Signatory(PendingParams pendingParams)
         {
             return new Signatory(pendingParams);
         }
@@ -279,8 +294,8 @@ namespace Hashgraph
                 case Type.Callback:
                     return ReferenceEquals(_data, other._data);
                 case Type.Pending:
-                    var thisPending = (ScheduleParams)_data;
-                    var otherPending = (ScheduleParams)other._data;
+                    var thisPending = (PendingParams)_data;
+                    var otherPending = (PendingParams)other._data;
                     return thisPending.Equals(otherPending);
             }
             return false;
@@ -439,26 +454,26 @@ namespace Hashgraph
             }
         }
 
-        ScheduleParams? ISignatory.GetSchedule()
+        PendingParams? ISignatory.GetSchedule()
         {
             switch (_type)
             {
                 case Type.Pending:
-                    return (ScheduleParams)_data;
+                    return (PendingParams)_data;
                 case Type.List:
-                    ScheduleParams? result = null;
+                    PendingParams? result = null;
                     foreach (ISignatory signer in (Signatory[])_data)
                     {
                         var schedule = signer.GetSchedule();
-                        if(schedule is not null)
+                        if (schedule is not null)
                         {
-                            if(result is null)
+                            if (result is null)
                             {
                                 result = schedule;
-                            }                            
-                            else if(!result.Equals(schedule))
+                            }
+                            else if (!result.Equals(schedule))
                             {
-                                throw new InvalidOperationException("Found Multiple Schedules in Signatory, do not know which one to choose.");
+                                throw new InvalidOperationException("Found Multiple Pending Signatories, do not know which one to choose.");
                             }
                         }
                     }

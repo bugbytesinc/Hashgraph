@@ -1,7 +1,4 @@
-﻿#pragma warning disable CS0612
-using System;
-
-namespace Proto
+﻿namespace Proto
 {
     public sealed partial class QueryHeader
     {
@@ -12,13 +9,13 @@ namespace Proto
         internal TransactionID? getTransactionId()
         {
             var signedBytes = Payment?.SignedTransactionBytes;
-            if(signedBytes is not null)
+            if (signedBytes is not null)
             {
                 var bodyBytes = SignedTransaction.Parser.ParseFrom(signedBytes).BodyBytes;
-                if(bodyBytes is not null)
+                if (bodyBytes is not null)
                 {
                     return TransactionBody.Parser.ParseFrom(bodyBytes)?.TransactionID;
-                }                
+                }
             }
             return null;
         }

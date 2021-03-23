@@ -16,7 +16,7 @@ namespace Hashgraph
         /// </summary>
         internal CallContractRecord(NetworkResult result) : base(result)
         {
-            CallResult = result.Record!.ContractCallResult.ToContractCallResult();
+            CallResult = new ContractCallResult(result.Record!.ContractCallResult);
         }
     }
 }

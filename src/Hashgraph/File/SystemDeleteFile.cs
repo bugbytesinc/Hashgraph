@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ namespace Hashgraph
         /// <summary>
         /// Removes a file from the network via Administrative Delete
         /// </summary>
-        /// <param name="fileToDelete">
+        /// <param name="file">
         /// The address of the file to delete.
         /// </param>
         /// <param name="configure">
@@ -26,14 +25,14 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> SystemDeleteFileAsync(Address fileToDelete, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SystemDeleteFileAsync(Address file, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await SystemDeleteFileImplementationAsync(fileToDelete, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemDeleteTransactionBody.FromFile(file), configure, false));
         }
         /// <summary>
         /// Removes a file from the network via Administrative Delete
         /// </summary>
-        /// <param name="fileToDelete">
+        /// <param name="file">
         /// The address of the file to delete.
         /// </param>
         /// <param name="signatory">
@@ -54,14 +53,14 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> SystemDeleteFileAsync(Address fileToDelete, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SystemDeleteFileAsync(Address file, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await SystemDeleteFileImplementationAsync(fileToDelete, signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemDeleteTransactionBody.FromFile(file), configure, false, signatory));
         }
         /// <summary>
         /// Removes a file from the network via Administrative Delete
         /// </summary>
-        /// <param name="fileToDelete">
+        /// <param name="file">
         /// The address of the file to delete.
         /// </param>
         /// <param name="configure">
@@ -78,14 +77,14 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionRecord> SystemDeleteFileWithRecordAsync(Address fileToDelete, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> SystemDeleteFileWithRecordAsync(Address file, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await SystemDeleteFileImplementationAsync(fileToDelete, null, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemDeleteTransactionBody.FromFile(file), configure, true));
         }
         /// <summary>
         /// Removes a file from the network via Administrative Delete
         /// </summary>
-        /// <param name="fileToDelete">
+        /// <param name="file">
         /// The address of the file to delete.
         /// </param>
         /// <param name="signatory">
@@ -107,25 +106,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionRecord> SystemDeleteFileWithRecordAsync(Address fileToDelete, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> SystemDeleteFileWithRecordAsync(Address file, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await SystemDeleteFileImplementationAsync(fileToDelete, signatory, configure, true));
-        }
-        /// <summary>
-        /// Internal helper function implementing the file delete functionality.
-        /// </summary>
-        private async Task<NetworkResult> SystemDeleteFileImplementationAsync(Address fileToDelete, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            fileToDelete = RequireInputParameter.FileToDelete(fileToDelete);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                SystemDelete = new SystemDeleteTransactionBody
-                {
-                    FileID = new FileID(fileToDelete)
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete file, status: {0}", signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemDeleteTransactionBody.FromFile(file), configure, true, signatory));
         }
     }
 }

@@ -584,7 +584,7 @@ namespace Hashgraph.Test.Topic
                 TotalSegmentCount = 1,
                 Signatory = new Signatory( 
                     fxTopic.ParticipantPrivateKey,
-                    new ScheduleParams
+                    new PendingParams
                     {
                         PendingPayer = fxPayer
                     })
@@ -595,14 +595,9 @@ namespace Hashgraph.Test.Topic
             Assert.True(schedulingReceipt.RunningHash.IsEmpty);
             Assert.Equal(0ul, schedulingReceipt.RunningHashVersion);
 
-            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(new SignPendingTransactionParams
-            {
-                Pending = schedulingReceipt.Pending.Pending,
-                TransactionBody = schedulingReceipt.Pending.TransactionBody,
-                Signatory = fxPayer
-            });
+            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(schedulingReceipt.Pending.Id,fxPayer);
 
-            var pendingReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Id.AsPending());
+            var pendingReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Pending.TxId);
             Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
 
             var messageReceipt = Assert.IsType<SubmitMessageReceipt>(pendingReceipt);

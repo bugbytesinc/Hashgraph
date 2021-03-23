@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -31,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenReceipt> MintTokenAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
-            return new TokenReceipt(await MintTokenImplementationAsync(token, amount, null, configure, false));
+            return new TokenReceipt(await ExecuteTransactionAsync(new TokenMintTransactionBody(token, amount), configure, false));
         }
         /// <summary>
         /// Adds token coins to the treasury.
@@ -61,7 +60,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenReceipt> MintTokenAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TokenReceipt(await MintTokenImplementationAsync(token, amount, signatory, configure, false));
+            return new TokenReceipt(await ExecuteTransactionAsync(new TokenMintTransactionBody(token, amount), configure, false, signatory));
         }
         /// <summary>
         /// Adds token coins to the treasury.
@@ -87,7 +86,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenRecord> MintTokenWithRecordAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
-            return new TokenRecord(await MintTokenImplementationAsync(token, amount, null, configure, true));
+            return new TokenRecord(await ExecuteTransactionAsync(new TokenMintTransactionBody(token, amount), configure, true));
         }
         /// <summary>
         /// Adds token coins to the treasury.
@@ -117,25 +116,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenRecord> MintTokenWithRecordAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TokenRecord(await MintTokenImplementationAsync(token, amount, signatory, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of mint token method.
-        /// </summary>
-        private async Task<NetworkResult> MintTokenImplementationAsync(Address token, ulong amount, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            token = RequireInputParameter.Token(token);
-            amount = RequireInputParameter.TokenAmount(amount);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                TokenMint = new TokenMintTransactionBody
-                {
-                    Token = new TokenID(token),
-                    Amount = amount
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to Mint Token Coins, status: {0}", signatory);
+            return new TokenRecord(await ExecuteTransactionAsync(new TokenMintTransactionBody(token, amount), configure, true, signatory));
         }
     }
 }

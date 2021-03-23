@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -32,7 +31,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> ResumeTokenAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ResumeTokenImplementationAsync(token, address, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenUnfreezeAccountTransactionBody(token, address), configure, false));
         }
         /// <summary>
         /// Resumes the associated account's ability to send or
@@ -63,7 +62,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> ResumeTokenAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ResumeTokenImplementationAsync(token, address, signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenUnfreezeAccountTransactionBody(token, address), configure, false, signatory));
         }
         /// <summary>
         /// Resumes the associated account's ability to send or
@@ -90,7 +89,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> ResumeTokenWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ResumeTokenImplementationAsync(token, address, null, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenUnfreezeAccountTransactionBody(token, address), configure, true));
         }
         /// <summary>
         /// Resumes the associated account's ability to send or
@@ -121,25 +120,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> ResumeTokenWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ResumeTokenImplementationAsync(token, address, signatory, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation of delete token method.
-        /// </summary>
-        private async Task<NetworkResult> ResumeTokenImplementationAsync(Address token, Address address, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            token = RequireInputParameter.Token(token);
-            address = RequireInputParameter.Address(address);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                TokenUnfreeze = new TokenUnfreezeAccountTransactionBody
-                {
-                    Token = new TokenID(token),
-                    Account = new AccountID(address)
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to Resume Token, status: {0}", signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenUnfreezeAccountTransactionBody(token, address), configure, true, signatory));
         }
     }
 }

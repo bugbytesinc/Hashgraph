@@ -147,12 +147,12 @@ namespace Hashgraph.Test.File
                         ctx.Payer = systemAddress;
                         ctx.Signatory = new Signatory(
                             _network.PrivateKey,
-                            new ScheduleParams { PendingPayer = fxPayer }
+                            new PendingParams { PendingPayer = fxPayer }
                         );
                     });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to delete file, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

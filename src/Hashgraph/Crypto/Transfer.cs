@@ -1,7 +1,5 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -42,7 +40,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> TransferAsync(Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await TransferImplementationAsync(fromAddress, toAddress, amount, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(fromAddress, toAddress, amount), configure, false));
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -78,7 +76,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> TransferAsync(Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await TransferImplementationAsync(fromAddress, toAddress, amount, signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(fromAddress, toAddress, amount), configure, false, signatory));
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -110,7 +108,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> TransferWithRecordAsync(Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await TransferImplementationAsync(fromAddress, toAddress, amount, null, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(fromAddress, toAddress, amount), configure, true));
         }
         /// <summary>
         /// Transfer tinybars from one account to another.
@@ -146,7 +144,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> TransferWithRecordAsync(Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await TransferImplementationAsync(fromAddress, toAddress, amount, signatory, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(fromAddress, toAddress, amount), configure, true, signatory));
         }
         /// <summary>
         /// Transfer cryptocurrency and tokens in the same transaction atomically among multiple hedera accounts and contracts.
@@ -169,8 +167,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> TransferAsync(TransferParams transfers, Action<IContext>? configure = null)
         {
-            var (cryptoTransfers, tokenTransfers) = RequireInputParameter.CryptoAndTransferList(transfers);
-            return new TransactionReceipt(await TransferImplementationAsync(cryptoTransfers, tokenTransfers, transfers.Signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(transfers), configure, false, transfers.Signatory));
         }
         /// <summary>
         /// Transfer cryptocurrency and tokens in the same transaction atomically among multiple hedera accounts and contracts.
@@ -193,42 +190,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> TransferWithRecordAsync(TransferParams transfers, Action<IContext>? configure = null)
         {
-            var (cryptoTransfers, tokenTransfers) = RequireInputParameter.CryptoAndTransferList(transfers);
-            return new TransactionRecord(await TransferImplementationAsync(cryptoTransfers, tokenTransfers, transfers.Signatory, configure, true));
-        }
-        /// <summary>
-        /// Internal implementation for Transfer Crypto.
-        /// Returns either a receipt or record or throws
-        /// an exception.
-        /// </summary>
-        private Task<NetworkResult> TransferImplementationAsync(Address fromAddress, Address toAddress, long amount, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            fromAddress = RequireInputParameter.FromAddress(fromAddress);
-            toAddress = RequireInputParameter.ToAddress(toAddress);
-            amount = RequireInputParameter.Amount(amount);
-            var cryptoTransfers = RequireInputParameter.CryptoTransferList(new[] { KeyValuePair.Create(fromAddress, -amount), KeyValuePair.Create(toAddress, amount) });
-            return TransferImplementationAsync(cryptoTransfers, null, signatory, configure, includeRecord);
-        }
-        /// <summary>
-        /// Internal implementation for Multi Account Transfer Crypto and Tokens.
-        /// Returns either a receipt or record or throws an exception.
-        /// </summary>
-        private async Task<NetworkResult> TransferImplementationAsync(TransferList? cryptoTransfers, IEnumerable<TokenTransferList>? tokenTransfers, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                CryptoTransfer = new CryptoTransferTransactionBody()
-            };
-            if (cryptoTransfers != null)
-            {
-                transactionBody.CryptoTransfer.Transfers = cryptoTransfers;
-            }
-            if (tokenTransfers != null)
-            {
-                transactionBody.CryptoTransfer.TokenTransfers.AddRange(tokenTransfers);
-            }
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to execute transfers, status: {0}", signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(transfers), configure, true, transfers.Signatory));
         }
     }
 }

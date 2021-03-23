@@ -25,9 +25,8 @@ namespace Hashgraph
         /// </summary>
         internal CreateContractRecord(NetworkResult result) : base(result)
         {
-
             Contract = result.Receipt.ContractID.AsAddress();
-            CallResult = result.Record!.ContractCreateResult.ToContractCallResult();
+            CallResult = new ContractCallResult(result.Record!.ContractCreateResult);
         }
     }
 }

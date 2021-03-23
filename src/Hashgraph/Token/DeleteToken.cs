@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -27,9 +26,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteTokenAsync(Address token, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteTokenAsync(Address token, Action<IContext>? configure = null)
         {
-            return DeleteTokenImplementationAsync(token, null, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenDeleteTransactionBody(token), configure, false));
         }
         /// <summary>
         /// Deletes a token from the network. Must be signed by the admin key.
@@ -54,25 +53,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteTokenAsync(Address token, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteTokenAsync(Address token, Signatory signatory, Action<IContext>? configure = null)
         {
-            return DeleteTokenImplementationAsync(token, signatory, configure);
-        }
-        /// <summary>
-        /// Internal implementation of delete token method.
-        /// </summary>
-        private async Task<TransactionReceipt> DeleteTokenImplementationAsync(Address token, Signatory? signatory, Action<IContext>? configure)
-        {
-            token = RequireInputParameter.Token(token);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                TokenDeletion = new TokenDeleteTransactionBody
-                {
-                    Token = new TokenID(token)
-                }
-            };
-            return new TransactionReceipt(await transactionBody.SignAndExecuteWithRetryAsync(context, false, "Unable to Delete Token, status: {0}", signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenDeleteTransactionBody(token), configure, false, signatory));
         }
     }
 }

@@ -712,7 +712,7 @@ namespace Hashgraph.Test.Token
                 },
                 Signatory = new Signatory(
                     fxToken.TreasuryAccount.PrivateKey,
-                    new ScheduleParams
+                    new PendingParams
                     {
                         PendingPayer = fxPayer
                     })
@@ -724,14 +724,10 @@ namespace Hashgraph.Test.Token
             Assert.Equal(0UL, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
             Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
 
-            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(new SignPendingTransactionParams { 
-                Pending = schedulingReceipt.Pending.Pending,
-                TransactionBody = schedulingReceipt.Pending.TransactionBody,
-                Signatory = fxPayer
-            });
+            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(schedulingReceipt.Pending.Id, fxPayer);
             Assert.Equal(ResponseCode.Success, counterReceipt.Status);
 
-            var transferReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Id.AsPending());
+            var transferReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Pending.TxId);
             Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
 
             Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));

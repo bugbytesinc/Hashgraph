@@ -300,12 +300,12 @@ namespace Hashgraph.Test.File
                     Contents = newContents,
                     Signatory = new Signatory(
                         fxFile.PrivateKey,
-                        new ScheduleParams { PendingPayer = fxPayer }
+                        new PendingParams { PendingPayer = fxPayer }
                     )
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to update file, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

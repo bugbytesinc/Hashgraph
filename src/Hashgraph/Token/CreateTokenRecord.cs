@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
-
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 
 namespace Hashgraph

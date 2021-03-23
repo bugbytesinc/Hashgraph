@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -30,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateContractReceipt> CreateContractAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateContractReceipt(await CreateContractImplementationAsync(createParameters, configure, false));
+            return new CreateContractReceipt(await ExecuteTransactionAsync(new ContractCreateTransactionBody(createParameters), configure, false, createParameters.Signatory));
         }
         /// <summary>
         /// Creates a new contract instance with the given create parameters 
@@ -55,29 +53,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateContractRecord> CreateContractWithRecordAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateContractRecord(await CreateContractImplementationAsync(createParameters, configure, true));
-        }
-        /// <summary>
-        /// Internal Create Contract Implementation
-        /// </summary>
-        private async Task<NetworkResult> CreateContractImplementationAsync(CreateContractParams createParameters, Action<IContext>? configure, bool includeRecord)
-        {
-            createParameters = RequireInputParameter.CreateParameters(createParameters);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                ContractCreateInstance = new ContractCreateTransactionBody
-                {
-                    FileID = new FileID(createParameters.File),
-                    AdminKey = createParameters.Administrator is null ? null : new Key(createParameters.Administrator),
-                    Gas = createParameters.Gas,
-                    InitialBalance = createParameters.InitialBalance,
-                    AutoRenewPeriod = new Duration(createParameters.RenewPeriod),
-                    ConstructorParameters = ByteString.CopyFrom(Abi.EncodeArguments(createParameters.Arguments).ToArray()),
-                    Memo = createParameters.Memo ?? ""
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to create contract, status: {0}", createParameters.Signatory);
+            return new CreateContractRecord(await ExecuteTransactionAsync(new ContractCreateTransactionBody(createParameters), configure, true, createParameters.Signatory));
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿#pragma warning disable CS8618
-using Google.Protobuf;
 using Proto;
 
 namespace Hashgraph.Implementation
@@ -9,7 +8,6 @@ namespace Hashgraph.Implementation
         internal TransactionID TransactionID { get; set; }
         internal Proto.TransactionReceipt Receipt { get; set; }
         internal Proto.TransactionRecord? Record { get; set; }
-        internal ByteString? BodyBytes { get; set; }
 
         internal TransactionReceipt ToReceipt()
         {

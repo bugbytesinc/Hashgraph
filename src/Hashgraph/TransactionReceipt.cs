@@ -1,6 +1,8 @@
-﻿using Hashgraph.Implementation;
+﻿using Google.Protobuf.Collections;
+using Hashgraph.Implementation;
 using Proto;
-using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Hashgraph
 {
@@ -63,10 +65,43 @@ namespace Hashgraph
             {
                 Pending = new PendingTransaction
                 {
-                    Pending = receipt.ScheduleID.ToAddress(),
-                    TransactionBody = result.BodyBytes?.Memory ?? ReadOnlyMemory<byte>.Empty
+                    Id = receipt.ScheduleID.ToAddress(),
+                    TxId = receipt.ScheduledTransactionID.AsTxId()
                 };
             }
+        }
+    }
+    internal static class TransactionReceiptExtensions
+    {
+        private static ReadOnlyCollection<TransactionReceipt> EMPTY_RESULT = new List<TransactionReceipt>().AsReadOnly();
+        internal static ReadOnlyCollection<TransactionReceipt> Create(this RepeatedField<Proto.TransactionReceipt> list, Proto.TransactionReceipt first, TransactionID transactionId)
+        {
+            var count = (first != null ? 1 : 0) + (list != null ? list.Count : 0);
+            if (count > 0)
+            {
+                var result = new List<TransactionReceipt>(count);
+                if (first != null)
+                {
+                    result.Add(new NetworkResult
+                    {
+                        TransactionID = transactionId,
+                        Receipt = first
+                    }.ToReceipt());
+                }
+                if (list != null && list.Count > 0)
+                {
+                    foreach (var entry in list)
+                    {
+                        result.Add(new NetworkResult
+                        {
+                            TransactionID = transactionId,
+                            Receipt = entry
+                        }.ToReceipt());
+                    }
+                }
+                return result.AsReadOnly();
+            }
+            return EMPTY_RESULT;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Threading.Tasks;
@@ -181,30 +180,22 @@ namespace Hashgraph
         /// </summary>
         private async Task<NetworkResult> SubmitMessageImplementationAsync(Address topic, ReadOnlyMemory<byte> message, bool isSegment, TxId? parentTx, int segmentIndex, int segmentTotalCount, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
         {
-            topic = RequireInputParameter.Topic(topic);
-            message = RequireInputParameter.Message(message);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                ConsensusSubmitMessage = new ConsensusSubmitMessageTransactionBody
-                {
-                    TopicID = new TopicID(topic),
-                    Message = ByteString.CopyFrom(message.Span),
-                    ChunkInfo = isSegment ? createChunkInfo(parentTx, segmentIndex, segmentTotalCount) : null
-                }
-            };
+            var transaction = new ConsensusSubmitMessageTransactionBody(topic, message, isSegment, parentTx, segmentIndex, segmentTotalCount);
             if (isSegment && segmentIndex == 1)
             {
                 // Smelly Workaround due to necesity to embed the
                 // same transaction ID in the middle of the message
                 // as the envelope for the case of the first segment
                 // of a segmented message.
-                var initialChunkTransactionId = context.GetOrCreateTransactionID();
-                await using var subContext = new GossipContextStack(context);
-                subContext.Transaction = initialChunkTransactionId.AsTxId();
-                if (subContext.GatherSignatories(signatory).GetSchedule() is null)
+                //
+                // First We need to apply the confgure command, to 
+                // create the correct context
+                await using var configuredClient = Clone(configure);
+                var initialChunkTransactionId = configuredClient._context.GetOrCreateTransactionID();
+                if (configuredClient._context.GatherSignatories(signatory).GetSchedule() is null)
                 {
-                    transactionBody.ConsensusSubmitMessage.ChunkInfo!.InitialTransactionID = initialChunkTransactionId;
+                    // The easy path, this is not a scheduled transaction.
+                    transaction.ChunkInfo!.InitialTransactionID = initialChunkTransactionId;
                 }
                 else
                 {
@@ -213,58 +204,24 @@ namespace Hashgraph
                     // transaction should have the "scheduled" flag set.
                     var scheduledChunkTransactionId = new TransactionID(initialChunkTransactionId);
                     scheduledChunkTransactionId.Scheduled = true;
-                    transactionBody.ConsensusSubmitMessage.ChunkInfo!.InitialTransactionID = scheduledChunkTransactionId;
+                    transaction.ChunkInfo!.InitialTransactionID = scheduledChunkTransactionId;
                 }
-                var result = await transactionBody.SignAndExecuteWithRetryAsync(subContext, false, "Submit Message failed, status: {0}", signatory);
+                // We use our configured client, however we need to override the
+                // configuration with one additional configuration rule that will
+                // peg the transaction to our pre-computed value.
+                var result = await configuredClient.ExecuteTransactionAsync(transaction, ctx => ctx.Transaction = initialChunkTransactionId.AsTxId(), false, signatory);
                 if (includeRecord)
                 {
                     // Note: we use the original context here, because we 
                     // don't want to re-use the transaction ID that was pinned
                     // to the subContext, would cause the paying TX to fail as a duplicate.
-                    result.Record = await context.GetTransactionRecordAsync(result.TransactionID);
+                    result.Record = await configuredClient.GetTransactionRecordAsync(configuredClient._context, result.TransactionID);
                 }
                 return result;
             }
             else
             {
-                return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Submit Message failed, status: {0}", signatory);
-            }
-
-            static ConsensusMessageChunkInfo createChunkInfo(TxId? parentTx, int segmentIndex, int segmentTotalCount)
-            {
-                if (segmentTotalCount < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(SubmitMessageParams.TotalSegmentCount), "Total Segment Count must be a positive number.");
-                }
-                if (segmentIndex > segmentTotalCount || segmentIndex < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(SubmitMessageParams.Index), "Segment index must be between one and the total segment count inclusively.");
-                }
-                if (segmentIndex == 1)
-                {
-                    if (!(parentTx is null))
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(SubmitMessageParams.ParentTxId), "The Parent Transaction cannot be specified (must be null) when the segment index is one.");
-                    }
-                    return new ConsensusMessageChunkInfo
-                    {
-                        Total = segmentTotalCount,
-                        Number = segmentIndex,
-                        // This is done elsewhere, 
-                        // requires smelly edge case workaround
-                        //InitialTransactionID = transactionId
-                    };
-                }
-                if (parentTx is null)
-                {
-                    throw new ArgumentNullException(nameof(SubmitMessageParams.ParentTxId), "The parent transaction id is required when segment index is greater than one.");
-                }
-                return new ConsensusMessageChunkInfo
-                {
-                    Total = segmentTotalCount,
-                    Number = segmentIndex,
-                    InitialTransactionID = new TransactionID(parentTx)
-                };
+                return await ExecuteTransactionAsync(transaction, configure, includeRecord, signatory);
             }
         }
     }

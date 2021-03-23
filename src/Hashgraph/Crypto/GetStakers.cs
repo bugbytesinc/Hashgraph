@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,16 +31,7 @@ namespace Hashgraph
         /// </remarks>
         internal async Task<Dictionary<Address, long>> GetStakers(Address address, Action<IContext>? configure = null)
         {
-            address = RequireInputParameter.Address(address);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                CryptoGetProxyStakers = new CryptoGetStakersQuery
-                {
-                    AccountID = new AccountID(address)
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
+            var response = await ExecuteQueryAsync(new CryptoGetStakersQuery(address), configure);
             return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => ps.AccountID.AsAddress(), ps => ps.Amount);
         }
     }

@@ -95,18 +95,18 @@ namespace Hashgraph.Test.Fixtures
                 {
                     var signedTransaction = Proto.SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
                     var transactionBody = Proto.TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
-                    if(transactionBody.ScheduleCreate is not null)
-                    {
-                        var scheduledTransaction = TransactionBody.Parser.ParseFrom(transactionBody.ScheduleCreate.TransactionBody);
-                        Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(scheduledTransaction)}");
-                        Output.WriteLine($"{DateTime.UtcNow}  ├─ SCH → {JsonFormatter.Default.Format(transactionBody)}");
-                        Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
-                    }
-                    else
-                    {
+                    //if(transactionBody.ScheduleCreate is not null)
+                    //{
+                    //    var scheduledTransaction = transactionBody.ScheduleCreate.ScheduledTransactionBody;
+                    //    Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(scheduledTransaction)}");
+                    //    Output.WriteLine($"{DateTime.UtcNow}  ├─ SCH → {JsonFormatter.Default.Format(transactionBody)}");
+                    //    Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
+                    //}
+                    //else
+                    //{
                         Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
                         Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
-                    }
+                    //}
                 }
                 else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.SignedTransactionBytes != null)
                 {

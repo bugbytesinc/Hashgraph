@@ -189,11 +189,11 @@ namespace Hashgraph.Test.Contract
                     Contract = fxContract.ContractRecord.Contract,
                     Gas = await _network.TinybarsFromGas(400),
                     FunctionName = "get_message",
-                    Signatory = new ScheduleParams { PendingPayer = fxPayer }
+                    Signatory = new PendingParams { PendingPayer = fxPayer }
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Contract call failed, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

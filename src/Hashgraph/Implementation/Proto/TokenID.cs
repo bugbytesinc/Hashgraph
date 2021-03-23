@@ -1,4 +1,6 @@
 ﻿using Hashgraph;
+using Hashgraph.Implementation;
+using System;
 
 namespace Proto
 {
@@ -6,6 +8,10 @@ namespace Proto
     {
         internal TokenID(Address token) : this()
         {
+            if (token.IsNullOrNone())
+            {
+                throw new ArgumentNullException(nameof(token), "Token is missing. Please check that it is not null or empty.");
+            }
             ShardNum = token.ShardNum;
             RealmNum = token.RealmNum;
             TokenNum = token.AccountNum;

@@ -784,14 +784,14 @@ namespace Hashgraph.Test.Token
                 {
                     fx.Params.Signatory = new Signatory(
                         fx.Params.Signatory,
-                        new ScheduleParams
+                        new PendingParams
                         {
                             PendingPayer = fxPayer,
                         });
                 });
             });
-            Assert.Equal(ResponseCode.UnschedulableTransaction, tex.Status);
-            Assert.StartsWith("Unable to create Token, status: UnschedulableTransaction", tex.Message);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

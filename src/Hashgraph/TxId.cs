@@ -35,23 +35,10 @@ namespace Hashgraph
         public int ValidStartNanos { get; private init; }
         /// <summary>
         /// This transaction ID represents a pending or 
-        /// "scheduled" transaction that may or may not
-        /// have been executed.
+        /// "scheduled" transaction that may or may not have 
+        /// been executed.  The flag shold be set to true 
+        /// when interacting with pending transactions.
         /// </summary>
-        /// <remarks>
-        /// When a transaction is created as a pending transaction,
-        /// the network assigns the final "executed" ID of the 
-        /// transaction as the same Transaction ID as the envelope
-        /// transaction that created the pending transaction.  But,
-        /// it is necessary to discern between the transaction that
-        /// created the pending transaction and the pending transaction
-        /// itself.  Therefore the "pending" transaction receives a
-        /// Pending (Scheduled) flag as a part of its definition.
-        /// NOTE: You can not manually create a transaction and use it
-        /// to as the transaction ID when executing a transaction (this
-        /// is done via the context), the network will fail the transaction
-        /// if the pending flag is set.
-        /// </remarks>
         public bool Pending { get; private init; }
         /// <summary>
         /// Public constructor.
@@ -123,16 +110,6 @@ namespace Hashgraph
             // Because we don't want to set
             // this property to nullable
             Address = Address.None;
-        }
-        /// <summary>
-        /// Convenience method converting this transaction ID to its 
-        /// "Pending" form.  This is useful for querying for receipts
-        /// and records of executed pending transactions.
-        /// </summary>
-        /// <returns></returns>
-        public TxId AsPending()
-        {
-            return new TxId(Address, ValidStartSeconds, ValidStartNanos, true);
         }
     }
 }

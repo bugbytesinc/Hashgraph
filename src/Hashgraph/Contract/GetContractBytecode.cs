@@ -1,6 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -34,17 +32,7 @@ namespace Hashgraph
         /// </remarks>
         internal async Task<ReadOnlyMemory<byte>> GetContractBytecodeAsync(Address contract, Action<IContext>? configure = null)
         {
-            contract = RequireInputParameter.Contract(contract);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                ContractGetBytecode = new ContractGetBytecodeQuery
-                {
-                    ContractID = new ContractID(contract)
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            return response.ContractGetBytecodeResponse.Bytecode.ToByteArray();
+            return (await ExecuteQueryAsync(new ContractGetBytecodeQuery(contract), configure)).ContractGetBytecodeResponse.Bytecode.Memory;
         }
     }
 }

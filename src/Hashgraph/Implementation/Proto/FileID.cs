@@ -1,14 +1,19 @@
 ﻿using Hashgraph;
+using System;
 
 namespace Proto
 {
     public sealed partial class FileID
     {
-        internal FileID(Address address) : this()
+        internal FileID(Address file) : this()
         {
-            ShardNum = address.ShardNum;
-            RealmNum = address.RealmNum;
-            FileNum = address.AccountNum;
+            if (file is null)
+            {
+                throw new ArgumentNullException(nameof(file), "File is missing. Please check that it is not null.");
+            }
+            ShardNum = file.ShardNum;
+            RealmNum = file.RealmNum;
+            FileNum = file.AccountNum;
         }
     }
 

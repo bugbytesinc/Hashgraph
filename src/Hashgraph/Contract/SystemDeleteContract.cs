@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -28,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SystemDeleteContractAsync(Address contractToDelete, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await SystemDeleteContractImplementationAsync(contractToDelete, null, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemDeleteTransactionBody.FromContract(contractToDelete), configure, false));
         }
         /// <summary>
         /// Removes a contract from the network via Administrative Delete
@@ -56,7 +55,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SytemDeleteContractAsync(Address contractToDelete, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await SystemDeleteContractImplementationAsync(contractToDelete, signatory, configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemDeleteTransactionBody.FromContract(contractToDelete), configure, false, signatory));
         }
         /// <summary>
         /// Removes a contract from the network via Administrative Delete
@@ -80,7 +79,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SystemDeleteContractWithRecordAsync(Address contractToDelete, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await SystemDeleteContractImplementationAsync(contractToDelete, null, configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemDeleteTransactionBody.FromContract(contractToDelete), configure, true));
         }
         /// <summary>
         /// Removes a contract from the network via Administrative Delete
@@ -109,23 +108,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SystemDeleteContractWithRecordAsync(Address contractToDelete, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await SystemDeleteContractImplementationAsync(contractToDelete, signatory, configure, true));
-        }
-        /// <summary>
-        /// Internal helper function implementing the contract delete functionality.
-        /// </summary>
-        private async Task<NetworkResult> SystemDeleteContractImplementationAsync(Address contractToDelete, Signatory? signatory, Action<IContext>? configure, bool includeRecord)
-        {
-            contractToDelete = RequireInputParameter.ContractToDelete(contractToDelete);
-            await using var context = CreateChildContext(configure);
-            var transactionBody = new TransactionBody
-            {
-                SystemDelete = new SystemDeleteTransactionBody
-                {
-                    ContractID = new ContractID(contractToDelete)
-                }
-            };
-            return await transactionBody.SignAndExecuteWithRetryAsync(context, includeRecord, "Unable to delete contract, status: {0}", signatory);
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemDeleteTransactionBody.FromContract(contractToDelete), configure, true, signatory));
         }
     }
 }

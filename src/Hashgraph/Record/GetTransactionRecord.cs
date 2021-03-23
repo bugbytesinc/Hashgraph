@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Collections.ObjectModel;
@@ -43,7 +42,6 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network has no record of the transaction or request has invalid or had missing data.</exception>
         public async Task<TransactionRecord> GetTransactionRecordAsync(TxId transaction, Action<IContext>? configure = null)
         {
-            transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
             // For the public version of this method, we do not know
@@ -52,7 +50,7 @@ namespace Hashgraph
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
             await WaitForConsensusReceipt(context, transactionId);
-            var record = await context.GetTransactionRecordAsync(transactionId);
+            var record = await GetTransactionRecordAsync(context, transactionId);
             return new NetworkResult
             {
                 TransactionID = transactionId,
@@ -80,7 +78,6 @@ namespace Hashgraph
         /// </returns>
         public async Task<ReadOnlyCollection<TransactionRecord>> GetAllTransactionRecordsAsync(TxId transaction, Action<IContext>? configure = null)
         {
-            transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
             // For the public version of this method, we do not know
@@ -89,8 +86,15 @@ namespace Hashgraph
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
             await WaitForConsensusReceipt(context, transactionId);
-            var record = await context.GetTransactionRecordResponseAsync(transactionId, true);
-            return record.DuplicateTransactionRecords.ToTransactionRecordList(record.TransactionRecord);
+            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, true), context, 0);
+            // Note if we are retrieving the list, Not found is OK too.
+            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+            if (precheckCode != ResponseCodeEnum.Ok && precheckCode != ResponseCodeEnum.RecordNotFound)
+            {
+                throw new TransactionException("Unable to retrieve transaction record.", transactionId.AsTxId(), (ResponseCode)precheckCode);
+            }
+            var record = response.TransactionGetRecord;
+            return TransactionRecordExtensions.Create(record.DuplicateTransactionRecords, record.TransactionRecord);
         }
         /// <summary>
         /// Internal Helper function used to wait for conesnsus regardless of the reported
@@ -100,14 +104,8 @@ namespace Hashgraph
         /// We may be retrieving a failed record (the status would not equal OK).
         private async Task WaitForConsensusReceipt(GossipContextStack context, TransactionID transactionId)
         {
-            var query = new Query
-            {
-                TransactionGetReceipt = new TransactionGetReceiptQuery
-                {
-                    TransactionID = transactionId
-                }
-            };
-            await context.ExecuteNetworkRequestWithRetryAsync(query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            var query = new TransactionGetReceiptQuery(transactionId) as INetworkQuery;
+            await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry);
 
             static bool shouldRetry(Response response)
             {
