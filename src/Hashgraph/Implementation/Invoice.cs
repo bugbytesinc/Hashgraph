@@ -118,17 +118,6 @@ namespace Hashgraph.Implementation
             }
             return map.SigPair.Count > 0 ? map : null;
         }
-
-        internal static async Task<SignatureMap?> TryGenerateSignatureMapAsync(TransactionBody transactionBody, ISignatory? signatory, int signaturePrefixTrimLimit)
-        {
-            if (signatory is not null)
-            {
-                var invoice = new Invoice(transactionBody);
-                await signatory.SignAsync(invoice);
-                return invoice.TryGenerateMapFromCollectedSignatures(signaturePrefixTrimLimit);
-            }
-            return null;
-        }
     }
 }
 

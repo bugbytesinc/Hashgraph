@@ -68,15 +68,6 @@ namespace Hashgraph
             /// to be scheduled instead.
             /// </summary>
             Pending = 6,
-            /// <summary>
-            /// This represnts legacy signing features in the library that are slated
-            /// for removal over time, such as the Ed25519 key(s) embedded in the
-            /// <see cref="Account"/> object.  At some point in the future 
-            /// <code>Account</code> will be replaced with <see cref="Address"/> 
-            /// and <code>Signatory</code> will be the sole means for communicating 
-            /// how to sign transactions.
-            /// </summary>
-            OtherSigner = 999
         }
         /// <summary>
         /// Internal type of this Signatory.
@@ -393,19 +384,6 @@ namespace Hashgraph
             return !(left == right);
         }
         /// <summary>
-        /// Legacy support for components that also have
-        /// the ability to sign transactions.  Used only internally
-        /// by the library.
-        /// </summary>
-        /// <param name="signer">
-        /// The legacy signer instance (such as a <see cref="Account"/>).
-        /// </param>
-        internal Signatory(ISignatory signer)
-        {
-            _type = Type.OtherSigner;
-            _data = signer;
-        }
-        /// <summary>
         /// Implement the signing algorithm.  In the case of an Ed25519
         /// it will use the private key to sign the transaction and 
         /// return immediately.  In the case of the callback method, it 
@@ -441,9 +419,6 @@ namespace Hashgraph
                     break;
                 case Type.Callback:
                     await ((Func<IInvoice, Task>)_data)(invoice);
-                    break;
-                case Type.OtherSigner:
-                    await ((ISignatory)_data).SignAsync(invoice);
                     break;
                 case Type.Pending:
                     // This will be called to sign the to-be-scheduled
