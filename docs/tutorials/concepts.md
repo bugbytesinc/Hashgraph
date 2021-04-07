@@ -26,8 +26,8 @@ Whereas querying the Hedera network for balances is presently free other actions
 
 ## Signatory
 
-The **Signatory** is a private key, or callback method that can sign a transaction.  Typically, a signatory is an account holder’s private key.  The .NET framework will accept Ed25519 keys as signatories and use them to sign transactions.  It also accepts callback functions for advanced scenarios such as distributed cooperative systems coordinating the signatures of a sigle transaction.
+The **Signatory** is a private key, or callback method that can sign a transaction.  Typically, a signatory is an account holder’s private key.  The .NET framework will accept Ed25519 keys as signatories and use them to sign transactions.  It also accepts callback functions for advanced scenarios such as distributed cooperative systems coordinating the signatures of a single transaction.
 
 ## Endorsement
 
-Most accounts are secured by a single private Ed25519 key.  The hedera network never sees these private keys but has been given the public key corresponding to each account's private key during creation.  Accounts are not the only thing protected by keys in the hedera network.  Contracts, Topics and Tokens can be administered (modified) by parties holding administrative keys assigned to these assets.  For example, when creating a Token, there is an opportunity to provide a public key enabling access to various administrative functions against the token.  The .NET SDK provides the Endorsement object to hold this public key value.
+Most accounts are secured by a single private Ed25519 key.  The Hedera network never sees these private keys but has been given the public key corresponding to each account's private key during creation.  Accounts are not the only thing protected by keys in the Hedera network.  Contracts, Topics and Tokens can be administered (modified) by parties holding administrative keys assigned to these assets.  For example, when creating a Token, there is an opportunity to provide a public key enabling access to various administrative functions against the token.  The .NET SDK provides the Endorsement object to hold this public key value.
