@@ -36,7 +36,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AssociateTokenAsync(Address token, Address account, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -67,7 +67,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AssociateTokensAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -102,7 +102,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AssociateTokenAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -137,7 +137,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AssociateTokensAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -168,7 +168,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AssociateTokenWithRecordAsync(Address token, Address account, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -199,7 +199,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AssociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -234,7 +234,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AssociateTokenWithRecordAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, true, signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, true, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -269,7 +269,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AssociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, true, signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

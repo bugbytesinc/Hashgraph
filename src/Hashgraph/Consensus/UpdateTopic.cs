@@ -30,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> UpdateTopicAsync(UpdateTopicParams updateParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new ConsensusUpdateTopicTransactionBody(updateParameters), configure, false, updateParameters.Signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ConsensusUpdateTopicTransactionBody(updateParameters), configure, false, updateParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Updates the changeable properties of a hedera network Topic.
@@ -56,7 +56,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> UpdateTopicWithRecordAsync(UpdateTopicParams updateParameters, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new ConsensusUpdateTopicTransactionBody(updateParameters), configure, true, updateParameters.Signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new ConsensusUpdateTopicTransactionBody(updateParameters), configure, true, updateParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

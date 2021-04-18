@@ -71,7 +71,7 @@ namespace Hashgraph.Extensions
                 Index = 1,
                 TotalSegmentCount = segmentCount,
                 Signatory = signatory
-            }); ;
+            }).ConfigureAwait(false);
             var parentTx = receipts[0].Id;
             for (int i = 1; i < segmentCount - 1; i++)
             {
@@ -83,7 +83,7 @@ namespace Hashgraph.Extensions
                     Index = i + 1,
                     TotalSegmentCount = segmentCount,
                     Signatory = signatory
-                });
+                }).ConfigureAwait(false);
             }
             if (segmentCount > 1)
             {
@@ -95,7 +95,7 @@ namespace Hashgraph.Extensions
                     Index = segmentCount,
                     TotalSegmentCount = segmentCount,
                     Signatory = signatory
-                });
+                }).ConfigureAwait(false);
             }
             return receipts;
         }

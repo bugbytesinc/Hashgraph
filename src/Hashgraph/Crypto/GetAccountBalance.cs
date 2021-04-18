@@ -24,7 +24,7 @@ namespace Hashgraph
         /// </returns>
         public async Task<AccountBalances> GetAccountBalancesAsync(Address address, Action<IContext>? configure = null)
         {
-            return new AccountBalances(await ExecuteQueryAsync(CryptoGetAccountBalanceQuery.ForAccount(address), configure));
+            return new AccountBalances(await ExecuteQueryAsync(CryptoGetAccountBalanceQuery.ForAccount(address), configure).ConfigureAwait(false));
         }
         /// <summary>
         /// Retrieves the balance in tinybars from the network for a given address.
@@ -45,7 +45,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<ulong> GetAccountBalanceAsync(Address address, Action<IContext>? configure = null)
         {
-            return new AccountBalances(await ExecuteQueryAsync(CryptoGetAccountBalanceQuery.ForAccount(address), configure)).Crypto;
+            return new AccountBalances(await ExecuteQueryAsync(CryptoGetAccountBalanceQuery.ForAccount(address), configure).ConfigureAwait(false)).Crypto;
         }
     }
 }

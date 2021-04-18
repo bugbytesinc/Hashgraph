@@ -1,5 +1,4 @@
 ﻿#pragma warning disable CS8604 // Possible null reference argument.
-using Hashgraph.Implementation;
 using System;
 using System.Threading.Tasks;
 
@@ -34,7 +33,7 @@ namespace Hashgraph.Extensions
         /// </returns>
         public static async Task<ExchangeRates> GetExchangeRatesAsync(this Client client, Action<IContext>? configure = null)
         {
-            var file = await client.GetFileContentAsync(EXCHANGE_RATE_FILE_ADDRESS, configure);
+            var file = await client.GetFileContentAsync(EXCHANGE_RATE_FILE_ADDRESS, configure).ConfigureAwait(false);
             var set = Proto.ExchangeRateSet.Parser.ParseFrom(file.ToArray());
             return new ExchangeRates(set.CurrentRate?.ToExchangeRate(), set.NextRate?.ToExchangeRate());
         }

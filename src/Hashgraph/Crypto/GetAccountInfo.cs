@@ -25,7 +25,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<AccountInfo> GetAccountInfoAsync(Address address, Action<IContext>? configure = null)
         {
-            return new AccountInfo(await ExecuteQueryAsync(new CryptoGetInfoQuery(address), configure));
+            return new AccountInfo(await ExecuteQueryAsync(new CryptoGetInfoQuery(address), configure).ConfigureAwait(false));
         }
     }
 }

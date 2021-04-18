@@ -28,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<FileReceipt> CreateFileAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
         {
-            return new FileReceipt(await ExecuteTransactionAsync(new FileCreateTransactionBody(createParameters), configure, false, createParameters.Signatory));
+            return new FileReceipt(await ExecuteTransactionAsync(new FileCreateTransactionBody(createParameters), configure, false, createParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Creates a new file with the given content.
@@ -52,7 +52,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<FileRecord> CreateFileWithRecordAsync(CreateFileParams createParameters, Action<IContext>? configure = null)
         {
-            return new FileRecord(await ExecuteTransactionAsync(new FileCreateTransactionBody(createParameters), configure, true, createParameters.Signatory));
+            return new FileRecord(await ExecuteTransactionAsync(new FileCreateTransactionBody(createParameters), configure, true, createParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

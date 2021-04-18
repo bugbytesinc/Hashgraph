@@ -32,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<SubmitMessageReceipt> SubmitMessageAsync(Address topic, ReadOnlyMemory<byte> message, Action<IContext>? configure = null)
         {
-            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, null, configure, false));
+            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, null, configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Sends a message to the network for a given consensus topic.
@@ -63,7 +63,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<SubmitMessageReceipt> SubmitMessageAsync(Address topic, ReadOnlyMemory<byte> message, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, signatory, configure, false));
+            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, signatory, configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Sends a segment of a message to the network for a given consensus topic.
@@ -90,7 +90,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<SubmitMessageReceipt> SubmitMessageAsync(SubmitMessageParams submitParams, Action<IContext>? configure = null)
         {
-            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(submitParams.Topic, submitParams.Segment, true, submitParams.ParentTxId, submitParams.Index, submitParams.TotalSegmentCount, submitParams.Signatory, configure, false));
+            return new SubmitMessageReceipt(await SubmitMessageImplementationAsync(submitParams.Topic, submitParams.Segment, true, submitParams.ParentTxId, submitParams.Index, submitParams.TotalSegmentCount, submitParams.Signatory, configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Sends a message to the network for a given consensus topic.
@@ -117,7 +117,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(Address topic, ReadOnlyMemory<byte> message, Action<IContext>? configure = null)
         {
-            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, null, configure, true));
+            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, null, configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Sends a message to the network for a given consensus topic.
@@ -148,7 +148,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(Address topic, ReadOnlyMemory<byte> message, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, signatory, configure, true));
+            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(topic, message, false, null, 0, 0, signatory, configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Sends a message to the network for a given consensus topic.
@@ -173,7 +173,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<SubmitMessageRecord> SubmitMessageWithRecordAsync(SubmitMessageParams submitParams, Action<IContext>? configure = null)
         {
-            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(submitParams.Topic, submitParams.Segment, true, submitParams.ParentTxId, submitParams.Index, submitParams.TotalSegmentCount, submitParams.Signatory, configure, true));
+            return new SubmitMessageRecord(await SubmitMessageImplementationAsync(submitParams.Topic, submitParams.Segment, true, submitParams.ParentTxId, submitParams.Index, submitParams.TotalSegmentCount, submitParams.Signatory, configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Internal implementation of the submit message call.
@@ -209,19 +209,19 @@ namespace Hashgraph
                 // We use our configured client, however we need to override the
                 // configuration with one additional configuration rule that will
                 // peg the transaction to our pre-computed value.
-                var result = await configuredClient.ExecuteTransactionAsync(transaction, ctx => ctx.Transaction = initialChunkTransactionId.AsTxId(), false, signatory);
+                var result = await configuredClient.ExecuteTransactionAsync(transaction, ctx => ctx.Transaction = initialChunkTransactionId.AsTxId(), false, signatory).ConfigureAwait(false);
                 if (includeRecord)
                 {
                     // Note: we use the original context here, because we 
                     // don't want to re-use the transaction ID that was pinned
                     // to the subContext, would cause the paying TX to fail as a duplicate.
-                    result.Record = await configuredClient.GetTransactionRecordAsync(configuredClient._context, result.TransactionID);
+                    result.Record = await configuredClient.GetTransactionRecordAsync(configuredClient._context, result.TransactionID).ConfigureAwait(false);
                 }
                 return result;
             }
             else
             {
-                return await ExecuteTransactionAsync(transaction, configure, includeRecord, signatory);
+                return await ExecuteTransactionAsync(transaction, configure, includeRecord, signatory).ConfigureAwait(false);
             }
         }
     }

@@ -27,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateTopicReceipt> CreateTopicAsync(CreateTopicParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateTopicReceipt(await ExecuteTransactionAsync(new ConsensusCreateTopicTransactionBody(createParameters), configure, false, createParameters.Signatory));
+            return new CreateTopicReceipt(await ExecuteTransactionAsync(new ConsensusCreateTopicTransactionBody(createParameters), configure, false, createParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Creates a new topic instance with the given create parameters.
@@ -50,7 +50,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateTopicRecord> CreateTopicWithRecordAsync(CreateTopicParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateTopicRecord(await ExecuteTransactionAsync(new ConsensusCreateTopicTransactionBody(createParameters), configure, true, createParameters.Signatory));
+            return new CreateTopicRecord(await ExecuteTransactionAsync(new ConsensusCreateTopicTransactionBody(createParameters), configure, true, createParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

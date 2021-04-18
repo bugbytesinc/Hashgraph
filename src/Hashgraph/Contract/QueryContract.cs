@@ -36,7 +36,7 @@ namespace Hashgraph
         public async Task<ContractCallResult> QueryContractAsync(QueryContractParams queryParameters, Action<IContext>? configure = null)
         {
             var query = new ContractCallLocalQuery(queryParameters);
-            var response = await ExecuteQueryAsync(query, configure, queryParameters.ReturnValueCharge);
+            var response = await ExecuteQueryAsync(query, configure, queryParameters.ReturnValueCharge).ConfigureAwait(false);
             var header = response.ResponseHeader;
             if (header == null)
             {

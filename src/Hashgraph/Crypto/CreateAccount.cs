@@ -29,7 +29,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateAccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateAccountReceipt(await ExecuteTransactionAsync(new CryptoCreateTransactionBody(createParameters), configure, false, createParameters.Signatory));
+            return new CreateAccountReceipt(await ExecuteTransactionAsync(new CryptoCreateTransactionBody(createParameters), configure, false, createParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Creates a new network account with a given initial balance
@@ -55,7 +55,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateAccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateAccountRecord(await ExecuteTransactionAsync(new CryptoCreateTransactionBody(createParameters), configure, true, createParameters.Signatory));
+            return new CreateAccountRecord(await ExecuteTransactionAsync(new CryptoCreateTransactionBody(createParameters), configure, true, createParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

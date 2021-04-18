@@ -31,7 +31,7 @@ namespace Hashgraph
         /// </remarks>
         internal async Task<Dictionary<Address, long>> GetStakers(Address address, Action<IContext>? configure = null)
         {
-            var response = await ExecuteQueryAsync(new CryptoGetStakersQuery(address), configure);
+            var response = await ExecuteQueryAsync(new CryptoGetStakersQuery(address), configure).ConfigureAwait(false);
             return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => ps.AccountID.AsAddress(), ps => ps.Amount);
         }
     }

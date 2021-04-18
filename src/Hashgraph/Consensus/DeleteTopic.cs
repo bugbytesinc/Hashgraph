@@ -28,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteTopicAsync(Address topic, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new ConsensusDeleteTopicTransactionBody(topic), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ConsensusDeleteTopicTransactionBody(topic), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Deletes a topic instance from the network. Must be signed 
@@ -56,7 +56,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteTopicAsync(Address topic, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new ConsensusDeleteTopicTransactionBody(topic), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ConsensusDeleteTopicTransactionBody(topic), configure, false, signatory).ConfigureAwait(false));
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SuspendNetworkAsync(SuspendNetworkParams suspendParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new FreezeTransactionBody(suspendParameters), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FreezeTransactionBody(suspendParameters), configure, false).ConfigureAwait(false));
         }
     }
 }

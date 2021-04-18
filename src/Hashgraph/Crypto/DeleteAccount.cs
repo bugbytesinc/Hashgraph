@@ -32,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoDeleteTransactionBody(addressToDelete, transferToAddress), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoDeleteTransactionBody(addressToDelete, transferToAddress), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Deletes an account from the network returning the remaining 
@@ -65,7 +65,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteAccountAsync(Address addressToDelete, Address transferToAddress, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoDeleteTransactionBody(addressToDelete, transferToAddress), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoDeleteTransactionBody(addressToDelete, transferToAddress), configure, false, signatory).ConfigureAwait(false));
         }
     }
 }

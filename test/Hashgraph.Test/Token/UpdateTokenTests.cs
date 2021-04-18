@@ -352,7 +352,7 @@ namespace Hashgraph.Test.Token
         public async Task CanUpdateRenewPeriod()
         {
             await using var fxToken = await TestToken.CreateAsync(_network);
-            var newRenwew = TimeSpan.FromDays(89);
+            var newRenwew = TimeSpan.FromDays(90) + TimeSpan.FromMinutes(10);
 
             var updateParams = new UpdateTokenParams
             {

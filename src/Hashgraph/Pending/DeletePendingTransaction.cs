@@ -28,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeletePendingTransactionAsync(Address pending, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new ScheduleDeleteTransactionBody(pending), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ScheduleDeleteTransactionBody(pending), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Deletes a token from the network. Must be signed by the admin key.
@@ -55,7 +55,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeletePendingTransactionAsync(Address pending, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new ScheduleDeleteTransactionBody(pending), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ScheduleDeleteTransactionBody(pending), configure, false, signatory).ConfigureAwait(false));
         }
     }
 }

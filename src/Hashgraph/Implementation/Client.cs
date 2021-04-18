@@ -51,25 +51,25 @@ namespace Hashgraph
             transactionBody.TransactionValidDuration = new Duration(context.TransactionDuration);
             transactionBody.Memo = context.Memo ?? "";
             var invoice = new Invoice(transactionBody);
-            await signatory.SignAsync(invoice);
+            await signatory.SignAsync(invoice).ConfigureAwait(false);
             var signedTransaction = new Transaction
             {
                 SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(context.SignaturePrefixTrimLimit).ToByteString()
             };
-            var precheck = await context.ExecuteSignedRequestWithRetryImplementationAsync(signedTransaction, transaction.InstantiateNetworkRequestMethod, getResponseCode);
+            var precheck = await context.ExecuteSignedRequestWithRetryImplementationAsync(signedTransaction, transaction.InstantiateNetworkRequestMethod, getResponseCode).ConfigureAwait(false);
             if (precheck.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
             {
                 var responseCode = (ResponseCode)precheck.NodeTransactionPrecheckCode;
                 throw new PrecheckException($"Transaction Failed Pre-Check: {responseCode}", result.TransactionID.AsTxId(), responseCode, precheck.Cost);
             }
-            var receipt = result.Receipt = await context.GetReceiptAsync(result.TransactionID);
+            var receipt = result.Receipt = await context.GetReceiptAsync(result.TransactionID).ConfigureAwait(false);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException(string.Format(transaction.TransactionExceptionMessage, receipt.Status), result.TransactionID.AsTxId(), (ResponseCode)receipt.Status);
             }
             if (includeRecord)
             {
-                result.Record = await GetTransactionRecordAsync(context, result.TransactionID);
+                result.Record = await GetTransactionRecordAsync(context, result.TransactionID).ConfigureAwait(false);
             }
             return result;
 
@@ -81,7 +81,7 @@ namespace Hashgraph
         private async Task<Response> ExecuteQueryAsync(INetworkQuery query, Action<IContext>? configure, long supplementalCost = 0)
         {
             await using var context = CreateChildContext(configure);
-            return await ExecuteQueryInContextAsync(query, context, supplementalCost);
+            return await ExecuteQueryInContextAsync(query, context, supplementalCost).ConfigureAwait(false);
 
         }
         private async Task<Response> ExecuteQueryInContextAsync(INetworkQuery query, GossipContextStack context, long supplementalCost)
@@ -92,20 +92,20 @@ namespace Hashgraph
                 Payment = new Transaction { SignedTransactionBytes = ByteString.Empty },
                 ResponseType = ResponseType.CostAnswer
             });
-            var response = await executeUnsignedAskQuery();
+            var response = await executeUnsignedAskQuery().ConfigureAwait(false);
             ulong cost = response.ResponseHeader?.Cost ?? 0UL;
             if (cost > 0)
             {
                 var transactionId = context.GetOrCreateTransactionID();
-                query.SetHeader(await createSignedQueryHeader((long)cost + supplementalCost, transactionId));
-                response = await executeSignedQuery();
+                query.SetHeader(await createSignedQueryHeader((long)cost + supplementalCost, transactionId).ConfigureAwait(false));
+                response = await executeSignedQuery().ConfigureAwait(false);
                 response.Validate(transactionId);
             }
             return response;
 
             async Task<Response> executeUnsignedAskQuery()
             {
-                var answer = await context.ExecuteNetworkRequestWithRetryAsync(envelope, query.InstantiateNetworkRequestMethod, shouldRetryRequest);
+                var answer = await context.ExecuteNetworkRequestWithRetryAsync(envelope, query.InstantiateNetworkRequestMethod, shouldRetryRequest).ConfigureAwait(false);
                 var code = answer.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
                 if (code != ResponseCodeEnum.Ok)
                 {
@@ -154,7 +154,7 @@ namespace Hashgraph
                 transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(gateway), Amount = queryFee });
                 transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
                 var invoice = new Invoice(transactionBody);
-                await signatory.SignAsync(invoice);
+                await signatory.SignAsync(invoice).ConfigureAwait(false);
                 var signedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(context.SignaturePrefixTrimLimit).ToByteString();
                 return new QueryHeader
                 {
@@ -181,7 +181,7 @@ namespace Hashgraph
         /// </summary>
         private async Task<Proto.TransactionRecord> GetTransactionRecordAsync(GossipContextStack context, TransactionID transactionRecordId)
         {
-            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionRecordId, false), context, 0);
+            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionRecordId, false), context, 0).ConfigureAwait(false);
             var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (precheckCode != ResponseCodeEnum.Ok)
             {

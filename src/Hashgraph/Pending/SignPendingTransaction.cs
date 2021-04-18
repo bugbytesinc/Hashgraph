@@ -32,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SignPendingTransactionAsync(Address pending, Signatory? signatory = null, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new ScheduleSignTransactionBody(pending), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ScheduleSignTransactionBody(pending), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Adds a signature to a pending transaction record. The Scheduled Transaction executes 
@@ -60,7 +60,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SignPendingTransactionWithRecordAsync(Address pending, Signatory? signatory = null, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new ScheduleSignTransactionBody(pending), configure, true, signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new ScheduleSignTransactionBody(pending), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

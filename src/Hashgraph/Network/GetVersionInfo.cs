@@ -24,7 +24,7 @@ namespace Hashgraph
         /// NOTE: Marked Internal because this is not yet implemented in testnet.
         internal async Task<VersionInfo> GetVersionInfoAsync(Action<IContext>? configure = null)
         {
-            return new VersionInfo(await ExecuteQueryAsync(new NetworkGetVersionInfoQuery(), configure));
+            return new VersionInfo(await ExecuteQueryAsync(new NetworkGetVersionInfoQuery(), configure).ConfigureAwait(false));
         }
     }
 }

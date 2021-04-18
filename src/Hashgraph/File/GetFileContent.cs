@@ -27,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<ReadOnlyMemory<byte>> GetFileContentAsync(Address file, Action<IContext>? configure = null)
         {
-            var response = await ExecuteQueryAsync(new FileGetContentsQuery(file), configure);
+            var response = await ExecuteQueryAsync(new FileGetContentsQuery(file), configure).ConfigureAwait(false);
             return response.FileGetContents.FileContents.Contents.Memory;
         }
     }

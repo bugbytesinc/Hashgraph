@@ -28,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateContractReceipt> CreateContractAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateContractReceipt(await ExecuteTransactionAsync(new ContractCreateTransactionBody(createParameters), configure, false, createParameters.Signatory));
+            return new CreateContractReceipt(await ExecuteTransactionAsync(new ContractCreateTransactionBody(createParameters), configure, false, createParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Creates a new contract instance with the given create parameters 
@@ -53,7 +53,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateContractRecord> CreateContractWithRecordAsync(CreateContractParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateContractRecord(await ExecuteTransactionAsync(new ContractCreateTransactionBody(createParameters), configure, true, createParameters.Signatory));
+            return new CreateContractRecord(await ExecuteTransactionAsync(new ContractCreateTransactionBody(createParameters), configure, true, createParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

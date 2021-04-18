@@ -27,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SystemRestoreFileAsync(Address file, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Undeletes a file from the network via Administrative Restore
@@ -55,7 +55,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SystemRestoreFileAsync(Address file, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Undeletes a file from the network via Administrative Restore
@@ -79,7 +79,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SystemRestoreFileWithRecordAsync(Address file, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Undeletes a file from the network via Administrative Restore
@@ -108,7 +108,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SystemRestoreFileWithRecordAsync(Address file, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, true, signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

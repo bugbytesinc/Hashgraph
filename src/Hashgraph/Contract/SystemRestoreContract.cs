@@ -27,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SystemRestoreContractAsync(Address contractToRestore, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromContract(contractToRestore), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromContract(contractToRestore), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Restores a contract to the network via Administrative Restore
@@ -55,7 +55,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SytemRestoreContractAsync(Address contractToRestore, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromContract(contractToRestore), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromContract(contractToRestore), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Restores a contract to the network via Administrative Restore
@@ -79,7 +79,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SystemRestoreContractWithRecordAsync(Address contractToRestore, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromContract(contractToRestore), configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromContract(contractToRestore), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Restores a contract to the network via Administrative Restore
@@ -108,7 +108,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SystemRestoreContractWithRecordAsync(Address contractToRestore, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromContract(contractToRestore), configure, true, signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromContract(contractToRestore), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

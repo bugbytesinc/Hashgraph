@@ -37,7 +37,7 @@ namespace Hashgraph
         {
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
-            var receipt = await context.GetReceiptAsync(transactionId);
+            var receipt = await context.GetReceiptAsync(transactionId).ConfigureAwait(false);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to retreive receipt, status: {receipt.Status}", transaction, (ResponseCode)receipt.Status);
@@ -74,7 +74,7 @@ namespace Hashgraph
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
             var query = new TransactionGetReceiptQuery(transactionId, true) as INetworkQuery;
-            var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry);
+            var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry).ConfigureAwait(false);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             if (responseCode == ResponseCodeEnum.Busy)
             {

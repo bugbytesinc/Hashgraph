@@ -32,7 +32,7 @@ namespace Hashgraph.Extensions
         /// </returns>
         public static async Task<FeeSchedules> GetFeeScheduleAsync(this Client client, Action<IContext>? configure = null)
         {
-            var file = await client.GetFileContentAsync(FEE_SCHEDULE_FILE_ADDRESS, configure);
+            var file = await client.GetFileContentAsync(FEE_SCHEDULE_FILE_ADDRESS, configure).ConfigureAwait(false);
             var set = Proto.CurrentAndNextFeeSchedule.Parser.ParseFrom(file.ToArray());
             return new FeeSchedules(set.CurrentFeeSchedule?.ToFeeSchedule(), set.NextFeeSchedule?.ToFeeSchedule());
         }

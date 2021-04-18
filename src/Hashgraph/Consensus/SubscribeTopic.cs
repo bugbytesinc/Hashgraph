@@ -81,7 +81,7 @@ namespace Hashgraph
             var writer = subscribeParameters.MessageWriter;
             try
             {
-                await ProcessResultStream(subscribeParameters.Topic);
+                await ProcessResultStreamAsync(subscribeParameters.Topic).ConfigureAwait(false);
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {
@@ -111,14 +111,14 @@ namespace Hashgraph
                 }
             }
 
-            async Task ProcessResultStream(Address topic)
+            async Task ProcessResultStreamAsync(Address topic)
             {
-                while (await stream.MoveNext())
+                while (await stream.MoveNext().ConfigureAwait(false))
                 {
                     var message = stream.Current.ToTopicMessage(topic);
                     if (!writer.TryWrite(message))
                     {
-                        while (await writer.WaitToWriteAsync())
+                        while (await writer.WaitToWriteAsync().ConfigureAwait(false))
                         {
                             if (!writer.TryWrite(message))
                             {

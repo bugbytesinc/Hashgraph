@@ -27,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteFileAsync(Address fileToDelete, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new FileDeleteTransactionBody(fileToDelete), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FileDeleteTransactionBody(fileToDelete), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes a file from the network.
@@ -55,7 +55,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> DeleteFileAsync(Address fileToDelete, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new FileDeleteTransactionBody(fileToDelete), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FileDeleteTransactionBody(fileToDelete), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes a file from the network.
@@ -79,7 +79,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> DeleteFileWithRecordAsync(Address fileToDelete, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new FileDeleteTransactionBody(fileToDelete), configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new FileDeleteTransactionBody(fileToDelete), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes a file from the network.
@@ -108,7 +108,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> DeleteFileWithRecordAsync(Address fileToDelete, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new FileDeleteTransactionBody(fileToDelete), configure, true, signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new FileDeleteTransactionBody(fileToDelete), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

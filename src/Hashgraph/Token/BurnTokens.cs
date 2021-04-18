@@ -30,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenReceipt> BurnTokenAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
-            return new TokenReceipt(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, false));
+            return new TokenReceipt(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes token coins from the treasury.
@@ -60,7 +60,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenReceipt> BurnTokenAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TokenReceipt(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, false, signatory));
+            return new TokenReceipt(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes token coins from the treasury.
@@ -86,7 +86,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenRecord> BurnTokenWithRecordAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
-            return new TokenRecord(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, true));
+            return new TokenRecord(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes token coins from the treasury.
@@ -116,7 +116,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenRecord> BurnTokenWithRecordAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TokenRecord(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, true, signatory));
+            return new TokenRecord(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> AppendFileAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new FileAppendTransactionBody(appendParameters), configure, false, appendParameters.Signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FileAppendTransactionBody(appendParameters), configure, false, appendParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Appends content to an existing file.
@@ -50,7 +50,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> AppendFileWithRecordAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new FileAppendTransactionBody(appendParameters), configure, true, appendParameters.Signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new FileAppendTransactionBody(appendParameters), configure, true, appendParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

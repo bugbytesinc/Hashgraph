@@ -28,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> UpdateFileAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new FileUpdateTransactionBody(updateParameters), configure, false, updateParameters.Signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FileUpdateTransactionBody(updateParameters), configure, false, updateParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Updates the properties or contents of an existing file stored in the network.
@@ -53,7 +53,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> UpdateFileWithRecordAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new FileUpdateTransactionBody(updateParameters), configure, true, updateParameters.Signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new FileUpdateTransactionBody(updateParameters), configure, true, updateParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

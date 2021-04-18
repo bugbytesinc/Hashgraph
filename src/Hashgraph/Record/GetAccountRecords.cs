@@ -28,7 +28,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<TransactionRecord[]> GetAccountRecordsAsync(Address address, Action<IContext>? configure = null)
         {
-            var response = await ExecuteQueryAsync(new CryptoGetAccountRecordsQuery(address), configure);
+            var response = await ExecuteQueryAsync(new CryptoGetAccountRecordsQuery(address), configure).ConfigureAwait(false);
             return TransactionRecordExtensions.Create(response.CryptoGetAccountRecords.Records, null).ToArray();
         }
     }

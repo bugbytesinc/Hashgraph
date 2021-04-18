@@ -36,7 +36,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SubmitUnsafeTransactionAsync(ReadOnlyMemory<byte> transaction, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await SubmitUnsafeTransactionImplementationAsync(transaction, configure, false));
+            return new TransactionReceipt(await SubmitUnsafeTransactionImplementationAsync(transaction, configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Submits an arbitrary type-un-checked message to the network.
@@ -66,7 +66,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SubmitUnsafeTransactionWithRecordAsync(ReadOnlyMemory<byte> transaction, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await SubmitUnsafeTransactionImplementationAsync(transaction, configure, true));
+            return new TransactionRecord(await SubmitUnsafeTransactionImplementationAsync(transaction, configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Internal implementation of the submit message call.
@@ -95,12 +95,12 @@ namespace Hashgraph
                 UncheckedSubmit = uncheckedSubmitBody
             };
             var invoice = new Invoice(transactionBody);
-            await signatories.SignAsync(invoice);
+            await signatories.SignAsync(invoice).ConfigureAwait(false);
             var signedTransaction = new Transaction
             {
                 SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(context.SignaturePrefixTrimLimit).ToByteString()
             };
-            var precheck = await context.ExecuteSignedRequestWithRetryImplementationAsync(signedTransaction, (uncheckedSubmitBody as INetworkTransaction).InstantiateNetworkRequestMethod, getResponseCode);
+            var precheck = await context.ExecuteSignedRequestWithRetryImplementationAsync(signedTransaction, (uncheckedSubmitBody as INetworkTransaction).InstantiateNetworkRequestMethod, getResponseCode).ConfigureAwait(false);
             if (precheck.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
             {
                 var responseCode = (ResponseCode)precheck.NodeTransactionPrecheckCode;
@@ -111,7 +111,7 @@ namespace Hashgraph
             // a receipt for this submission, however, there will be an attempt to execute the submitted transaction
             // as this method bypasses PRECHECK validations.  So, there will be a receipt for the inner transaction, 
             // with success or a failure code.  Therefore we return the receipt or record for the custom transaction.
-            var receipt = result.Receipt = await context.GetReceiptAsync(innerTransactionId);
+            var receipt = result.Receipt = await context.GetReceiptAsync(innerTransactionId).ConfigureAwait(false);
             // Retain standard behavior of throwing an exception if the receipt has an error code.
             if (receipt.Status != ResponseCodeEnum.Success)
             {
@@ -119,7 +119,7 @@ namespace Hashgraph
             }
             if (includeRecord)
             {
-                result.Record = await GetTransactionRecordAsync(context, innerTransactionId);
+                result.Record = await GetTransactionRecordAsync(context, innerTransactionId).ConfigureAwait(false);
             }
             return result!;
 

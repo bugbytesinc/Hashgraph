@@ -31,7 +31,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SuspendTokenAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenFreezeAccountTransactionBody(token, address), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenFreezeAccountTransactionBody(token, address), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Suspends the associated account's ability to send or
@@ -62,7 +62,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SuspendTokenAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenFreezeAccountTransactionBody(token, address), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenFreezeAccountTransactionBody(token, address), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Suspends the associated account's ability to send or
@@ -89,7 +89,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SuspendTokenWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenFreezeAccountTransactionBody(token, address), configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenFreezeAccountTransactionBody(token, address), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Suspends the associated account's ability to send or
@@ -120,7 +120,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> SuspendTokenWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenFreezeAccountTransactionBody(token, address), configure, true, signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenFreezeAccountTransactionBody(token, address), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

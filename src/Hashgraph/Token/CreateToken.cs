@@ -27,7 +27,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateTokenReceipt> CreateTokenAsync(CreateTokenParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateTokenReceipt(await ExecuteTransactionAsync(new TokenCreateTransactionBody(createParameters), configure, false, createParameters.Signatory));
+            return new CreateTokenReceipt(await ExecuteTransactionAsync(new TokenCreateTransactionBody(createParameters), configure, false, createParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Creates a new token instance with the given create parameters.
@@ -50,7 +50,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CreateTokenRecord> CreateTokenWithRecordAsync(CreateTokenParams createParameters, Action<IContext>? configure = null)
         {
-            return new CreateTokenRecord(await ExecuteTransactionAsync(new TokenCreateTransactionBody(createParameters), configure, true, createParameters.Signatory));
+            return new CreateTokenRecord(await ExecuteTransactionAsync(new TokenCreateTransactionBody(createParameters), configure, true, createParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> RevokeTokenKycAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenRevokeKycTransactionBody(token, address), configure, false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenRevokeKycTransactionBody(token, address), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Revokes KYC status from the associated account's relating to the specified token.
@@ -61,7 +61,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> RevokeTokenKycAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenRevokeKycTransactionBody(token, address), configure, false, signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenRevokeKycTransactionBody(token, address), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Revokes KYC status from the associated account's relating to the specified token.
@@ -88,7 +88,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> RevokeTokenKycWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenRevokeKycTransactionBody(token, address), configure, true));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenRevokeKycTransactionBody(token, address), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Revokes KYC status from the associated account's relating to the specified token.
@@ -119,7 +119,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionRecord> RevokeTokenKycWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenRevokeKycTransactionBody(token, address), configure, true, signatory));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenRevokeKycTransactionBody(token, address), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

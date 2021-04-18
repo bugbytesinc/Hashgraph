@@ -35,7 +35,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenReceipt> ConfiscateTokensAsync(Address token, Address address, ulong amount, Action<IContext>? configure = null)
         {
-            return new TokenReceipt(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, address, amount), configure, false));
+            return new TokenReceipt(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, address, amount), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -70,7 +70,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenReceipt> ConfiscateTokensAsync(Address token, Address address, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TokenReceipt(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, address, amount), configure, false, signatory));
+            return new TokenReceipt(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, address, amount), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -101,7 +101,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenRecord> ConfiscateTokensWithRecordAsync(Address token, Address address, ulong amount, Action<IContext>? configure = null)
         {
-            return new TokenRecord(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, address, amount), configure, true));
+            return new TokenRecord(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, address, amount), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes the holdings of given token from the associated 
@@ -136,7 +136,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TokenRecord> ConfiscateTokensWithRecordAsync(Address token, Address address, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TokenRecord(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, address, amount), configure, true, signatory));
+            return new TokenRecord(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, address, amount), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

@@ -49,8 +49,8 @@ namespace Hashgraph
             // we need to get the receipt first (and wait if necessary).
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
-            await WaitForConsensusReceipt(context, transactionId);
-            var record = await GetTransactionRecordAsync(context, transactionId);
+            await WaitForConsensusReceipt(context, transactionId).ConfigureAwait(false);
+            var record = await GetTransactionRecordAsync(context, transactionId).ConfigureAwait(false);
             return new NetworkResult
             {
                 TransactionID = transactionId,
@@ -85,8 +85,8 @@ namespace Hashgraph
             // we need to get the receipt first (and wait if necessary).
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
-            await WaitForConsensusReceipt(context, transactionId);
-            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, true), context, 0);
+            await WaitForConsensusReceipt(context, transactionId).ConfigureAwait(false);
+            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, true), context, 0).ConfigureAwait(false);
             // Note if we are retrieving the list, Not found is OK too.
             var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (precheckCode != ResponseCodeEnum.Ok && precheckCode != ResponseCodeEnum.RecordNotFound)
@@ -105,7 +105,7 @@ namespace Hashgraph
         private async Task WaitForConsensusReceipt(GossipContextStack context, TransactionID transactionId)
         {
             var query = new TransactionGetReceiptQuery(transactionId) as INetworkQuery;
-            await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry);
+            await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry).ConfigureAwait(false);
 
             static bool shouldRetry(Response response)
             {

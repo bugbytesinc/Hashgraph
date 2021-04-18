@@ -25,7 +25,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<FileInfo> GetFileInfoAsync(Address file, Action<IContext>? configure = null)
         {
-            return new FileInfo(await ExecuteQueryAsync(new FileGetInfoQuery(file), configure));
+            return new FileInfo(await ExecuteQueryAsync(new FileGetInfoQuery(file), configure).ConfigureAwait(false));
         }
     }
 }

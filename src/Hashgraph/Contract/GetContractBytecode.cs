@@ -32,7 +32,7 @@ namespace Hashgraph
         /// </remarks>
         internal async Task<ReadOnlyMemory<byte>> GetContractBytecodeAsync(Address contract, Action<IContext>? configure = null)
         {
-            return (await ExecuteQueryAsync(new ContractGetBytecodeQuery(contract), configure)).ContractGetBytecodeResponse.Bytecode.Memory;
+            return (await ExecuteQueryAsync(new ContractGetBytecodeQuery(contract), configure).ConfigureAwait(false)).ContractGetBytecodeResponse.Bytecode.Memory;
         }
     }
 }

@@ -414,11 +414,11 @@ namespace Hashgraph
                 case Type.List:
                     foreach (ISignatory signer in (Signatory[])_data)
                     {
-                        await signer.SignAsync(invoice);
+                        await signer.SignAsync(invoice).ConfigureAwait(false);
                     }
                     break;
                 case Type.Callback:
-                    await ((Func<IInvoice, Task>)_data)(invoice);
+                    await ((Func<IInvoice, Task>)_data)(invoice).ConfigureAwait(false);
                     break;
                 case Type.Pending:
                     // This will be called to sign the to-be-scheduled

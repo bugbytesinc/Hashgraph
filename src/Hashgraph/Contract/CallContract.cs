@@ -32,7 +32,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> CallContractAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new ContractCallTransactionBody(callParameters), configure, false, callParameters.Signatory));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ContractCallTransactionBody(callParameters), configure, false, callParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Calls a smart contract returning if successful.  The CallContractReceipt 
@@ -59,7 +59,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<CallContractRecord> CallContractWithRecordAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return new CallContractRecord(await ExecuteTransactionAsync(new ContractCallTransactionBody(callParameters), configure, true, callParameters.Signatory));
+            return new CallContractRecord(await ExecuteTransactionAsync(new ContractCallTransactionBody(callParameters), configure, true, callParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

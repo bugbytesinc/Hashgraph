@@ -123,8 +123,8 @@ namespace Hashgraph
                         // the receipt will already be in the system.  Check to see if it is there.
                         if (request is Transaction transaction)
                         {
-                            await Task.Delay(retryDelay * retryCount);
-                            var receiptResponse = await CheckForReceipt(transaction);
+                            await Task.Delay(retryDelay * retryCount).ConfigureAwait(false);
+                            var receiptResponse = await CheckForReceipt(transaction).ConfigureAwait(false);
                             callOnResponseReceivedHandlers(retryCount, receiptResponse);
                             if (receiptResponse.NodeTransactionPrecheckCode != ResponseCodeEnum.ReceiptNotFound &&
                                 receiptResponse is TResponse tenativeResponse &&
@@ -134,7 +134,7 @@ namespace Hashgraph
                             }
                         }
                     }
-                    await Task.Delay(retryDelay * (retryCount + 1));
+                    await Task.Delay(retryDelay * (retryCount + 1)).ConfigureAwait(false);
                 }
                 var finalResponse = await sendRequest(request, null, null, default);
                 callOnResponseReceivedHandlers(maxRetries, finalResponse);
@@ -174,7 +174,7 @@ namespace Hashgraph
                                     $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
                                 callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
                             }
-                            await Task.Delay(retryDelay * (retryCount + 1));
+                            await Task.Delay(retryDelay * (retryCount + 1)).ConfigureAwait(false);
                         }
                     }
                     return new TransactionResponse { NodeTransactionPrecheckCode = ResponseCodeEnum.Unknown };
@@ -242,7 +242,7 @@ namespace Hashgraph
         internal static async Task<Proto.TransactionReceipt> GetReceiptAsync(this GossipContextStack context, TransactionID transactionId)
         {
             var query = new TransactionGetReceiptQuery(transactionId) as INetworkQuery;
-            var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry);
+            var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry).ConfigureAwait(false);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             switch (responseCode)
             {
