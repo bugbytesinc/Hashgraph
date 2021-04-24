@@ -698,5 +698,37 @@ namespace Hashgraph
         /// ConsensusSubmitMessage request's message size is larger than allowed.
         /// </summary>
         [Description("MESSAGE_SIZE_TOO_LARGE")] MessageSizeTooLarge = 214,
+        /// <summary>
+        /// An operation was assigned to more than one throttle group in a given bucket
+        /// </summary>
+        [Description("OPERATION_REPEATED_IN_BUCKET_GROUPS")] OperationRepeatedInBucketGroups = 215,
+        /// <summary>
+        /// The capacity needed to satisfy all opsPerSec groups in a bucket overflowed a signed 8-byte integral type
+        /// </summary>
+        [Description("BUCKET_CAPACITY_OVERFLOW")] BucketCapacityOverflow = 216,
+        /// <summary>
+        /// Given the network size in the address book, the node-level capacity for an operation would never be enough to accept a single request; usually means a bucket burstPeriod should be increased
+        /// </summary>
+        [Description("NODE_CAPACITY_NOT_SUFFICIENT_FOR_OPERATION")] NodeCapacityNotSufficientForOperation = 217,
+        /// <summary>
+        /// A bucket was defined without any throttle groups
+        /// </summary>
+        [Description("BUCKET_HAS_NO_THROTTLE_GROUPS")] BucketHasNoThrottleGroups = 218,
+        /// <summary>
+        /// A throttle group was granted zero opsPerSec
+        /// </summary>
+        [Description("THROTTLE_GROUP_HAS_ZERO_OPS_PER_SEC")] ThrottleGroupHasZeroOpsPerSec = 219,
+        /// <summary>
+        /// The throttle definitions file was updated, but some supported operations were not assigned a bucket
+        /// </summary>
+        [Description("SUCCESS_BUT_MISSING_EXPECTED_OPERATION")] SuccessButMissingExpectedOperation = 220,
+        /// <summary>
+        /// The new contents for the throttle definitions system file were not valid protobuf
+        /// </summary>
+        [Description("UNPARSEABLE_THROTTLE_DEFINITIONS")] UnparseableThrottleDefinitions = 221,
+        /// <summary>
+        /// The new throttle definitions system file were invalid, and no more specific error could be divined
+        /// </summary>
+        [Description("INVALID_THROTTLE_DEFINITIONS")] InvalidThrottleDefinitions = 222,
     }
 }
