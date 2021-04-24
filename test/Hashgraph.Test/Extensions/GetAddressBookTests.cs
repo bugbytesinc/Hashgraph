@@ -39,7 +39,7 @@ namespace Hashgraph.Test.Extensions
             // NOT IMPLEMENTED YET ON TESTNET
             Assert.Empty(node.IpAddress);
             Assert.Equal(0, node.Port);
-            Assert.Equal(0, node.CertificateHash.Length);
+            Assert.NotEqual(0, node.CertificateHash.Length);
         }
         [Fact(DisplayName = "Address Book: Can Get Address Book Manually")]
         public async Task CanGetAddressBookManually()
