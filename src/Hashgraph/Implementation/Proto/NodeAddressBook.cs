@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hashgraph.Extensions;
+using System;
 using System.Linq;
 
 namespace Proto
@@ -7,15 +8,15 @@ namespace Proto
     {
         internal Hashgraph.Extensions.NodeInfo[] ToNodeInfoArray()
         {
-            return NodeAddress.Select(a => new Hashgraph.Extensions.NodeInfo
+            return NodeAddress.Select(node => new Hashgraph.Extensions.NodeInfo
             {
-                Id = a.NodeId,
-                IpAddress = a.IpAddress.ToStringUtf8(),
-                Port = a.Portno,
-                Memo = a.Memo.ToStringUtf8(),
-                RsaPublicKey = a.RSAPubKey,
-                Address = a.NodeAccountId.AsAddress(),
-                CertificateHash = new ReadOnlyMemory<byte>(a.NodeCertHash.ToArray())
+                Id = node.NodeId,
+                RsaPublicKey = node.RSAPubKey,
+                Address = node.NodeAccountId.AsAddress(),
+                CertificateHash = new ReadOnlyMemory<byte>(node.NodeCertHash.ToArray()),
+                Endpoints = node.ServiceEndpoint?.Select(e => new Endpoint(e)).ToArray() ?? Array.Empty<Endpoint>(),
+                Description = node.Description,
+                Stake = node.Stake,
             }).ToArray();
         }
     }
