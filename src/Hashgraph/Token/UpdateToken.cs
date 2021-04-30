@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -29,9 +28,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> UpdateTokenAsync(UpdateTokenParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> UpdateTokenAsync(UpdateTokenParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateTokenImplementationAsync<TransactionReceipt>(updateParameters, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenUpdateTransactionBody(updateParameters), configure, false, updateParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Updates the changeable properties of a hedera network Token.
@@ -55,87 +54,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> UpdateTokenWithRecordAsync(UpdateTokenParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> UpdateTokenWithRecordAsync(UpdateTokenParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateTokenImplementationAsync<TransactionRecord>(updateParameters, configure);
-        }
-        /// <summary>
-        /// Internal implementation of the update Token functionality.
-        /// </summary>
-        private async Task<TResult> UpdateTokenImplementationAsync<TResult>(UpdateTokenParams updateParameters, Action<IContext>? configure) where TResult : new()
-        {
-            updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
-            var updateTokenBody = new TokenUpdateTransactionBody
-            {
-                Token = new TokenID(updateParameters.Token)
-            };
-            if (!(updateParameters.Treasury is null))
-            {
-                updateTokenBody.Treasury = new AccountID(updateParameters.Treasury);
-            }
-            if (!(updateParameters.Administrator is null))
-            {
-                updateTokenBody.AdminKey = new Key(updateParameters.Administrator);
-            }
-            if (!(updateParameters.GrantKycEndorsement is null))
-            {
-                updateTokenBody.KycKey = new Key(updateParameters.GrantKycEndorsement);
-            }
-            if (!(updateParameters.SuspendEndorsement is null))
-            {
-                updateTokenBody.FreezeKey = new Key(updateParameters.SuspendEndorsement);
-            }
-            if (!(updateParameters.ConfiscateEndorsement is null))
-            {
-                updateTokenBody.WipeKey = new Key(updateParameters.ConfiscateEndorsement);
-            }
-            if (!(updateParameters.SupplyEndorsement is null))
-            {
-                updateTokenBody.SupplyKey = new Key(updateParameters.SupplyEndorsement);
-            }
-            if (!string.IsNullOrWhiteSpace(updateParameters.Symbol))
-            {
-                updateTokenBody.Symbol = updateParameters.Symbol;
-            }
-            if (!string.IsNullOrWhiteSpace(updateParameters.Name))
-            {
-                updateTokenBody.Name = updateParameters.Name;
-            }
-            if (updateParameters.Expiration.HasValue)
-            {
-                updateTokenBody.Expiry = new Timestamp(updateParameters.Expiration.Value);
-            }
-            if (updateParameters.RenewPeriod.HasValue)
-            {
-                updateTokenBody.AutoRenewPeriod = new Duration(updateParameters.RenewPeriod.Value);
-            }
-            if (!(updateParameters.RenewAccount is null))
-            {
-                updateTokenBody.AutoRenewAccount = new AccountID(updateParameters.RenewAccount);
-            }
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.TokenUpdate = updateTokenBody;
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to update Token, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenUpdateTransactionBody(updateParameters), configure, true, updateParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

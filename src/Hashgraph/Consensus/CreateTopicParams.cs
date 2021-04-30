@@ -1,5 +1,4 @@
-﻿#pragma warning disable CS8618 // Non-nullable field is uninitialized.
-using System;
+﻿using System;
 
 namespace Hashgraph
 {
@@ -11,7 +10,7 @@ namespace Hashgraph
         /// <summary>
         /// Short description of the topic, not checked for uniqueness.
         /// </summary>
-        public string Memo { get; set; }
+        public string? Memo { get; set; }
         /// <summary>
         /// An optional endorsement, when specified, can be used to 
         /// authorize a modification or deletion of this topic, including

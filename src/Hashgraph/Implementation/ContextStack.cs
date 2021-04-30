@@ -136,13 +136,13 @@ namespace Hashgraph.Implementation
             {
                 if (count == 0)
                 {
-                    await Task.WhenAll(_channels.Values.Select(channel => channel.ShutdownAsync()).ToArray());
+                    await Task.WhenAll(_channels.Values.Select(channel => channel.ShutdownAsync()).ToArray()).ConfigureAwait(false);
                     _channels.Clear();
                 }
             }
             else
             {
-                await _parent.removeRef();
+                await _parent.removeRef().ConfigureAwait(false);
             }
         }
     }

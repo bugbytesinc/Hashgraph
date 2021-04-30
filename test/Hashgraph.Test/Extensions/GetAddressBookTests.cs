@@ -36,7 +36,6 @@ namespace Hashgraph.Test.Extensions
             Assert.NotNull(node);
             Assert.NotNull(node.RsaPublicKey);
             Assert.Equal(_network.Gateway, node.Address);
-            // NOT IMPLEMENTED YET ON TESTNET
             Assert.Empty(node.IpAddress);
             Assert.Equal(0, node.Port);
             Assert.NotEqual(0, node.CertificateHash.Length);

@@ -6,7 +6,7 @@ namespace Hashgraph
     /// The token balance information associated with an account,
     /// including the amount of coins held, KYC status and Freeze status.
     /// </summary>
-    public sealed record TokenBalance
+    public sealed record TokenBalance : CryptoBalance
     {
         /// <summary>
         /// The Address of the token
@@ -16,11 +16,6 @@ namespace Hashgraph
         /// The string symbol representing this token.
         /// </summary>
         public string Symbol { get; internal init; }
-        /// <summary>
-        /// The balance of tokens held by the associated account
-        /// in the smallest denomination.
-        /// </summary>
-        public ulong Balance { get; internal init; }
         /// <summary>
         /// The KYC status of the token for this account.
         /// </summary>

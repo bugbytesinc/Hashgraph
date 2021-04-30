@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -29,9 +28,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> GrantTokenKycAsync(Address token, Address address, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> GrantTokenKycAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return GrantTokenKycImplementationAsync<TransactionReceipt>(token, address, null, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenGrantKycTransactionBody(token, address), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Grants KYC status to the associated account's relating to the specified token.
@@ -59,9 +58,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> GrantTokenKycAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> GrantTokenKycAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return GrantTokenKycImplementationAsync<TransactionReceipt>(token, address, signatory, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenGrantKycTransactionBody(token, address), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Grants KYC status to the associated account's relating to the specified token.
@@ -85,9 +84,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> GrantTokenKycWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> GrantTokenKycWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
         {
-            return GrantTokenKycImplementationAsync<TransactionRecord>(token, address, null, configure);
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenGrantKycTransactionBody(token, address), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Grants KYC status to the associated account's relating to the specified token.
@@ -115,44 +114,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> GrantTokenKycWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> GrantTokenKycWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
         {
-            return GrantTokenKycImplementationAsync<TransactionRecord>(token, address, signatory, configure);
-        }
-        /// <summary>
-        /// Internal implementation of delete token method.
-        /// </summary>
-        private async Task<TResult> GrantTokenKycImplementationAsync<TResult>(Address token, Address address, Signatory? signatory, Action<IContext>? configure) where TResult : new()
-        {
-            token = RequireInputParameter.Token(token);
-            address = RequireInputParameter.Address(address);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.TokenGrantKyc = new TokenGrantKycTransactionBody
-            {
-                Token = new TokenID(token),
-                Account = new AccountID(address)
-            };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to Grant Token, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenGrantKycTransactionBody(token, address), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

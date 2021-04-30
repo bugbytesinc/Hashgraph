@@ -120,7 +120,7 @@ namespace Hashgraph.Test.Signature
             });
             var signatory = new Signatory(CustomSigner);
             await (signatory as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GetSignedTransaction(0);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(0);
             var signatureMap = signedTransaction.SigMap;
             Assert.Single(signatureMap.SigPair);
             Assert.Empty(signatureMap.SigPair[0].PubKeyPrefix);
@@ -147,7 +147,7 @@ namespace Hashgraph.Test.Signature
             var signatory = new Signatory(CustomSigner);
             await (signatory as ISignatory).SignAsync(invoice);
             var trimLimit = Generator.Integer(5, 10);
-            var signedTransaction = invoice.GetSignedTransaction(trimLimit);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(trimLimit);
             var signatureMap = signedTransaction.SigMap;
             Assert.Single(signatureMap.SigPair);
             Assert.Equal(trimLimit, signatureMap.SigPair[0].PubKeyPrefix.Length);
@@ -173,7 +173,7 @@ namespace Hashgraph.Test.Signature
                 Memo = Generator.String(20, 30)
             });
             await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GetSignedTransaction(0);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(0);
             var signatureMap = signedTransaction.SigMap;
             Assert.Equal(sigCount, signatureMap.SigPair.Count);
             foreach (var sig in signatureMap.SigPair)
@@ -206,7 +206,7 @@ namespace Hashgraph.Test.Signature
                 Memo = Generator.String(20, 30)
             });
             await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GetSignedTransaction(prefix.Length + 10);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(prefix.Length + 10);
             var signatureMap = signedTransaction.SigMap;
             Assert.Equal(sigCount, signatureMap.SigPair.Count);
             foreach (var sig in signatureMap.SigPair)
@@ -240,7 +240,7 @@ namespace Hashgraph.Test.Signature
                 Memo = Generator.String(20, 30)
             });
             await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GetSignedTransaction(sigCount - 3);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(sigCount - 3);
             var signatureMap = signedTransaction.SigMap;
             Assert.Equal(sigCount, signatureMap.SigPair.Count);
             for (int i = 0; i < signatureMap.SigPair.Count; i++)
@@ -271,7 +271,7 @@ namespace Hashgraph.Test.Signature
             });
             var signatory = new Signatory(CustomSigner);
             await (signatory as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GetSignedTransaction(0);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(0);
             var signatureMap = signedTransaction.SigMap;
             Assert.Single(signatureMap.SigPair);
             Assert.Empty(signatureMap.SigPair[0].PubKeyPrefix);
@@ -301,7 +301,7 @@ namespace Hashgraph.Test.Signature
             });
             var signatory = new Signatory(CustomSigner);
             await (signatory as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GetSignedTransaction(0);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(0);
             var signatureMap = signedTransaction.SigMap;
             Assert.Equal(2, signatureMap.SigPair.Count);
 

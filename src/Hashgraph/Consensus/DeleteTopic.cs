@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -11,7 +10,7 @@ namespace Hashgraph
         /// Deletes a topic instance from the network. Must be signed 
         /// by the admin key.
         /// </summary>
-        /// <param name="topicToDelete">
+        /// <param name="topic">
         /// The Topic instance that will be deleted.
         /// </param>
         /// <param name="configure">
@@ -27,15 +26,15 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the topic is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteTopicAsync(Address topicToDelete, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteTopicAsync(Address topic, Action<IContext>? configure = null)
         {
-            return DeleteTopicImplementationAsync(topicToDelete, null, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ConsensusDeleteTopicTransactionBody(topic), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Deletes a topic instance from the network. Must be signed 
         /// by the admin key.
         /// </summary>
-        /// <param name="topicToDelete">
+        /// <param name="topic">
         /// The Topic instance that will be deleted.
         /// </param>
         /// <param name="signatory">
@@ -55,32 +54,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the topic is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> DeleteTopicAsync(Address topicToDelete, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteTopicAsync(Address topic, Signatory signatory, Action<IContext>? configure = null)
         {
-            return DeleteTopicImplementationAsync(topicToDelete, signatory, configure);
-        }
-        /// <summary>
-        /// Internal implementation of delete topic method.
-        /// </summary>
-        private async Task<TransactionReceipt> DeleteTopicImplementationAsync(Address topicToDelete, Signatory? signatory, Action<IContext>? configure)
-        {
-            topicToDelete = RequireInputParameter.AddressToDelete(topicToDelete);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.ConsensusDeleteTopic = new ConsensusDeleteTopicTransactionBody
-            {
-                TopicID = new TopicID(topicToDelete)
-            };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to Delete Topic, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            return receipt.FillProperties(transactionId, new TransactionReceipt());
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ConsensusDeleteTopicTransactionBody(topic), configure, false, signatory).ConfigureAwait(false));
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Grpc.Core;
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Collections.ObjectModel;
@@ -15,6 +14,13 @@ namespace Hashgraph
         /// </summary>
         /// <param name="transaction">
         /// Transaction identifier of the record
+        /// </param>
+        /// <param name="pending">
+        /// Flag indicating to return the pending or "scheduled" version of
+        /// the transaction.  If set to true, the network will look for
+        /// the receipt of an executed pending transaction.  The TxID is
+        /// the ID of the tranaction that "created" the pending (scheduled) 
+        /// transaction.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -36,7 +42,6 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network has no record of the transaction or request has invalid or had missing data.</exception>
         public async Task<TransactionRecord> GetTransactionRecordAsync(TxId transaction, Action<IContext>? configure = null)
         {
-            transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
             // For the public version of this method, we do not know
@@ -44,10 +49,14 @@ namespace Hashgraph
             // we need to get the receipt first (and wait if necessary).
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
-            await WaitForConsensusReceipt(context, transactionId);
-            var record = await GetTransactionRecordAsync(context, transactionId);
-            return record.ToTransactionRecord();
-
+            await WaitForConsensusReceipt(context, transactionId).ConfigureAwait(false);
+            var record = await GetTransactionRecordAsync(context, transactionId).ConfigureAwait(false);
+            return new NetworkResult
+            {
+                TransactionID = transactionId,
+                Receipt = record.Receipt,
+                Record = record
+            }.ToRecord();
         }
         /// <summary>
         /// Retrieves all records having the given transaction ID, including duplicates
@@ -69,7 +78,6 @@ namespace Hashgraph
         /// </returns>
         public async Task<ReadOnlyCollection<TransactionRecord>> GetAllTransactionRecordsAsync(TxId transaction, Action<IContext>? configure = null)
         {
-            transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
             // For the public version of this method, we do not know
@@ -77,9 +85,16 @@ namespace Hashgraph
             // we need to get the receipt first (and wait if necessary).
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
-            await WaitForConsensusReceipt(context, transactionId);
-            var record = await GetTransactionRecordResponseAsync(context, transactionId, true);
-            return record.DuplicateTransactionRecords.ToTransactionRecordList(record.TransactionRecord);
+            await WaitForConsensusReceipt(context, transactionId).ConfigureAwait(false);
+            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, true), context, 0).ConfigureAwait(false);
+            // Note if we are retrieving the list, Not found is OK too.
+            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+            if (precheckCode != ResponseCodeEnum.Ok && precheckCode != ResponseCodeEnum.RecordNotFound)
+            {
+                throw new TransactionException("Unable to retrieve transaction record.", transactionId.AsTxId(), (ResponseCode)precheckCode);
+            }
+            var record = response.TransactionGetRecord;
+            return TransactionRecordExtensions.Create(record.DuplicateTransactionRecords, record.TransactionRecord);
         }
         /// <summary>
         /// Internal Helper function used to wait for conesnsus regardless of the reported
@@ -89,14 +104,8 @@ namespace Hashgraph
         /// We may be retrieving a failed record (the status would not equal OK).
         private async Task WaitForConsensusReceipt(GossipContextStack context, TransactionID transactionId)
         {
-            var query = new Query
-            {
-                TransactionGetReceipt = new TransactionGetReceiptQuery
-                {
-                    TransactionID = transactionId
-                }
-            };
-            await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            var query = new TransactionGetReceiptQuery(transactionId) as INetworkQuery;
+            await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry).ConfigureAwait(false);
 
             static bool shouldRetry(Response response)
             {
@@ -104,37 +113,6 @@ namespace Hashgraph
                     response.TransactionGetReceipt?.Header?.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||
                     response.TransactionGetReceipt?.Receipt?.Status == ResponseCodeEnum.Unknown;
             }
-        }
-        /// <summary>
-        /// Internal Helper function to retrieve the transaction record provided 
-        /// by the network following network consensus regarding a query or transaction.
-        /// </summary>
-        private async Task<Proto.TransactionRecord> GetTransactionRecordAsync(GossipContextStack context, TransactionID transactionRecordId)
-        {
-            return (await GetTransactionRecordResponseAsync(context, transactionRecordId, false)).TransactionRecord;
-        }
-        /// <summary>
-        /// Internal Helper function to retrieve the transaction record or list of duplicate records provided 
-        /// by the network following network consensus regarding a query or transaction.
-        /// </summary>
-        private async Task<Proto.TransactionGetRecordResponse> GetTransactionRecordResponseAsync(GossipContextStack context, TransactionID transactionRecordId, bool includeDuplicates)
-        {
-            var query = new Query
-            {
-                TransactionGetRecord = new TransactionGetRecordQuery
-                {
-                    TransactionID = transactionRecordId,
-                    IncludeDuplicates = includeDuplicates
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            // Note if we are retrieving the list, Not found is OK too.
-            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (precheckCode != ResponseCodeEnum.Ok && !(includeDuplicates && precheckCode == ResponseCodeEnum.RecordNotFound))
-            {
-                throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.ToTxId(), (ResponseCode)precheckCode);
-            }
-            return response.TransactionGetRecord;
         }
     }
 }

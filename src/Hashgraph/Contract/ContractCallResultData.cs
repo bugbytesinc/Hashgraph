@@ -13,6 +13,9 @@ namespace Hashgraph
         /// The raw bytes returned from a function call (in ABI format).
         /// </summary>
         private readonly ReadOnlyMemory<byte> _data;
+        /// <summary>
+        /// Internal Constructor from the Raw Data
+        /// </summary>
         internal ContractCallResultData(ReadOnlyMemory<byte> data)
         {
             _data = data;

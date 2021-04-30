@@ -46,6 +46,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
@@ -87,6 +88,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
@@ -128,6 +130,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
@@ -241,6 +244,27 @@ namespace Hashgraph.Test.Token
             Assert.Equal(amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
+        }
+        [Fact(DisplayName = "Burn Tokens: Can Not Schedule Burn Token Coins")]
+        public async Task CanNotScheduleBurnTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var amountToDestory = fxToken.Params.Circulation / 3;
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.BurnTokenAsync(
+                    fxToken,
+                    amountToDestory,
+                    new Signatory(
+                        fxToken.SupplyPrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

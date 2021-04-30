@@ -40,7 +40,8 @@ namespace Hashgraph.Test.Token
                 Expiration = DateTime.UtcNow.AddDays(90),
                 RenewPeriod = fxTemplate.Params.RenewPeriod,
                 RenewAccount = fxTemplate.RenewAccount,
-                Signatory = new Signatory(fxToken.Params.Signatory, fxTemplate.Params.Signatory)
+                Signatory = new Signatory(fxToken.Params.Signatory, fxTemplate.Params.Signatory),
+                Memo = fxTemplate.Params.Memo
             };
 
             var receipt = await fxToken.Client.UpdateTokenAsync(updateParams);
@@ -60,6 +61,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxTemplate.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Equal(fxTemplate.Params.Memo, info.Memo);
             Assert.False(info.Deleted);
         }
         [Fact(DisplayName = "Update Token: Can Update Token and get Record")]
@@ -89,7 +91,8 @@ namespace Hashgraph.Test.Token
                 Expiration = DateTime.UtcNow.AddDays(90),
                 RenewPeriod = fxTemplate.Params.RenewPeriod,
                 RenewAccount = fxTemplate.RenewAccount,
-                Signatory = new Signatory(fxToken.Params.Signatory, fxTemplate.Params.Signatory)
+                Signatory = new Signatory(fxToken.Params.Signatory, fxTemplate.Params.Signatory),
+                Memo = fxTemplate.Params.Memo
             };
 
             var record = await fxToken.Client.UpdateTokenWithRecordAsync(updateParams);
@@ -118,6 +121,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxTemplate.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Empty Update Parameters Raises Error")]
         public async Task EmptyUpdateParametersRaisesError()
@@ -287,11 +291,49 @@ namespace Hashgraph.Test.Token
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(newName, info.Name);
         }
+        [Fact(DisplayName = "Update Token: Can Update Memo")]
+        public async Task CanUpdateMemo()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var newMemo = Generator.String(30, 50);
+
+            var updateParams = new UpdateTokenParams
+            {
+                Token = fxToken.Record.Token,
+                Memo = newMemo,
+                Signatory = fxToken.AdminPrivateKey
+            };
+
+            var receipt = await fxToken.Client.UpdateTokenAsync(updateParams);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(newMemo, info.Memo);
+        }
+        [Fact(DisplayName = "Update Token: Can Update Memo to Empty")]
+        public async Task CanUpdateMemoToEmpty()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network);
+
+            var updateParams = new UpdateTokenParams
+            {
+                Token = fxToken.Record.Token,
+                Memo = string.Empty,
+                Signatory = fxToken.AdminPrivateKey
+            };
+
+            var receipt = await fxToken.Client.UpdateTokenAsync(updateParams);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Empty(info.Memo);
+        }
         [Fact(DisplayName = "Update Token: Can Update Expiration")]
         public async Task CanUpdateExpiration()
         {
             await using var fxToken = await TestToken.CreateAsync(_network);
-            var newExpiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddDays(90));
+
+            var newExpiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddDays(365));
 
             var updateParams = new UpdateTokenParams
             {
@@ -310,7 +352,7 @@ namespace Hashgraph.Test.Token
         public async Task CanUpdateRenewPeriod()
         {
             await using var fxToken = await TestToken.CreateAsync(_network);
-            var newRenwew = TimeSpan.FromDays(89);
+            var newRenwew = TimeSpan.FromDays(90) + TimeSpan.FromMinutes(10);
 
             var updateParams = new UpdateTokenParams
             {
@@ -402,6 +444,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Updating To Used Symbol Is Allowed")]
         public async Task UpdatingToUsedSymbolIsAllowed()
@@ -432,6 +475,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Updating To Used Name Is Allowed")]
         public async Task UpdatingToUsedNameIsAllowed()
@@ -463,6 +507,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Updating To Empty Treasury Address Raises Error")]
         public async Task UpdatingToEmptyTreasuryRaisesError()
@@ -498,6 +543,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Cannot Make Token Immutable")]
         public async Task CannotMakeTokenImmutable()
@@ -533,6 +579,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Cannot Remove Grant KYC Endorsement")]
         public async Task CannotRemoveGrantKYCEndorsement()
@@ -568,6 +615,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Cannot Remove Suspend Endorsement")]
         public async Task CannotRemoveSuspendEndorsement()
@@ -603,6 +651,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Cannot Remove Confiscate Endorsement")]
         public async Task CannotRemoveConfiscateEndorsement()
@@ -638,6 +687,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Cannot Remove Supply Endorsement")]
         public async Task CannotRemoveSupplyEndorsement()
@@ -673,6 +723,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Update Token: Cannot Update Imutable Token")]
         public async Task CannotUpdateImutableToken()
@@ -729,6 +780,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
@@ -769,6 +821,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
@@ -821,6 +874,61 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
+        }
+        [Fact(DisplayName = "Update Token: Can Not Change Treasury to Unassociated Account")]
+        public async Task CanChangeTreasuryToUnassociatedAccount()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+            {
+                fx.Params.ConfiscateEndorsement = null;
+                fx.Params.SuspendEndorsement = null;
+                fx.Params.GrantKycEndorsement = null;
+            });
+            var totalCirculation = fxToken.Params.Circulation;
+
+            Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+            Assert.Equal(totalCirculation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+
+            // Returns A Failure
+            var tex = await Assert.ThrowsAnyAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
+                {
+                    Token = fxToken.Record.Token,
+                    Treasury = fxAccount.Record.Address,
+                    Signatory = new Signatory(fxToken.AdminPrivateKey, fxAccount.PrivateKey)
+                });
+            });
+            Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
+
+            // Confirm it did not change the Treasury Account
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+        }
+        [Fact(DisplayName = "Update Token: Can Not Schedule Update Token")]
+        public async Task CanNotScheduleUpdateToken()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var newSymbol = Generator.UppercaseAlphaCode(20);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
+                {
+                    Token = fxToken.Record.Token,
+                    Symbol = newSymbol,
+                    Signatory = new Signatory(
+                        fxToken.AdminPrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        })
+                });
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

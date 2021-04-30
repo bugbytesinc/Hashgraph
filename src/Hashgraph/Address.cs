@@ -1,4 +1,4 @@
-﻿using Hashgraph.Implementation;
+﻿using System;
 
 namespace Hashgraph
 {
@@ -53,9 +53,28 @@ namespace Hashgraph
         /// </param>
         public Address(long shardNum, long realmNum, long accountNum)
         {
-            ShardNum = RequireInputParameter.ShardNumber(shardNum);
-            RealmNum = RequireInputParameter.RealmNumber(realmNum);
-            AccountNum = RequireInputParameter.AcountNumber(accountNum);
+            if (shardNum < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(shardNum), "Shard Number cannot be negative.");
+            }
+            if (realmNum < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(realmNum), "Realm Number cannot be negative.");
+            }
+            if (accountNum < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(accountNum), "Account Number cannot be negative.");
+            }
+            ShardNum = shardNum;
+            RealmNum = realmNum;
+            AccountNum = accountNum;
+        }
+    }
+    internal static class AddressExtensions
+    {
+        internal static bool IsNullOrNone(this Address? address)
+        {
+            return address is null || address == Address.None;
         }
     }
 }

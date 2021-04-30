@@ -1,36 +1,27 @@
-﻿using Google.Protobuf.Collections;
-using Hashgraph;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using Hashgraph;
+using System;
 
 namespace Proto
 {
-    internal static class TokenTransferListExtensions
+    public sealed partial class TokenTransferList
     {
-        private static ReadOnlyCollection<TokenTransfer> EMPTY_RESULT = new List<TokenTransfer>().AsReadOnly();
-        internal static ReadOnlyCollection<TokenTransfer> ToTransfers(this RepeatedField<TokenTransferList> list)
+        internal TokenTransferList(Address token, Address fromAddress, Address toAddress, long amount) : this()
         {
-            if (list != null && list.Count > 0)
+            if (fromAddress is null)
             {
-                var collector = new Dictionary<(Address, Address), long>();
-                foreach (var xferList in list)
-                {
-                    var token = xferList.Token.ToAddress();
-                    foreach (var xfer in xferList.Transfers)
-                    {
-                        var key = (token, xfer.AccountID.ToAddress());
-                        collector.TryGetValue(key, out long amount);
-                        collector[key] = amount + xfer.Amount;
-                    }
-                }
-                var result = new List<TokenTransfer>(collector.Count);
-                foreach (var entry in collector)
-                {
-                    result.Add(new TokenTransfer(entry.Key.Item1, entry.Key.Item2, entry.Value));
-                }
-                return result.AsReadOnly();
+                throw new ArgumentNullException(nameof(toAddress), "Account to transfer from is missing. Please check that it is not null.");
             }
-            return EMPTY_RESULT;
+            if (toAddress is null)
+            {
+                throw new ArgumentNullException(nameof(toAddress), "Account to transfer to is missing. Please check that it is not null.");
+            }
+            if (amount < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(amount), "The amount to transfer must be non-negative.");
+            }
+            Token = new TokenID(token);
+            Transfers.Add(new AccountAmount(fromAddress, -amount));
+            Transfers.Add(new AccountAmount(toAddress, amount));
         }
     }
 }

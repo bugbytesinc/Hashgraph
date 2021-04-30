@@ -52,7 +52,7 @@ namespace Hashgraph.Test.System
             await (_network.Signatory as ISignatory).SignAsync(invoice);
             var transaction = new Proto.Transaction
             {
-                SignedTransactionBytes = invoice.GetSignedTransaction(6).ToByteString()
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(6).ToByteString()
             };
 
             var receipt = await client.SubmitUnsafeTransactionAsync(transaction.ToByteArray(), ctx => ctx.Payer = systemAddress);
@@ -95,7 +95,7 @@ namespace Hashgraph.Test.System
             await (_network.Signatory as ISignatory).SignAsync(invoice);
             var transaction = new Proto.Transaction
             {
-                SignedTransactionBytes = invoice.GetSignedTransaction(6).ToByteString()
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(6).ToByteString()
             };
 
             var record = await client.SubmitUnsafeTransactionWithRecordAsync(transaction.ToByteArray(), ctx => ctx.Payer = systemAddress);

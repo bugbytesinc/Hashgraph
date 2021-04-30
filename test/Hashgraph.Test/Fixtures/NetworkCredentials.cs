@@ -93,8 +93,18 @@ namespace Hashgraph.Test.Fixtures
                 {
                     var signedTransaction = Proto.SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
                     var transactionBody = Proto.TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
-                    Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
-                    Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
+                    //if(transactionBody.ScheduleCreate is not null)
+                    //{
+                    //    var scheduledTransaction = transactionBody.ScheduleCreate.ScheduledTransactionBody;
+                    //    Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(scheduledTransaction)}");
+                    //    Output.WriteLine($"{DateTime.UtcNow}  ├─ SCH → {JsonFormatter.Default.Format(transactionBody)}");
+                    //    Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
+                    //}
+                    //else
+                    //{
+                        Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
+                        Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
+                    //}
                 }
                 else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.SignedTransactionBytes != null)
                 {
@@ -179,6 +189,9 @@ namespace Hashgraph.Test.Fixtures
                     break;
                 case Query.QueryOneofCase.TransactionGetFastRecord:
                     payment = query.TransactionGetFastRecord?.Header?.Payment;
+                    break;
+                case Query.QueryOneofCase.ScheduleGetInfo:
+                    payment = query.ScheduleGetInfo?.Header?.Payment;
                     break;
             }
             return payment != null;

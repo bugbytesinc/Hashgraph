@@ -1,4 +1,4 @@
-﻿using Hashgraph.Implementation;
+﻿using System;
 
 namespace Hashgraph
 {
@@ -57,10 +57,26 @@ namespace Hashgraph
         /// </param>
         public Gateway(string url, long shardNum, long realmNum, long accountNum)
         {
-            Url = RequireInputParameter.Url(url);
-            ShardNum = RequireInputParameter.ShardNumber(shardNum);
-            RealmNum = RequireInputParameter.RealmNumber(realmNum);
-            AccountNum = RequireInputParameter.AcountNumber(accountNum);
+            if (shardNum < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(shardNum), "Shard Number cannot be negative.");
+            }
+            if (realmNum < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(realmNum), "Realm Number cannot be negative.");
+            }
+            if (accountNum < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(accountNum), "Account Number cannot be negative.");
+            }
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                throw new ArgumentOutOfRangeException(nameof(url), "URL is required.");
+            }
+            Url = url;
+            ShardNum = shardNum;
+            RealmNum = realmNum;
+            AccountNum = accountNum;
         }
         /// <summary>
         /// Implicit operator for converting a Gateway to an Address

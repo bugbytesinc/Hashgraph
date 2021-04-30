@@ -179,5 +179,22 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
             Assert.StartsWith("Unable to create Consensus Topic, status: InvalidSignature", tex.Message);
         }
+
+        [Fact(DisplayName = "Create Topic: Can Not Schedule a Create Topic")]
+        public async Task CanNotScheduleACreateTopic()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await TestTopic.CreateAsync(_network, fx => {
+                    fx.Params.Signatory = new Signatory(fx.Signatory, new PendingParams
+                    {
+                        PendingPayer = fxPayer,
+                    });
+                });
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+        }
     }
 }

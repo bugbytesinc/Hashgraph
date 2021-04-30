@@ -1,5 +1,4 @@
 ﻿#pragma warning disable CS8604 // Possible null reference argument.
-using Hashgraph.Implementation;
 using System;
 using System.Threading.Tasks;
 
@@ -34,7 +33,7 @@ namespace Hashgraph.Extensions
         /// </returns>
         public static async Task<NodeInfo[]> GetAddressBookAsync(this Client client, Action<IContext>? configure = null)
         {
-            var file = await client.GetFileContentAsync(ADDRESS_BOOK_FILE_ADDRESS, configure);
+            var file = await client.GetFileContentAsync(ADDRESS_BOOK_FILE_ADDRESS, configure).ConfigureAwait(false);
             var book = Proto.NodeAddressBook.Parser.ParseFrom(file.ToArray());
             return book.ToNodeInfoArray();
         }

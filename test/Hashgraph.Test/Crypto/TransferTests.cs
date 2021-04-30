@@ -217,7 +217,7 @@ namespace Hashgraph.Test.Crypto
             {
                 await fx1.Client.TransferWithRecordAsync(transfers);
             });
-            Assert.Equal("cryptoTransfers", aor.ParamName);
+            Assert.Equal("CryptoTransfers", aor.ParamName);
             Assert.StartsWith("The sum of crypto sends and receives does not balance.", aor.Message);
         }
         [Fact(DisplayName = "Transfer: net values of aero are not allowed in transfers.")]
@@ -244,7 +244,7 @@ namespace Hashgraph.Test.Crypto
             {
                 await fx1.Client.TransferWithRecordAsync(transfers);
             });
-            Assert.Equal("cryptoTransfers", aor.ParamName);
+            Assert.Equal("CryptoTransfers", aor.ParamName);
             Assert.StartsWith($"The amount to transfer crypto to/from 0.0.{account1.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.", aor.Message);
 
             Assert.Equal(fx1.CreateParams.InitialBalance, await fx1.Client.GetAccountBalanceAsync(account1));
@@ -277,7 +277,7 @@ namespace Hashgraph.Test.Crypto
             {
                 await fx1.Client.TransferWithRecordAsync(transfers);
             });
-            Assert.Equal("cryptoTransfers", aor.ParamName);
+            Assert.Equal("CryptoTransfers", aor.ParamName);
             Assert.StartsWith("The dictionary of crypto transfers can not be empty", aor.Message);
         }
         [Fact(DisplayName = "Transfer: Transaction ID Information Makes Sense for Receipt")]
@@ -482,6 +482,104 @@ namespace Hashgraph.Test.Crypto
                 });
             });
             Assert.StartsWith("Signature with Duplicate Prefix Identifier was provided, but did not have an Identical Signature.", aex3.Message);
+        }
+        [Fact(DisplayName = "Transfer: Can Schedule A Transfer Between Two Accounts Using Context Signatory")]
+        public async Task CanScheduleATransferBetweenTwoAccountsUsingContextSignatory()
+        {
+            var initialBalance = (ulong)Generator.Integer(100, 1000);
+            var transferAmount = initialBalance / 2;
+            await using var fxSendingAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxReceivingAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            var contextSignatory = new Signatory(_network.PrivateKey, new PendingParams());
+            await fxSendingAccount.Client.TransferAsync(fxSendingAccount, fxReceivingAccount, (long)transferAmount, ctx => ctx.Signatory = contextSignatory);
+        }
+        [Fact(DisplayName = "Transfer: Can Schedule A Transfer Between Two Accounts Using Params Signatory")]
+        public async Task CanScheduleATransferBetweenTwoAccountsUsingParamsSignatory()
+        {
+            var initialBalance = (ulong)Generator.Integer(100, 1000);
+            var transferAmount = initialBalance / 2;
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            var paramsSignatory = new Signatory(new PendingParams());
+            await fxAccount1.Client.TransferAsync(fxAccount1, fxAccount2, (long)transferAmount, paramsSignatory);
+        }
+        [Fact(DisplayName = "Transfer: Can Schedule A Transfer Between Two Accounts Using Context Signatory With Private Key")]
+        public async Task CanScheduleATransferBetweenTwoAccountsUsingContextSignatoryWithPrivateKey()
+        {
+            var initialBalance = (ulong)Generator.Integer(100, 1000);
+            var transferAmount = initialBalance / 2;
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+
+            var contextSignatory = new Signatory(_network.PrivateKey, new PendingParams());
+            await fxAccount1.Client.TransferAsync(fxAccount1, fxAccount2, (long)transferAmount, ctx => ctx.Signatory = contextSignatory);
+        }
+        [Fact(DisplayName = "Transfer: Can Schedule A Transfer Between Two Accounts With Third Party Payer")]
+        public async Task CanScheduleATransferBetweenTwoAccountsWithThirdPartyPayer()
+        {
+            var initialBalance = (ulong)Generator.Integer(100, 1000);
+            var transferAmount = initialBalance / 2;
+            await using var fxSender = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxReceiver = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 10_00_000_000);
+
+            var contextSignatory = new Signatory(fxPayer.PrivateKey, _network.PrivateKey, new PendingParams { PendingPayer = _network.Payer });
+            var contextPayer = fxPayer.Record.Address;
+
+            await fxSender.Client.TransferAsync(fxSender, fxReceiver, (long)transferAmount, ctx => { ctx.Payer = contextPayer; ctx.Signatory = contextSignatory; });
+        }
+        [Fact(DisplayName = "Transfer: Can Schedule A Transfer That Should Immediately Execute")]
+        public async Task CanScheduleATransferThatShouldImmediatelyExecute()
+        {
+            var initialBalance = (ulong)Generator.Integer(100, 1000);
+            var transferAmount = initialBalance / 2;
+            await using var fxSender = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxReceiver = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+
+            var pendingSignatory = new Signatory(fxPayer.PrivateKey, fxSender.PrivateKey, new PendingParams { PendingPayer = fxPayer });
+
+            var record = await fxSender.Client.TransferWithRecordAsync(fxSender, fxReceiver, (long)transferAmount, pendingSignatory);
+
+            var info = await fxPayer.Client.GetPendingTransactionInfoAsync(record.Pending.Id);
+            Assert.Equal(record.Pending.Id, info.Id);
+            Assert.Equal(record.Pending.TxId, info.TxId);
+            Assert.Equal(_network.Payer, info.Creator);
+            Assert.Equal(fxPayer.Record.Address, info.Payer);
+            Assert.Equal(2,info.Endorsements.Length);
+            Assert.Equal(new Endorsement(fxPayer.PublicKey), info.Endorsements[0]);
+            Assert.Null(info.Administrator);
+            Assert.Empty(info.Memo);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.True(record.Concensus <= info.Executed);
+            Assert.Null(info.Deleted);
+            Assert.False(info.PendingTransactionBody.IsEmpty);
+
+            await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
+            await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
+            Assert.True(await fxPayer.Client.GetAccountBalanceAsync(fxPayer) < fxPayer.CreateParams.InitialBalance);
+
+            var executedReceipt = await fxPayer.Client.GetReceiptAsync(record.Pending.TxId);
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(record.Pending.TxId, executedReceipt.Id);
+            Assert.NotNull(executedReceipt.CurrentExchangeRate);
+            Assert.NotNull(executedReceipt.NextExchangeRate);
+            Assert.Null(executedReceipt.Pending);
+
+            var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(record.Pending.TxId);
+            Assert.Equal(ResponseCode.Success, executedRecord.Status);
+            Assert.Equal(record.Pending.TxId, executedRecord.Id);
+            Assert.InRange(executedRecord.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(executedRecord.Transfers[fxSender], -(long)transferAmount);
+            Assert.Equal(executedRecord.Transfers[fxReceiver], (long)transferAmount);
+            Assert.True(executedRecord.Transfers[fxPayer] < 0);
+            Assert.Empty(executedRecord.TokenTransfers);
+            Assert.False(executedRecord.Hash.IsEmpty);
+            Assert.NotNull(executedRecord.Concensus);
+            Assert.NotNull(executedRecord.CurrentExchangeRate);
+            Assert.NotNull(executedRecord.NextExchangeRate);
+            Assert.Empty(executedRecord.Memo);
+            Assert.Null(executedRecord.Pending);
         }
     }
 }

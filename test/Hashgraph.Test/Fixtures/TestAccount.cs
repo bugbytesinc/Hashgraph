@@ -23,7 +23,8 @@ namespace Hashgraph.Test.Fixtures
             fx.CreateParams = new CreateAccountParams
             {
                 Endorsement = fx.PublicKey,
-                InitialBalance = (ulong)Generator.Integer(10, 20)
+                InitialBalance = (ulong)Generator.Integer(10, 20),
+                Memo = Generator.String(10,20)
             };
             customize?.Invoke(fx);
             fx.Record = await fx.Client.CreateAccountWithRecordAsync(fx.CreateParams, ctx =>

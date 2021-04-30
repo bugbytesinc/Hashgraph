@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -32,33 +30,7 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<TransactionReceipt> SuspendNetworkAsync(SuspendNetworkParams suspendParameters, Action<IContext>? configure = null)
         {
-            suspendParameters = RequireInputParameter.SuspendNetworkParams(suspendParameters);
-            await using var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            var startDate = DateTime.UtcNow.Add(suspendParameters.Starting);
-            var endDate = startDate.Add(suspendParameters.Duration);
-            transactionBody.Freeze = new FreezeTransactionBody
-            {
-                StartHour = startDate.Hour,
-                StartMin = startDate.Minute,
-                EndHour = endDate.Hour,
-                EndMin = endDate.Minute,
-            };
-            if (!suspendParameters.UpdateFile.IsNullOrNone())
-            {
-                transactionBody.Freeze.UpdateFile = new FileID(suspendParameters.UpdateFile);
-                transactionBody.Freeze.FileHash = ByteString.CopyFrom(suspendParameters.UpdateFileHash.Span);
-            }
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Failed to submit suspend/freeze command, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            return receipt.FillProperties(transactionId, new TransactionReceipt());
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FreezeTransactionBody(suspendParameters), configure, false).ConfigureAwait(false));
         }
     }
 }

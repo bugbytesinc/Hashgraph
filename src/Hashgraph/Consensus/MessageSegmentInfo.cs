@@ -1,4 +1,4 @@
-﻿#pragma warning disable CS8618
+﻿using Proto;
 
 namespace Hashgraph
 {
@@ -26,5 +26,14 @@ namespace Hashgraph
         /// the whole of the message when assembled.
         /// </summary>
         public int TotalSegmentCount { get; internal init; }
+        /// <summary>
+        /// Internal Constructor from Raw Datat
+        /// </summary>
+        internal MessageSegmentInfo(ConsensusMessageChunkInfo info)
+        {
+            ParentTxId = info.InitialTransactionID.AsTxId();
+            Index = info.Number;
+            TotalSegmentCount = info.Total;
+        }
     }
 }

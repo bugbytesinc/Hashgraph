@@ -35,6 +35,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fx.Params.Symbol, info.Symbol);
         }
         [Fact(DisplayName = "Token Info: Null Token Identifier Raises Exception")]
         public async Task NullTokenIdentifierRaisesException()

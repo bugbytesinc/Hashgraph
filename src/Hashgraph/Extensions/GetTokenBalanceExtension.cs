@@ -31,8 +31,8 @@ namespace Hashgraph.Extensions
         /// <returns></returns>
         public static async Task<ulong> GetAccountTokenBalanceAsync(this Client client, Address address, Address token, Action<IContext>? configure = null)
         {
-            var balances = await client.GetAccountBalancesAsync(address);
-            return balances.Tokens.TryGetValue(token, out ulong balance) ? balance : 0;
+            var balances = await client.GetAccountBalancesAsync(address, configure).ConfigureAwait(false);
+            return balances.Tokens.TryGetValue(token, out CryptoBalance? crypto) ? crypto.Balance : 0;
         }
         /// <summary>
         /// Helper method to retrieve just the balance of a single token for
@@ -55,8 +55,8 @@ namespace Hashgraph.Extensions
         /// <returns></returns>
         public static async Task<ulong> GetContractTokenBalanceAsync(this Client client, Address contract, Address token, Action<IContext>? configure = null)
         {
-            var balances = await client.GetContractBalancesAsync(contract);
-            return balances.Tokens.TryGetValue(token, out ulong balance) ? balance : 0;
+            var balances = await client.GetContractBalancesAsync(contract, configure).ConfigureAwait(false);
+            return balances.Tokens.TryGetValue(token, out CryptoBalance? crypto) ? crypto.Balance : 0;
         }
     }
 }

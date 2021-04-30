@@ -99,7 +99,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(newExpiration, info.Expiration);
             Assert.Equal(fx.PublicKey, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
 
@@ -122,7 +122,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(newEndorsement, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
 
@@ -148,7 +148,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractRecord.Contract, info.Address);
             Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
-            Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Contract Update: Can Update Memo.")]
@@ -323,6 +323,48 @@ namespace Hashgraph.Test.Contract
             });
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", tex.Message);
+        }
+        [Fact(DisplayName = "Contract Update: Can not make mutable contract imutable.")]
+        async Task CanNotMakeMutableContractImutable()
+        {
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxContract.Client.UpdateContractAsync(new UpdateContractParams
+                {
+                    Contract = fxContract.ContractRecord.Contract,
+                    Administrator = Endorsement.None,
+                    Signatory = fxContract.PrivateKey
+                });
+            });
+            Assert.Equal(ResponseCode.InvalidAdminKey, tex.Status);
+            Assert.StartsWith("Unable to update Contract, status: InvalidAdminKey", tex.Message);
+
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(fxContract.PublicKey, info.Administrator);
+        }
+        [Fact(DisplayName = "Contract Update: Can Not Schedule Update.")]
+        public async Task CanNotScheduleUpdate()
+        {
+            await using var fxContract = await GreetingContract.CreateAsync(_network);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            var newMemo = Generator.Code(50);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+                {
+                    Contract = fxContract.ContractRecord.Contract,
+                    Memo = newMemo,
+                    Signatory = new Signatory(
+                        fxContract.PrivateKey,
+                        new PendingParams { PendingPayer = fxPayer }
+                    )
+                });
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

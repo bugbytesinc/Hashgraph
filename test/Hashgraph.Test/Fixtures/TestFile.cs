@@ -26,6 +26,7 @@ namespace Hashgraph.Test.Fixtures
             test.Client = networkCredentials.NewClient();
             test.CreateParams = new CreateFileParams
             {
+                Memo = Generator.Code(20),
                 Expiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddSeconds(7890000)),
                 Endorsements = new Endorsement[] { test.PublicKey },
                 Contents = Encoding.Unicode.GetBytes("Hello From .NET" + Generator.Code(50)).Take(48).ToArray(),

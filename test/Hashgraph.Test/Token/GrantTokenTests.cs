@@ -139,5 +139,29 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Status);
             Assert.StartsWith("Unable to Grant Token, status: TokenHasNoKycKey", tex.Message);
         }
+        [Fact(DisplayName = "Grant Tokens: Can Not Schedule Grant Token Coins")]
+        public async Task CanNotScheduleGrantTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
+            var circulation = fxToken.Params.Circulation;
+            var xferAmount = circulation / 3;
+            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.GrantTokenKycAsync(
+                    fxToken.Record.Token,
+                    fxAccount,
+                    new Signatory(
+                        fxToken.GrantPrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+        }
     }
 }

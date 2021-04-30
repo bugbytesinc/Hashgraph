@@ -460,7 +460,13 @@ namespace Hashgraph
         /// The Topic ID specified is not in the system.
         /// </summary>
         [Description("INVALID_TOPIC_ID")] InvalidTopicId = 150,
+        /// <summary>
+        /// A provided admin key was invalid.
+        /// </summary>
         [Description("INVALID_ADMIN_KEY")] InvalidAdminKey = 155,
+        /// <summary>
+        /// A provided submit key was invalid.
+        /// </summary>
         [Description("INVALID_SUBMIT_KEY")] InvalidSubmitKey = 156,
         /// <summary>
         /// An attempted operation was not authorized (ie - a deleteTopic for a topic with no adminKey).
@@ -497,7 +503,7 @@ namespace Hashgraph
         /// </summary>
         [Description("ACCOUNT_FROZEN_FOR_TOKEN")] AccountFrozenForToken = 165,
         /// <summary>
-        /// Maximum number of token relations for agiven account is exceeded
+        /// An involved account already has more than &lt;tt>tokens.maxPerAccount&lt;/tt> associations with non-deleted tokens.
         /// </summary>
         [Description("TOKENS_PER_ACCOUNT_LIMIT_EXCEEDED")] TokensPerAccountLimitExceeded = 166,
         /// <summary>
@@ -529,11 +535,11 @@ namespace Hashgraph
         /// </summary>
         [Description("TRANSFERS_NOT_ZERO_SUM_FOR_TOKEN")] TransfersNotZeroSumForToken = 173,
         /// <summary>
-        /// Token Symbol is not provided
+        /// A token symbol was not provided
         /// </summary>
         [Description("MISSING_TOKEN_SYMBOL")] MissingTokenSymbol = 174,
         /// <summary>
-        /// Token Symbol is too long
+        /// The provided token symbol was too long
         /// </summary>
         [Description("TOKEN_SYMBOL_TOO_LONG")] TokenSymbolTooLong = 175,
         /// <summary>
@@ -560,16 +566,37 @@ namespace Hashgraph
         /// Wipe key is not set on token
         /// </summary>
         [Description("TOKEN_HAS_NO_WIPE_KEY")] TokenHasNoWipeKey = 181,
+        /// <summary>
+        /// The requested token mint amount would cause an invalid total supply
+        /// </summary>
         [Description("INVALID_TOKEN_MINT_AMOUNT")] InvalidTokenMintAmount = 182,
+        /// <summary>
+        /// The requested token burn amount would cause an invalid total supply
+        /// </summary>
         [Description("INVALID_TOKEN_BURN_AMOUNT")] InvalidTokenBurnAmount = 183,
+        /// <summary>
+        /// A required token-account relationship is missing
+        /// </summary>
         [Description("TOKEN_NOT_ASSOCIATED_TO_ACCOUNT")] TokenNotAssociatedToAccount = 184,
         /// <summary>
-        /// Cannot execute wipe operation on treasury account
+        /// The target of a wipe operation was the token treasury account
         /// </summary>
         [Description("CANNOT_WIPE_TOKEN_TREASURY_ACCOUNT")] CannotWipeTokenTreasuryAccount = 185,
+        /// <summary>
+        /// The provided KYC key was invalid.
+        /// </summary>
         [Description("INVALID_KYC_KEY")] InvalidKycKey = 186,
+        /// <summary>
+        /// The provided wipe key was invalid.
+        /// </summary>
         [Description("INVALID_WIPE_KEY")] InvalidWipeKey = 187,
+        /// <summary>
+        /// The provided freeze key was invalid.
+        /// </summary>
         [Description("INVALID_FREEZE_KEY")] InvalidFreezeKey = 188,
+        /// <summary>
+        /// The provided supply key was invalid.
+        /// </summary>
         [Description("INVALID_SUPPLY_KEY")] InvalidSupplyKey = 189,
         /// <summary>
         /// Token Name is not provided
@@ -615,5 +642,93 @@ namespace Hashgraph
         /// TokenTransfersTransactionBody has a TokenTransferList with no AccountAmounts
         /// </summary>
         [Description("EMPTY_TOKEN_TRANSFER_ACCOUNT_AMOUNTS")] EmptyTokenTransferAccountAmounts = 200,
+        /// <summary>
+        /// The Scheduled entity does not exist; or has now expired, been deleted, or been executed
+        /// </summary>
+        [Description("INVALID_SCHEDULE_ID")] InvalidScheduleId = 201,
+        /// <summary>
+        /// The Scheduled entity cannot be modified. Admin key not set
+        /// </summary>
+        [Description("SCHEDULE_IS_IMMUTABLE")] ScheduleIsImmutable = 202,
+        /// <summary>
+        /// The provided Scheduled Payer does not exist
+        /// </summary>
+        [Description("INVALID_SCHEDULE_PAYER_ID")] InvalidSchedulePayerId = 203,
+        /// <summary>
+        /// The Schedule Create Transaction TransactionID account does not exist
+        /// </summary>
+        [Description("INVALID_SCHEDULE_ACCOUNT_ID")] InvalidScheduleAccountId = 204,
+        /// <summary>
+        /// The provided sig map did not contain any new valid signatures from required signers of the scheduled transaction
+        /// </summary>
+        [Description("NO_NEW_VALID_SIGNATURES")] NoNewValidSignatures = 205,
+        /// <summary>
+        /// The required signers for a scheduled transaction cannot be resolved, for example because they do not exist or have been deleted
+        /// </summary>
+        [Description("UNRESOLVABLE_REQUIRED_SIGNERS")] UnresolvableRequiredSigners = 206,
+        /// <summary>
+        /// Only whitelisted transaction types may be scheduled
+        /// </summary>
+        [Description("SCHEDULED_TRANSACTION_NOT_IN_WHITELIST")] ScheduledTransactionNotInWhitelist = 207,
+        /// <summary>
+        /// At least one of the signatures in the provided sig map did not represent a valid signature for any required signer
+        /// </summary>
+        [Description("SOME_SIGNATURES_WERE_INVALID")] SomeSignaturesWereInvalid = 208,
+        /// <summary>
+        /// The scheduled field in the TransactionID may not be set to true
+        /// </summary>
+        [Description("TRANSACTION_ID_FIELD_NOT_ALLOWED")] TransactionIdFieldNotAllowed = 209,
+        /// <summary>
+        /// A schedule already exists with the same identifying fields of an attempted ScheduleCreate (that is, all fields other than scheduledPayerAccountID)
+        /// </summary>
+        [Description("IDENTICAL_SCHEDULE_ALREADY_CREATED")] IdenticalScheduleAlreadyCreated = 210,
+        /// <summary>
+        /// A string field in the transaction has a UTF-8 encoding with the prohibited zero byte
+        /// </summary>
+        [Description("INVALID_ZERO_BYTE_IN_STRING")] InvalidZeroByteInString = 211,
+        /// <summary>
+        /// A schedule being signed or deleted has already been deleted
+        /// </summary>
+        [Description("SCHEDULE_ALREADY_DELETED")] ScheduleAlreadyDeleted = 212,
+        /// <summary>
+        /// A schedule being signed or deleted has already been executed
+        /// </summary>
+        [Description("SCHEDULE_ALREADY_EXECUTED")] ScheduleAlreadyExecuted = 213,
+        /// <summary>
+        /// ConsensusSubmitMessage request's message size is larger than allowed.
+        /// </summary>
+        [Description("MESSAGE_SIZE_TOO_LARGE")] MessageSizeTooLarge = 214,
+        /// <summary>
+        /// An operation was assigned to more than one throttle group in a given bucket
+        /// </summary>
+        [Description("OPERATION_REPEATED_IN_BUCKET_GROUPS")] OperationRepeatedInBucketGroups = 215,
+        /// <summary>
+        /// The capacity needed to satisfy all opsPerSec groups in a bucket overflowed a signed 8-byte integral type
+        /// </summary>
+        [Description("BUCKET_CAPACITY_OVERFLOW")] BucketCapacityOverflow = 216,
+        /// <summary>
+        /// Given the network size in the address book, the node-level capacity for an operation would never be enough to accept a single request; usually means a bucket burstPeriod should be increased
+        /// </summary>
+        [Description("NODE_CAPACITY_NOT_SUFFICIENT_FOR_OPERATION")] NodeCapacityNotSufficientForOperation = 217,
+        /// <summary>
+        /// A bucket was defined without any throttle groups
+        /// </summary>
+        [Description("BUCKET_HAS_NO_THROTTLE_GROUPS")] BucketHasNoThrottleGroups = 218,
+        /// <summary>
+        /// A throttle group was granted zero opsPerSec
+        /// </summary>
+        [Description("THROTTLE_GROUP_HAS_ZERO_OPS_PER_SEC")] ThrottleGroupHasZeroOpsPerSec = 219,
+        /// <summary>
+        /// The throttle definitions file was updated, but some supported operations were not assigned a bucket
+        /// </summary>
+        [Description("SUCCESS_BUT_MISSING_EXPECTED_OPERATION")] SuccessButMissingExpectedOperation = 220,
+        /// <summary>
+        /// The new contents for the throttle definitions system file were not valid protobuf
+        /// </summary>
+        [Description("UNPARSEABLE_THROTTLE_DEFINITIONS")] UnparseableThrottleDefinitions = 221,
+        /// <summary>
+        /// The new throttle definitions system file were invalid, and no more specific error could be divined
+        /// </summary>
+        [Description("INVALID_THROTTLE_DEFINITIONS")] InvalidThrottleDefinitions = 222,
     }
 }

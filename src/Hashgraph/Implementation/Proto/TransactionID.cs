@@ -1,4 +1,5 @@
 ﻿using Hashgraph;
+using System;
 
 namespace Proto
 {
@@ -6,21 +7,33 @@ namespace Proto
     {
         internal TransactionID(TxId transaction) : this()
         {
+            if (transaction is null)
+            {
+                throw new ArgumentNullException(nameof(transaction), "Transaction is missing. Please check that it is not null.");
+            }
             AccountID = new AccountID(transaction.Address);
             TransactionValidStart = new Timestamp
             {
                 Seconds = transaction.ValidStartSeconds,
                 Nanos = transaction.ValidStartNanos
             };
+            Scheduled = transaction.Pending;
         }
-        internal TxId ToTxId()
+    }
+
+    internal static class TransactionIDExtensions
+    {
+        internal static TxId AsTxId(this TransactionID? id)
         {
-            return new TxId
+            if(id is not null)
             {
-                Address = AccountID.ToAddress(),
-                ValidStartSeconds = TransactionValidStart.Seconds,
-                ValidStartNanos = TransactionValidStart.Nanos
-            };
+                var timestamp = id.TransactionValidStart;
+                if(timestamp is not null)
+                {
+                    return new TxId(id.AccountID.AsAddress(), timestamp.Seconds, timestamp.Nanos, id.Scheduled);
+                }
+            }
+            return TxId.None;
         }
     }
 }

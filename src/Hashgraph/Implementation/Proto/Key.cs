@@ -43,7 +43,7 @@ namespace Proto
                 KeyOneofCase.Ed25519 => new Endorsement(KeyType.Ed25519, new ReadOnlyMemory<byte>(Ed25519Util.publicKeyPrefix.Concat(Ed25519.ToByteArray()).ToArray())),
                 KeyOneofCase.RSA3072 => new Endorsement(KeyType.RSA3072, RSA3072.ToByteArray()),
                 KeyOneofCase.ECDSA384 => new Endorsement(KeyType.ECDSA384, ECDSA384.ToByteArray()),
-                KeyOneofCase.ContractID => new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(ContractID.ToAddress())),
+                KeyOneofCase.ContractID => new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(ContractID.AsAddress())),
                 KeyOneofCase.ThresholdKey => ThresholdKey.Keys.Keys.Count == 0 ? Endorsement.None : new Endorsement(ThresholdKey.Threshold, ThresholdKey.Keys.ToEndorsements()),
                 KeyOneofCase.KeyList => KeyList.Keys.Count == 0 ? Endorsement.None : new Endorsement(KeyList.ToEndorsements()),
                 _ => throw new InvalidOperationException($"Unknown Key Type {KeyCase}.  Do we have a network/library version mismatch?"),

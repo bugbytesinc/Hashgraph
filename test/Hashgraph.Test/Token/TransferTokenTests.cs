@@ -41,6 +41,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -53,6 +54,8 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
             Assert.Single(balances.Tokens);
             Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
+            Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
         }
         [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins and Get Record")]
         public async Task CanTransferTokensAndGetRecord()
@@ -97,6 +100,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -109,6 +113,8 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
             Assert.Single(balances.Tokens);
             Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
+            Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
         }
         [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins and Get Record with signatories in context param")]
         public async Task CanTransferTokensAndGetRecordWithSignatoriesInContextParam()
@@ -153,6 +159,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -165,6 +172,8 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
             Assert.Single(balances.Tokens);
             Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
+            Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
         }
         [Fact(DisplayName = "Transfer Tokens: Can Execute Multi-Transfer Token Coins")]
         public async Task CanExecuteMultiTransferTokens()
@@ -585,6 +594,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, association.Token);
             Assert.Equal(fxToken.Params.Symbol, association.Symbol);
             Assert.Equal(xferAmount, association.Balance);
+            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
         }
@@ -669,6 +679,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             // Move the treasury back
             await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
@@ -681,6 +692,47 @@ namespace Hashgraph.Test.Token
             // All coins swept back to original treasury.
             Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
             Assert.Equal(circulation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        }
+        [Fact(DisplayName = "Transfer Tokens: Can Schedule Multi-Transfer Token Coins")]
+        public async Task CanScheduleMultiTransferTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
+            var xferAmount = fxToken.Params.Circulation / 3;
+            var expectedTreasury = fxToken.Params.Circulation - 2 * xferAmount;
+            var transfers = new TransferParams
+            {
+                TokenTransfers = new TokenTransfer[]
+                {
+                    new TokenTransfer(fxToken,fxAccount1,(long)xferAmount),
+                    new TokenTransfer(fxToken,fxAccount2,(long)xferAmount),
+                    new TokenTransfer(fxToken,fxToken.TreasuryAccount,-2*(long)xferAmount)
+                },
+                Signatory = new Signatory(
+                    fxToken.TreasuryAccount.PrivateKey,
+                    new PendingParams
+                    {
+                        PendingPayer = fxPayer
+                    })
+            };
+            var schedulingReceipt = await fxToken.Client.TransferAsync(transfers);
+            Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+
+            Assert.Equal(0UL, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
+            Assert.Equal(0UL, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
+            Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+
+            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(schedulingReceipt.Pending.Id, fxPayer);
+            Assert.Equal(ResponseCode.Success, counterReceipt.Status);
+
+            var transferReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Pending.TxId);
+            Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+
+            Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
+            Assert.Equal(xferAmount, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
+            Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
     }
 }

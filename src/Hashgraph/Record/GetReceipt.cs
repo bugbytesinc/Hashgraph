@@ -1,5 +1,4 @@
-﻿#pragma warning disable IDE0066
-using Hashgraph.Implementation;
+﻿using Hashgraph.Implementation;
 using Proto;
 using System;
 using System.Collections.ObjectModel;
@@ -16,6 +15,13 @@ namespace Hashgraph
         /// <param name="transaction">
         /// Transaction identifier of the receipt.
         /// </param>
+        /// <param name="pending">
+        /// Flag indicating to return the pending or "scheduled" version of
+        /// the transaction.  If set to true, the network will look for
+        /// the receipt of an executed pending transaction.  The TxID is
+        /// the ID of the tranaction that "created" the pending (scheduled) 
+        /// transaction.
+        /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
         /// the execution configuration for just this method call. 
@@ -29,15 +35,18 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network has no record of the transaction or request has invalid or had missing data.</exception>
         public async Task<TransactionReceipt> GetReceiptAsync(TxId transaction, Action<IContext>? configure = null)
         {
-            transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
-            var receipt = await Transactions.GetReceiptAsync(context, transactionId);
+            var receipt = await context.GetReceiptAsync(transactionId).ConfigureAwait(false);
             if (receipt.Status != ResponseCodeEnum.Success)
             {
                 throw new TransactionException($"Unable to retreive receipt, status: {receipt.Status}", transaction, (ResponseCode)receipt.Status);
             }
-            return receipt.ToTransactionReceipt(transactionId);
+            return new NetworkResult
+            {
+                TransactionID = transactionId,
+                Receipt = receipt
+            }.ToReceipt();
         }
         /// <summary>
         /// Retreives all known receipts from the network having the given
@@ -62,24 +71,16 @@ namespace Hashgraph
         /// respond.</exception>
         public async Task<ReadOnlyCollection<TransactionReceipt>> GetAllReceiptsAsync(TxId transaction, Action<IContext>? configure = null)
         {
-            transaction = RequireInputParameter.Transaction(transaction);
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
-            var query = new Query
-            {
-                TransactionGetReceipt = new TransactionGetReceiptQuery
-                {
-                    TransactionID = transactionId,
-                    IncludeDuplicates = true
-                }
-            };
-            var response = await Transactions.ExecuteNetworkRequestWithRetryAsync(context, query, query.InstantiateNetworkRequestMethod, shouldRetry);
+            var query = new TransactionGetReceiptQuery(transactionId, true) as INetworkQuery;
+            var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry).ConfigureAwait(false);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             if (responseCode == ResponseCodeEnum.Busy)
             {
-                throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.ToTxId(), (ResponseCode)responseCode);
+                throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.AsTxId(), (ResponseCode)responseCode);
             }
-            return response.TransactionGetReceipt.DuplicateTransactionReceipts.ToTransactionReceiptList(response.TransactionGetReceipt.Receipt, transactionId);
+            return TransactionReceiptExtensions.Create(response.TransactionGetReceipt.DuplicateTransactionReceipts, response.TransactionGetReceipt.Receipt, transactionId);
 
             static bool shouldRetry(Response response)
             {

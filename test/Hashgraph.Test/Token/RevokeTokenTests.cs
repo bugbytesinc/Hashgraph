@@ -187,5 +187,37 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Status);
             Assert.StartsWith("Unable to Revoke Token, status: TokenHasNoKycKey", tex.Message);
         }
+        [Fact(DisplayName = "Revoke Tokens: Can Not Schedule Revoke Token Coins")]
+        public async Task CanNotScheduleRevokeTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
+            var circulation = fxToken.Params.Circulation;
+            var xferAmount = circulation / 3;
+
+            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+
+            await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+
+            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.RevokeTokenKycAsync(
+                    fxToken.Record.Token,
+                    fxAccount,
+                    new Signatory(
+                        fxToken.GrantPrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+        }
     }
 }

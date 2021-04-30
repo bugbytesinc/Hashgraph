@@ -28,8 +28,8 @@ namespace Hashgraph.Test.Topic
                     Memo = newMemo,
                 });
             });
-            Assert.Equal("Topic", ane.ParamName);
-            Assert.StartsWith("Topic address is missing", ane.Message);
+            Assert.Equal("topic", ane.ParamName);
+            Assert.StartsWith("Topic Address is missing", ane.Message);
         }
         [Fact(DisplayName = "Update Topic: Call to Update With No Changes Raises Error")]
         public async Task UpdateWitnoutChangesRaisesError()
@@ -308,6 +308,29 @@ namespace Hashgraph.Test.Topic
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
             Assert.StartsWith("Unable to update Topic, status: InvalidSignature", tex.Message);
+        }
+        [Fact(DisplayName = "Update Topic: Can Not Schedule Update Memo")]
+        public async Task CanNotScheduleUpdate()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxTopic = await TestTopic.CreateAsync(_network);
+            var newMemo = Generator.String(10, 100);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxTopic.Client.UpdateTopicAsync(new UpdateTopicParams
+                {
+                    Topic = fxTopic.Record.Topic,
+                    Memo = newMemo,
+                    Signatory = new Signatory(
+                        fxTopic.AdminPrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        })
+                });
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

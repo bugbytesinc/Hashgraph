@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -28,9 +27,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<CreateAccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public async Task<CreateAccountReceipt> CreateAccountAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateAccountImplementationAsync<CreateAccountReceipt>(createParameters, configure);
+            return new CreateAccountReceipt(await ExecuteTransactionAsync(new CryptoCreateTransactionBody(createParameters), configure, false, createParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Creates a new network account with a given initial balance
@@ -54,48 +53,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<CreateAccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
+        public async Task<CreateAccountRecord> CreateAccountWithRecordAsync(CreateAccountParams createParameters, Action<IContext>? configure = null)
         {
-            return CreateAccountImplementationAsync<CreateAccountRecord>(createParameters, configure);
-        }
-        /// <summary>
-        /// Internal implementation for Create Account
-        /// Returns either a receipt or record or throws
-        /// an exception.
-        /// </summary>
-        private async Task<TResult> CreateAccountImplementationAsync<TResult>(CreateAccountParams createParameters, Action<IContext>? configure) where TResult : new()
-        {
-            var publicKey = RequireInputParameter.KeysFromEndorsements(createParameters);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, createParameters.Signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.CryptoCreateAccount = new CryptoCreateTransactionBody
-            {
-                Key = publicKey,
-                InitialBalance = createParameters.InitialBalance,
-                ReceiverSigRequired = createParameters.RequireReceiveSignature,
-                AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod),
-                ProxyAccountID = createParameters.Proxy is null ? null : new AccountID(createParameters.Proxy),
-            };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to create account, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is CreateAccountRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is CreateAccountReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new CreateAccountRecord(await ExecuteTransactionAsync(new CryptoCreateTransactionBody(createParameters), configure, true, createParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

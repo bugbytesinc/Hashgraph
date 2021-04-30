@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -27,9 +25,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> AppendFileAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> AppendFileAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
         {
-            return AppendFileImplementationAsync<TransactionReceipt>(appendParameters, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FileAppendTransactionBody(appendParameters), configure, false, appendParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Appends content to an existing file.
@@ -50,44 +48,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> AppendFileWithRecordAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> AppendFileWithRecordAsync(AppendFileParams appendParameters, Action<IContext>? configure = null)
         {
-            return AppendFileImplementationAsync<TransactionRecord>(appendParameters, configure);
-        }
-        /// <summary>
-        /// Internal helper function implementing file append services.
-        /// </summary>
-        public async Task<TResult> AppendFileImplementationAsync<TResult>(AppendFileParams appendParameters, Action<IContext>? configure = null) where TResult : new()
-        {
-            appendParameters = RequireInputParameter.AppendParameters(appendParameters);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, appendParameters.Signatory);
-            var appendFileBody = new FileAppendTransactionBody
-            {
-                FileID = new FileID(appendParameters.File),
-                Contents = ByteString.CopyFrom(appendParameters.Contents.ToArray())
-            };
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.FileAppend = appendFileBody;
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to append to file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new TransactionRecord(await ExecuteTransactionAsync(new FileAppendTransactionBody(appendParameters), configure, true, appendParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

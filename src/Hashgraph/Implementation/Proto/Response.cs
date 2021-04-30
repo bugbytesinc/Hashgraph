@@ -31,6 +31,7 @@ namespace Proto
                     ResponseOneofCase.ConsensusGetTopicInfo => (response_ as ConsensusGetTopicInfoResponse)?.Header,
                     ResponseOneofCase.NetworkGetVersionInfo => (response_ as NetworkGetVersionInfoResponse)?.Header,
                     ResponseOneofCase.TokenGetInfo => (response_ as TokenGetInfoResponse)?.Header,
+                    ResponseOneofCase.ScheduleGetInfo => (response_ as ScheduleGetInfoResponse)?.Header,
                     _ => null
                 };
             }
@@ -161,6 +162,9 @@ namespace Proto
                 case ResponseOneofCase.TokenGetInfo:
                     defaultValidate(transactionId, ((TokenGetInfoResponse)response_).Header);
                     break;
+                case ResponseOneofCase.ScheduleGetInfo:
+                    defaultValidate(transactionId, ((ScheduleGetInfoResponse)response_).Header);
+                    break;
                 default:
                     throw new InvalidOperationException("Query has No Type Set, unable to set Query Header of Unknown Query Type.");
             };
@@ -169,11 +173,11 @@ namespace Proto
         {
             if (header == null)
             {
-                throw new PrecheckException($"Transaction Failed to Produce a Response.", transactionId.ToTxId(), ResponseCode.Unknown, 0);
+                throw new PrecheckException($"Transaction Failed to Produce a Response.", transactionId.AsTxId(), ResponseCode.Unknown, 0);
             }
             if (header.NodeTransactionPrecheckCode != Proto.ResponseCodeEnum.Ok)
             {
-                throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", transactionId.ToTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
+                throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", transactionId.AsTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
             }
         }
         private static void cryptoGetAccountRecordsValidate(TransactionID transactionId, ResponseHeader? header)
@@ -181,7 +185,7 @@ namespace Proto
             var precheckCode = header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (precheckCode != ResponseCodeEnum.Ok)
             {
-                throw new TransactionException("Unable to retrieve transaction records.", transactionId.ToTxId(), (ResponseCode)precheckCode);
+                throw new TransactionException("Unable to retrieve transaction records.", transactionId.AsTxId(), (ResponseCode)precheckCode);
             }
         }
     }

@@ -23,6 +23,10 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyMemory<byte> Contents { get; set; }
         /// <summary>
+        /// A short description of the file.
+        /// </summary>
+        public string Memo { get; set; }
+        /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to create to this file.  Typically matches the
         /// Endorsements associated with this file.

@@ -177,8 +177,7 @@ namespace Hashgraph.Test.Crypto
             var createResult = await client.CreateAccountAsync(new CreateAccountParams
             {
                 InitialBalance = initialBalance,
-                Endorsement = endorsement,
-                Signatory = new Signatory(privateKey1a, privateKey1b, privateKey2a, privateKey2b)
+                Endorsement = endorsement
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
@@ -201,6 +200,49 @@ namespace Hashgraph.Test.Crypto
 
             // Now try with proper set of signatures
             var record = await client.TransferWithRecordAsync(createResult.Address, _network.Payer, (long)initialBalance, privateKey3);
+
+            var balance = await client.GetAccountBalanceAsync(createResult.Address);
+            Assert.Equal(0UL, balance);
+        }
+        [Fact(DisplayName = "Multi-Sig Account: Can rotate to complex signature.")]
+        public async Task CanRotateToComplexSignature()
+        {
+            var initialBalance = (ulong)Generator.Integer(10, 200);
+            var (publicKey1a, privateKey1a) = Generator.KeyPair();
+            var (publicKey1b, privateKey1b) = Generator.KeyPair();
+            var (publicKey2a, privateKey2a) = Generator.KeyPair();
+            var (publicKey2b, privateKey2b) = Generator.KeyPair();
+            var (publicKey3a, privateKey3a) = Generator.KeyPair();
+            var (publicKey3b, privateKey3b) = Generator.KeyPair();
+            var (publicKey3c, privateKey3c) = Generator.KeyPair();
+            var endorsement = new Endorsement(new Endorsement(1, publicKey1a, publicKey1b), new Endorsement(1, publicKey2a, publicKey2b));
+            var client = _network.NewClient();
+            var createResult = await client.CreateAccountAsync(new CreateAccountParams
+            {
+                InitialBalance = initialBalance,
+                Endorsement = endorsement
+            });
+            Assert.Equal(ResponseCode.Success, createResult.Status);
+
+            // Fail by not providing all necessary keys (note only one of the root keys here)
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await client.TransferWithRecordAsync(createResult.Address, _network.Payer, (long)initialBalance, privateKey3a);
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+
+            await client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Address = createResult.Address,
+                Endorsement = new Endorsement(1, publicKey3a, publicKey3b, publicKey3c),
+                Signatory = privateKey3a,
+            }, ctx =>
+            {
+                ctx.Signatory = new Signatory(_network.Signatory, privateKey1a, privateKey2a);
+            });
+
+            // Now try with proper set of signatures
+            var record = await client.TransferWithRecordAsync(createResult.Address, _network.Payer, (long)initialBalance, privateKey3c);
 
             var balance = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(0UL, balance);

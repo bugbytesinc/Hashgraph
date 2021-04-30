@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -28,17 +27,8 @@ namespace Hashgraph
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
         public async Task<ReadOnlyMemory<byte>> GetFileContentAsync(Address file, Action<IContext>? configure = null)
         {
-            file = RequireInputParameter.File(file);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                FileGetContents = new FileGetContentsQuery
-                {
-                    FileID = new FileID(file)
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            return new ReadOnlyMemory<byte>(response.FileGetContents.FileContents.Contents.ToByteArray());
+            var response = await ExecuteQueryAsync(new FileGetContentsQuery(file), configure).ConfigureAwait(false);
+            return response.FileGetContents.FileContents.Contents.Memory;
         }
     }
 }

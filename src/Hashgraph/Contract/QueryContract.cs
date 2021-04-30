@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -36,38 +35,27 @@ namespace Hashgraph
         /// the method returns a <see cref="ContractCallResult"/> with the same information.</exception>
         public async Task<ContractCallResult> QueryContractAsync(QueryContractParams queryParameters, Action<IContext>? configure = null)
         {
-            queryParameters = RequireInputParameter.QueryParameters(queryParameters);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                ContractCallLocal = new ContractCallLocalQuery
-                {
-                    ContractID = new ContractID(queryParameters.Contract),
-                    Gas = queryParameters.Gas,
-                    FunctionParameters = Abi.EncodeFunctionWithArguments(queryParameters.FunctionName, queryParameters.FunctionArgs).ToByteString(),
-                    MaxResultSize = queryParameters.MaxAllowedReturnSize
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context, queryParameters.ReturnValueCharge);
+            var query = new ContractCallLocalQuery(queryParameters);
+            var response = await ExecuteQueryAsync(query, configure, queryParameters.ReturnValueCharge).ConfigureAwait(false);
             var header = response.ResponseHeader;
             if (header == null)
             {
-                throw new PrecheckException($"Transaction Failed to Produce a Response.", query.QueryHeader!.getTransactionId()!.ToTxId(), ResponseCode.Unknown, 0);
+                throw new PrecheckException($"Transaction Failed to Produce a Response.", query.Header!.getTransactionId().AsTxId(), ResponseCode.Unknown, 0);
             }
             if (response.ContractCallLocal?.FunctionResult == null)
             {
-                throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", query.QueryHeader!.getTransactionId()!.ToTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
+                throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", query.Header!.getTransactionId().AsTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
             }
             if (queryParameters.ThrowOnFail && header.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
             {
                 throw new ContractException(
                     $"Contract Query Failed with Code: {header.NodeTransactionPrecheckCode}",
-                    query.QueryHeader!.getTransactionId()!.ToTxId(),
+                    query.Header!.getTransactionId().AsTxId(),
                     (ResponseCode)header.NodeTransactionPrecheckCode,
                     header.Cost,
-                    response.ContractCallLocal.FunctionResult.ToContractCallResult());
+                    new ContractCallResult(response));
             }
-            return response.ContractCallLocal.FunctionResult.ToContractCallResult();
+            return new ContractCallResult(response);
         }
     }
 }

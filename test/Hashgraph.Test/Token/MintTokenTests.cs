@@ -44,6 +44,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var expectedTreasury = 2 * fxToken.Params.Circulation;
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
@@ -76,6 +77,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var expectedTreasury = 2 * fxToken.Params.Circulation;
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
@@ -116,6 +118,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var expectedTreasury = 2 * fxToken.Params.Circulation;
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
@@ -153,6 +156,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var expectedTreasury = 2 * fxToken.Params.Circulation;
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
@@ -216,6 +220,26 @@ namespace Hashgraph.Test.Token
 
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
+        }
+        [Fact(DisplayName = "Mint Tokens: Can Not Schedule Mint Token Coins")]
+        public async Task CanNotScheduleMintTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.MintTokenAsync(
+                    fxToken.Record.Token,
+                    fxToken.Params.Circulation,
+                    new Signatory(
+                        fxToken.SupplyPrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

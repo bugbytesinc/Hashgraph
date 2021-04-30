@@ -13,6 +13,10 @@ namespace Hashgraph
         /// </summary>
         public Address File { get; set; }
         /// <summary>
+        /// If not null, a new description of the file.
+        /// </summary>
+        public string? Memo { get; set; }
+        /// <summary>
         /// A descriptor of the keys required to sign transactions editing and 
         /// otherwise manipulating the contents of this file. Set to
         /// <code>null</code> to leave unchanged.

@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -29,9 +28,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TokenReceipt> BurnTokenAsync(Address token, ulong amount, Action<IContext>? configure = null)
+        public async Task<TokenReceipt> BurnTokenAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
-            return BurnTokenImplementationAsync<TokenReceipt>(token, amount, null, configure);
+            return new TokenReceipt(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes token coins from the treasury.
@@ -59,9 +58,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TokenReceipt> BurnTokenAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TokenReceipt> BurnTokenAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return BurnTokenImplementationAsync<TokenReceipt>(token, amount, signatory, configure);
+            return new TokenReceipt(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes token coins from the treasury.
@@ -85,9 +84,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TokenRecord> BurnTokenWithRecordAsync(Address token, ulong amount, Action<IContext>? configure = null)
+        public async Task<TokenRecord> BurnTokenWithRecordAsync(Address token, ulong amount, Action<IContext>? configure = null)
         {
-            return BurnTokenImplementationAsync<TokenRecord>(token, amount, null, configure);
+            return new TokenRecord(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Removes token coins from the treasury.
@@ -115,44 +114,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TokenRecord> BurnTokenWithRecordAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TokenRecord> BurnTokenWithRecordAsync(Address token, ulong amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return BurnTokenImplementationAsync<TokenRecord>(token, amount, signatory, configure);
-        }
-        /// <summary>
-        /// Internal implementation of burn token method.
-        /// </summary>
-        private async Task<TResult> BurnTokenImplementationAsync<TResult>(Address token, ulong amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
-        {
-            token = RequireInputParameter.Token(token);
-            amount = RequireInputParameter.TokenAmount(amount);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.TokenBurn = new TokenBurnTransactionBody
-            {
-                Token = new TokenID(token),
-                Amount = amount
-            };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to Burn Token Coins, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TokenRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TokenReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new TokenRecord(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, amount), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

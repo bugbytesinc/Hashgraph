@@ -71,6 +71,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.True(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             var accountInfo = await fxToken.Client.GetAccountInfoAsync(fxAccount.Record.Address);
             var token = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
@@ -78,6 +79,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, token.Token);
             Assert.Equal(fxToken.Params.Symbol, token.Symbol);
             Assert.Equal(xferAmount, token.Balance);
+            Assert.Equal(fxToken.Params.Decimals, token.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
 
@@ -87,6 +89,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, token.Token);
             Assert.Equal(fxToken.Params.Symbol, token.Symbol);
             Assert.Equal(totalTinytokens - xferAmount, token.Balance);
+            Assert.Equal(fxToken.Params.Decimals, token.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
         }
@@ -284,6 +287,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
 
             // Move the Treasury, hmm...don't need treasury key?
             await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
@@ -312,6 +316,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
         [Fact(DisplayName = "Token Delete: Can Delete Treasury after Deleting Token")]
         public async Task CanDeleteTreasuryAfterDeletingToken()
@@ -326,6 +331,21 @@ namespace Hashgraph.Test.Token
 
             var receipt = await fx.Client.DeleteAccountAsync(fx.TreasuryAccount.Record.Address, _network.Payer, fx.TreasuryAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
+        }
+        [Fact(DisplayName = "Token Delete: Can Not Schedule a Delete Token")]
+        public async Task CanNotScheduleADeleteToken()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxToken = await TestToken.CreateAsync(_network);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.DeleteTokenAsync(fxToken.Record.Token, new Signatory(fxToken.AdminPrivateKey, new PendingParams
+                {
+                    PendingPayer = fxPayer,
+                }));
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

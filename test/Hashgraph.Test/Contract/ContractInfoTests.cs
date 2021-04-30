@@ -30,7 +30,7 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
-            Assert.Equal(fx.Memo, info.Memo);
+            Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Contract Info: Can Get Stateful Contract Info")]
@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
-            Assert.StartsWith("Stateful Contract Create: Instantiating Stateful Instance", info.Memo);
+            Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
         [Fact(DisplayName = "Contract Info: Retrieving Non Existent Contract Raises Error")]
@@ -81,7 +81,7 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
-            Assert.StartsWith("Stateful Contract Create: Instantiating Stateful Instance", info.Memo);
+            Assert.StartsWith(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
     }

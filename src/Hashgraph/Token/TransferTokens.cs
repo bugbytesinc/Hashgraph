@@ -1,7 +1,5 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Hashgraph
@@ -39,9 +37,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferTokensAsync(Address token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> TransferTokensAsync(Address token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return TransferTokenImplementationAsync<TransactionReceipt>(token, fromAddress, toAddress, amount, null, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(token, fromAddress, toAddress, amount), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Transfer tokens from one account to another.
@@ -78,9 +76,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> TransferTokensAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> TransferTokensAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return TransferTokenImplementationAsync<TransactionReceipt>(token, fromAddress, toAddress, amount, signatory, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(token, fromAddress, toAddress, amount), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Transfer tokens from one account to another.
@@ -113,9 +111,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferTokensWithRecordAsync(Address token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> TransferTokensWithRecordAsync(Address token, Address fromAddress, Address toAddress, long amount, Action<IContext>? configure = null)
         {
-            return TransferTokenImplementationAsync<TransactionRecord>(token, fromAddress, toAddress, amount, null, configure);
+            return new TransactionRecord(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(token, fromAddress, toAddress, amount), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Transfer tokens from one account to another.
@@ -152,35 +150,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> TransferTokensWithRecordAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> TransferTokensWithRecordAsync(Address token, Address fromAddress, Address toAddress, long amount, Signatory signatory, Action<IContext>? configure = null)
         {
-            return TransferTokenImplementationAsync<TransactionRecord>(token, fromAddress, toAddress, amount, signatory, configure);
-        }
-        /// <summary>
-        /// Internal implementation for Single Transfer Crypto
-        /// Returns either a receipt or record or throws
-        /// an exception.
-        /// </summary>
-        private async Task<TResult> TransferTokenImplementationAsync<TResult>(Address token, Address fromAddress, Address toAddress, long amount, Signatory? signatory, Action<IContext>? configure) where TResult : new()
-        {
-            amount = RequireInputParameter.Amount(amount);
-            var transactions = new List<TokenTransferList>(1);
-            var xferList = new TokenTransferList
-            {
-                Token = new TokenID(RequireInputParameter.Token(token))
-            };
-            xferList.Transfers.Add(new AccountAmount
-            {
-                AccountID = new AccountID(RequireInputParameter.FromAddress(fromAddress)),
-                Amount = -amount
-            });
-            xferList.Transfers.Add(new AccountAmount
-            {
-                AccountID = new AccountID(RequireInputParameter.ToAddress(toAddress)),
-                Amount = amount
-            });
-            transactions.Add(xferList);
-            return await TransferImplementationAsync<TResult>(null, transactions, signatory, configure);
+            return new TransactionRecord(await ExecuteTransactionAsync(new CryptoTransferTransactionBody(token, fromAddress, toAddress, amount), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ namespace Hashgraph
         /// <summary>
         /// Undeletes a file from the network via Administrative Restore
         /// </summary>
-        /// <param name="fileToRestore">
+        /// <param name="file">
         /// The address of the file to restore.
         /// </param>
         /// <param name="configure">
@@ -26,14 +25,14 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> SystemRestoreFileAsync(Address fileToRestore, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SystemRestoreFileAsync(Address file, Action<IContext>? configure = null)
         {
-            return SystemRestoreFileImplementationAsync<TransactionReceipt>(fileToRestore, null, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Undeletes a file from the network via Administrative Restore
         /// </summary>
-        /// <param name="fileToRestore">
+        /// <param name="file">
         /// The address of the file to restore.
         /// </param>
         /// <param name="signatory">
@@ -54,14 +53,14 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> SystemRestoreFileAsync(Address fileToRestore, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> SystemRestoreFileAsync(Address file, Signatory signatory, Action<IContext>? configure = null)
         {
-            return SystemRestoreFileImplementationAsync<TransactionReceipt>(fileToRestore, signatory, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Undeletes a file from the network via Administrative Restore
         /// </summary>
-        /// <param name="fileToRestore">
+        /// <param name="file">
         /// The address of the file to restore.
         /// </param>
         /// <param name="configure">
@@ -78,14 +77,14 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> SystemRestoreFileWithRecordAsync(Address fileToRestore, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> SystemRestoreFileWithRecordAsync(Address file, Action<IContext>? configure = null)
         {
-            return SystemRestoreFileImplementationAsync<TransactionRecord>(fileToRestore, null, configure);
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Undeletes a file from the network via Administrative Restore
         /// </summary>
-        /// <param name="fileToRestore">
+        /// <param name="file">
         /// The address of the file to restore.
         /// </param>
         /// <param name="signatory">
@@ -107,42 +106,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> SystemRestoreFileWithRecordAsync(Address fileToRestore, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> SystemRestoreFileWithRecordAsync(Address file, Signatory signatory, Action<IContext>? configure = null)
         {
-            return SystemRestoreFileImplementationAsync<TransactionRecord>(fileToRestore, signatory, configure);
-        }
-        /// <summary>
-        /// Internal helper function implementing the file delete functionality.
-        /// </summary>
-        public async Task<TResult> SystemRestoreFileImplementationAsync<TResult>(Address fileToRestore, Signatory? signatory, Action<IContext>? configure = null) where TResult : new()
-        {
-            fileToRestore = RequireInputParameter.FileToRestore(fileToRestore);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.SystemUndelete = new SystemUndeleteTransactionBody
-            {
-                FileID = new FileID(fileToRestore)
-            };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to delete file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new TransactionRecord(await ExecuteTransactionAsync(SystemUndeleteTransactionBody.FromFile(file), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

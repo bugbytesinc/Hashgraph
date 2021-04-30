@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -26,17 +25,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         public async Task<FileInfo> GetFileInfoAsync(Address file, Action<IContext>? configure = null)
         {
-            file = RequireInputParameter.File(file);
-            await using var context = CreateChildContext(configure);
-            var query = new Query
-            {
-                FileGetInfo = new FileGetInfoQuery
-                {
-                    FileID = new FileID(file)
-                }
-            };
-            var response = await query.SignAndExecuteWithRetryAsync(context);
-            return response.FileGetInfo.FileInfo.ToFileInfo();
+            return new FileInfo(await ExecuteQueryAsync(new FileGetInfoQuery(file), configure).ConfigureAwait(false));
         }
     }
 }

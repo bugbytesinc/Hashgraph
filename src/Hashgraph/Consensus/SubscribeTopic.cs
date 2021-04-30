@@ -1,6 +1,5 @@
 ﻿using Com.Hedera.Mirror.Api.Proto;
 using Grpc.Core;
-using Hashgraph.Implementation;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,9 +35,30 @@ namespace Hashgraph
         /// <exception cref="MirrorException">If the mirror node stream faulted during request processing or upon submission.</exception>
         public async Task SubscribeTopicAsync(SubscribeTopicParams subscribeParameters, Action<IMirrorContext>? configure = null)
         {
-            subscribeParameters = RequireInputParameter.SubscribeParameters(subscribeParameters);
+            if (subscribeParameters is null)
+            {
+                throw new ArgumentNullException(nameof(subscribeParameters), "Topic Subscribe Parameters argument is missing. Please check that it is not null.");
+            }
+            if (subscribeParameters.Topic is null)
+            {
+                throw new ArgumentNullException(nameof(subscribeParameters.Topic), "Topic address is missing. Please check that it is not null.");
+            }
+            if (subscribeParameters.MessageWriter is null)
+            {
+                throw new ArgumentNullException(nameof(subscribeParameters.MessageWriter), "The destination channel writer missing. Please check that it is not null.");
+            }
+            if (subscribeParameters.Starting.HasValue && subscribeParameters.Ending.HasValue)
+            {
+                if (subscribeParameters.Ending.Value < subscribeParameters.Starting.Value)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(subscribeParameters.Ending), "The ending filter date is less than the starting filter date, no records can be returned.");
+                }
+            }
             await using var context = CreateChildContext(configure);
-            RequireInContext.Url(context);
+            if (context.Url is null)
+            {
+                throw new InvalidOperationException("The Mirror Node Urul has not been configured. Please check that 'Url' is set in the Mirror context.");
+            }
             var query = new ConsensusTopicQuery()
             {
                 TopicID = new Proto.TopicID(subscribeParameters.Topic),
@@ -61,7 +81,7 @@ namespace Hashgraph
             var writer = subscribeParameters.MessageWriter;
             try
             {
-                await ProcessResultStream(subscribeParameters.Topic);
+                await ProcessResultStreamAsync(subscribeParameters.Topic).ConfigureAwait(false);
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
             {
@@ -91,14 +111,14 @@ namespace Hashgraph
                 }
             }
 
-            async Task ProcessResultStream(Address topic)
+            async Task ProcessResultStreamAsync(Address topic)
             {
-                while (await stream.MoveNext())
+                while (await stream.MoveNext().ConfigureAwait(false))
                 {
                     var message = stream.Current.ToTopicMessage(topic);
                     if (!writer.TryWrite(message))
                     {
-                        while (await writer.WaitToWriteAsync())
+                        while (await writer.WaitToWriteAsync().ConfigureAwait(false))
                         {
                             if (!writer.TryWrite(message))
                             {

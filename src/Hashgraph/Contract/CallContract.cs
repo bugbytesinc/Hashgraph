@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -32,9 +30,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> CallContractAsync(CallContractParams callParameters, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> CallContractAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return CallContractImplementationAsync<TransactionReceipt>(callParameters, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new ContractCallTransactionBody(callParameters), configure, false, callParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Calls a smart contract returning if successful.  The CallContractReceipt 
@@ -59,45 +57,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<CallContractRecord> CallContractWithRecordAsync(CallContractParams callParameters, Action<IContext>? configure = null)
+        public async Task<CallContractRecord> CallContractWithRecordAsync(CallContractParams callParameters, Action<IContext>? configure = null)
         {
-            return CallContractImplementationAsync<CallContractRecord>(callParameters, configure);
-        }
-        /// <summary>
-        /// Internal implementation of the contract call method.
-        /// </summary>
-        private async Task<TResult> CallContractImplementationAsync<TResult>(CallContractParams callParmeters, Action<IContext>? configure) where TResult : new()
-        {
-            callParmeters = RequireInputParameter.CallContractParameters(callParmeters);
-            await using var context = CreateChildContext(configure);
-            var gateway = RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, callParmeters.Signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.ContractCall = new ContractCallTransactionBody
-            {
-                ContractID = new ContractID(callParmeters.Contract),
-                Gas = callParmeters.Gas,
-                Amount = callParmeters.PayableAmount,
-                FunctionParameters = Abi.EncodeFunctionWithArguments(callParmeters.FunctionName, callParmeters.FunctionArgs).ToByteString()
-            };
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Contract call failed, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is CallContractRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new CallContractRecord(await ExecuteTransactionAsync(new ContractCallTransactionBody(callParameters), configure, true, callParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

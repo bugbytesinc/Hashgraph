@@ -15,11 +15,12 @@ namespace Proto
                 {
                     result.Add(new Hashgraph.TokenBalance
                     {
-                        Token = entry.TokenId.ToAddress(),
+                        Token = entry.TokenId.AsAddress(),
                         Symbol = entry.Symbol,
                         Balance = entry.Balance,
                         KycStatus = (Hashgraph.TokenKycStatus)entry.KycStatus,
-                        TradableStatus = (Hashgraph.TokenTradableStatus)entry.FreezeStatus
+                        TradableStatus = (Hashgraph.TokenTradableStatus)entry.FreezeStatus, 
+                        Decimals = entry.Decimals
                     });
                 }
             }

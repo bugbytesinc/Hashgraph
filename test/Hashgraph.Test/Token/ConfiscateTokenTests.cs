@@ -248,5 +248,32 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
         }
+        [Fact(DisplayName = "Confiscate Tokens: Can Not Schedule Confiscate Token Coins")]
+        public async Task CanNotScheduleConfiscateTokenCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
+            var xferAmount = 2 * fxToken.Params.Circulation / (ulong)Generator.Integer(3, 5);
+
+            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.ConfiscateTokensAsync(
+                    fxToken,
+                    fxAccount,
+                    xferAmount,
+                    new Signatory(
+                        fxToken.ConfiscatePrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        })
+                );
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+        }
     }
 }

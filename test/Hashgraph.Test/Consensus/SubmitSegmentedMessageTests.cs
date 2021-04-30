@@ -570,5 +570,50 @@ namespace Hashgraph.Test.Topic
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal((ulong)expectedSequenceNumber, info.SequenceNumber);
         }
+
+        [Fact(DisplayName = "Submit Segmented Message: Can Schedule Submit Single Segmented Message")]
+        public async Task CanScheduleSubmitSingleSegmentedMessage()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxTopic = await TestTopic.CreateAsync(_network);
+            var submitParams = new SubmitMessageParams
+            {
+                Topic = fxTopic.Record.Topic,
+                Segment = Encoding.ASCII.GetBytes(Generator.String(120, 199)),
+                Index = 1,
+                TotalSegmentCount = 1,
+                Signatory = new Signatory( 
+                    fxTopic.ParticipantPrivateKey,
+                    new PendingParams
+                    {
+                        PendingPayer = fxPayer
+                    })
+            };
+            var schedulingReceipt = await fxTopic.Client.SubmitMessageAsync(submitParams);
+            Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+            Assert.Equal(0ul, schedulingReceipt.SequenceNumber);
+            Assert.True(schedulingReceipt.RunningHash.IsEmpty);
+            Assert.Equal(0ul, schedulingReceipt.RunningHashVersion);
+
+            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(schedulingReceipt.Pending.Id,fxPayer);
+
+            var pendingReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Pending.TxId);
+            Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
+
+            var messageReceipt = Assert.IsType<SubmitMessageReceipt>(pendingReceipt);
+            Assert.Equal(1ul, messageReceipt.SequenceNumber);
+            Assert.False(messageReceipt.RunningHash.IsEmpty);
+            Assert.Equal(3ul, messageReceipt.RunningHashVersion);
+
+            var info = await fxTopic.Client.GetTopicInfoAsync(fxTopic.Record.Topic);
+            Assert.Equal(fxTopic.Memo, info.Memo);
+            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.Equal(1UL, info.SequenceNumber);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(new Endorsement(fxTopic.AdminPublicKey), info.Administrator);
+            Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
+            Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+            Assert.Equal(fxTopic.TestAccount.Record.Address, info.RenewAccount);
+        }
     }
 }

@@ -1,18 +1,31 @@
 ﻿using Hashgraph;
+using System;
 
 namespace Proto
 {
     public sealed partial class TopicID
     {
-        internal TopicID(Address address) : this()
+        internal TopicID(Address topic) : this()
         {
-            ShardNum = address.ShardNum;
-            RealmNum = address.RealmNum;
-            TopicNum = address.AccountNum;
+            if (topic is null)
+            {
+                throw new ArgumentNullException(nameof(topic), "Topic Address is missing. Please check that it is not null.");
+            }
+            ShardNum = topic.ShardNum;
+            RealmNum = topic.RealmNum;
+            TopicNum = topic.AccountNum;
         }
-        internal Address ToAddress()
+    }
+
+    internal static class TopicIDExtensions
+    {
+        internal static Address AsAddress(this TopicID? id)
         {
-            return new Address(ShardNum, RealmNum, TopicNum);
+            if (id is not null)
+            {
+                return new Address(id.ShardNum, id.RealmNum, id.TopicNum);
+            }
+            return Address.None;
         }
     }
 }

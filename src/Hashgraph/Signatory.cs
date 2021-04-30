@@ -63,14 +63,11 @@ namespace Hashgraph
             /// </summary>
             List = 5,
             /// <summary>
-            /// This represnts legacy signing features in the library that are slated
-            /// for removal over time, such as the Ed25519 key(s) embedded in the
-            /// <see cref="Account"/> object.  At some point in the future 
-            /// <code>Account</code> will be replaced with <see cref="Address"/> 
-            /// and <code>Signatory</code> will be the sole means for communicating 
-            /// how to sign transactions.
+            /// This signatory holds information delaying the immediate execution of
+            /// the transaction upon submission and instead causing the transaction 
+            /// to be scheduled instead.
             /// </summary>
-            OtherSigner = 999
+            Pending = 6,
         }
         /// <summary>
         /// Internal type of this Signatory.
@@ -79,8 +76,8 @@ namespace Hashgraph
         /// <summary>
         /// Internal union of the types of data this Signatory may hold.
         /// The contents are a function of the <code>Type</code>.  It can be a 
-        /// list of other signatories, a reference to a callback method, or an 
-        /// Ed25519 private key.
+        /// list of other signatories, a reference to a callback method, 
+        /// pending transaction schedule information or an  Ed25519 private key.
         /// </summary>
         private readonly object _data;
         /// <summary>
@@ -104,10 +101,25 @@ namespace Hashgraph
         /// One or more signatories that when combined can form a
         /// multi key signature for the transaction.
         /// </param>
-        public Signatory(params Signatory[] Signatories)
+        public Signatory(params Signatory[] signatories)
         {
+            if (signatories is null)
+            {
+                throw new ArgumentNullException(nameof(signatories), "The list of signatories may not be null.");
+            }
+            else if (signatories.Length == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(signatories), "At least one Signatory in a list is required.");
+            }
+            for (int i = 0; i < signatories.Length; i++)
+            {
+                if (signatories[i] is null)
+                {
+                    throw new ArgumentNullException(nameof(signatories), "No signatory within the list may be null.");
+                }
+            }
             _type = Type.List;
-            _data = RequireInputParameter.Signatories(Signatories);
+            _data = signatories;
         }
         /// <summary>
         /// Create a signatory having a private key of the specified type.
@@ -166,8 +178,29 @@ namespace Hashgraph
         /// </remarks>
         public Signatory(Func<IInvoice, Task> signingCallback)
         {
+            if (signingCallback is null)
+            {
+                throw new ArgumentNullException(nameof(signingCallback), "The signing callback must not be null.");
+            }
             _type = Type.Callback;
-            _data = RequireInputParameter.SigningCallback(signingCallback);
+            _data = signingCallback;
+        }
+        /// <summary>
+        /// Creates a signatory that indicates the transaction should be 
+        /// scheduled and not immediately executed.  The params include
+        /// optional details on how to schedule the transaction.
+        /// </summary> 
+        /// <param name="pendingParams">
+        /// The scheduling details of the pending transaction.
+        /// </param>
+        public Signatory(PendingParams pendingParams)
+        {
+            if (pendingParams is null)
+            {
+                throw new ArgumentNullException(nameof(pendingParams), "Pending Parameters object cannot be null.");
+            }
+            _type = Type.Pending;
+            _data = pendingParams;
         }
         /// <summary>
         /// Convenience implict cast for creating a <code>Signatory</code> 
@@ -195,6 +228,17 @@ namespace Hashgraph
         public static implicit operator Signatory(Func<IInvoice, Task> signingCallback)
         {
             return new Signatory(signingCallback);
+        }
+        /// <summary>
+        /// Convenience implicit cast for creating a <code>Signatory</code>
+        /// directly from a <see cref="PendingParams"/> object.
+        /// </summary>
+        /// <param name="pendingParams">
+        /// The scheduling details of the pending transaction.
+        /// </param>
+        public static implicit operator Signatory(PendingParams pendingParams)
+        {
+            return new Signatory(pendingParams);
         }
         /// <summary>
         /// Equality implementation.
@@ -240,6 +284,10 @@ namespace Hashgraph
                     break;
                 case Type.Callback:
                     return ReferenceEquals(_data, other._data);
+                case Type.Pending:
+                    var thisPending = (PendingParams)_data;
+                    var otherPending = (PendingParams)other._data;
+                    return thisPending.Equals(otherPending);
             }
             return false;
         }
@@ -336,19 +384,6 @@ namespace Hashgraph
             return !(left == right);
         }
         /// <summary>
-        /// Legacy support for components that also have
-        /// the ability to sign transactions.  Used only internally
-        /// by the library.
-        /// </summary>
-        /// <param name="signer">
-        /// The legacy signer instance (such as a <see cref="Account"/>).
-        /// </param>
-        internal Signatory(ISignatory signer)
-        {
-            _type = Type.OtherSigner;
-            _data = signer;
-        }
-        /// <summary>
         /// Implement the signing algorithm.  In the case of an Ed25519
         /// it will use the private key to sign the transaction and 
         /// return immediately.  In the case of the callback method, it 
@@ -379,17 +414,47 @@ namespace Hashgraph
                 case Type.List:
                     foreach (ISignatory signer in (Signatory[])_data)
                     {
-                        await signer.SignAsync(invoice);
+                        await signer.SignAsync(invoice).ConfigureAwait(false);
                     }
                     break;
                 case Type.Callback:
-                    await ((Func<IInvoice, Task>)_data)(invoice);
+                    await ((Func<IInvoice, Task>)_data)(invoice).ConfigureAwait(false);
                     break;
-                case Type.OtherSigner:
-                    await ((ISignatory)_data).SignAsync(invoice);
+                case Type.Pending:
+                    // This will be called to sign the to-be-scheduled
+                    // transaction. In this context, we do nothing.
                     break;
                 default:
                     throw new InvalidOperationException("Not a presently supported Signatory key type, please consider the callback signatory as an alternative.");
+            }
+        }
+
+        PendingParams? ISignatory.GetSchedule()
+        {
+            switch (_type)
+            {
+                case Type.Pending:
+                    return (PendingParams)_data;
+                case Type.List:
+                    PendingParams? result = null;
+                    foreach (ISignatory signer in (Signatory[])_data)
+                    {
+                        var schedule = signer.GetSchedule();
+                        if (schedule is not null)
+                        {
+                            if (result is null)
+                            {
+                                result = schedule;
+                            }
+                            else if (!result.Equals(schedule))
+                            {
+                                throw new InvalidOperationException("Found Multiple Pending Signatories, do not know which one to choose.");
+                            }
+                        }
+                    }
+                    return result;
+                default:
+                    return null;
             }
         }
     }

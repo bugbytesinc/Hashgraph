@@ -55,6 +55,52 @@ namespace Hashgraph.Test.File
             var retrievedContents = await test.Client.GetFileContentAsync(test.Record.File);
             Assert.Equal(newContents, retrievedContents.ToArray());
         }
+        [Fact(DisplayName = "File Update: Can Update Memo")]
+        public async Task CanUpdateMemo()
+        {
+            await using var test = await TestFile.CreateAsync(_network);
+
+            var newMemo = Generator.Code(30);            
+
+            var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Memo = newMemo,
+                Signatory = test.CreateParams.Signatory
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Equal(newMemo, info.Memo);
+            Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
+            Assert.False(info.Deleted);
+        }
+        [Fact(DisplayName = "File Update: Can Update Memo to Empty")]
+        public async Task CanUpdateMemoToEmpty()
+        {
+            await using var test = await TestFile.CreateAsync(_network);
+
+            var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Memo = string.Empty,
+                Signatory = test.CreateParams.Signatory
+            });
+            Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+            var info = await test.Client.GetFileInfoAsync(test.Record.File);
+            Assert.NotNull(info);
+            Assert.Equal(test.Record.File, info.File);
+            Assert.Empty(info.Memo);
+            Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+            Assert.Equal(test.CreateParams.Expiration, info.Expiration);
+            Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
+            Assert.False(info.Deleted);
+        }
         [Fact(DisplayName = "File Update: Cannot Replace Contents of deleted file")]
         public async Task CanUpdateFileContentsOfDeletedFile()
         {
@@ -239,6 +285,27 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
             Assert.True(info.Deleted);
+        }
+        [Fact(DisplayName = "File Update: Can Not Schedule Update.")]
+        public async Task CanNotScheduleUpdate()
+        {
+            await using var fxFile = await TestFile.CreateAsync(_network);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxFile.Client.UpdateFileAsync(new UpdateFileParams
+                {
+                    File = fxFile.Record.File,
+                    Contents = newContents,
+                    Signatory = new Signatory(
+                        fxFile.PrivateKey,
+                        new PendingParams { PendingPayer = fxPayer }
+                    )
+                });
+            });
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Threading.Tasks;
 
@@ -28,9 +26,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> UpdateFileAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> UpdateFileAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateFileImplementationAsync<TransactionReceipt>(updateParameters, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new FileUpdateTransactionBody(updateParameters), configure, false, updateParameters.Signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Updates the properties or contents of an existing file stored in the network.
@@ -53,51 +51,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> UpdateFileWithRecordAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> UpdateFileWithRecordAsync(UpdateFileParams updateParameters, Action<IContext>? configure = null)
         {
-            return UpdateFileImplementationAsync<TransactionRecord>(updateParameters, configure);
-        }
-        /// <summary>
-        /// Internal helper method implementing the file update service.
-        /// </summary>
-        public async Task<TResult> UpdateFileImplementationAsync<TResult>(UpdateFileParams updateParameters, Action<IContext>? configure) where TResult : new()
-        {
-            updateParameters = RequireInputParameter.UpdateParameters(updateParameters);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatory = Transactions.GatherSignatories(context, updateParameters.Signatory);
-            var updateFileBody = new FileUpdateTransactionBody
-            {
-                FileID = new FileID(updateParameters.File)
-            };
-            if (!(updateParameters.Endorsements is null))
-            {
-                updateFileBody.Keys = new KeyList(updateParameters.Endorsements);
-            }
-            if (updateParameters.Contents.HasValue)
-            {
-                updateFileBody.Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
-            }
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.FileUpdate = updateFileBody;
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatory, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to update file, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new TransactionRecord(await ExecuteTransactionAsync(new FileUpdateTransactionBody(updateParameters), configure, true, updateParameters.Signatory).ConfigureAwait(false));
         }
     }
 }

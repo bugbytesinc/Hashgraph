@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Proto;
+using System;
 
 namespace Hashgraph
 {
@@ -12,7 +13,7 @@ namespace Hashgraph
         public TxId CreateNewTxId(Action<IContext>? configure = null)
         {
             var context = CreateChildContext(configure);
-            var result = Transactions.GetOrCreateTransactionID(context).ToTxId();
+            var result = context.GetOrCreateTransactionID().AsTxId();
             _ = context.DisposeAsync();
             return result;
         }

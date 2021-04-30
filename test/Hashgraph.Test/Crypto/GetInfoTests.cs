@@ -36,6 +36,24 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
         }
+        [Fact(DisplayName = "Get Account Info: Can Get Info for Account Facet")]
+        public async Task CanGetInfoForAccountFacet()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.Equal(fxAccount.Record.Address, info.Address);
+            Assert.NotNull(info.SmartContractId);
+            Assert.False(info.Deleted);
+            Assert.NotNull(info.Proxy);
+            Assert.Equal(Address.None, info.Proxy);
+            Assert.Equal(0, info.ProxiedToAccount);
+            Assert.Equal(fxAccount.PublicKey, info.Endorsement);
+            Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
+            Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
+            Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(fxAccount.CreateParams.Memo, info.Memo);
+        }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Server Node")]
         public async Task CanGetInfoForGatewayAsync()
         {

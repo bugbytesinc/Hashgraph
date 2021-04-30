@@ -14,7 +14,7 @@ namespace Proto
                 Port = a.Portno,
                 Memo = a.Memo.ToStringUtf8(),
                 RsaPublicKey = a.RSAPubKey,
-                Address = a.NodeAccountId == null ? Hashgraph.Address.None : a.NodeAccountId.ToAddress(),
+                Address = a.NodeAccountId.AsAddress(),
                 CertificateHash = new ReadOnlyMemory<byte>(a.NodeCertHash.ToArray())
             }).ToArray();
         }

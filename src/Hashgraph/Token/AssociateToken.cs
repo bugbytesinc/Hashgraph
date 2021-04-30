@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Proto;
+﻿using Proto;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,10 +34,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token has already been associated.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> AssociateTokenAsync(Address token, Address account, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> AssociateTokenAsync(Address token, Address account, Action<IContext>? configure = null)
         {
-            var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return AssociateTokenImplementationAsync<TransactionReceipt>(list, account, null, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -67,10 +65,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token has already been associated.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> AssociateTokensAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> AssociateTokensAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
         {
-            var list = RequireInputParameter.Tokens(tokens);
-            return AssociateTokenImplementationAsync<TransactionReceipt>(list, account, null, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -103,10 +100,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> AssociateTokenAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> AssociateTokenAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return AssociateTokenImplementationAsync<TransactionReceipt>(list, account, signatory, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -139,10 +135,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionReceipt> AssociateTokensAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> AssociateTokensAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            var list = RequireInputParameter.Tokens(tokens);
-            return AssociateTokenImplementationAsync<TransactionReceipt>(list, account, signatory, configure);
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -171,10 +166,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> AssociateTokenWithRecordAsync(Address token, Address account, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> AssociateTokenWithRecordAsync(Address token, Address account, Action<IContext>? configure = null)
         {
-            var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return AssociateTokenImplementationAsync<TransactionRecord>(list, account, null, configure);
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -203,10 +197,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> AssociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> AssociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Action<IContext>? configure = null)
         {
-            var list = RequireInputParameter.Tokens(tokens);
-            return AssociateTokenImplementationAsync<TransactionRecord>(list, account, null, configure);
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining token balances 
@@ -239,10 +232,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> AssociateTokenWithRecordAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> AssociateTokenWithRecordAsync(Address token, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            var list = new TokenID[] { new TokenID(RequireInputParameter.Token(token)) };
-            return AssociateTokenImplementationAsync<TransactionRecord>(list, account, signatory, configure);
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(token, account), configure, true, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Provisions Storage associated with the Account for maintaining 
@@ -275,44 +267,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public Task<TransactionRecord> AssociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> AssociateTokensWithRecordAsync(IEnumerable<Address> tokens, Address account, Signatory signatory, Action<IContext>? configure = null)
         {
-            var list = RequireInputParameter.Tokens(tokens);
-            return AssociateTokenImplementationAsync<TransactionRecord>(list, account, signatory, configure);
-        }
-        /// <summary>
-        /// Internal implementation of associate method.
-        /// </summary>
-        private async Task<TResult> AssociateTokenImplementationAsync<TResult>(TokenID[] tokens, Address account, Signatory? signatory, Action<IContext>? configure) where TResult : new()
-        {
-            account = RequireInputParameter.Account(account);
-            await using var context = CreateChildContext(configure);
-            RequireInContext.Gateway(context);
-            var payer = RequireInContext.Payer(context);
-            var signatories = Transactions.GatherSignatories(context, signatory);
-            var transactionId = Transactions.GetOrCreateTransactionID(context);
-            var transactionBody = new TransactionBody(context, transactionId);
-            transactionBody.TokenAssociate = new TokenAssociateTransactionBody
-            {
-                Account = new AccountID(account)
-            };
-            transactionBody.TokenAssociate.Tokens.AddRange(tokens);
-            var receipt = await transactionBody.SignAndExecuteWithRetryAsync(signatories, context);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to associate Token with Account, status: {receipt.Status}", transactionId.ToTxId(), (ResponseCode)receipt.Status);
-            }
-            var result = new TResult();
-            if (result is TransactionRecord rec)
-            {
-                var record = await GetTransactionRecordAsync(context, transactionId);
-                record.FillProperties(rec);
-            }
-            else if (result is TransactionReceipt rcpt)
-            {
-                receipt.FillProperties(transactionId, rcpt);
-            }
-            return result;
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenAssociateTransactionBody(tokens, account), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }
