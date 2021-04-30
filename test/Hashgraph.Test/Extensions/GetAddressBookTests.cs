@@ -36,9 +36,9 @@ namespace Hashgraph.Test.Extensions
             Assert.NotNull(node);
             Assert.NotNull(node.RsaPublicKey);
             Assert.Equal(_network.Gateway, node.Address);
-            Assert.NotEmpty(node.IpAddress);
-            Assert.NotEqual(0, node.Port);
-            Assert.Equal(0, node.CertificateHash.Length);
+            Assert.Empty(node.IpAddress);
+            Assert.Equal(0, node.Port);
+            Assert.NotEqual(0, node.CertificateHash.Length);
         }
         [Fact(DisplayName = "Address Book: Can Get Address Book Manually")]
         public async Task CanGetAddressBookManually()

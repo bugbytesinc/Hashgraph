@@ -120,7 +120,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(fx.CreateParams.InitialBalance, info.Balance);
             Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
 
-            var receipt = await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, (long)fx.CreateParams.InitialBalance, fx.PrivateKey, ctx => ctx.FeeLimit = 1000000);
+            var receipt = await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, (long)fx.CreateParams.InitialBalance, fx.PrivateKey);
             var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(0UL, newBalanceAfterTransfer);
         }
