@@ -22,7 +22,7 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "greet"
             }, ctx => ctx.Memo = "Call Contract");
             Assert.NotNull(record);
@@ -46,7 +46,7 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_message"
             }, ctx => ctx.Memo = "Call Contract");
             Assert.NotNull(record);
@@ -69,7 +69,7 @@ namespace Hashgraph.Test.Contract
             var receipt = await fx.Client.CallContractAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_message",
                 Signatory = _network.PrivateKey
             }, ctx => ctx.Signatory = null);
@@ -85,7 +85,7 @@ namespace Hashgraph.Test.Contract
             var setRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(1200),
+                Gas = 20000,
                 FunctionName = "set_message",
                 FunctionArgs = new object[] { newMessage }
             }, ctx => ctx.Memo = "Call Contract");
@@ -104,7 +104,7 @@ namespace Hashgraph.Test.Contract
             var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_message"
             });
             Assert.NotNull(getRecord);
@@ -130,7 +130,7 @@ namespace Hashgraph.Test.Contract
             var setRecord = await fx.Client.CallContractAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(1200),
+                Gas = 20000,
                 FunctionName = "set_message",
                 FunctionArgs = new object[] { newMessage }
             });
@@ -140,7 +140,7 @@ namespace Hashgraph.Test.Contract
             var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_message"
             }, ctx => ctx.Memo = "Call Contract");
             Assert.NotNull(getRecord);
@@ -169,7 +169,7 @@ namespace Hashgraph.Test.Contract
                 await fx.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(400),
+                    Gas = 4000,
                     FunctionName = "greet",
                 });
             });
@@ -187,7 +187,7 @@ namespace Hashgraph.Test.Contract
                 await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fxContract.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(400),
+                    Gas = 4000,
                     FunctionName = "get_message",
                     Signatory = new PendingParams { PendingPayer = fxPayer }
                 });

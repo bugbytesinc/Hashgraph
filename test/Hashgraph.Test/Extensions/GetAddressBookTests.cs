@@ -29,16 +29,17 @@ namespace Hashgraph.Test.Extensions
         [Fact(DisplayName = "Address Book: Can Find Current Gateway RSA Key in Address Book")]
         public async Task CanGetCurrentGatewayRsaFromAddressBook()
         {
-            var nodeId = $"{_network.Gateway.ShardNum}.{_network.Gateway.RealmNum}.{_network.Gateway.AccountNum}";
             var client = _network.NewClient();
             var book = await client.GetAddressBookAsync();
-            var node = book.FirstOrDefault(n => n.Memo == nodeId);
+            Address nodeAddress = _network.Gateway;
+            var node = book.FirstOrDefault(n => n.Address == nodeAddress);
             Assert.NotNull(node);
             Assert.NotNull(node.RsaPublicKey);
-            Assert.Equal(_network.Gateway, node.Address);
-            Assert.Empty(node.IpAddress);
-            Assert.Equal(0, node.Port);
-            Assert.NotEqual(0, node.CertificateHash.Length);
+            Assert.NotEmpty(node.Endpoints);
+            // Not implemented Yet
+            Assert.Equal(0, node.CertificateHash.Length);
+            // Can't say or not.
+            //Assert.Equal(0, node.Stake);
         }
         [Fact(DisplayName = "Address Book: Can Get Address Book Manually")]
         public async Task CanGetAddressBookManually()

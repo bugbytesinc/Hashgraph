@@ -15,18 +15,6 @@ namespace Hashgraph.Extensions
         /// </summary>
         public long Id { get; internal init; }
         /// <summary>
-        /// The ip address of the Node with separator & octets
-        /// </summary>
-        public string IpAddress { get; internal init; }
-        /// <summary>
-        /// The port number of the grpc server for the node
-        /// </summary>
-        public int Port { get; internal init; }
-        /// <summary>
-        /// The memo field of the node
-        /// </summary>
-        public string Memo { get; internal init; }
-        /// <summary>
         /// The RSA public key of the node.
         /// </summary>
         public string RsaPublicKey { get; internal init; }
@@ -38,5 +26,17 @@ namespace Hashgraph.Extensions
         /// Hash of the X509 certificate for gRPC traffict to this node.
         /// </summary>
         public ReadOnlyMemory<byte> CertificateHash { get; internal init; }
+        /// <summary>
+        /// List of public ip addresses and ports exposed by this node.
+        /// </summary>
+        public Endpoint[] Endpoints { get; internal init; }
+        /// <summary>
+        /// A Description of the node.
+        /// </summary>
+        public string Description { get; internal set; }
+        /// <summary>
+        /// The amount of tinybars staked to the node.
+        /// </summary>
+        public long Stake { get; internal set; }
     }
 }

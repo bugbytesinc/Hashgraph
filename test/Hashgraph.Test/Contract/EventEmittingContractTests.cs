@@ -22,7 +22,7 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_balance"
             });
             Assert.NotNull(record);
@@ -46,7 +46,7 @@ namespace Hashgraph.Test.Contract
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_balance"
             });
 
@@ -68,7 +68,7 @@ namespace Hashgraph.Test.Contract
             var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(600),
+                Gas = 20000,
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fx2.Record.Address }
             });
@@ -132,7 +132,7 @@ namespace Hashgraph.Test.Contract
             var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_balance"
             });
             Assert.NotNull(contractBalanceBefore);
@@ -145,7 +145,7 @@ namespace Hashgraph.Test.Contract
                 await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
                 {
                     Contract = fxContract.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(600),
+                    Gas = 20000,
                     FunctionName = "send_to",
                     FunctionArgs = new[] { fxAccount1.Record.Address }
                 });
@@ -157,7 +157,7 @@ namespace Hashgraph.Test.Contract
             var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_balance"
             });
             Assert.NotNull(contractBalanceAfter);

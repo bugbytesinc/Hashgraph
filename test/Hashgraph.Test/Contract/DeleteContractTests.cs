@@ -138,7 +138,7 @@ namespace Hashgraph.Test.Contract
             var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "get_balance"
             });
             Assert.NotNull(contractBalanceBefore);
