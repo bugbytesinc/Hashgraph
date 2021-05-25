@@ -233,49 +233,56 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(emptyAddress, updatedInfo.Proxy);
         }
-        [Fact(DisplayName = "Update Account: Update with Insufficient Funds Returns Required Fee")]
-        public async Task UpdateWithInsufficientFundsReturnsRequiredFee()
+        [Fact(DisplayName = "NETWORK V0.14.0 REGRESSION: Update Account: Update with Insufficient Funds Returns Required Fee Fails")]
+        public async Task UpdateWithInsufficientFundsReturnsRequiredFeeNetwork14Regression()
         {
-            var (publicKey, privateKey) = Generator.KeyPair();
-            await using var client = _network.NewClient();
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = 1,
-                Endorsement = publicKey,
-                Signatory = privateKey,
-                RequireReceiveSignature = true
-            });
-            Assert.Equal(ResponseCode.Success, createResult.Status);
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(UpdateWithInsufficientFundsReturnsRequiredFee));
+            Assert.StartsWith("Unable to update account, status: InsufficientTxFee", testFailException.Message);
 
-            var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.True(originalInfo.ReceiveSignatureRequired);
-
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            //[Fact(DisplayName = "Update Account: Update with Insufficient Funds Returns Required Fee")]
+            async Task UpdateWithInsufficientFundsReturnsRequiredFee()
             {
-                await client.UpdateAccountAsync(new UpdateAccountParams
+                var (publicKey, privateKey) = Generator.KeyPair();
+                await using var client = _network.NewClient();
+                var createResult = await client.CreateAccountAsync(new CreateAccountParams
+                {
+                    InitialBalance = 1,
+                    Endorsement = publicKey,
+                    Signatory = privateKey,
+                    RequireReceiveSignature = true
+                });
+                Assert.Equal(ResponseCode.Success, createResult.Status);
+
+                var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
+                Assert.True(originalInfo.ReceiveSignatureRequired);
+
+                var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+                {
+                    await client.UpdateAccountAsync(new UpdateAccountParams
+                    {
+                        Address = createResult.Address,
+                        Signatory = privateKey,
+                        RequireReceiveSignature = false,
+                    }, ctx =>
+                    {
+                        ctx.FeeLimit = 1;
+                    });
+                });
+                Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
+                var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
                 {
                     Address = createResult.Address,
                     Signatory = privateKey,
-                    RequireReceiveSignature = false,
+                    RequireReceiveSignature = false
                 }, ctx =>
                 {
-                    ctx.FeeLimit = 1;
+                    ctx.FeeLimit = (long)pex.RequiredFee;
                 });
-            });
-            Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
-            var updateResult = await client.UpdateAccountAsync(new UpdateAccountParams
-            {
-                Address = createResult.Address,
-                Signatory = privateKey,
-                RequireReceiveSignature = false
-            }, ctx =>
-            {
-                ctx.FeeLimit = (long)pex.RequiredFee;
-            });
-            Assert.Equal(ResponseCode.Success, updateResult.Status);
+                Assert.Equal(ResponseCode.Success, updateResult.Status);
 
-            var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.False(updatedInfo.ReceiveSignatureRequired);
+                var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
+                Assert.False(updatedInfo.ReceiveSignatureRequired);
+            }
         }
         [Fact(DisplayName = "Update Account: Empty Endorsement is Not Allowed")]
         public async Task EmptyEndorsementIsNotAllowed()
@@ -361,7 +368,7 @@ namespace Hashgraph.Test.Crypto
                     RequireReceiveSignature = newValue,
                     Signatory = new Signatory(
                         fxAccount,
-                        new PendingParams {  PendingPayer = fxPayer }
+                        new PendingParams { PendingPayer = fxPayer }
                     )
                 });
             });
@@ -378,9 +385,9 @@ namespace Hashgraph.Test.Crypto
                 Address = fxAccount,
                 Signatory = new Signatory(fxAccount, fxTempate),
                 Endorsement = fxTempate.CreateParams.Endorsement,
-                RequireReceiveSignature = fxTempate.CreateParams.RequireReceiveSignature,                
+                RequireReceiveSignature = fxTempate.CreateParams.RequireReceiveSignature,
                 Proxy = fxTempate,
-                Memo = fxTempate.CreateParams.Memo                
+                Memo = fxTempate.CreateParams.Memo
             });
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.False(record.Hash.IsEmpty);

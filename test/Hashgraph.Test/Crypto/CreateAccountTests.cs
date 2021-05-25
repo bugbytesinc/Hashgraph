@@ -155,37 +155,43 @@ namespace Hashgraph.Test.Crypto
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(memo, info.Memo);
         }
-        [Fact(DisplayName = "Create Account: Can Schedule Create Account")]
+        [Fact(DisplayName = "Create Account: Can Not Schedule Create Account")]
         public async Task CanScheduleCreateAccount()
         {
             await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
-            var fxAccount = await TestAccount.CreateAsync(_network, fx =>
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                fx.CreateParams.Signatory = new PendingParams
+                var fxAccount = await TestAccount.CreateAsync(_network, fx =>
                 {
-                    PendingPayer = fxPayer
-                };
+                    fx.CreateParams.Signatory = new PendingParams
+                    {
+                        PendingPayer = fxPayer
+                    };
+                });
+
+                //var transactionReceipt = await fxPayer.Client.SignPendingTransactionAsync(fxAccount.Record.Pending.Id, fxPayer);
+                //var pendingReceipt = await fxPayer.Client.GetReceiptAsync(fxAccount.Record.Pending.TxId);
+                //Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
+
+                //var createReceipt = Assert.IsType<CreateAccountReceipt>(pendingReceipt);
+                //var account = createReceipt.Address;
+
+                //var info = await fxPayer.Client.GetAccountInfoAsync(account);
+                //Assert.Equal(account, info.Address);
+                //Assert.NotNull(info.SmartContractId);
+                //Assert.False(info.Deleted);
+                //Assert.NotNull(info.Proxy);
+                //Assert.Equal(Address.None, info.Proxy);
+                //Assert.Equal(0, info.ProxiedToAccount);
+                //Assert.Equal(fxAccount.CreateParams.Endorsement, info.Endorsement);
+                //Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
+                //Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
+                //Assert.Equal(fxAccount.CreateParams.AutoRenewPeriod.TotalSeconds, info.AutoRenewPeriod.TotalSeconds);
+                //Assert.True(info.Expiration > DateTime.MinValue);
             });
-
-            var transactionReceipt = await fxPayer.Client.SignPendingTransactionAsync(fxAccount.Record.Pending.Id, fxPayer);
-            var pendingReceipt = await fxPayer.Client.GetReceiptAsync(fxAccount.Record.Pending.TxId);
-            Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
-
-            var createReceipt = Assert.IsType<CreateAccountReceipt>(pendingReceipt);
-            var account = createReceipt.Address;
-
-            var info = await fxPayer.Client.GetAccountInfoAsync(account);
-            Assert.Equal(account, info.Address);
-            Assert.NotNull(info.SmartContractId);
-            Assert.False(info.Deleted);
-            Assert.NotNull(info.Proxy);
-            Assert.Equal(Address.None, info.Proxy);
-            Assert.Equal(0, info.ProxiedToAccount);
-            Assert.Equal(fxAccount.CreateParams.Endorsement, info.Endorsement);
-            Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
-            Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
-            Assert.Equal(fxAccount.CreateParams.AutoRenewPeriod.TotalSeconds, info.AutoRenewPeriod.TotalSeconds);
-            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
 }
