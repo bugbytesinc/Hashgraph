@@ -38,7 +38,8 @@ namespace Hashgraph.Test.Extensions
             Assert.NotEqual(0, node.CertificateHash.Length);
             // Not implemented Yet
             Assert.Empty(node.Endpoints);
-            Assert.Equal(0, node.Stake);
+            // Can't say or not.
+            //Assert.Equal(0, node.Stake);
         }
         [Fact(DisplayName = "Address Book: Can Get Address Book Manually")]
         public async Task CanGetAddressBookManually()

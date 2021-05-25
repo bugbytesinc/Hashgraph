@@ -64,18 +64,6 @@ namespace Hashgraph.Test.Fixtures
                 ctx.OnSendingRequest = OutputSendingRequest;
             });
         }
-        public async Task<long> TinybarsFromGas(double agu)
-        {
-            // agu = Arbitrary Gas Unit
-            // This can't be right, but other attempts at conversion fail however.
-            if (_exchangeRate == null)
-            {
-                await using var client = NewClient();
-                _exchangeRate = (await client.GetExchangeRatesAsync()).Current;
-            }
-            // Something is very wrong with gas computaiton
-            return (long)(agu * _exchangeRate.HBarEquivalent);
-        }
         private int GetAsInt(string key)
         {
             var valueAsString = _configuration[key];

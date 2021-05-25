@@ -22,8 +22,8 @@ namespace Hashgraph.Test.Contract
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
-                ReturnValueCharge = await _network.TinybarsFromGas(400),
+                Gas = 4000,
+                ReturnValueCharge = 4000,
                 FunctionName = "greet"
             });
             Assert.NotNull(result);
@@ -41,8 +41,8 @@ namespace Hashgraph.Test.Contract
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
-                ReturnValueCharge = await _network.TinybarsFromGas(400),
+                Gas = 4000,
+                ReturnValueCharge = 4000,
                 FunctionName = "get_message"
             });
             Assert.NotNull(result);
@@ -63,7 +63,7 @@ namespace Hashgraph.Test.Contract
                 {
                     Contract = fx.ContractRecord.Contract,
                     Gas = 1,
-                    ReturnValueCharge = await _network.TinybarsFromGas(400),
+                    ReturnValueCharge = 4000,
                     FunctionName = "get_message"
                 });
             });
@@ -87,7 +87,7 @@ namespace Hashgraph.Test.Contract
             {
                 Contract = fx.ContractRecord.Contract,
                 Gas = 1,
-                ReturnValueCharge = await _network.TinybarsFromGas(400),
+                ReturnValueCharge = 4000,
                 FunctionName = "get_message",
                 ThrowOnFail = false
             });
@@ -110,7 +110,7 @@ namespace Hashgraph.Test.Contract
                 await fx.Client.QueryContractAsync(new QueryContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(400),
+                    Gas = 20000,
                     FunctionName = "set_message",
                     FunctionArgs = new object[] { newMessage },
                     ReturnValueCharge = 900
@@ -128,7 +128,7 @@ namespace Hashgraph.Test.Contract
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 20000,
                 FunctionName = "set_message",
                 FunctionArgs = new object[] { newMessage },
                 ReturnValueCharge = 900,
@@ -152,7 +152,7 @@ namespace Hashgraph.Test.Contract
                 await fx.Client.QueryContractAsync(new QueryContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(400),
+                    Gas = 4000,
                     FunctionName = "greet",
                     ReturnValueCharge = 1000,
                     MaxAllowedReturnSize = 1
@@ -169,7 +169,7 @@ namespace Hashgraph.Test.Contract
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = await _network.TinybarsFromGas(400),
+                Gas = 4000,
                 FunctionName = "greet",
                 ReturnValueCharge = 1000,
                 MaxAllowedReturnSize = 1,
@@ -193,8 +193,8 @@ namespace Hashgraph.Test.Contract
                 var result = await fx.Client.QueryContractAsync(new QueryContractParams
                 {
                     Contract = fx.ContractRecord.Contract,
-                    Gas = await _network.TinybarsFromGas(400),
-                    ReturnValueCharge = await _network.TinybarsFromGas(400),
+                    Gas = 4000,
+                    ReturnValueCharge = 4000,
                     FunctionName = "greet",
                     ThrowOnFail = false
                 }, ctx => ctx.Signatory = badPrivateKey);

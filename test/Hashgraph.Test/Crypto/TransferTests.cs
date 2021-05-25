@@ -346,55 +346,69 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: InvalidAccountId", tex.Message);
         }
-        [Fact(DisplayName = "Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception")]
-        public async Task InsufficientFeeExceptionIncludesRequiredFee()
+        [Fact(DisplayName = "NETWORK V0.14.0 REGRESSION: Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception Test Fails")]
+        public async Task InsufficientFeeExceptionIncludesRequiredFeeNetwork14Regression()
         {
-            await using var fx = await TestAccount.CreateAsync(_network);
-            var transferAmount = (long)(fx.CreateParams.InitialBalance / 2);
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(InsufficientFeeExceptionIncludesRequiredFee));
+            Assert.StartsWith("Unable to execute transfers, status: InsufficientTxFee", testFailException.Message);
+
+            //[Fact(DisplayName = "Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception")]
+            async Task InsufficientFeeExceptionIncludesRequiredFee()
             {
-                await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
+                await using var fx = await TestAccount.CreateAsync(_network);
+                var transferAmount = (long)(fx.CreateParams.InitialBalance / 2);
+                var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
-                    ctx.FeeLimit = 1;
+                    await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
+                    {
+                        ctx.FeeLimit = 1;
+                    });
                 });
-            });
-            Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", pex.Message);
-            Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
-            Assert.True(pex.RequiredFee > 0);
+                Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", pex.Message);
+                Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
+                Assert.True(pex.RequiredFee > 0);
 
-            var receipt = await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
-            {
-                ctx.FeeLimit = (long)pex.RequiredFee;
-            });
-            Assert.Equal(ResponseCode.Success, receipt.Status);
+                var receipt = await fx.Client.TransferAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
+                {
+                    ctx.FeeLimit = (long)pex.RequiredFee;
+                });
+                Assert.Equal(ResponseCode.Success, receipt.Status);
 
-            var balance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
-            Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, balance);
+                var balance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+                Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, balance);
+            }
         }
-        [Fact(DisplayName = "Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception")]
-        public async Task InsufficientFeeExceptionIncludesRequiredFeeForRecord()
+        [Fact(DisplayName = "NETWORK V0.14.0 REGRESSION: Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception Test Fails")]
+        public async Task InsufficientFeeExceptionIncludesRequiredFeeForRecordNetwork14Regresssion()
         {
-            await using var fx = await TestAccount.CreateAsync(_network);
-            var transferAmount = (long)(fx.CreateParams.InitialBalance / 2);
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(InsufficientFeeExceptionIncludesRequiredFeeForRecord));
+            Assert.StartsWith("Unable to execute transfers, status: InsufficientTxFee", testFailException.Message);
+
+            //[Fact(DisplayName = "Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception")]
+            async Task InsufficientFeeExceptionIncludesRequiredFeeForRecord()
             {
-                await fx.Client.TransferWithRecordAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
+                await using var fx = await TestAccount.CreateAsync(_network);
+                var transferAmount = (long)(fx.CreateParams.InitialBalance / 2);
+                var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
                 {
-                    ctx.FeeLimit = 1;
+                    await fx.Client.TransferWithRecordAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
+                    {
+                        ctx.FeeLimit = 1;
+                    });
                 });
-            });
-            Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", pex.Message);
-            Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
-            Assert.True(pex.RequiredFee > 0);
+                Assert.StartsWith("Transaction Failed Pre-Check: InsufficientTxFee", pex.Message);
+                Assert.Equal(ResponseCode.InsufficientTxFee, pex.Status);
+                Assert.True(pex.RequiredFee > 0);
 
-            var record = await fx.Client.TransferWithRecordAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
-            {
-                ctx.FeeLimit = (long)pex.RequiredFee;
-            });
-            Assert.Equal(ResponseCode.Success, record.Status);
+                var record = await fx.Client.TransferWithRecordAsync(fx.Record.Address, _network.Payer, transferAmount, fx.PrivateKey, ctx =>
+                {
+                    ctx.FeeLimit = (long)pex.RequiredFee;
+                });
+                Assert.Equal(ResponseCode.Success, record.Status);
 
-            var balance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
-            Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, balance);
+                var balance = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
+                Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, balance);
+            }
         }
         [Fact(DisplayName = "Transfer: Consistent Duplicated Signature Succeeds")]
         public async Task AllowsDuplicateSignature()
@@ -546,7 +560,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(record.Pending.TxId, info.TxId);
             Assert.Equal(_network.Payer, info.Creator);
             Assert.Equal(fxPayer.Record.Address, info.Payer);
-            Assert.Equal(2,info.Endorsements.Length);
+            Assert.Equal(2, info.Endorsements.Length);
             Assert.Equal(new Endorsement(fxPayer.PublicKey), info.Endorsements[0]);
             Assert.Null(info.Administrator);
             Assert.Empty(info.Memo);
