@@ -50,7 +50,7 @@ namespace Hashgraph
             Concensus = record.ConsensusTimestamp?.ToDateTime();
             Memo = record.Memo;
             Fee = record.TransactionFee;
-            Transfers = record.TransferList.ToTransfers();
+            Transfers = record.TransferList?.ToTransfers() ?? new ReadOnlyDictionary<Address, long>(new Dictionary<Address,long>());
             TokenTransfers = TokenTransferExtensions.Create(record.TokenTransferLists);
         }
     }
