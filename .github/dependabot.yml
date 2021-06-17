@@ -1,0 +1,18 @@
+# Create pull requests on updates to nuget packages, hedera-protobufs or github actions
+version: 2
+updates:
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+
+  - package-ecosystem: gitsubmodule
+    directory: /
+    schedule:
+      interval: daily
+
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: daily
