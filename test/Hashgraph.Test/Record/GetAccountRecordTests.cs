@@ -16,8 +16,8 @@ namespace Hashgraph.Test.Record
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Account Records: No transactions are stored when thresholds are at max values.")]
-        public async Task GetTransactionRecordsForRecentTransfers()
+        [Fact(DisplayName = "Account Records: Transaction Records are stored for a limited time.")]
+        public async Task TransactionRecordsAreStoredForALimitedTime()
         {
             await using var fx = await TestAccount.CreateAsync(_network);
             var childFeeLImit = 1_000_000;
@@ -35,7 +35,15 @@ namespace Hashgraph.Test.Record
             }
             var records = await fx.Client.GetAccountRecordsAsync(childAccount);
             Assert.NotNull(records);
-            Assert.Empty(records);
+            Assert.Equal(transactionCount, records.Length);
+            foreach(var record in records)
+            {
+                Assert.Equal(ResponseCode.Success, record.Status);
+                Assert.Equal(4, record.Transfers.Count);
+                Assert.Equal(-transferAmount - (long)record.Fee, record.Transfers[childAccount]);
+                Assert.Equal(transferAmount, record.Transfers[parentAccount]);
+                Assert.Empty(record.TokenTransfers);
+            }
         }
         [Fact(DisplayName = "Account Records: Get with Empty Account raises Error.")]
         public async Task EmptyAccountRaisesError()
