@@ -22,7 +22,7 @@ While we are in the process of building the preliminary infrastructure for this 
 
 | Main Branch | vNext (Preview Network)
 | - | -
-| [![Build Status](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20TESTNET%20Continuous%20&%20Nightly%20Build?branchName=master)](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20TESTNET%20Continuous%20&%20Nightly%20Build?branchName=master) | [![Build Status](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20PREVIEWNET%20Continuous%20&%20Nightly%20Build?branchName=previewnet)](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20PREVIEWNET%20Continuous%20&%20Nightly%20Build?branchName=previewnet)
+| [![Build Status](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20TESTNET%20Continuous%20&%20Nightly%20Build?branchName=main)](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20TESTNET%20Continuous%20&%20Nightly%20Build?branchName=main) | [![Build Status](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20PREVIEWNET%20Continuous%20&%20Nightly%20Build?branchName=previewnet)](https://bugbytes.visualstudio.com/Hashgraph/_apis/build/status/Hashgraph%20PREVIEWNET%20Continuous%20&%20Nightly%20Build?branchName=previewnet)
 
 ## Packages
 

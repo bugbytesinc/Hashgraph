@@ -16,7 +16,7 @@
     <PackageTags>Hedera Hashgraph Protobuf</PackageTags>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryType>GitHub</RepositoryType>
-    <PackageIconUrl>https://raw.githubusercontent.com/bugbytesinc/Hashgraph/master/logo.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/bugbytesinc/Hashgraph/main/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

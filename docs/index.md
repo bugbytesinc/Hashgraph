@@ -47,7 +47,7 @@ documentType: homepage
         <div class="col-md-10 col-md-offset-1 text-center">
         <section>
             <h2>Open Source</h2>
-            <p class="lead">Hashgraph is released under the <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/LICENSE">Apache 2.0 License</a>, the source code is available on <a href="https://github.com/bugbytesinc/Hashgraph">GitHub</a>.</p>
+            <p class="lead">Hashgraph is released under the <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/LICENSE">Apache 2.0 License</a>, the source code is available on <a href="https://github.com/bugbytesinc/Hashgraph">GitHub</a>.</p>
         </section>
         </div>
     </div>
