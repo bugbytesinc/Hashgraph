@@ -2,6 +2,7 @@
 using Proto;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Hashgraph
 {
@@ -25,9 +26,8 @@ namespace Hashgraph
         /// </summary>
         public long Amount { get; init; }
         /// <summary>
-        /// Internal Constructor representing the "None" version of an
-        /// version.  This is a special construct indicating the version
-        /// number is not known or is not specified.
+        /// Internal Constructor representing the "None" 
+        /// version of an transfer.
         /// </summary>
         private TokenTransfer()
         {
@@ -80,6 +80,14 @@ namespace Hashgraph
                     result.Add(new TokenTransfer(entry.Key.Item1, entry.Key.Item2, entry.Value));
                 }
                 return result.AsReadOnly();
+            }
+            return EMPTY_RESULT;
+        }
+        internal static ReadOnlyCollection<TokenTransfer> Create(RepeatedField<Proto.AssessedCustomFee> list)
+        {
+            if (list != null && list.Count > 0)
+            {
+                return list.Select(fee => new TokenTransfer(fee.TokenId.AsAddress(), fee.FeeCollectorAccountId.AsAddress(), fee.Amount)).ToList().AsReadOnly();
             }
             return EMPTY_RESULT;
         }

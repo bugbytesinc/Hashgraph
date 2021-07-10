@@ -41,7 +41,7 @@ namespace Hashgraph.Extensions
         /// A dictionary mapping hedera functionality (by name) to 
         /// structured fee data (serialized as JSON data).
         /// </summary>
-        public Dictionary<string, string> Data { get; internal init; }
+        public Dictionary<string, string[]> Data { get; internal init; }
         /// <summary>
         /// The Time at which this fee schedule expires.
         /// </summary>

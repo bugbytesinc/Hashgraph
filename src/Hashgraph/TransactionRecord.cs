@@ -41,6 +41,13 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyCollection<TokenTransfer> TokenTransfers { get; internal init; }
         /// <summary>
+        /// A list of token transfers applied by the network as commissions
+        /// for executing the original transaction.  Typically in the form
+        /// of royalties for transfering custom tokens and assets as defined
+        /// by the respective token definition's fees.
+        /// </summary>
+        public ReadOnlyCollection<TokenTransfer> Commissions { get; internal init; }
+        /// <summary>
         /// Internal Constructor of the record.
         /// </summary>
         internal TransactionRecord(NetworkResult result) : base(result)
@@ -50,8 +57,9 @@ namespace Hashgraph
             Concensus = record.ConsensusTimestamp?.ToDateTime();
             Memo = record.Memo;
             Fee = record.TransactionFee;
-            Transfers = record.TransferList?.ToTransfers() ?? new ReadOnlyDictionary<Address, long>(new Dictionary<Address,long>());
+            Transfers = record.TransferList?.ToTransfers() ?? new ReadOnlyDictionary<Address, long>(new Dictionary<Address, long>());
             TokenTransfers = TokenTransferExtensions.Create(record.TokenTransferLists);
+            Commissions = TokenTransferExtensions.Create(record.AssessedCustomFees);
         }
     }
 

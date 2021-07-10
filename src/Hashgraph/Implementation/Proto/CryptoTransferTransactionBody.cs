@@ -50,6 +50,10 @@ namespace Proto
         {
             TokenTransfers.Add(new TokenTransferList(token, fromAddress, toAddress, amount));
         }
+        internal CryptoTransferTransactionBody(Asset asset, Address fromAddress, Address toAddress) : this()
+        {
+            TokenTransfers.Add(new TokenTransferList(asset, fromAddress, toAddress));
+        }
         internal CryptoTransferTransactionBody(TransferParams transfers) : this()
         {
             if (transfers == null)
@@ -146,11 +150,57 @@ namespace Proto
                         TokenTransfers.Add(xferList);
                     }
                 }
-                missingTransfers &= TokenTransfers.Count == 0;
             }
+            if (transfers.AssetTransfers is not null)
+            {
+                foreach (var tokenGroup in transfers.AssetTransfers.GroupBy(txfer => (Address)txfer.Asset))
+                {
+                    if (tokenGroup.Key.IsNullOrNone())
+                    {
+                        throw new ArgumentException("Asset", "The list of asset token transfers cannot contain a null or empty Asset Token address.");
+                    }
+                    var netRequests = new Dictionary<long, AssetTransfer>();
+                    foreach (var xfer in tokenGroup)
+                    {
+                        if (xfer.Asset.SerialNum <= 0)
+                        {
+                            throw new ArgumentException(nameof(xfer.Asset), "The list of asset transfers cannot contain an asset without a serial number.");
+                        }
+                        if (xfer.From.IsNullOrNone())
+                        {
+                            throw new ArgumentException(nameof(xfer.From), "The list of asset transfers cannot contain a null or empty from account value.");
+                        }
+                        if (xfer.To.IsNullOrNone())
+                        {
+                            throw new ArgumentException(nameof(xfer.From), "The list of asset transfers cannot contain a null or empty to account value.");
+                        }
+                        if (netRequests.ContainsKey(xfer.Asset.SerialNum))
+                        {
+                            throw new ArgumentException(nameof(xfer.Asset), "The list of asset transfers cannot contain the saem asset in multiple transfers at once.");
+                        }
+                        else
+                        {
+                            netRequests[xfer.Asset.SerialNum] = xfer;
+                        }
+                    }
+                    if (netRequests.Count > 0)
+                    {
+                        var xferList = new TokenTransferList
+                        {
+                            Token = new TokenID(tokenGroup.Key)
+                        };
+                        foreach (var netTransfer in netRequests)
+                        {
+                            xferList.NftTransfers.Add(new NftTransfer(netTransfer.Value));
+                        }
+                        TokenTransfers.Add(xferList);
+                    }
+                }
+            }
+            missingTransfers &= TokenTransfers.Count == 0;
             if (missingTransfers)
             {
-                throw new ArgumentException(nameof(transfers), "Both crypto and token transfer lists are null or empty.  At least one must include net transfers.");
+                throw new ArgumentException(nameof(transfers), "Both crypto, token and asset transfer lists are null or empty.  At least one must include net transfers.");
             }
         }
     }

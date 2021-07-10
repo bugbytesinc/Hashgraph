@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using Hashgraph.Implementation;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Proto
@@ -33,6 +34,35 @@ namespace Proto
             Token = new TokenID(token);
             Account = new AccountID(address);
             Amount = amount;
+        }
+
+        internal TokenWipeAccountTransactionBody(Hashgraph.Asset asset, Hashgraph.Address address) : this()
+        {
+            if (Hashgraph.Asset.None.Equals(asset))
+            {
+                throw new ArgumentOutOfRangeException(nameof(asset), "The asset to confiscate is missing.");
+            }
+            if (Hashgraph.Address.None.Equals(address))
+            {
+                throw new ArgumentOutOfRangeException(nameof(address), "The account Addresss can not be empty or None.  Please provide a valid value.");
+            }
+            Token = new TokenID(asset);
+            Account = new AccountID(address);
+            SerialNumbers.Add(asset.SerialNum);
+        }
+        internal TokenWipeAccountTransactionBody(Hashgraph.Address token, IEnumerable<long> serialNumbers, Hashgraph.Address address) : this()
+        {
+            if (Hashgraph.Asset.None.Equals(token))
+            {
+                throw new ArgumentOutOfRangeException(nameof(token), "The asset token type to confiscate is missing.");
+            }
+            if (Hashgraph.Address.None.Equals(address))
+            {
+                throw new ArgumentOutOfRangeException(nameof(address), "The account Addresss can not be empty or None.  Please provide a valid value.");
+            }
+            Token = new TokenID(token);
+            Account = new AccountID(address);
+            SerialNumbers.AddRange(serialNumbers);
         }
     }
 }

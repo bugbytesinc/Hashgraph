@@ -39,6 +39,10 @@ namespace Hashgraph.Implementation
             {
                 return new SubmitMessageReceipt(this);
             }
+            else if (Receipt.SerialNumbers != null && Receipt.SerialNumbers.Count > 0)
+            {
+                return new AssetMintReceipt(this);
+            }
             else
             {
                 return new TransactionReceipt(this);
@@ -74,6 +78,10 @@ namespace Hashgraph.Implementation
             else if (!Receipt.TopicRunningHash.IsEmpty)
             {
                 return new SubmitMessageRecord(this);
+            }
+            else if (Receipt.SerialNumbers != null && Receipt.SerialNumbers.Count > 0)
+            {
+                return new AssetMintRecord(this);
             }
             else if (Record?.ContractCallResult != null)
             {

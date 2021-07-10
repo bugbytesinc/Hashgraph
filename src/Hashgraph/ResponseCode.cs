@@ -457,6 +457,10 @@ namespace Hashgraph
         /// </summary>
         [Description("MAX_FILE_SIZE_EXCEEDED")] MaxFileSizeExceeded = 112,
         /// <summary>
+        /// When a valid signature is not provided for operations on account with receiverSigRequired=true
+        /// </summary>
+        [Description("RECEIVER_SIG_REQUIRED")] ReceiverSigRequired = 113,
+        /// <summary>
         /// The Topic ID specified is not in the system.
         /// </summary>
         [Description("INVALID_TOPIC_ID")] InvalidTopicId = 150,
@@ -730,5 +734,117 @@ namespace Hashgraph
         /// The new throttle definitions system file were invalid, and no more specific error could be divined
         /// </summary>
         [Description("INVALID_THROTTLE_DEFINITIONS")] InvalidThrottleDefinitions = 222,
+        /// <summary>
+        /// The transaction references an account which has passed its expiration without renewal funds available, and currently remains in the ledger only because of the grace period given to expired entities
+        /// </summary>
+        [Description("ACCOUNT_EXPIRED_AND_PENDING_REMOVAL")] AccountExpiredAndPendingRemoval = 223,
+        /// <summary>
+        /// Invalid token max supply
+        /// </summary>
+        [Description("INVALID_TOKEN_MAX_SUPPLY")] InvalidTokenMaxSupply = 224,
+        /// <summary>
+        /// Invalid token nft serial number
+        /// </summary>
+        [Description("INVALID_TOKEN_NFT_SERIAL_NUMBER")] InvalidTokenNftSerialNumber = 225,
+        /// <summary>
+        /// Invalid nft id
+        /// </summary>
+        [Description("INVALID_NFT_ID")] InvalidNftId = 226,
+        /// <summary>
+        /// Nft metadata is too long
+        /// </summary>
+        [Description("METADATA_TOO_LONG")] MetadataTooLong = 227,
+        /// <summary>
+        /// Repeated operations count exceeds the limit
+        /// </summary>
+        [Description("BATCH_SIZE_LIMIT_EXCEEDED")] BatchSizeLimitExceeded = 228,
+        /// <summary>
+        /// The range of data to be gathered is out of the set boundaries
+        /// </summary>
+        [Description("INVALID_QUERY_RANGE")] InvalidQueryRange = 229,
+        /// <summary>
+        /// A custom fractional fee set a denominator of zero
+        /// </summary>
+        [Description("FRACTION_DIVIDES_BY_ZERO")] FractionDividesByZero = 230,
+        /// <summary>
+        /// The transaction payer could not afford a custom fee
+        /// </summary>
+        [Description("INSUFFICIENT_PAYER_BALANCE_FOR_CUSTOM_FEE")] InsufficientPayerBalanceForCustomFee = 231,
+        /// <summary>
+        /// The customFees list is longer than allowed limit 10
+        /// </summary>
+        [Description("CUSTOM_FEES_LIST_TOO_LONG")] CustomFeesListTooLong = 232,
+        /// <summary>
+        /// Any of the feeCollector accounts for customFees is invalid
+        /// </summary>
+        [Description("INVALID_CUSTOM_FEE_COLLECTOR")] InvalidCustomFeeCollector = 233,
+        /// <summary>
+        /// Any of the token Ids in customFees is invalid
+        /// </summary>
+        [Description("INVALID_TOKEN_ID_IN_CUSTOM_FEES")] InvalidTokenIdInCustomFees = 234,
+        /// <summary>
+        /// Any of the token Ids in customFees are not associated to feeCollector
+        /// </summary>
+        [Description("TOKEN_NOT_ASSOCIATED_TO_FEE_COLLECTOR")] TokenNotAssociatedToFeeCollector = 235,
+        /// <summary>
+        /// A token cannot have more units minted due to its configured supply ceiling
+        /// </summary>
+        [Description("TOKEN_MAX_SUPPLY_REACHED")] TokenMaxSupplyReached = 236,
+        /// <summary>
+        /// The transaction attempted to move an NFT serial number from an account other than its owner
+        /// </summary>
+        [Description("SENDER_DOES_NOT_OWN_NFT_SERIAL_NO")] SenderDoesNotOwnNftSerialNo = 237,
+        /// <summary>
+        /// A custom fee schedule entry did not specify either a fixed or fractional fee
+        /// </summary>
+        [Description("CUSTOM_FEE_NOT_FULLY_SPECIFIED")] CustomFeeNotFullySpecified = 238,
+        /// <summary>
+        /// Only positive fees may be assessed at this time
+        /// </summary>
+        [Description("CUSTOM_FEE_MUST_BE_POSITIVE")] CustomFeeMustBePositive = 239,
+        /// <summary>
+        /// Fee schedule key is not set on token
+        /// </summary>
+        [Description("TOKEN_HAS_NO_FEE_SCHEDULE_KEY")] TokenHasNoFeeScheduleKey = 240,
+        /// <summary>
+        /// A fractional custom fee exceeded the range of a 64-bit signed integer
+        /// </summary>
+        [Description("CUSTOM_FEE_OUTSIDE_NUMERIC_RANGE")] CustomFeeOutsideNumericRange = 241,
+        /// <summary>
+        /// The sum of all custom fractional fees must be strictly less than 1
+        /// </summary>
+        [Description("INVALID_CUSTOM_FRACTIONAL_FEES_SUM")] InvalidCustomFractionalFeesSum = 242,
+        /// <summary>
+        /// Each fractional custom fee must have its maximum_amount, if specified, at least its minimum_amount
+        /// </summary>
+        [Description("FRACTIONAL_FEE_MAX_AMOUNT_LESS_THAN_MIN_AMOUNT")] FractionalFeeMaxAmountLessThanMinAmount = 243,
+        /// <summary>
+        /// A fee schedule update tried to clear the custom fees from a token whose fee schedule was already empty
+        /// </summary>
+        [Description("CUSTOM_SCHEDULE_ALREADY_HAS_NO_FEES")] CustomScheduleAlreadyHasNoFees = 244,
+        /// <summary>
+        /// Only tokens of type FUNGIBLE_COMMON can be used to as fee schedule denominations
+        /// </summary>
+        [Description("CUSTOM_FEE_DENOMINATION_MUST_BE_FUNGIBLE_COMMON")] CustomFeeDenominationMustBeFungibleCommon = 245,
+        /// <summary>
+        /// Only tokens of type FUNGIBLE_COMMON can have fractional fees
+        /// </summary>
+        [Description("CUSTOM_FRACTIONAL_FEE_ONLY_ALLOWED_FOR_FUNGIBLE_COMMON")] CustomFractionalFeeOnlyAllowedForFungibleCommon = 246,
+        /// <summary>
+        /// The provided custom fee schedule key was invalid
+        /// </summary>
+        [Description("INVALID_CUSTOM_FEE_SCHEDULE_KEY")] InvalidCustomFeeScheduleKey = 247,
+        /// <summary>
+        /// The requested token mint metadata was invalid
+        /// </summary>
+        [Description("INVALID_TOKEN_MINT_METADATA")] InvalidTokenMintMetadata = 248,
+        /// <summary>
+        /// The requested token burn metadata was invalid
+        /// </summary>
+        [Description("INVALID_TOKEN_BURN_METADATA")] InvalidTokenBurnMetadata = 249,
+        /// <summary>
+        /// The treasury for a unique token cannot be changed until it owns no NFTs
+        /// </summary>
+        [Description("CURRENT_TREASURY_STILL_OWNS_NFTS")] CurrentTreasuryStillOwnsNfts = 250,
     }
 }

@@ -1,12 +1,14 @@
 ﻿using Proto;
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Hashgraph
 {
     /// <summary>
     /// The information returned from the GetTokenInfo Client 
-    /// method call.  It represents the details concerning a 
-    /// Hedera Fungable Token.
+    /// method call.  It represents the details concerning 
+    /// Tokens and Assets.
     /// </summary>
     public sealed record TokenInfo
     {
@@ -14,6 +16,11 @@ namespace Hashgraph
         /// The Hedera address of this token.
         /// </summary>
         public Address Token { get; private init; }
+        /// <summary>
+        /// The type of token this represents, fungible
+        /// token or Asset (NFT).
+        /// </summary>
+        public TokenType Type { get; private init; }
         /// <summary>
         /// The string symbol representing this token.
         /// </summary>
@@ -34,6 +41,11 @@ namespace Hashgraph
         /// The number of decimal places which each token may be subdivided.
         /// </summary>
         public uint Decimals { get; private init; }
+        /// <summary>
+        /// The maximum number of tokens allowed in circulation at a given time.
+        /// The value of 0 is unbounded.
+        /// </summary>
+        public long Ceiling { get; private init; }
         /// <summary>
         /// Administrator key for signing transactions modifying this token's properties.
         /// </summary>
@@ -59,6 +71,11 @@ namespace Hashgraph
         /// </summary>
         public Endorsement? SupplyEndorsement { get; private init; }
         /// <summary>
+        /// Administrator key for signing transactions updating the commissions
+        /// (custom transfer fees) associated with this token.
+        /// </summary>
+        public Endorsement? CommissionsEndorsement { get; set; }
+        /// <summary>
         /// The current default suspended/frozen status of the token.
         /// </summary>
         public TokenTradableStatus TradableStatus { get; private init; }
@@ -66,6 +83,16 @@ namespace Hashgraph
         /// The current default KYC status of the token.
         /// </summary>
         public TokenKycStatus KycStatus { get; private init; }
+        /// <summary>
+        /// The list of fixed fee commissions assessed on transactions
+        /// by the network when transferring this token.
+        /// </summary>
+        public ReadOnlyCollection<FixedCommission> FixedCommissions { get; internal init; }
+        /// <summary>
+        /// th elist of variable fee commissions assessed on transactions
+        /// by the network when transferring this token.
+        /// </summary>
+        public ReadOnlyCollection<VariableCommission> VariableCommissions { get; internal init; }
         /// <summary>
         /// Expiration date for the token.  Will renew as determined by the
         /// renew period and balance of auto renew account.
@@ -99,20 +126,26 @@ namespace Hashgraph
         /// The memo associated with the token instance.
         /// </summary>
         public string Memo { get; private init; }
+
         internal TokenInfo(Response response)
         {
             var info = response.TokenGetInfo.TokenInfo;
             Token = info.TokenId.AsAddress();
+            Type = (TokenType)info.TokenType;
             Symbol = info.Symbol;
             Name = info.Name;
             Treasury = info.Treasury.AsAddress();
             Circulation = info.TotalSupply;
             Decimals = info.Decimals;
+            Ceiling = info.MaxSupply;
             Administrator = info.AdminKey?.ToEndorsement();
             GrantKycEndorsement = info.KycKey?.ToEndorsement();
             SuspendEndorsement = info.FreezeKey?.ToEndorsement();
             ConfiscateEndorsement = info.WipeKey?.ToEndorsement();
             SupplyEndorsement = info.SupplyKey?.ToEndorsement();
+            CommissionsEndorsement = info.FeeScheduleKey?.ToEndorsement();
+            VariableCommissions = info.CustomFees.Where(fee => fee.FeeCase == CustomFee.FeeOneofCase.FractionalFee).Select(fee => new VariableCommission(fee)).ToList().AsReadOnly();
+            FixedCommissions = info.CustomFees.Where(fee => fee.FeeCase == CustomFee.FeeOneofCase.FixedFee).Select(fee => new FixedCommission(fee)).ToList().AsReadOnly();
             TradableStatus = (TokenTradableStatus)info.DefaultFreezeStatus;
             KycStatus = (TokenKycStatus)info.DefaultKycStatus;
             Expiration = info.Expiry.ToDateTime();

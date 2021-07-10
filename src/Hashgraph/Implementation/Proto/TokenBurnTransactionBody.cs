@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using Hashgraph.Implementation;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Proto
@@ -32,6 +33,28 @@ namespace Proto
             }
             Token = new TokenID(token);
             Amount = amount;
+        }
+        internal TokenBurnTransactionBody(Hashgraph.Address asset, IEnumerable<long> serialNumbers) : this()
+        {
+            if (serialNumbers is null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(serialNumbers), "The list of serial numbers must not be null.");
+            }
+            Token = new TokenID(asset);
+            SerialNumbers.AddRange(serialNumbers);
+            if (SerialNumbers.Count == 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(serialNumbers), "The list of serial numbers must not be empty.");
+            }
+        }
+        internal TokenBurnTransactionBody(Hashgraph.Asset asset) : this()
+        {
+            if (asset is null || asset == Hashgraph.Asset.None)
+            {
+                throw new ArgumentOutOfRangeException(nameof(asset), "The asset cannot be null or empty.");
+            }
+            Token = new TokenID(asset);
+            SerialNumbers.Add(asset.SerialNum);
         }
     }
 }
