@@ -26,9 +26,12 @@ namespace Hashgraph.Test.Extensions
 
             // Try to re-hydrate a known-to-exist fee schedule.
             Assert.NotNull(schedule.Current.Data["CryptoCreate"]);
-            var feeData = Proto.FeeData.Parser.ParseJson(schedule.Current.Data["CryptoCreate"]);
-            Assert.NotNull(feeData);
-            Assert.True(feeData.Nodedata.Max > 0);
+            foreach (var feeDetail in schedule.Current.Data["CryptoCreate"])
+            {
+                var feeDetailData = Proto.FeeData.Parser.ParseJson(feeDetail);
+                Assert.NotNull(feeDetailData);
+                Assert.True(feeDetailData.Nodedata.Max > 0);
+            }
         }
     }
 }

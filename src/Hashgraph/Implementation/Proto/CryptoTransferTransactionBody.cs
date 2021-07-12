@@ -176,7 +176,7 @@ namespace Proto
                         }
                         if (netRequests.ContainsKey(xfer.Asset.SerialNum))
                         {
-                            throw new ArgumentException(nameof(xfer.Asset), "The list of asset transfers cannot contain the saem asset in multiple transfers at once.");
+                            throw new ArgumentException(nameof(xfer.Asset), "The list of asset transfers cannot contain the same asset in multiple transfers at once.");
                         }
                         else
                         {

@@ -52,7 +52,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TokenReceipt> BurnAssetAsync(Address token, IEnumerable<long> serialNumbers, Action<IContext>? configure = null)
+        public async Task<TokenReceipt> BurnAssetsAsync(Address token, IEnumerable<long> serialNumbers, Action<IContext>? configure = null)
         {
             return new TokenReceipt(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, serialNumbers), configure, false).ConfigureAwait(false));
         }
@@ -109,7 +109,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TokenReceipt> BurnAssetAsync(Address token, IEnumerable<long> serialNumbers, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TokenReceipt> BurnAssetsAsync(Address token, IEnumerable<long> serialNumbers, Signatory signatory, Action<IContext>? configure = null)
         {
             return new TokenReceipt(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, serialNumbers), configure, false, signatory).ConfigureAwait(false));
         }
@@ -158,7 +158,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TokenRecord> BurnAssetWithRecordAsync(Address token, IEnumerable<long> serialNumbers, Action<IContext>? configure = null)
+        public async Task<TokenRecord> BurnAssetsWithRecordAsync(Address token, IEnumerable<long> serialNumbers, Action<IContext>? configure = null)
         {
             return new TokenRecord(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, serialNumbers), configure, true).ConfigureAwait(false));
         }
@@ -215,7 +215,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TokenRecord> BurnAssetWithRecordAsync(Address token, IEnumerable<long> serialNumbers, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TokenRecord> BurnAssetsWithRecordAsync(Address token, IEnumerable<long> serialNumbers, Signatory signatory, Action<IContext>? configure = null)
         {
             return new TokenRecord(await ExecuteTransactionAsync(new TokenBurnTransactionBody(token, serialNumbers), configure, true, signatory).ConfigureAwait(false));
         }

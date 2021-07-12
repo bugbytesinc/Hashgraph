@@ -4,29 +4,29 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Hashgraph.Test.Token
+namespace Hashgraph.Test.AssetToken
 {
     [Collection(nameof(NetworkCredentials))]
-    public class GetTokenInfoTests
+    public class GetAssetTokenInfoTests
     {
         private readonly NetworkCredentials _network;
-        public GetTokenInfoTests(NetworkCredentials network, ITestOutputHelper output)
+        public GetAssetTokenInfoTests(NetworkCredentials network, ITestOutputHelper output)
         {
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Token Info: Can Get Token Info")]
-        public async Task CanGetTokenInfo()
+        [Fact(DisplayName = "Asset Token Info: Can Get Asset Token Info")]
+        public async Task CanGetAssetTokenInfo()
         {
-            await using var fx = await TestToken.CreateAsync(_network);
+            await using var fx = await TestAsset.CreateAsync(_network);
             Assert.Equal(ResponseCode.Success, fx.Record.Status);
 
             var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
             Assert.Equal(fx.Record.Token, info.Token);
             Assert.Equal(fx.Params.Symbol, info.Symbol);
             Assert.Equal(fx.TreasuryAccount.Record.Address, info.Treasury);
-            Assert.Equal(fx.Params.Circulation, info.Circulation);
-            Assert.Equal(fx.Params.Decimals, info.Decimals);
+            Assert.Equal((ulong)fx.Metadata.Length, info.Circulation);
+            Assert.Equal(0u, info.Decimals);
             Assert.Equal(fx.Params.Ceiling, info.Ceiling);
             Assert.Equal(fx.Params.Administrator, info.Administrator);
             Assert.Equal(fx.Params.GrantKycEndorsement, info.GrantKycEndorsement);
@@ -38,14 +38,13 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.FixedCommissions);
             Assert.Empty(info.VariableCommissions);
+            Assert.Equal(TokenType.Asset, info.Type);
             Assert.False(info.Deleted);
-            Assert.Equal(TokenType.Fungible, info.Type);
-            Assert.Equal(fx.Params.Symbol, info.Symbol);
         }
-        [Fact(DisplayName = "Token Info: Null Token Identifier Raises Exception")]
+        [Fact(DisplayName = "Asset Token Info: Null Asset Identifier Raises Exception")]
         public async Task NullTokenIdentifierRaisesException()
         {
-            await using var fx = await TestToken.CreateAsync(_network);
+            await using var fx = await TestAsset.CreateAsync(_network);
 
             var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
@@ -54,10 +53,10 @@ namespace Hashgraph.Test.Token
             Assert.Equal("token", ane.ParamName);
             Assert.StartsWith("Token is missing. Please check that it is not null", ane.Message);
         }
-        [Fact(DisplayName = "Token Info: Empty Address Identifier Raises Exception")]
+        [Fact(DisplayName = "Asset Token Info: Empty Address Identifier Raises Exception")]
         public async Task EmptyAddressIdentifierRaisesException()
         {
-            await using var fx = await TestToken.CreateAsync(_network);
+            await using var fx = await TestAsset.CreateAsync(_network);
 
             var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
             {
@@ -66,7 +65,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal("token", ane.ParamName);
             Assert.StartsWith("Token is missing. Please check that it is not null", ane.Message);
         }
-        [Fact(DisplayName = "Token Info: Account Address for Token Symbol Raises Error")]
+        [Fact(DisplayName = "Asset Token Info: Account Address for Asset Symbol Raises Error")]
         public async Task AccountAddressForTokenSymbolRaisesError()
         {
             await using var fx = await TestAccount.CreateAsync(_network);
@@ -78,7 +77,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.InvalidTokenId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidTokenId", pex.Message);
         }
-        [Fact(DisplayName = "Token Info: Contract Address for Token Symbol Raises Error")]
+        [Fact(DisplayName = "Asset Token Info: Contract Address for Asset Symbol Raises Error")]
         public async Task ContractAddressForTokenSymbolRaisesError()
         {
             await using var fx = await GreetingContract.CreateAsync(_network);
@@ -90,7 +89,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.InvalidTokenId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidTokenId", pex.Message);
         }
-        [Fact(DisplayName = "Token Info: Topic Address for Token Symbol Raises Error")]
+        [Fact(DisplayName = "Asset Token Info: Topic Address for Asset Symbol Raises Error")]
         public async Task TopicAddressForTokenSymbolRaisesError()
         {
             await using var fx = await TestTopic.CreateAsync(_network);
@@ -102,7 +101,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.InvalidTokenId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidTokenId", pex.Message);
         }
-        [Fact(DisplayName = "Token Info: File Address for Token Symbol Raises Error")]
+        [Fact(DisplayName = "Asset Token Info: File Address for Asset Symbol Raises Error")]
         public async Task FileAddressForTokenSymbolRaisesError()
         {
             await using var fx = await TestFile.CreateAsync(_network);

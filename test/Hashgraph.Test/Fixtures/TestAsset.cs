@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Hashgraph.Test.Fixtures
 {
-    public class TestToken : IAsyncDisposable
+    public class TestAsset : IAsyncDisposable
     {
         public ReadOnlyMemory<byte> AdminPublicKey;
         public ReadOnlyMemory<byte> AdminPrivateKey;
@@ -16,76 +17,78 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> ConfiscatePrivateKey;
         public ReadOnlyMemory<byte> SupplyPublicKey;
         public ReadOnlyMemory<byte> SupplyPrivateKey;
-        public ReadOnlyMemory<byte> CommissionsPublicKey;
+        public ReadOnlyMemory<byte> CommissionsPublickKey;
         public ReadOnlyMemory<byte> CommissionsPrivateKey;
         public TestAccount TreasuryAccount;
         public TestAccount RenewAccount;
         public Address Payer;
         public Client Client;
-        public CreateTokenParams Params;
+        public CreateAssetParams Params;
         public CreateTokenRecord Record;
         public NetworkCredentials Network;
+        public ReadOnlyMemory<byte>[] Metadata;
+        public AssetMintRecord MintRecord;
 
-        public static async Task<TestToken> CreateAsync(NetworkCredentials networkCredentials, Action<TestToken> customize = null, params TestAccount[] associate)
+        public static async Task<TestAsset> CreateAsync(NetworkCredentials networkCredentials, Action<TestAsset> customize = null, params TestAccount[] associate)
         {
-            var wholeTokens = (ulong)(Generator.Integer(10, 20) * 100000);
-            var decimals = (uint)Generator.Integer(2, 5);
-            var circulation = wholeTokens * (ulong)Math.Pow(10, decimals);
-            var maxSupply = (long)(circulation * Generator.Double(2.1, 2.8));
-            var fx = new TestToken
+            var maxSupply = (long)(Generator.Integer(10, 20) * 1000);
+            var fx = new TestAsset
             {
                 Network = networkCredentials
             };
-            fx.Network.Output?.WriteLine("STARTING SETUP: Test Token Instance");
+            fx.Network.Output?.WriteLine("STARTING SETUP: Test Asset Instance");
             (fx.AdminPublicKey, fx.AdminPrivateKey) = Generator.KeyPair();
             (fx.GrantPublicKey, fx.GrantPrivateKey) = Generator.KeyPair();
             (fx.SuspendPublicKey, fx.SuspendPrivateKey) = Generator.KeyPair();
             (fx.ConfiscatePublicKey, fx.ConfiscatePrivateKey) = Generator.KeyPair();
             (fx.SupplyPublicKey, fx.SupplyPrivateKey) = Generator.KeyPair();
-            (fx.CommissionsPublicKey, fx.CommissionsPrivateKey) = Generator.KeyPair();
+            (fx.CommissionsPublickKey, fx.CommissionsPrivateKey) = Generator.KeyPair();
             fx.Payer = networkCredentials.Payer;
             fx.Client = networkCredentials.NewClient();
             fx.TreasuryAccount = await TestAccount.CreateAsync(networkCredentials);
             fx.RenewAccount = await TestAccount.CreateAsync(networkCredentials);
-            fx.Params = new CreateTokenParams
+            fx.Metadata = Enumerable.Range(1, Generator.Integer(3, 10)).Select(_ => Generator.SHA384Hash()).ToArray();
+            fx.Params = new CreateAssetParams
             {
                 Name = Generator.Code(50),
                 Symbol = Generator.UppercaseAlphaCode(20),
-                Circulation = circulation,
-                Decimals = decimals,
-                Ceiling = maxSupply,
                 Treasury = fx.TreasuryAccount.Record.Address,
+                Ceiling = maxSupply,
                 Administrator = fx.AdminPublicKey,
                 GrantKycEndorsement = fx.GrantPublicKey,
                 SuspendEndorsement = fx.SuspendPublicKey,
                 ConfiscateEndorsement = fx.ConfiscatePublicKey,
                 SupplyEndorsement = fx.SupplyPublicKey,
-                CommissionsEndorsement = fx.CommissionsPublicKey,
+                CommissionsEndorsement = fx.CommissionsPublickKey,
                 InitializeSuspended = false,
                 Expiration = Generator.TruncatedFutureDate(2000, 3000),
                 RenewAccount = fx.RenewAccount.Record.Address,
                 RenewPeriod = TimeSpan.FromDays(90),
                 Signatory = new Signatory(fx.AdminPrivateKey, fx.RenewAccount.PrivateKey, fx.TreasuryAccount.PrivateKey),
-                Memo = "Test Token: " + Generator.Code(20)
+                Memo = "Test Asset: " + Generator.Code(20)
             };
             customize?.Invoke(fx);
             fx.Record = await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
             {
-                ctx.Memo = "TestToken Setup: " + fx.Params.Symbol ?? "(null symbol)";
+                ctx.Memo = "TestAsset Setup: " + fx.Params.Symbol ?? "(null symbol)";
             });
             Assert.Equal(ResponseCode.Success, fx.Record.Status);
             await fx.AssociateAccounts(associate);
-            networkCredentials.Output?.WriteLine("SETUP COMPLETED: Test Token Instance");
+            if(fx.Metadata is not null && fx.Metadata.Length > 0)
+            {
+                fx.MintRecord = await fx.Client.MintAssetWithRecordAsync(fx.Record.Token, fx.Metadata, fx.SupplyPrivateKey);
+            }
+            networkCredentials.Output?.WriteLine("SETUP COMPLETED: Test Asset Instance");
             return fx;
         }
         public async ValueTask DisposeAsync()
         {
-            Network.Output?.WriteLine("STARTING TEARDOWN: Test Token Instance");
+            Network.Output?.WriteLine("STARTING TEARDOWN: Test Asset Instance");
             try
             {
                 await Client.DeleteTokenAsync(Record.Token, AdminPrivateKey, ctx =>
                 {
-                    ctx.Memo = "TestTokenInstance Teardown: Attempting to delete Token from Network (may already be deleted)";
+                    ctx.Memo = "TestAssetInstance Teardown: Attempting to delete Asset from Network (may already be deleted)";
                 });
             }
             catch
@@ -95,12 +98,12 @@ namespace Hashgraph.Test.Fixtures
             await Client.DisposeAsync();
             await TreasuryAccount.DisposeAsync();
             await RenewAccount.DisposeAsync();
-            Network.Output?.WriteLine("TEARDOWN COMPLETED Test Token Instance");
+            Network.Output?.WriteLine("TEARDOWN COMPLETED Test Asset Instance");
         }
 
-        public static implicit operator Address(TestToken fxToken)
+        public static implicit operator Address(TestAsset fxAsset)
         {
-            return fxToken.Record.Token;
+            return fxAsset.Record.Token;
         }
 
         public async Task AssociateAccounts(params TestAccount[] accounts)

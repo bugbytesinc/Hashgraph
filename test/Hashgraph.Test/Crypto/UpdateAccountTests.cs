@@ -411,6 +411,7 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(fxTempate.CreateParams.Memo, info.Memo);
+            Assert.Equal(0, info.AssetCount);
         }
     }
 }
