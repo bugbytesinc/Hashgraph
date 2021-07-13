@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Fixtures
             fx.Client = networkCredentials.NewClient();
             fx.TreasuryAccount = await TestAccount.CreateAsync(networkCredentials);
             fx.RenewAccount = await TestAccount.CreateAsync(networkCredentials);
-            fx.Metadata = Enumerable.Range(1, Generator.Integer(3, 10)).Select(_ => Generator.SHA384Hash()).ToArray();
+            fx.Metadata = Enumerable.Range(1, Generator.Integer(3, 9)).Select(_ => Generator.SHA384Hash()).ToArray();
             fx.Params = new CreateAssetParams
             {
                 Name = Generator.Code(50),

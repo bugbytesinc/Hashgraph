@@ -846,5 +846,21 @@ namespace Hashgraph
         /// The treasury for a unique token cannot be changed until it owns no NFTs
         /// </summary>
         [Description("CURRENT_TREASURY_STILL_OWNS_NFTS")] CurrentTreasuryStillOwnsNfts = 250,
+        /// <summary>
+        /// An account cannot be dissociated from a unique token if it owns NFTs for the token
+        /// </summary>
+        [Description("ACCOUNT_STILL_OWNS_NFTS")] AccountStillOwnsNfts = 251,
+        /// <summary>
+        /// A NFT can only be burned when owned by the unique token's treasury
+        /// </summary>
+        [Description("TREASURY_MUST_OWN_BURNED_NFT")] TreasuryMustOwnBurnedNft = 252,
+        /// <summary>
+        /// An account did not own the NFT to be wiped
+        /// </summary>
+        [Description("ACCOUNT_DOES_NOT_OWN_WIPED_NFT")] AccountDoesNotOwnWipedNft = 253,
+        /// <summary>
+        /// An AccountAmount token transfers list referenced a token type other than FUNGIBLE_COMMON
+        /// </summary>
+        [Description("ACCOUNT_AMOUNT_TRANSFERS_ONLY_ALLOWED_FOR_FUNGIBLE_COMMON")] AccountAmountTransfersOnlyAllowedForFungibleCommon = 254,
     }
 }

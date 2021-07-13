@@ -392,17 +392,15 @@ namespace Hashgraph.Test.AssetTokens
             Assert.NotNull(info);
             Assert.Null(info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token));
 
-            // TODO: NETWORK BUG: This should not be the case
-            //var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            //{
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, fxAsset.TreasuryAccount.PrivateKey);
-            //});
-            //Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
-            //Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
+            });
+            Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
+            Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
 
-            // BUG: these are wrong
             Assert.Equal(0UL, await fxAsset.Client.GetContractTokenBalanceAsync(fxContract, fxAsset));
-            Assert.Equal((ulong)fxAsset.Metadata.Length-1, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+            Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
         }
         [Fact(DisplayName = "Asset Delete: Can Not Delete Account Having Asset Balance")]
         public async Task CanNOtDeleteAccountHavingAssetBalance()

@@ -215,8 +215,8 @@ namespace Hashgraph.Test.AssetToken
             {
                 await fxAsset.Client.ConfiscateAssetsAsync(fxAsset, new long[] { 1, 2, 3 }, fxAccount, fxAsset.ConfiscatePrivateKey);
             });
-            Assert.Equal(ResponseCode.FailInvalid, tex.Status);
-            Assert.StartsWith("Unable to Confiscate Token, status: FailInvalid", tex.Message);
+            Assert.Equal(ResponseCode.AccountDoesNotOwnWipedNft, tex.Status);
+            Assert.StartsWith("Unable to Confiscate Token, status: AccountDoesNotOwnWipedNft", tex.Message);
 
             Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));

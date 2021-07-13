@@ -289,8 +289,8 @@ namespace Hashgraph.Test.AssetTokens
             {
                 await fxAsset.Client.BurnAssetsAsync(fxAsset, serialNumbers, fxAsset.SupplyPrivateKey);
             });
-            Assert.Equal(ResponseCode.FailInvalid, tex.Status);
-            Assert.StartsWith("Unable to Burn Token Coins, status: FailInvalid", tex.Message);
+            Assert.Equal(ResponseCode.InvalidNftId, tex.Status);
+            Assert.StartsWith("Unable to Burn Token Coins, status: InvalidNftId", tex.Message);
 
             Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
@@ -344,14 +344,14 @@ namespace Hashgraph.Test.AssetTokens
             {
                 await fxAsset.Client.BurnAssetsAsync(fxAsset, serialNumbersDestroyed, fxAsset.SupplyPrivateKey);
             });
-            Assert.Equal(ResponseCode.InsufficientTokenBalance, tex.Status);
-            Assert.StartsWith("Unable to Burn Token Coins, status: InsufficientTokenBalance", tex.Message);
+            Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
+            Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
 
             Assert.Equal((ulong)amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
             Assert.Equal((ulong)expectedTreasury, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
         }
-        [Fact(DisplayName = "Burn Assets: Can Burn An Asset The Treasury Does Not Own")]
+        [Fact(DisplayName = "Burn Assets: Can Not Burn An Asset The Treasury Does Not Own")]
         public async Task CanBurnAnAssetTheTreasuryDoesNotOwn()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
@@ -373,16 +373,19 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal((ulong)expectedTreasury, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
 
-            var reciept = await fxAsset.Client.BurnAssetsAsync(fxAsset, new long[] { 1 }, fxAsset.SupplyPrivateKey);
-            Assert.Equal(ResponseCode.Success, reciept.Status);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAsset.Client.BurnAssetsAsync(fxAsset, new long[] { 1 }, fxAsset.SupplyPrivateKey);
+            });
+            Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
+            Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
 
-            // TODO: NETWORK BUG: These number are wrong, the wrong token got burned.
             Assert.Equal((ulong)amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
-            Assert.Equal((ulong)expectedTreasury - 1, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
-            Assert.Equal((ulong)fxAsset.Metadata.Length - 1, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
+            Assert.Equal((ulong)expectedTreasury, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+            Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
         }
-        [Fact(DisplayName = "Burn Assets: Can Burn Single Asset The Treasury Does Not Own")]
-        public async Task CanBurnSingleAssetTheTreasuryDoesNotOwn()
+        [Fact(DisplayName = "Burn Assets: Can Not Burn Single Asset The Treasury Does Not Own")]
+        public async Task CanNotBurnSingleAssetTheTreasuryDoesNotOwn()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
@@ -403,18 +406,19 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal((ulong)expectedTreasury, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
 
-            var reciept = await fxAsset.Client.BurnAssetAsync(new Asset(fxAsset.Record.Token, 1), fxAsset.SupplyPrivateKey);
-            Assert.Equal(ResponseCode.Success, reciept.Status);
-            Assert.Equal((ulong)fxAsset.Metadata.Length - 1, reciept.Circulation);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAsset.Client.BurnAssetAsync(new Asset(fxAsset.Record.Token, 1), fxAsset.SupplyPrivateKey);
+            });
+            Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
+            Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
 
-            // TODO: NETWORK BUG: Token balances are corrupted.  Treasury is deducted when account balance should be instead.
             Assert.Equal((ulong)amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
-            Assert.Equal((ulong)expectedTreasury - 1, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
-            Assert.Equal((ulong)fxAsset.Metadata.Length - 1, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
+            Assert.Equal((ulong)expectedTreasury, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+            Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
 
-            // HOWEVER when getting the list of tokens, the accounting is correct
-            var allAssets = await fxAccount.Client.GetAssetInfoAsync(fxAsset.Record.Token, 0, fxAsset.Metadata.Length - 1);
-            Assert.Equal(fxAsset.Metadata.Length - 1, allAssets.Count);
+            var allAssets = await fxAccount.Client.GetAssetInfoAsync(fxAsset.Record.Token, 0, fxAsset.Metadata.Length);
+            Assert.Equal(fxAsset.Metadata.Length, allAssets.Count);
             var treasuryCount = 0;
             var accountCount = 0;
             foreach (var asset in allAssets)
@@ -432,18 +436,22 @@ namespace Hashgraph.Test.AssetTokens
                     Assert.True(asset.Asset.SerialNum > amountToTransfer);
                 }
             }
-            Assert.Equal(amountToTransfer - 1, accountCount);
+            Assert.Equal(amountToTransfer, accountCount);
             Assert.Equal(expectedTreasury, treasuryCount);
 
-            // and we should not find this, we explicitly destroyed serial number 1 above.
-            Assert.Null(allAssets.FirstOrDefault(a => a.Asset.SerialNum == 1));
+            // and we should find this
+            var foundAsset = allAssets.FirstOrDefault(a => a.Asset.SerialNum == 1);
+            Assert.NotNull(foundAsset);
 
-            // and this call gets corrupted
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await fxAccount.Client.GetAccountAssetInfoAsync(fxAccount.Record.Address, 0, 1);
-            });
-            Assert.Equal(ResponseCode.FailInvalid, pex.Status);
+            // Check previous bug where this call was corrupted after burn attempt.
+            var info = await fxAccount.Client.GetAccountAssetInfoAsync(fxAccount.Record.Address, 0, 1);
+            Assert.Single(info);
+            Assert.Equal(fxAccount.Record.Address, info[0].Owner);
+
+            // TODO - Use this when Equals implemented properly on AssetInfo
+            //Assert.Equal(foundAsset, info[0]);
+            Assert.Equal(foundAsset.Owner, info[0].Owner);
+            Assert.True(foundAsset.Metadata.ToArray().SequenceEqual(info[0].Metadata.ToArray()));
         }
         [Fact(DisplayName = "Burn Assets: Can Not Schedule Burn Asset Coins")]
         public async Task CanNotScheduleBurnAssetCoins()

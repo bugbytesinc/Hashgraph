@@ -371,14 +371,9 @@ namespace Hashgraph.Test.Token
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
             var xferAmount = 2 * fxToken.Params.Circulation / 3;
 
-            var _contractId = $"0.0.{fxContract.ContractRecord.Contract.AccountNum}";
-            var _tokenId = $"0.0.{fxToken.Record.Token.AccountNum}";
-            var _treasuryId = $"0.0.{fxToken.TreasuryAccount.Record.Address.AccountNum}";
-
             var receipt = await fxContract.Client.AssociateTokenAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
-            _network.Output.WriteLine($"\nCALLING: GetContractInfoAsync({_contractId})\n");
             var info = await fxAccount.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
             Assert.NotNull(info);
 
@@ -390,36 +385,22 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
-            _network.Output.WriteLine($"\nVERIFIED: Token {_tokenId} is associated with Contract {_contractId}\n");
 
-            _network.Output.WriteLine($"CALLING: DissociateTokenAsync({_tokenId}, {_contractId}, privateKey)\n");
             receipt = await fxContract.Client.DissociateTokenAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             info = await fxAccount.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
             Assert.NotNull(info);
             Assert.Null(info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token));
-            _network.Output.WriteLine($"\nVERIFIED: Token {_tokenId} is NOT associated with Contract {_contractId}\n");
 
-            // NETWORK BUG: This is what should happen
-            //var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            //{
-            //    await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
-            //});
-            //Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
-            //Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
+            });
+            Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
+            Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
 
-            //Assert.Equal(0UL, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
-
-            // NETWORK BUG: Should not be able to do this, it should fail
-            _network.Output.WriteLine($"\nCALLING: TransferTokensAsync({_tokenId}, {_treasuryId}, {_contractId}, {xferAmount}, privateKey)\n");
-            await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
-            Assert.Equal(ResponseCode.Success, receipt.Status);
-            // But appears to have failed behind the scenes anyway
             Assert.Equal(0UL, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
-            _network.Output.WriteLine($"\nVERIFIED: Contract {_contractId} has Token {_tokenId} balance of 0\n");
-            Assert.Equal(fxToken.Params.Circulation - xferAmount, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
-            _network.Output.WriteLine($"\nVERIFIED: Treasury {_treasuryId} has Token {_tokenId} balance of {fxToken.Params.Circulation - xferAmount} which is less than the original of {fxToken.Params.Circulation} by the amount of the transfer value.\n");
         }
         [Fact(DisplayName = "Token Delete: Can Delete Account Having Token Balance")]
         public async Task CanDeleteAccountHavingTokenBalance()
