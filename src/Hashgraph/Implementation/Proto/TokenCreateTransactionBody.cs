@@ -137,7 +137,7 @@ namespace Proto
             {
                 AutoRenewPeriod = new Duration(createParameters.RenewPeriod.Value);
             }
-            Memo = createParameters.Memo;
+            Memo = createParameters.Memo ?? string.Empty;
         }
         public TokenCreateTransactionBody(CreateAssetParams createParameters) : this()
         {
@@ -235,7 +235,7 @@ namespace Proto
             {
                 AutoRenewPeriod = new Duration(createParameters.RenewPeriod.Value);
             }
-            Memo = createParameters.Memo;
+            Memo = createParameters.Memo ?? string.Empty;
         }
     }
 }

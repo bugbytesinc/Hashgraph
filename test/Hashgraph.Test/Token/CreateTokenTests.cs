@@ -608,6 +608,28 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
             Assert.StartsWith("Unable to create Token, status: InvalidSignature", tex.Message);
         }
+        [Fact(DisplayName = "Create Token: Null Memo is Allowed")]
+        public async Task NullMemoIsAllowed()
+        {
+            await using var fx = await TestToken.CreateAsync(_network, fx =>
+            {
+                fx.Params.Memo = null;
+            });
+
+            var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
+            Assert.Empty(info.Memo);
+        }
+        [Fact(DisplayName = "Create Token: Empty Memo is Allowed")]
+        public async Task EmptyMemoIsAllowed()
+        {
+            await using var fx = await TestToken.CreateAsync(_network, fx =>
+            {
+                fx.Params.Memo = string.Empty;
+            });
+
+            var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
+            Assert.Empty(info.Memo);
+        }
         [Fact(DisplayName = "Create Token: Expiration time in Past Raises Error")]
         public async Task ExpirationTimeInPastRaisesError()
         {

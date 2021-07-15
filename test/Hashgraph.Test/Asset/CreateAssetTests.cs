@@ -624,6 +624,28 @@ namespace Hashgraph.Test.AssetTokens
             var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
             Assert.NotNull(info.SupplyEndorsement);
         }
+        [Fact(DisplayName = "Create Asset: Null Memo is Allowed")]
+        public async Task NullMemoIsAllowed()
+        {
+            await using var fx = await TestAsset.CreateAsync(_network, fx =>
+            {
+                fx.Params.Memo = null;
+            });
+
+            var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
+            Assert.Empty(info.Memo);
+        }
+        [Fact(DisplayName = "Create Asset: Empty Memo is Allowed")]
+        public async Task EmptyMemoIsAllowed()
+        {
+            await using var fx = await TestAsset.CreateAsync(_network, fx =>
+            {
+                fx.Params.Memo = string.Empty;
+            });
+
+            var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
+            Assert.Empty(info.Memo);
+        }
         [Fact(DisplayName = "Create Asset: Missing Renew Account Signature Raises Error")]
         public async Task CreateAssetMissingRenewAccountSignatureRaisesError()
         {
