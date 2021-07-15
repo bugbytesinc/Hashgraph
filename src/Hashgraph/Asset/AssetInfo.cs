@@ -28,6 +28,35 @@ namespace Hashgraph
         /// The metadata associated with this asset, limited to 100 bytes.
         /// </summary>
         public ReadOnlyMemory<byte> Metadata { get; private init; }
+        /// <summary>
+        /// Equality implementation
+        /// </summary>
+        /// <param name="other">
+        /// The other <code>AssetInfo</code> object to compare.
+        /// </param>
+        /// <returns>
+        /// True if asset, owner, created and metadata are the same.
+        /// </returns>
+        public bool Equals(AssetInfo? other)
+        {
+            return other is not null &&
+                Asset.Equals(other.Asset) &&
+                Owner.Equals(other.Owner) &&
+                Created.Equals(other.Created) &&
+                Metadata.Span.SequenceEqual(other.Metadata.Span);
+        }
+        /// <summary>
+        /// Equality implementation.
+        /// </summary>
+        /// <returns>
+        /// A unique hash of the contents of this <code>AssetInfo</code> 
+        /// object.  Only consistent within the current instance of 
+        /// the application process.
+        /// </returns>
+        public override int GetHashCode()
+        {
+            return $"AssetInfo.{Asset.GetHashCode()}.{Owner.GetHashCode()}.{Created.GetHashCode()}.{Hex.FromBytes(Metadata)}".GetHashCode();
+        }
         private AssetInfo(TokenNftInfo info)
         {
             Asset = info.NftID.AsAsset();

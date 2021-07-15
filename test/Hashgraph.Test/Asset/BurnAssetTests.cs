@@ -447,11 +447,7 @@ namespace Hashgraph.Test.AssetTokens
             var info = await fxAccount.Client.GetAccountAssetInfoAsync(fxAccount.Record.Address, 0, 1);
             Assert.Single(info);
             Assert.Equal(fxAccount.Record.Address, info[0].Owner);
-
-            // TODO - Use this when Equals implemented properly on AssetInfo
-            //Assert.Equal(foundAsset, info[0]);
-            Assert.Equal(foundAsset.Owner, info[0].Owner);
-            Assert.True(foundAsset.Metadata.ToArray().SequenceEqual(info[0].Metadata.ToArray()));
+            Assert.Equal(foundAsset, info[0]);
         }
         [Fact(DisplayName = "Burn Assets: Can Not Schedule Burn Asset Coins")]
         public async Task CanNotScheduleBurnAssetCoins()
