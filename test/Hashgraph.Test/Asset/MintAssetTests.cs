@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -244,6 +245,24 @@ namespace Hashgraph.Test.AssetTokens
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+        }
+        [Fact(DisplayName = "Mint Assets: Can Not More Mint Assets than Ceiling")]
+        public async Task CanNotMoreMintAssetsThanCeiling()
+        {
+            await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.Ceiling = fx.Metadata.Length);
+
+            var metadata = new ReadOnlyMemory<byte>[] { Generator.SHA384Hash() };
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAsset.Client.MintAssetAsync(fxAsset.Record.Token, metadata, fxAsset.SupplyPrivateKey);
+            });
+            Assert.Equal(ResponseCode.TokenMaxSupplyReached, tex.Status);
+            Assert.StartsWith("Unable to Mint Token Coins, status: TokenMaxSupplyReached", tex.Message);
+
+            var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
+            Assert.Equal(fxAsset.Params.Ceiling, (long) info.Circulation);
+            Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
         }
     }
 }

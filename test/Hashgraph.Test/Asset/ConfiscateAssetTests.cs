@@ -370,5 +370,20 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
+        [Fact(DisplayName = "Confiscate Assets: Can Confiscate Asset From Treasury")]
+        public async Task CanConfiscateAssetFromTreasury()
+        {
+            await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+            var circulation = (ulong)fxAsset.Metadata.Length;
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAsset.Client.ConfiscateAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAsset.ConfiscatePrivateKey);
+            });
+            Assert.Equal(ResponseCode.CannotWipeTokenTreasuryAccount, tex.Status);
+            Assert.StartsWith("Unable to Confiscate Token, status: CannotWipeTokenTreasuryAccount", tex.Message);
+
+            Assert.Equal(circulation, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
+        }
     }
 }

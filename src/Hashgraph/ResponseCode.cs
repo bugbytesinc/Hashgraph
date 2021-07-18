@@ -771,7 +771,7 @@ namespace Hashgraph
         /// </summary>
         [Description("INSUFFICIENT_PAYER_BALANCE_FOR_CUSTOM_FEE")] InsufficientPayerBalanceForCustomFee = 231,
         /// <summary>
-        /// The customFees list is longer than allowed limit 10
+        /// More than 10 custom fees were specified
         /// </summary>
         [Description("CUSTOM_FEES_LIST_TOO_LONG")] CustomFeesListTooLong = 232,
         /// <summary>
@@ -862,5 +862,21 @@ namespace Hashgraph
         /// An AccountAmount token transfers list referenced a token type other than FUNGIBLE_COMMON
         /// </summary>
         [Description("ACCOUNT_AMOUNT_TRANSFERS_ONLY_ALLOWED_FOR_FUNGIBLE_COMMON")] AccountAmountTransfersOnlyAllowedForFungibleCommon = 254,
+        /// <summary>
+        /// All the NFTs allowed in the current price regime have already been minted
+        /// </summary>
+        [Description("MAX_NFTS_IN_PRICE_REGIME_HAVE_BEEN_MINTED")] MaxNftsInPriceRegimeHaveBeenMinted = 255,
+        /// <summary>
+        /// The payer account has been marked as deleted
+        /// </summary>
+        [Description("PAYER_ACCOUNT_DELETED")] PayerAccountDeleted = 256,
+        /// <summary>
+        /// The reference chain of custom fees for a transferred token exceeded the maximum length of 2
+        /// </summary>
+        [Description("CUSTOM_FEE_CHARGING_EXCEEDED_MAX_RECURSION_DEPTH")] CustomFeeChargingExceededMaxRecursionDepth = 257,
+        /// <summary>
+        /// More than 20 balance adjustments were to satisfy a CryptoTransfer and its implied custom fee payments
+        /// </summary>
+        [Description("CUSTOM_FEE_CHARGING_EXCEEDED_MAX_ACCOUNT_AMOUNTS")] CustomFeeChargingExceededMaxAccountAmounts = 258,
     }
 }

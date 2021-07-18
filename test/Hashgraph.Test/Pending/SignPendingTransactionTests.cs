@@ -76,7 +76,5 @@ namespace Hashgraph.Test.Schedule
             Assert.Equal(2, info.Endorsements.Length);
             Assert.NotNull(info.Executed);
         }
-
-        // todo add the delete to the cleanup
     }
 }

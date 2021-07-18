@@ -262,5 +262,21 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
+        [Fact(DisplayName = "Mint Tokens: Can Not Mint More than Ceiling")]
+        public async Task CanNotMintMoreThanCeiling()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.Ceiling = (long)fx.Params.Circulation);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.MintTokenAsync(fxToken.Record.Token, fxToken.Params.Circulation, fxToken.SupplyPrivateKey);
+            });
+            Assert.Equal(ResponseCode.TokenMaxSupplyReached, tex.Status);
+            Assert.StartsWith("Unable to Mint Token Coins, status: TokenMaxSupplyReached", tex.Message);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Params.Ceiling, (long)info.Circulation);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
+        }
     }
 }
