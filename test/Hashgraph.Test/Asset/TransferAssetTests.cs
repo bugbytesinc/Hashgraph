@@ -724,7 +724,7 @@ namespace Hashgraph.Test.AssetTokens
 
             var circulation = (ulong)fxAsset.Metadata.Length;
             var serialNumbers = Enumerable.Range(1, fxAsset.Metadata.Length).Where(i => i % 2 == 0).Select(i => (long)i).ToArray();
-            var xferCount = circulation - (ulong)serialNumbers.Length;
+            var xferCount = (ulong)serialNumbers.Length;
             var expectedTreasury = circulation - xferCount;
 
             var transfers = new TransferParams
