@@ -10,7 +10,7 @@ namespace Proto
             return new Hashgraph.Extensions.FeeSchedule
             {
                 Expires = ExpiryTime.ToDateTime(),
-                Data = TransactionFeeSchedule.ToDictionary(fee => fee.HederaFunctionality.ToString(), fee => JsonFormatter.Default.Format(fee.FeeData))
+                Data = TransactionFeeSchedule.ToDictionary(fee => fee.HederaFunctionality.ToString(), fee => fee.FeeData is null ? "{}" : JsonFormatter.Default.Format(fee.FeeData))
             };
         }
     }
