@@ -246,8 +246,8 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount1, 100);
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
-            await AssertHg.TokenBalanceAsync(fxComToken, fxComAccount, 100);
-            await AssertHg.TokenBalanceAsync(fxComToken, fxToken.TreasuryAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxComAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxToken.TreasuryAccount, 100);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 200);
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
@@ -260,8 +260,8 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount1, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
-            await AssertHg.TokenBalanceAsync(fxComToken, fxComAccount, 200);
-            await AssertHg.TokenBalanceAsync(fxComToken, fxToken.TreasuryAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxComAccount, 100);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxToken.TreasuryAccount, 100);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 200);
         }
 
@@ -336,16 +336,16 @@ namespace Hashgraph.Test.Token
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, 100, fxToken.TreasuryAccount);
 
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 50);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 100);
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
-            await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 50);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 0);
             await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, 49, fxAccount1);
 
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 1);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 51);
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 25);
-            await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 74);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 24);
             await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
         }
 
@@ -354,41 +354,41 @@ namespace Hashgraph.Test.Token
         {
             await using var fxAccount1 = await TestAccount.CreateAsync(_network);
             await using var fxAccount2 = await TestAccount.CreateAsync(_network);
-            await using var fxAccount3 = await TestAccount.CreateAsync(_network);
+            await using var fxComAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
                 fx.Params.VariableCommissions = new VariableCommission[]
                 {
-                    new VariableCommission(fxAccount1,1,2,1,100)
+                    new VariableCommission(fxComAccount,1,2,1,100)
                 };
                 fx.Params.GrantKycEndorsement = null;
                 fx.Params.CommissionsEndorsement = null;
-                fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxAccount1.PrivateKey);
-            }, fxAccount2, fxAccount3);
+                fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxComAccount.PrivateKey);
+            }, fxAccount1, fxAccount2);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
+            await AssertHg.TokenIsAssociatedAsync(fxToken, fxComAccount);
             await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount1);
             await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount2);
-            await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount3);
 
-            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount2, 100, fxToken.TreasuryAccount);
+            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, 100, fxToken.TreasuryAccount);
 
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 50);
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 50);
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount3, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 100);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
 
-            await fxToken.Client.TransferTokensAsync(fxToken, fxAccount2, fxAccount3, 50, fxAccount2);
+            await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, 50, fxAccount1);
 
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 75);
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount3, 25);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 25);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 50);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 25);
             await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
         }
 
 
-        [Fact(DisplayName = "Commissions: Transferring Token Applies Fixed Commision To Treasury")]
-        async Task TransferringTokenAppliesFixedCommisionToTreasury()
+        [Fact(DisplayName = "Commissions: Transferring Token From Treasury Does Not Apply Fixed Commision")]
+        async Task TransferringTokenFromTreasuryDoesNotApplyFixedCommision()
         {
             await using var fxAccount1 = await TestAccount.CreateAsync(_network);
             await using var fxAccount2 = await TestAccount.CreateAsync(_network);
@@ -404,15 +404,15 @@ namespace Hashgraph.Test.Token
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, 100, fxToken.TreasuryAccount);
 
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 50);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 100);
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
-            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 50);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, 50, fxAccount1);
 
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 50);
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 25);
-            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 25);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 75);
         }
 
         [Fact(DisplayName = "Commissions: Can Apply a Simple Imutable Token With Commissions")]
@@ -443,16 +443,16 @@ namespace Hashgraph.Test.Token
 
             await fxTreasury.Client.TransferTokensAsync(token, fxTreasury, fxAccount1, 100, fxTreasury);
 
-            Assert.Equal(50ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount1, token));
+            Assert.Equal(100ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount1, token));
             Assert.Equal(0ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount2, token));
-            Assert.Equal(50ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxCollector, token));
+            Assert.Equal(0ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxCollector, token));
             Assert.Equal(900ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxTreasury, token));
 
             await fxTreasury.Client.TransferTokensAsync(token, fxAccount1, fxAccount2, 50, fxAccount1);
 
-            Assert.Equal(0ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount1, token));
+            Assert.Equal(50ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount1, token));
             Assert.Equal(25ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount2, token));
-            Assert.Equal(75ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxCollector, token));
+            Assert.Equal(25ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxCollector, token));
             Assert.Equal(900ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxTreasury, token));
         }
 
@@ -487,9 +487,9 @@ namespace Hashgraph.Test.Token
                  ctx.Signatory = fxTreasury;
              });
 
-            Assert.Equal(50ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount1, token));
+            Assert.Equal(100ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount1, token));
             Assert.Equal(0ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount2, token));
-            Assert.Equal(50ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxCollector, token));
+            Assert.Equal(0ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxCollector, token));
             Assert.Equal(900ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxTreasury, token));
 
             await fxTreasury.Client.TransferTokensAsync(token, fxAccount1, fxAccount2, 50, ctx =>
@@ -498,18 +498,19 @@ namespace Hashgraph.Test.Token
                 ctx.Signatory = fxAccount1;
             });
 
-            Assert.Equal(0ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount1, token));
+            Assert.Equal(50ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount1, token));
             Assert.Equal(25ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxAccount2, token));
-            Assert.Equal(75ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxCollector, token));
+            Assert.Equal(25ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxCollector, token));
             Assert.Equal(900ul, await fxTreasury.Client.GetAccountTokenBalanceAsync(fxTreasury, token));
         }
 
         [Fact(DisplayName = "Commissions: Inssuficient Commission Token Balance Prevents Transfer")]
         async Task InssuficientCommissionTokenBalancePreventsTransfer()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network);
             await using var fxComAccount = await TestAccount.CreateAsync(_network);
-            await using var fxComToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxComAccount, fxAccount);
+            await using var fxComToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxComAccount, fxAccount1, fxAccount2);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
                 fx.Params.FixedCommissions = new FixedCommission[]
@@ -517,38 +518,43 @@ namespace Hashgraph.Test.Token
                     new FixedCommission(fxComAccount, fxComToken, 200)
                 };
                 fx.Params.GrantKycEndorsement = null;
-            }, fxAccount);
+            }, fxAccount1, fxAccount2);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             await fxToken.Client.AssociateTokenAsync(fxComToken, fxToken.TreasuryAccount, fxToken.TreasuryAccount);
 
-            await fxComToken.Client.TransferTokensAsync(fxComToken, fxComToken.TreasuryAccount, fxToken.TreasuryAccount, 100, fxComToken.TreasuryAccount);
+            await fxComToken.Client.TransferTokensAsync(fxComToken, fxComToken.TreasuryAccount, fxAccount1, 100, fxComToken.TreasuryAccount);
+            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, 100, fxToken.TreasuryAccount);
 
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 100);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 0);
-            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
             await AssertHg.TokenBalanceAsync(fxToken, fxComToken.TreasuryAccount, 0);
 
-            await AssertHg.TokenBalanceAsync(fxComToken, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxAccount1, 100);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComAccount, 0);
-            await AssertHg.TokenBalanceAsync(fxComToken, fxToken.TreasuryAccount, 100);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxToken.TreasuryAccount, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, 100, fxToken.TreasuryAccount);
+                await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
             });
             Assert.Equal(ResponseCode.InsufficientPayerBalanceForCustomFee, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: InsufficientPayerBalanceForCustomFee", tex.Message);
 
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 100);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 0);
-            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
             await AssertHg.TokenBalanceAsync(fxToken, fxComToken.TreasuryAccount, 0);
 
-            await AssertHg.TokenBalanceAsync(fxComToken, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxAccount1, 100);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComAccount, 0);
-            await AssertHg.TokenBalanceAsync(fxComToken, fxToken.TreasuryAccount, 100);
+            await AssertHg.TokenBalanceAsync(fxComToken, fxToken.TreasuryAccount, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
         }
 
@@ -654,83 +660,75 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxComToken, fxComAccount, 50);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
         }
-        [Fact(DisplayName = "Commissions: Nested Fixed Commissions Are Supported")]
-        async Task NestedFixedCommissionsAreSupported()
+        [Fact(DisplayName = "Commissions: Treasury Exempted from Nested Commissions")]
+        async Task TreasuryExemptedFromNestedCommissions()
         {
-            await using var fxAccount1 = await TestAccount.CreateAsync(_network);
-            await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxComAccount = await TestAccount.CreateAsync(_network);
-            await using var fxComToken1 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2, fxComAccount);
-            await using var fxComToken2 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2, fxComAccount);
-            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
+            await using var fxComToken1 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount, fxComAccount);
+            await using var fxComToken2 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount, fxComAccount);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
 
-            await fxToken.Client.TransferTokensAsync(fxComToken1, fxComToken1.TreasuryAccount, fxAccount1, 100, fxComToken1.TreasuryAccount);
-            await fxToken.Client.TransferTokensAsync(fxComToken2, fxComToken2.TreasuryAccount, fxAccount1, 100, fxComToken2.TreasuryAccount);
-            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, 100, fxToken.TreasuryAccount);
+            await fxToken.Client.AssociateTokenAsync(fxComToken1, fxToken.TreasuryAccount, fxToken.TreasuryAccount);
+            await fxToken.Client.AssociateTokenAsync(fxComToken2, fxToken.TreasuryAccount, fxToken.TreasuryAccount);
+
+            await fxToken.Client.TransferTokensAsync(fxComToken1, fxComToken1.TreasuryAccount, fxToken.TreasuryAccount, 100, fxComToken1.TreasuryAccount);
+            await fxToken.Client.TransferTokensAsync(fxComToken2, fxComToken2.TreasuryAccount, fxToken.TreasuryAccount, 100, fxComToken2.TreasuryAccount);
 
             await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken1, 50) }, null, new Signatory(fxToken.CommissionsPrivateKey, fxComAccount.PrivateKey));
             await fxToken.Client.UpdateCommissionsAsync(fxComToken1, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken2, 25) }, null, new Signatory(fxComToken1.CommissionsPrivateKey, fxComAccount.PrivateKey));
 
-            var record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComToken1.TreasuryAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComToken2.TreasuryAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation);
+
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxComAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxComToken1.TreasuryAccount, fxComToken1.Params.Circulation - 100);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxComToken2.TreasuryAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxToken.TreasuryAccount, 100);
+
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxComAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxComToken1.TreasuryAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxComToken2.TreasuryAccount, fxComToken2.Params.Circulation - 100);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxToken.TreasuryAccount, 100);
+
+            var record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxToken.TreasuryAccount, fxAccount, 100, fxToken.TreasuryAccount);
             Assert.Empty(record.AssetTransfers);
-            Assert.Equal(2, record.Commissions.Count);
+            Assert.Empty(record.Commissions);
 
-            var commission = record.Commissions.FirstOrDefault(c => c.Token == fxComToken1.Record.Token);
-            Assert.NotNull(commission);
-            Assert.Equal(50U, commission.Amount);
-            Assert.Equal(fxComAccount.Record.Address, commission.Address);
-
-            commission = record.Commissions.FirstOrDefault(c => c.Token == fxComToken2.Record.Token);
-            Assert.NotNull(commission);
-            Assert.Equal(25U, commission.Amount);
-            Assert.Equal(fxComAccount.Record.Address, commission.Address);
-
-            Assert.Equal(6, record.TokenTransfers.Count);
+            Assert.Equal(2, record.TokenTransfers.Count);
 
             var xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == -100);
             Assert.NotNull(xfer);
             Assert.Equal(fxToken.Record.Token, xfer.Token);
-            Assert.Equal(fxAccount1.Record.Address, xfer.Address);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, xfer.Address);
 
             xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == 100);
             Assert.NotNull(xfer);
             Assert.Equal(fxToken.Record.Token, xfer.Token);
-            Assert.Equal(fxAccount2.Record.Address, xfer.Address);
+            Assert.Equal(fxAccount.Record.Address, xfer.Address);
 
-            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == -50);
-            Assert.NotNull(xfer);
-            Assert.Equal(fxComToken1.Record.Token, xfer.Token);
-            Assert.Equal(fxAccount1.Record.Address, xfer.Address);
-
-            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == 50);
-            Assert.NotNull(xfer);
-            Assert.Equal(fxComToken1.Record.Token, xfer.Token);
-            Assert.Equal(fxComAccount.Record.Address, xfer.Address);
-
-            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == -25);
-            Assert.NotNull(xfer);
-            Assert.Equal(fxComToken2.Record.Token, xfer.Token);
-            Assert.Equal(fxAccount1.Record.Address, xfer.Address);
-
-            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == 25);
-            Assert.NotNull(xfer);
-            Assert.Equal(fxComToken2.Record.Token, xfer.Token);
-            Assert.Equal(fxComAccount.Record.Address, xfer.Address);
-
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 0);
-            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 100);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 100);
             await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComToken1.TreasuryAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComToken2.TreasuryAccount, 0);
             await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
 
-            await AssertHg.TokenBalanceAsync(fxComToken1, fxAccount1, 50);
-            await AssertHg.TokenBalanceAsync(fxComToken1, fxAccount2, 0);
-            await AssertHg.TokenBalanceAsync(fxComToken1, fxComAccount, 50);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxComAccount, 0);
             await AssertHg.TokenBalanceAsync(fxComToken1, fxComToken1.TreasuryAccount, fxComToken1.Params.Circulation - 100);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxComToken2.TreasuryAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxToken.TreasuryAccount, 100);
 
-            await AssertHg.TokenBalanceAsync(fxComToken2, fxAccount1, 75);
-            await AssertHg.TokenBalanceAsync(fxComToken2, fxAccount2, 0);
-            await AssertHg.TokenBalanceAsync(fxComToken2, fxComAccount, 25);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxComAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxComToken1.TreasuryAccount, 0);
             await AssertHg.TokenBalanceAsync(fxComToken2, fxComToken2.TreasuryAccount, fxComToken2.Params.Circulation - 100);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxToken.TreasuryAccount, 100);
         }
         [Fact(DisplayName = "Commissions: Transferring Asset Applies Fixed Commision With Updated Fee Structure")]
         async Task TransferringAssetAppliesFixedCommisionWithUpdatedFeeStructure()
@@ -893,6 +891,84 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount1, 80);
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
+        }
+        [Fact(DisplayName = "Commissions: Treasury Does Pay Second Degree Comission")]
+        async Task TreasuryDoesPaySecondDegreeComission()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+            await using var fxComAccount = await TestAccount.CreateAsync(_network);
+            await using var fxComToken1 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount, fxAccount2, fxComAccount);
+            await using var fxComToken2 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount, fxAccount2, fxComAccount);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount, fxAccount2);
+
+            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken1, 50) }, null, new Signatory(fxToken.CommissionsPrivateKey, fxComAccount.PrivateKey));
+            await fxToken.Client.UpdateCommissionsAsync(fxComToken1, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken2, 25) }, null, new Signatory(fxComToken1.CommissionsPrivateKey, fxComAccount.PrivateKey));
+
+            await fxToken.Client.TransferTokensAsync(fxComToken1, fxComToken1.TreasuryAccount, fxAccount, 100, fxComToken1.TreasuryAccount);
+            await fxToken.Client.TransferTokensAsync(fxComToken2, fxComToken2.TreasuryAccount, fxAccount, 100, fxComToken2.TreasuryAccount);
+            await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, 100, fxToken.TreasuryAccount);
+
+            var record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxAccount, fxAccount2, 100, fxAccount);
+            Assert.Empty(record.AssetTransfers);
+            Assert.Equal(2, record.Commissions.Count);
+
+            var commission = record.Commissions.FirstOrDefault(c => c.Token == fxComToken1.Record.Token);
+            Assert.NotNull(commission);
+            Assert.Equal(50U, commission.Amount);
+            Assert.Equal(fxComAccount.Record.Address, commission.Address);
+
+            commission = record.Commissions.FirstOrDefault(c => c.Token == fxComToken2.Record.Token);
+            Assert.NotNull(commission);
+            Assert.Equal(25U, commission.Amount);
+            Assert.Equal(fxComAccount.Record.Address, commission.Address);
+
+            Assert.Equal(6, record.TokenTransfers.Count);
+
+            var xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == -100);
+            Assert.NotNull(xfer);
+            Assert.Equal(fxToken.Record.Token, xfer.Token);
+            Assert.Equal(fxAccount.Record.Address, xfer.Address);
+
+            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == 100);
+            Assert.NotNull(xfer);
+            Assert.Equal(fxToken.Record.Token, xfer.Token);
+            Assert.Equal(fxAccount2.Record.Address, xfer.Address);
+
+            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == -50);
+            Assert.NotNull(xfer);
+            Assert.Equal(fxComToken1.Record.Token, xfer.Token);
+            Assert.Equal(fxAccount.Record.Address, xfer.Address);
+
+            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == 50);
+            Assert.NotNull(xfer);
+            Assert.Equal(fxComToken1.Record.Token, xfer.Token);
+            Assert.Equal(fxComAccount.Record.Address, xfer.Address);
+
+            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == -25);
+            Assert.NotNull(xfer);
+            Assert.Equal(fxComToken2.Record.Token, xfer.Token);
+            Assert.Equal(fxAccount.Record.Address, xfer.Address);
+
+            xfer = record.TokenTransfers.FirstOrDefault(x => x.Amount == 25);
+            Assert.NotNull(xfer);
+            Assert.Equal(fxComToken2.Record.Token, xfer.Token);
+            Assert.Equal(fxComAccount.Record.Address, xfer.Address);
+
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 100);
+            await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 0);
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - 100);
+
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxAccount, 50);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxAccount2, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxComAccount, 50);
+            await AssertHg.TokenBalanceAsync(fxComToken1, fxComToken1.TreasuryAccount, fxComToken1.Params.Circulation - 100);
+
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxAccount, 75);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxAccount2, 0);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxComAccount, 25);
+            await AssertHg.TokenBalanceAsync(fxComToken2, fxComToken2.TreasuryAccount, fxComToken2.Params.Circulation - 100);
         }
     }
 }
