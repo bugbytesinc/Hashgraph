@@ -183,11 +183,18 @@ namespace Hashgraph
         {
             var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionRecordId, false), context, 0).ConfigureAwait(false);
             var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (precheckCode != ResponseCodeEnum.Ok)
+            if(precheckCode == ResponseCodeEnum.Ok)
+            {
+                return response.TransactionGetRecord.TransactionRecord;
+            }
+            else if(precheckCode == ResponseCodeEnum.InsufficientTxFee)
+            {
+                throw new TransactionException("The Network Changed the price of Retrieving a Record while attempting to retrieve this record, the transaction likely succeeded, please try to retrieve the record again.", transactionRecordId.AsTxId(), (ResponseCode)precheckCode);
+            }
+            else
             {
                 throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId.AsTxId(), (ResponseCode)precheckCode);
             }
-            return response.TransactionGetRecord.TransactionRecord;
         }
     }
 }
