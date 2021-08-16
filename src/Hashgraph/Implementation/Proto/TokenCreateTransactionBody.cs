@@ -119,13 +119,9 @@ namespace Proto
             {
                 FeeScheduleKey = new Key(createParameters.CommissionsEndorsement);
             }
-            if (createParameters.FixedCommissions is not null)
+            if (createParameters.Commissions is not null)
             {
-                CustomFees.AddRange(createParameters.FixedCommissions.Select(commission => new CustomFee(commission)));
-            }
-            if (createParameters.VariableCommissions is not null)
-            {
-                CustomFees.AddRange(createParameters.VariableCommissions.Select(commission => new CustomFee(commission)));
+                CustomFees.AddRange(createParameters.Commissions.Select(commission => new CustomFee(commission)));
             }
             FreezeDefault = createParameters.InitializeSuspended;
             Expiry = new Timestamp(createParameters.Expiration);
@@ -221,9 +217,9 @@ namespace Proto
             {
                 FeeScheduleKey = new Key(createParameters.CommissionsEndorsement);
             }
-            if (createParameters.FixedCommissions is not null)
+            if (createParameters.Commissions is not null)
             {
-                CustomFees.AddRange(createParameters.FixedCommissions.Select(commission => new CustomFee(commission)));
+                CustomFees.AddRange(createParameters.Commissions.Select(commission => new CustomFee(commission)));
             }
             FreezeDefault = createParameters.InitializeSuspended;
             Expiry = new Timestamp(createParameters.Expiration);

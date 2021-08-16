@@ -76,12 +76,12 @@ namespace Hashgraph
         /// </summary>
         public Endorsement? CommissionsEndorsement { get; set; }
         /// <summary>
-        /// The list of fixed fee commissions applied to transactions
+        /// The list of commissions applied to transactions
         /// transferring this asset.  If a commission endorsement is not
         /// supplied upon creation, the commissions are imutable after
         /// creation.
         /// </summary>
-        public IEnumerable<FixedCommission>? FixedCommissions { get; set; }
+        public IEnumerable<ICommission>? Commissions { get; set; }
         /// <summary>
         /// The default frozen setting for current and newly created accounts.  A value 
         /// of <code>true</code> will default crypto account status of <code>Frozen</code> 

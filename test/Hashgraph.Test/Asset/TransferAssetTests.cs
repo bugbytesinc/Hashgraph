@@ -44,8 +44,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
 
@@ -626,12 +625,13 @@ namespace Hashgraph.Test.AssetTokens
         [Fact(DisplayName = "Transfer Assets: Can Change Treasury After Emptying")]
         public async Task CanChangeTreasuryAfterEmptying()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var fxNewTreasury = await TestAccount.CreateAsync(_network);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
                 fx.Params.GrantKycEndorsement = null;
                 fx.Params.ConfiscateEndorsement = null;
-            }, fxAccount);
+            }, fxAccount, fxNewTreasury);
 
             var serialNumbers = Enumerable.Range(1, fxAsset.Metadata.Length).Select(i => (long)i);
 
@@ -645,25 +645,45 @@ namespace Hashgraph.Test.AssetTokens
             // Double check balances.
             Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
             Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+            Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxNewTreasury, fxAsset));
 
-            // Move the treasury to an existing account
+            // Can Not move the treasury to an existing account already having tokens
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAsset.Client.UpdateTokenAsync(new UpdateTokenParams
+                {
+                    Token = fxAsset,
+                    Treasury = fxAccount,
+                    Signatory = new Signatory(fxAsset.AdminPrivateKey, fxAccount.PrivateKey)
+                });
+            });
+            Assert.Equal(ResponseCode.TransactionRequiresZeroTokenBalances, tex.Status);
+            Assert.StartsWith("Unable to update Token, status: TransactionRequiresZeroTokenBalances", tex.Message);
+
+            // Coins have not moved.
+            Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
+            Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+            Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxNewTreasury, fxAsset));
+
+            // Move the treasury to a new account having zero token balance
             await fxAsset.Client.UpdateTokenAsync(new UpdateTokenParams
             {
                 Token = fxAsset,
-                Treasury = fxAccount,
-                Signatory = new Signatory(fxAsset.AdminPrivateKey, fxAccount.PrivateKey)
+                Treasury = fxNewTreasury,
+                Signatory = new Signatory(fxAsset.AdminPrivateKey, fxNewTreasury.PrivateKey)
             });
 
             // Coins have not moved.
             Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
             Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+            Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxNewTreasury, fxAsset));
 
             // What does the info say now?
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
             Assert.Equal(fxAsset.Record.Token, info.Token);
             Assert.Equal(TokenType.Asset, info.Type);
             Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
-            Assert.Equal(fxAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxNewTreasury.Record.Address, info.Treasury);
             Assert.Equal((ulong)fxAsset.Metadata.Length, info.Circulation);
             Assert.Equal(0U, info.Decimals);
             Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);

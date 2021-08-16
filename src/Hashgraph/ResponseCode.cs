@@ -811,9 +811,9 @@ namespace Hashgraph
         /// </summary>
         [Description("CUSTOM_FEE_OUTSIDE_NUMERIC_RANGE")] CustomFeeOutsideNumericRange = 241,
         /// <summary>
-        /// The sum of all custom fractional fees must be strictly less than 1
+        /// A royalty cannot exceed the total fungible value exchanged for an NFT
         /// </summary>
-        [Description("INVALID_CUSTOM_FRACTIONAL_FEES_SUM")] InvalidCustomFractionalFeesSum = 242,
+        [Description("ROYALTY_FRACTION_CANNOT_EXCEED_ONE")] RoyaltyFractionCannotExceedOne = 242,
         /// <summary>
         /// Each fractional custom fee must have its maximum_amount, if specified, at least its minimum_amount
         /// </summary>
@@ -878,5 +878,17 @@ namespace Hashgraph
         /// More than 20 balance adjustments were to satisfy a CryptoTransfer and its implied custom fee payments
         /// </summary>
         [Description("CUSTOM_FEE_CHARGING_EXCEEDED_MAX_ACCOUNT_AMOUNTS")] CustomFeeChargingExceededMaxAccountAmounts = 258,
+        /// <summary>
+        /// The sender account in the token transfer transaction could not afford a custom fee
+        /// </summary>
+        [Description("INSUFFICIENT_SENDER_ACCOUNT_BALANCE_FOR_CUSTOM_FEE")] InsufficientSenderAccountBalanceForCustomFee = 259,
+        /// <summary>
+        /// Currently no more than 4,294,967,295 NFTs may be minted for a given unique token type
+        /// </summary>
+        [Description("SERIAL_NUMBER_LIMIT_REACHED")] SerialNumberLimitReached = 260,
+        /// <summary>
+        /// Only tokens of type NON_FUNGIBLE_UNIQUE can have royalty fees
+        /// </summary>
+        [Description("CUSTOM_ROYALTY_FEE_ONLY_ALLOWED_FOR_NON_FUNGIBLE_UNIQUE")] CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique = 261,
     }
 }

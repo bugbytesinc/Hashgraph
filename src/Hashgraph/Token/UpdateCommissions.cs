@@ -14,17 +14,10 @@ namespace Hashgraph
         /// <param name="token">
         /// The address of the token definition to update.
         /// </param>
-        /// <param name="fixedCommissions">
-        /// The list of fixed commissions to apply to token transactions, may
-        /// be a blank list or null. Note: if only updating fixed commissions
-        /// and not variable commissions, any previous variable commissions will 
-        /// be removed if not re-listed in the variableCommissions list.
-        /// </param>
-        /// <param name="variableCommissions">
-        /// The list of variable commissions to apply to the token transactions,
-        /// may be a blank list of null.  Note: if only updating variable commissions
-        /// and not fixed commissions, any previous fixed commissions will be removed
-        /// if not re-listed in the fixedCommissions list.
+        /// <param name="commissions">
+        /// The list of commissions to apply to token transactions, may
+        /// be a blank list or null, this list replaces the previous 
+        /// list of commissions in full.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -39,9 +32,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> UpdateCommissionsAsync(Address token, IEnumerable<FixedCommission>? fixedCommissions, IEnumerable<VariableCommission>? variableCommissions, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> UpdateCommissionsAsync(Address token, IEnumerable<ICommission>? commissions, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenFeeScheduleUpdateTransactionBody(token, fixedCommissions, variableCommissions), configure, false).ConfigureAwait(false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenFeeScheduleUpdateTransactionBody(token, commissions), configure, false).ConfigureAwait(false));
         }
         /// <summary>
         /// Updates (replaces) the commissions (custom fees) associated with 
@@ -50,17 +43,10 @@ namespace Hashgraph
         /// <param name="token">
         /// The address of the token definition to update.
         /// </param>
-        /// <param name="fixedCommissions">
-        /// The list of fixed commissions to apply to token transactions, may
-        /// be a blank list or null. Note: if only updating fixed commissions
-        /// and not variable commissions, any previous variable commissions will 
-        /// be removed if not re-listed in the variableCommissions list.
-        /// </param>
-        /// <param name="variableCommissions">
-        /// The list of variable commissions to apply to the token transactions,
-        /// may be a blank list of null.  Note: if only updating variable commissions
-        /// and not fixed commissions, any previous fixed commissions will be removed
-        /// if not re-listed in the fixedCommissions list.
+        /// <param name="commissions">
+        /// The list of commissions to apply to token transactions, may
+        /// be a blank list or null, this list replaces the previous 
+        /// list of commissions in full.
         /// </param>
         /// <param name="signatory">
         /// Additional signing key matching the administrative endorsements
@@ -79,9 +65,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> UpdateCommissionsAsync(Address token, IEnumerable<FixedCommission>? fixedCommissions, IEnumerable<VariableCommission>? variableCommissions, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> UpdateCommissionsAsync(Address token, IEnumerable<ICommission>? commissions, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenFeeScheduleUpdateTransactionBody(token, fixedCommissions, variableCommissions), configure, false, signatory).ConfigureAwait(false));
+            return new TransactionReceipt(await ExecuteTransactionAsync(new TokenFeeScheduleUpdateTransactionBody(token, commissions), configure, false, signatory).ConfigureAwait(false));
         }
         /// <summary>
         /// Updates (replaces) the commissions (custom fees) associated with 
@@ -90,17 +76,10 @@ namespace Hashgraph
         /// <param name="token">
         /// The address of the token definition to update.
         /// </param>
-        /// <param name="fixedCommissions">
-        /// The list of fixed commissions to apply to token transactions, may
-        /// be a blank list or null. Note: if only updating fixed commissions
-        /// and not variable commissions, any previous variable commissions will 
-        /// be removed if not re-listed in the variableCommissions list.
-        /// </param>
-        /// <param name="variableCommissions">
-        /// The list of variable commissions to apply to the token transactions,
-        /// may be a blank list of null.  Note: if only updating variable commissions
-        /// and not fixed commissions, any previous fixed commissions will be removed
-        /// if not re-listed in the fixedCommissions list.
+        /// <param name="commissions">
+        /// The list of commissions to apply to token transactions, may
+        /// be a blank list or null, this list replaces the previous 
+        /// list of commissions in full.
         /// </param>
         /// <param name="configure">
         /// Optional callback method providing an opportunity to modify 
@@ -115,9 +94,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionRecord> UpdateCommissionsWithRecordAsync(Address token, IEnumerable<FixedCommission>? fixedCommissions, IEnumerable<VariableCommission>? variableCommissions, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> UpdateCommissionsWithRecordAsync(Address token, IEnumerable<ICommission>? commissions, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenFeeScheduleUpdateTransactionBody(token, fixedCommissions, variableCommissions), configure, true).ConfigureAwait(false));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenFeeScheduleUpdateTransactionBody(token, commissions), configure, true).ConfigureAwait(false));
         }
         /// <summary>
         /// Updates (replaces) the commissions (custom fees) associated with 
@@ -126,17 +105,10 @@ namespace Hashgraph
         /// <param name="token">
         /// The address of the token definition to update.
         /// </param>
-        /// <param name="fixedCommissions">
-        /// The list of fixed commissions to apply to token transactions, may
-        /// be a blank list or null. Note: if only updating fixed commissions
-        /// and not variable commissions, any previous variable commissions will 
-        /// be removed if not re-listed in the variableCommissions list.
-        /// </param>
-        /// <param name="variableCommissions">
-        /// The list of variable commissions to apply to the token transactions,
-        /// may be a blank list of null.  Note: if only updating variable commissions
-        /// and not fixed commissions, any previous fixed commissions will be removed
-        /// if not re-listed in the fixedCommissions list.
+        /// <param name="commissions">
+        /// The list of commissions to apply to token transactions, may
+        /// be a blank list or null, this list replaces the previous 
+        /// list of commissions in full.
         /// </param>
         /// <param name="signatory">
         /// Additional signing key matching the administrative endorsements
@@ -155,9 +127,9 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionRecord> UpdateCommissionsWithRecordAsync(Address token, IEnumerable<FixedCommission>? fixedCommissions, IEnumerable<VariableCommission>? variableCommissions, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> UpdateCommissionsWithRecordAsync(Address token, IEnumerable<ICommission>? commissions, Signatory signatory, Action<IContext>? configure = null)
         {
-            return new TransactionRecord(await ExecuteTransactionAsync(new TokenFeeScheduleUpdateTransactionBody(token, fixedCommissions, variableCommissions), configure, true, signatory).ConfigureAwait(false));
+            return new TransactionRecord(await ExecuteTransactionAsync(new TokenFeeScheduleUpdateTransactionBody(token, commissions), configure, true, signatory).ConfigureAwait(false));
         }
     }
 }

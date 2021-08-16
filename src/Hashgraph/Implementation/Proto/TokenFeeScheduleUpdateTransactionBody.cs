@@ -27,16 +27,13 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).updateTokenFeeScheduleAsync;
         }
 
-        internal TokenFeeScheduleUpdateTransactionBody(Address token, IEnumerable<FixedCommission>? fixedCommissions, IEnumerable<VariableCommission>? variableCommissions) : this()
+        internal TokenFeeScheduleUpdateTransactionBody(Address token, IEnumerable<ICommission>? commissions) : this()
         {
             TokenId = new TokenID(token);
-            if (fixedCommissions is not null)
+            // Note: Null & Empty are Valid, they will clear the list of fees.
+            if (commissions is not null)
             {
-                CustomFees.AddRange(fixedCommissions.Select(commission => new CustomFee(commission)));
-            }
-            if (variableCommissions is not null)
-            {
-                CustomFees.AddRange(variableCommissions.Select(commission => new CustomFee(commission)));
+                CustomFees.AddRange(commissions.Select(commission => new CustomFee(commission)));
             }
         }
     }

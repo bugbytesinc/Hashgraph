@@ -64,8 +64,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.Equal(fxTemplate.Params.Memo, info.Memo);
             Assert.False(info.Deleted);
         }
@@ -129,8 +128,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxTemplate.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxTemplate.Params.Memo, info.Memo);
         }
@@ -457,8 +455,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -493,8 +490,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -530,8 +526,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -571,8 +566,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -612,8 +606,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -653,8 +646,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -694,8 +686,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -735,8 +726,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -776,8 +766,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -838,8 +827,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
@@ -884,8 +872,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
@@ -942,8 +929,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
@@ -1006,7 +992,7 @@ namespace Hashgraph.Test.Token
         {
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.FixedCommissions = new FixedCommission[]
+                fx.Params.Commissions = new FixedCommission[]
                 {
                     new FixedCommission(fx.TreasuryAccount, Address.None, 10)
                 };
@@ -1017,42 +1003,42 @@ namespace Hashgraph.Test.Token
                new FixedCommission(fxToken.TreasuryAccount, Address.None, 1)
             };
 
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, commissions, null, fxToken.CommissionsPrivateKey);
+            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, commissions, fxToken.CommissionsPrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Empty(info.VariableCommissions);
-            Assert.Single(info.FixedCommissions);
+            Assert.Single(info.Commissions);
 
-            var commission = info.FixedCommissions[0];
+            var commission = info.Commissions[0] as FixedCommission;
+            Assert.NotNull(commission);
             Assert.Equal(fxToken.TreasuryAccount.Record.Address, commission.Account);
             Assert.Equal(Address.None, commission.Token);
             Assert.Equal(1, commission.Amount);
         }
-        [Fact(DisplayName = "Update Token: Can Update Token Variable Commission")]
-        public async Task CanUpdateTokenVariableCommission()
+        [Fact(DisplayName = "Update Token: Can Update Token Fractional Commission")]
+        public async Task CanUpdateTokenFractionalCommission()
         {
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.VariableCommissions = new VariableCommission[]
+                fx.Params.Commissions = new FractionalCommission[]
                 {
-                    new VariableCommission(fx.TreasuryAccount, 1, 10, 1, 10)
+                    new FractionalCommission(fx.TreasuryAccount, 1, 10, 1, 10)
                 };
             });
 
-            var commissions = new VariableCommission[]
+            var commissions = new FractionalCommission[]
             {
-                new VariableCommission(fxToken.TreasuryAccount, 1, 2, 1, 100)
+                new FractionalCommission(fxToken.TreasuryAccount, 1, 2, 1, 100)
             };
 
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, null, commissions, fxToken.CommissionsPrivateKey);
+            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, commissions, fxToken.CommissionsPrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Single(info.VariableCommissions);
+            Assert.Single(info.Commissions);
 
-            var commission = info.VariableCommissions[0];
+            var commission = info.Commissions[0] as FractionalCommission;
+            Assert.NotNull(commission);
             Assert.Equal(fxToken.TreasuryAccount.Record.Address, commission.Account);
             Assert.Equal(1, commission.Numerator);
             Assert.Equal(2, commission.Denominator);
@@ -1064,18 +1050,17 @@ namespace Hashgraph.Test.Token
         {
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.FixedCommissions = new FixedCommission[]
+                fx.Params.Commissions = new FixedCommission[]
                 {
                     new FixedCommission(fx.TreasuryAccount, Address.None, 1)
                 };
             });
 
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[0], new VariableCommission[0], fxToken.CommissionsPrivateKey);
+            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, new ICommission[0], fxToken.CommissionsPrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
         }
     }
 }

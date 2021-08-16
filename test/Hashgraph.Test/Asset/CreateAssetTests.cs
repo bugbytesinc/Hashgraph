@@ -42,8 +42,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
 
@@ -59,8 +58,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0UL, tokInfo.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokInfo.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokInfo.TradableStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
         }
         [Fact(DisplayName = "Create Asset: Can Create Asset Definition with Fixed Commission")]
         public async Task CanCreateAssetDefinitionWithFixedCommission()
@@ -68,7 +66,7 @@ namespace Hashgraph.Test.AssetTokens
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
                 fx.Metadata = null;
-                fx.Params.FixedCommissions = new FixedCommission[]
+                fx.Params.Commissions = new FixedCommission[]
                 {
                     new FixedCommission(fx.TreasuryAccount, Address.None, 1)
                 };
@@ -94,12 +92,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Single(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Single(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
 
-            var commission = info.FixedCommissions[0];
+            var commission = info.Commissions[0] as FixedCommission;
+            Assert.NotNull(commission);
             Assert.Equal(fxAsset.TreasuryAccount.Record.Address, commission.Account);
             Assert.Equal(Address.None, commission.Token);
             Assert.Equal(1, commission.Amount);

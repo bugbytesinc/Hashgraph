@@ -50,8 +50,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
 
@@ -261,7 +260,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.StartsWith("Unable to Mint Token Coins, status: TokenMaxSupplyReached", tex.Message);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Equal(fxAsset.Params.Ceiling, (long) info.Circulation);
+            Assert.Equal(fxAsset.Params.Ceiling, (long)info.Circulation);
             Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
         }
     }

@@ -24,7 +24,7 @@ namespace Hashgraph.Test.Token
             await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.FixedCommissions = new FixedCommission[]
+                fx.Params.Commissions = new FixedCommission[]
                 {
                     new FixedCommission(fxAccount, comToken, 100)
                 };
@@ -32,56 +32,48 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Single(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Single(info.Commissions);
 
-            Assert.Equal(fxToken.Params.FixedCommissions.First(), info.FixedCommissions[0]);
+            Assert.Equal(fxToken.Params.Commissions.First(), info.Commissions[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Create Token with Variable Commission")]
-        public async Task CanCreateTokenWithVariableCommission()
+        [Fact(DisplayName = "Commissions: Can Create Token with Fractional Commission")]
+        public async Task CanCreateTokenWithFractionalCommission()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.VariableCommissions = new VariableCommission[]
+                fx.Params.Commissions = new FractionalCommission[]
                 {
-                    new VariableCommission(fxAccount, 1, 2, 1, 100)
+                    new FractionalCommission(fxAccount, 1, 2, 1, 100)
                 };
                 fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Single(info.VariableCommissions);
+            Assert.Single(info.Commissions);
 
-            Assert.Equal(fxToken.Params.VariableCommissions.First(), info.VariableCommissions[0]);
+            Assert.Equal(fxToken.Params.Commissions.First(), info.Commissions[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Create Token with Fixed and Variable Commissions")]
-        public async Task CanCreateTokenWithFixedAndVariableCommissions()
+        [Fact(DisplayName = "Commissions: Can Create Token with Fixed and Fractional Commissions")]
+        public async Task CanCreateTokenWithFixedAndFractionalCommissions()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
+            var fixedCommission = new FixedCommission(fxAccount, comToken, 100);
+            var fractionalCommission = new FractionalCommission(fxAccount, 1, 2, 1, 100);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.FixedCommissions = new FixedCommission[]
-                {
-                    new FixedCommission(fxAccount, comToken, 100)
-                };
-                fx.Params.VariableCommissions = new VariableCommission[]
-                {
-                    new VariableCommission(fxAccount, 1, 2, 1, 100)
-                };
+                fx.Params.Commissions = new ICommission[] { fixedCommission, fractionalCommission };
                 fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Single(info.FixedCommissions);
-            Assert.Single(info.VariableCommissions);
+            Assert.Equal(2, info.Commissions.Count);
 
-            Assert.Equal(fxToken.Params.FixedCommissions.First(), info.FixedCommissions[0]);
-            Assert.Equal(fxToken.Params.VariableCommissions.First(), info.VariableCommissions[0]);
+            Assert.Equal(fixedCommission, info.Commissions.First(f => f.CommissionType == CommissionType.Fixed));
+            Assert.Equal(fractionalCommission, info.Commissions.First(f => f.CommissionType == CommissionType.Fractional));
         }
         [Fact(DisplayName = "Commissions: Can Add Fixed Commission to Token Definition")]
         public async Task CanAddFixedCommissionToTokenDefinition()
@@ -91,49 +83,46 @@ namespace Hashgraph.Test.Token
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
             var fixedCommissions = new FixedCommission[] { new FixedCommission(fxAccount, comToken, 100) };
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, fixedCommissions, null, fxToken.CommissionsPrivateKey);
+            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, fixedCommissions, fxToken.CommissionsPrivateKey);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Single(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Single(info.Commissions);
 
-            Assert.Equal(fixedCommissions[0], info.FixedCommissions[0]);
+            Assert.Equal(fixedCommissions[0], info.Commissions[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Add Variable Commission to Token Definition")]
-        public async Task CanAddVariableCommissionToTokenDefinition()
+        [Fact(DisplayName = "Commissions: Can Add Fractional Commission to Token Definition")]
+        public async Task CanAddFractionalCommissionToTokenDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
-            var variableCommissions = new VariableCommission[] { new VariableCommission(fxAccount, 1, 2, 1, 100) };
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, null, variableCommissions, fxToken.CommissionsPrivateKey);
+            var fractionalCommissions = new FractionalCommission[] { new FractionalCommission(fxAccount, 1, 2, 1, 100) };
+            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, fractionalCommissions, fxToken.CommissionsPrivateKey);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Single(info.VariableCommissions);
+            Assert.Single(info.Commissions);
 
-            Assert.Equal(variableCommissions[0], info.VariableCommissions[0]);
+            Assert.Equal(fractionalCommissions[0], info.Commissions[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Add Fixed and Variable Commissions to Token Definition")]
-        public async Task CanAddFixedAndVariableCommissionsToTokenDefinition()
+        [Fact(DisplayName = "Commissions: Can Add Fixed and Fractional Commissions to Token Definition")]
+        public async Task CanAddFixedAndFractionalCommissionsToTokenDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
-            var fixedCommissions = new FixedCommission[] { new FixedCommission(fxAccount, comToken, 100) };
-            var variableCommissions = new VariableCommission[] { new VariableCommission(fxAccount, 1, 2, 1, 100) };
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, fixedCommissions, variableCommissions, fxToken.CommissionsPrivateKey);
+            var fixedCommission = new FixedCommission(fxAccount, comToken, 100);
+            var fractionalCommission = new FractionalCommission(fxAccount, 1, 2, 1, 100);
+            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, new ICommission[] { fixedCommission, fractionalCommission }, fxToken.CommissionsPrivateKey);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Single(info.FixedCommissions);
-            Assert.Single(info.VariableCommissions);
+            Assert.Equal(2, info.Commissions.Count);
 
-            Assert.Equal(fixedCommissions[0], info.FixedCommissions[0]);
-            Assert.Equal(variableCommissions[0], info.VariableCommissions[0]);
+            Assert.Equal(fixedCommission, info.Commissions.First(f => f.CommissionType == CommissionType.Fixed));
+            Assert.Equal(fractionalCommission, info.Commissions.First(f => f.CommissionType == CommissionType.Fractional));
         }
         [Fact(DisplayName = "Commissions: Can Create Asset with Fixed Commission")]
         public async Task CanCreateAssetWithFixedCommission()
@@ -142,7 +131,7 @@ namespace Hashgraph.Test.Token
             await using var comAsset = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.FixedCommissions = new FixedCommission[]
+                fx.Params.Commissions = new FixedCommission[]
                 {
                     new FixedCommission(fxAccount, comAsset, 100)
                 };
@@ -150,10 +139,28 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Single(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Single(info.Commissions);
 
-            Assert.Equal(fxAsset.Params.FixedCommissions.First(), info.FixedCommissions[0]);
+            Assert.Equal(fxAsset.Params.Commissions.First(), info.Commissions[0]);
+        }
+        [Fact(DisplayName = "Commissions: Can Create Asset with Value Commission")]
+        public async Task CanCreateAssetWithValueCommission()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            await using var comAsset = await TestToken.CreateAsync(_network, null, fxAccount);
+            await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
+            {
+                fx.Params.Commissions = new ValueCommission[]
+                {
+                    new ValueCommission(fxAccount, 1, 2, 1, comAsset.Record.Token)
+                };
+            }, fxAccount);
+            Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
+
+            var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
+            Assert.Single(info.Commissions);
+
+            Assert.Equal(fxAsset.Params.Commissions.First(), info.Commissions[0]);
         }
         [Fact(DisplayName = "Commissions: Can Add Fixed Commission to Asset Definition")]
         public async Task CanAddFixedCommissionToAssetDefinition()
@@ -163,33 +170,31 @@ namespace Hashgraph.Test.Token
             await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
 
             var fixedCommissions = new FixedCommission[] { new FixedCommission(fxAccount, comAsset, 100) };
-            var receipt = await fxAsset.Client.UpdateCommissionsAsync(fxAsset, fixedCommissions, null, fxAsset.CommissionsPrivateKey);
+            var receipt = await fxAsset.Client.UpdateCommissionsAsync(fxAsset, fixedCommissions, fxAsset.CommissionsPrivateKey);
             Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Single(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Single(info.Commissions);
 
-            Assert.Equal(fixedCommissions[0], info.FixedCommissions[0]);
+            Assert.Equal(fixedCommissions[0], info.Commissions[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Not Add Variable Commission to Asset Definition")]
-        public async Task CanNotAddVariableCommissionToAssetDefinition()
+        [Fact(DisplayName = "Commissions: Can Not Add Fractional Commission to Asset Definition")]
+        public async Task CanNotAddFractionalCommissionToAssetDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
 
-            var variableCommissions = new VariableCommission[] { new VariableCommission(fxAccount, 1, 2, 1, 100) };
+            var fractionalCommissions = new FractionalCommission[] { new FractionalCommission(fxAccount, 1, 2, 1, 100) };
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fxAsset.Client.UpdateCommissionsAsync(fxAsset, null, variableCommissions, fxAsset.CommissionsPrivateKey);
+                await fxAsset.Client.UpdateCommissionsAsync(fxAsset, fractionalCommissions, fxAsset.CommissionsPrivateKey);
             });
             Assert.Equal(ResponseCode.CustomFractionalFeeOnlyAllowedForFungibleCommon, tex.Status);
             Assert.StartsWith("Unable to Update Token Transfer Commissions, status: CustomFractionalFeeOnlyAllowedForFungibleCommon", tex.Message);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
         }
 
         [Fact(DisplayName = "Commissions: Transferring Token Applies Fixed Commision")]
@@ -201,7 +206,7 @@ namespace Hashgraph.Test.Token
             await using var fxComToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxComAccount, fxAccount1, fxAccount2);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.FixedCommissions = new FixedCommission[]
+                fx.Params.Commissions = new FixedCommission[]
                 {
                     new FixedCommission(fxComAccount, fxComToken, 100)
                 };
@@ -298,7 +303,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
 
-            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 100) }, null, fxToken.CommissionsPrivateKey);
+            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 100) }, fxToken.CommissionsPrivateKey);
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
 
@@ -320,9 +325,9 @@ namespace Hashgraph.Test.Token
             await using var fxComAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.VariableCommissions = new VariableCommission[]
+                fx.Params.Commissions = new FractionalCommission[]
                 {
-                    new VariableCommission(fxComAccount,1,2,1,100)
+                    new FractionalCommission(fxComAccount,1,2,1,100)
                 };
                 fx.Params.GrantKycEndorsement = null;
                 fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxComAccount.PrivateKey);
@@ -357,9 +362,9 @@ namespace Hashgraph.Test.Token
             await using var fxComAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.VariableCommissions = new VariableCommission[]
+                fx.Params.Commissions = new FractionalCommission[]
                 {
-                    new VariableCommission(fxComAccount,1,2,1,100)
+                    new FractionalCommission(fxComAccount,1,2,1,100)
                 };
                 fx.Params.GrantKycEndorsement = null;
                 fx.Params.CommissionsEndorsement = null;
@@ -394,9 +399,9 @@ namespace Hashgraph.Test.Token
             await using var fxAccount2 = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.VariableCommissions = new VariableCommission[]
+                fx.Params.Commissions = new FractionalCommission[]
                 {
-                    new VariableCommission(fx.TreasuryAccount,1,2,1,100)
+                    new FractionalCommission(fx.TreasuryAccount,1,2,1,100)
                 };
                 fx.Params.GrantKycEndorsement = null;
                 fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxAccount1.PrivateKey);
@@ -430,9 +435,9 @@ namespace Hashgraph.Test.Token
                 Circulation = 1000,
                 Treasury = fxTreasury,
                 Expiration = DateTime.UtcNow.AddDays(70),
-                VariableCommissions = new VariableCommission[]
+                Commissions = new FractionalCommission[]
                 {
-                    new VariableCommission(fxCollector,1,2,1,100)
+                    new FractionalCommission(fxCollector,1,2,1,100)
                 },
                 Memo = string.Empty,
                 Signatory = new Signatory(fxTreasury, fxCollector)
@@ -471,9 +476,9 @@ namespace Hashgraph.Test.Token
                 Circulation = 1000,
                 Treasury = fxTreasury,
                 Expiration = DateTime.UtcNow.AddDays(70),
-                VariableCommissions = new VariableCommission[]
+                Commissions = new FractionalCommission[]
                 {
-                    new VariableCommission(fxCollector,1,2,1,100)
+                    new FractionalCommission(fxCollector,1,2,1,100)
                 },
                 Signatory = new Signatory(fxTreasury, fxCollector)
             })).Token;
@@ -513,7 +518,7 @@ namespace Hashgraph.Test.Token
             await using var fxComToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxComAccount, fxAccount1, fxAccount2);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.FixedCommissions = new FixedCommission[]
+                fx.Params.Commissions = new FixedCommission[]
                 {
                     new FixedCommission(fxComAccount, fxComToken, 200)
                 };
@@ -542,8 +547,8 @@ namespace Hashgraph.Test.Token
             {
                 await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
             });
-            Assert.Equal(ResponseCode.InsufficientPayerBalanceForCustomFee, tex.Status);
-            Assert.StartsWith("Unable to execute transfers, status: InsufficientPayerBalanceForCustomFee", tex.Message);
+            Assert.Equal(ResponseCode.InsufficientSenderAccountBalanceForCustomFee, tex.Status);
+            Assert.StartsWith("Unable to execute transfers, status: InsufficientSenderAccountBalanceForCustomFee", tex.Message);
 
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 100);
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
@@ -558,8 +563,8 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
         }
 
-        [Fact(DisplayName = "Commissions: Variable Commissions Appear in Transaction Record")]
-        async Task VariableCommissionsAppearInTransactionRecord()
+        [Fact(DisplayName = "Commissions: Fractional Commissions Appear in Transaction Record")]
+        async Task FractionalCommissionsAppearInTransactionRecord()
         {
             await using var fxAccount1 = await TestAccount.CreateAsync(_network);
             await using var fxAccount2 = await TestAccount.CreateAsync(_network);
@@ -571,7 +576,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.Commissions);
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 100);
 
-            await fxToken.Client.UpdateCommissionsAsync(fxToken, null, new VariableCommission[] { new VariableCommission(fxComAccount, 1, 2, 1, 100) }, fxToken.CommissionsPrivateKey);
+            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FractionalCommission[] { new FractionalCommission(fxComAccount, 1, 2, 1, 100) }, fxToken.CommissionsPrivateKey);
 
             record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
             Assert.Empty(record.AssetTransfers);
@@ -617,7 +622,7 @@ namespace Hashgraph.Test.Token
             await fxToken.Client.TransferTokensAsync(fxComToken, fxComToken.TreasuryAccount, fxAccount1, 100, fxComToken.TreasuryAccount);
             await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, 100, fxToken.TreasuryAccount);
 
-            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 50) }, null, new Signatory(fxToken.CommissionsPrivateKey, fxComAccount.PrivateKey));
+            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 50) }, new Signatory(fxToken.CommissionsPrivateKey, fxComAccount.PrivateKey));
 
             var record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
             Assert.Empty(record.AssetTransfers);
@@ -675,8 +680,8 @@ namespace Hashgraph.Test.Token
             await fxToken.Client.TransferTokensAsync(fxComToken1, fxComToken1.TreasuryAccount, fxToken.TreasuryAccount, 100, fxComToken1.TreasuryAccount);
             await fxToken.Client.TransferTokensAsync(fxComToken2, fxComToken2.TreasuryAccount, fxToken.TreasuryAccount, 100, fxComToken2.TreasuryAccount);
 
-            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken1, 50) }, null, new Signatory(fxToken.CommissionsPrivateKey, fxComAccount.PrivateKey));
-            await fxToken.Client.UpdateCommissionsAsync(fxComToken1, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken2, 25) }, null, new Signatory(fxComToken1.CommissionsPrivateKey, fxComAccount.PrivateKey));
+            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken1, 50) }, new Signatory(fxToken.CommissionsPrivateKey, fxComAccount.PrivateKey));
+            await fxToken.Client.UpdateCommissionsAsync(fxComToken1, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken2, 25) }, new Signatory(fxComToken1.CommissionsPrivateKey, fxComAccount.PrivateKey));
 
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
             await AssertHg.TokenBalanceAsync(fxToken, fxComAccount, 0);
@@ -763,7 +768,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
 
-            await fxAsset.Client.UpdateCommissionsAsync(fxAsset, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 100) }, null, fxAsset.CommissionsPrivateKey);
+            await fxAsset.Client.UpdateCommissionsAsync(fxAsset, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 100) }, fxAsset.CommissionsPrivateKey);
 
             await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAccount1, fxAccount2, fxAccount1);
 
@@ -810,7 +815,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
 
-            await fxAsset.Client.UpdateCommissionsAsync(fxAsset, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 100) }, null, fxAsset.CommissionsPrivateKey);
+            await fxAsset.Client.UpdateCommissionsAsync(fxAsset, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 100) }, fxAsset.CommissionsPrivateKey);
 
             var schedulingReceipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAccount1, fxAccount2, new Signatory(fxAccount1, new PendingParams { PendingPayer = fxAccount2 }));
 
@@ -870,7 +875,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxComToken, fxAccount2, 0);
             await AssertHg.TokenBalanceAsync(fxComToken, fxComToken.TreasuryAccount, fxComToken.Params.Circulation - 100);
 
-            await fxAsset.Client.UpdateCommissionsAsync(fxAsset, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 10) }, null, fxAsset.CommissionsPrivateKey);
+            await fxAsset.Client.UpdateCommissionsAsync(fxAsset, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken, 10) }, fxAsset.CommissionsPrivateKey);
 
             await fxAsset.Client.TransferAsync(new TransferParams
             {
@@ -902,8 +907,8 @@ namespace Hashgraph.Test.Token
             await using var fxComToken2 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount, fxAccount2, fxComAccount);
             await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount, fxAccount2);
 
-            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken1, 50) }, null, new Signatory(fxToken.CommissionsPrivateKey, fxComAccount.PrivateKey));
-            await fxToken.Client.UpdateCommissionsAsync(fxComToken1, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken2, 25) }, null, new Signatory(fxComToken1.CommissionsPrivateKey, fxComAccount.PrivateKey));
+            await fxToken.Client.UpdateCommissionsAsync(fxToken, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken1, 50) }, new Signatory(fxToken.CommissionsPrivateKey, fxComAccount.PrivateKey));
+            await fxToken.Client.UpdateCommissionsAsync(fxComToken1, new FixedCommission[] { new FixedCommission(fxComAccount, fxComToken2, 25) }, new Signatory(fxComToken1.CommissionsPrivateKey, fxComAccount.PrivateKey));
 
             await fxToken.Client.TransferTokensAsync(fxComToken1, fxComToken1.TreasuryAccount, fxAccount, 100, fxComToken1.TreasuryAccount);
             await fxToken.Client.TransferTokensAsync(fxComToken2, fxComToken2.TreasuryAccount, fxAccount, 100, fxComToken2.TreasuryAccount);

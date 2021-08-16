@@ -84,15 +84,10 @@ namespace Hashgraph
         /// </summary>
         public TokenKycStatus KycStatus { get; private init; }
         /// <summary>
-        /// The list of fixed fee commissions assessed on transactions
+        /// The list of fixed commissions assessed on transactions
         /// by the network when transferring this token.
         /// </summary>
-        public ReadOnlyCollection<FixedCommission> FixedCommissions { get; internal init; }
-        /// <summary>
-        /// th elist of variable fee commissions assessed on transactions
-        /// by the network when transferring this token.
-        /// </summary>
-        public ReadOnlyCollection<VariableCommission> VariableCommissions { get; internal init; }
+        public ReadOnlyCollection<ICommission> Commissions { get; internal init; }
         /// <summary>
         /// Expiration date for the token.  Will renew as determined by the
         /// renew period and balance of auto renew account.
@@ -144,8 +139,7 @@ namespace Hashgraph
             ConfiscateEndorsement = info.WipeKey?.ToEndorsement();
             SupplyEndorsement = info.SupplyKey?.ToEndorsement();
             CommissionsEndorsement = info.FeeScheduleKey?.ToEndorsement();
-            VariableCommissions = info.CustomFees.Where(fee => fee.FeeCase == CustomFee.FeeOneofCase.FractionalFee).Select(fee => new VariableCommission(fee)).ToList().AsReadOnly();
-            FixedCommissions = info.CustomFees.Where(fee => fee.FeeCase == CustomFee.FeeOneofCase.FixedFee).Select(fee => new FixedCommission(fee)).ToList().AsReadOnly();
+            Commissions = info.CustomFees.Select(fee => fee.ToCommission()).ToList().AsReadOnly();
             TradableStatus = (TokenTradableStatus)info.DefaultFreezeStatus;
             KycStatus = (TokenKycStatus)info.DefaultKycStatus;
             Expiration = info.Expiry.ToDateTime();

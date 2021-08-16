@@ -36,8 +36,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(fx.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.FixedCommissions);
-            Assert.Empty(info.VariableCommissions);
+            Assert.Empty(info.Commissions);
             Assert.Equal(TokenType.Asset, info.Type);
             Assert.False(info.Deleted);
         }

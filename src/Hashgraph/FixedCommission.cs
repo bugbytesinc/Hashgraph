@@ -5,8 +5,12 @@ namespace Hashgraph
     /// <summary>
     /// Represents a fixed commission associated with transfers of a token or asset.
     /// </summary>
-    public sealed record FixedCommission
+    public sealed record FixedCommission : ICommission
     {
+        /// <summary>
+        /// A Fixed Commission Fee
+        /// </summary>
+        public CommissionType CommissionType => CommissionType.Fixed;
         /// <summary>
         /// The account receiving the commision fee.
         /// </summary>

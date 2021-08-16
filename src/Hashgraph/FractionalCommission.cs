@@ -3,10 +3,14 @@
 namespace Hashgraph
 {
     /// <summary>
-    /// Represents a variable commission associated with transfers of a token or asset.
+    /// Represents a Fractional Commission associated with transfers of a token or asset.
     /// </summary>
-    public sealed record VariableCommission
+    public sealed record FractionalCommission : ICommission
     {
+        /// <summary>
+        /// A Porpotional Commission Fee based on the amount of Token Transferred.
+        /// </summary>
+        public CommissionType CommissionType => CommissionType.Fractional;
         /// <summary>
         /// The account receiving the commision fee.
         /// </summary>
@@ -44,7 +48,7 @@ namespace Hashgraph
         /// <summary>
         /// Internal Constructor representing the "None" version of a commission.
         /// </summary>
-        private VariableCommission()
+        private FractionalCommission()
         {
             Account = Address.None;
             Numerator = 0;
@@ -53,7 +57,7 @@ namespace Hashgraph
             Maximum = 0;
         }
         /// <summary>
-        /// Public Constructor, an <code>VariableCommission</code> is immutable after creation.
+        /// Public Constructor, an <code>FractionalCommission</code> is immutable after creation.
         /// </summary>
         /// <param name="account">
         /// The account receiving the commision fee.
@@ -79,7 +83,7 @@ namespace Hashgraph
         /// The maximum allowed fee value, in terms of
         /// the smallest denomination of the payment token.
         /// </param>
-        public VariableCommission(Address account, long numerator, long denominator, long minimum, long maximum)
+        public FractionalCommission(Address account, long numerator, long denominator, long minimum, long maximum)
         {
             Account = account;
             Numerator = numerator;
@@ -88,7 +92,7 @@ namespace Hashgraph
             Maximum = maximum;
         }
 
-        internal VariableCommission(CustomFee fee)
+        internal FractionalCommission(CustomFee fee)
         {
             Account = fee.FeeCollectorAccountId.AsAddress();
             var fraction = fee.FractionalFee;
