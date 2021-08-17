@@ -256,15 +256,14 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
         }
-        [Fact(DisplayName = "Burn Tokens: Can Not Schedule Burn Token Coins")]
-        public async Task CanNotScheduleBurnTokenCoins()
+        [Fact(DisplayName = "Burn Tokens: Can Schedule Burn Token Coins")]
+        public async Task CanScheduleBurnTokenCoins()
         {
-            await using var fxPayer = await TestAccount.CreateAsync(_network);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 40_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
-            var amountToDestory = fxToken.Params.Circulation / 3;
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await fxToken.Client.BurnTokenAsync(
+            var amountToDestory = fxToken.Params.Circulation / 3 + 1;
+            var expectedCirculation = fxToken.Params.Circulation - amountToDestory;
+            var pendingReceipt = await fxToken.Client.BurnTokenAsync(
                     fxToken,
                     amountToDestory,
                     new Signatory(
@@ -273,9 +272,38 @@ namespace Hashgraph.Test.Token
                         {
                             PendingPayer = fxPayer
                         }));
-            });
-            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
-            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+
+            Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
+            // This should be considered a network bug.
+            Assert.Equal(0UL, pendingReceipt.Circulation);
+
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation);
+
+            var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey);
+            Assert.Equal(ResponseCode.Success, signingReceipt.Status);
+            // This should be considered a network bug.
+            Assert.Equal(0UL, pendingReceipt.Circulation);
+
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, expectedCirculation);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(expectedCirculation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Empty(info.Commissions);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
         }
     }
 }

@@ -224,27 +224,6 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0UL, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal(0UL, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
         }
-        [Fact(DisplayName = "Mint Assets: Can Not Schedule Mint Asset Coins")]
-        public async Task CanNotScheduleMintAssetCoins()
-        {
-            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
-            await using var fxAsset = await TestAsset.CreateAsync(_network);
-            var metadata = Enumerable.Range(1, Generator.Integer(2, 10)).Select(_ => Generator.SHA384Hash()).ToArray();
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await fxAsset.Client.MintAssetAsync(
-                    fxAsset.Record.Token,
-                    metadata,
-                    new Signatory(
-                        fxAsset.SupplyPrivateKey,
-                        new PendingParams
-                        {
-                            PendingPayer = fxPayer
-                        }));
-            });
-            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
-            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
-        }
         [Fact(DisplayName = "Mint Assets: Can Not More Mint Assets than Ceiling")]
         public async Task CanNotMoreMintAssetsThanCeiling()
         {
@@ -262,6 +241,62 @@ namespace Hashgraph.Test.AssetTokens
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
             Assert.Equal(fxAsset.Params.Ceiling, (long)info.Circulation);
             Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+        }
+        [Fact(DisplayName = "Mint Assets: Can Schedule Mint Asset Coins")]
+        public async Task CanScheduleMintAssetCoins()
+        {
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            await using var fxAsset = await TestAsset.CreateAsync(_network);
+            var metadata = Enumerable.Range(1, Generator.Integer(2, 10)).Select(_ => Generator.SHA384Hash()).ToArray();
+            var pendingReceipt = await fxAsset.Client.MintAssetAsync(
+                    fxAsset.Record.Token,
+                    metadata,
+                    new Signatory(
+                        fxAsset.SupplyPrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
+
+            await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)fxAsset.Metadata.Length);
+
+            var schedulingReceipt = await fxAsset.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey); //as AssetMintReceipt;
+            Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+            // Should be able to do this but can't yet
+            //Assert.Equal(metadata.Length, schedulingReceipt.SerialNumbers.Count);
+            //foreach (var serialNumber in schedulingReceipt.SerialNumbers)
+            //{
+            //    Assert.True(serialNumber > 0);
+            //}
+
+            // Can also get them via Record.
+            var record = await fxAsset.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as AssetMintRecord;
+            Assert.Equal(metadata.Length, record.SerialNumbers.Count);
+            foreach (var serialNumber in record.SerialNumbers)
+            {
+                Assert.True(serialNumber > 0);
+            }
+
+            await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)(metadata.Length + fxAsset.Metadata.Length));
+
+            var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
+            Assert.Equal(fxAsset.Record.Token, info.Token);
+            Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+            Assert.Equal(TokenType.Asset, info.Type);
+            Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal((ulong)(metadata.Length + fxAsset.Metadata.Length), info.Circulation);
+            Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+            Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+            Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Empty(info.Commissions);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxAsset.Params.Memo, info.Memo);
         }
     }
 }

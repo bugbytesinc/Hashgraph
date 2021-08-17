@@ -448,25 +448,57 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAccount.Record.Address, info[0].Owner);
             Assert.Equal(foundAsset, info[0]);
         }
-        [Fact(DisplayName = "Burn Assets: Can Not Schedule Burn Asset Coins")]
-        public async Task CanNotScheduleBurnAssetCoins()
+        [Fact(DisplayName = "Burn Assets: Can Schedule Burn Asset Coins")]
+        public async Task CanScheduleBurnAssetCoins()
         {
-            await using var fxPayer = await TestAccount.CreateAsync(_network);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 40_00_000_000);
             await using var fxAsset = await TestAsset.CreateAsync(_network);
-            var amountToDestory = fxAsset.Metadata.Length / 3;
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await fxAsset.Client.BurnAssetAsync(
-                    new Asset(fxAsset.Record.Token, 1),
-                    new Signatory(
-                        fxAsset.SupplyPrivateKey,
-                        new PendingParams
-                        {
-                            PendingPayer = fxPayer
-                        }));
-            });
-            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
-            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+            var amountToDestory = fxAsset.Metadata.Length / 3 + 1;
+            var expectedCirculation = (ulong)(fxAsset.Metadata.Length - amountToDestory);
+            var serialNumbers = Enumerable.Range(1, amountToDestory).Select(i => (long)i);
+
+            var pendingReceipt = await fxAsset.Client.BurnAssetsAsync(
+                fxAsset.Record.Token,
+                serialNumbers,
+                new Signatory(
+                    fxAsset.SupplyPrivateKey,
+                    new PendingParams
+                    {
+                        PendingPayer = fxPayer
+                    }));
+
+            Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
+            // This should be considered a network bug.
+            Assert.Equal(0UL, pendingReceipt.Circulation);
+
+            await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)fxAsset.Metadata.Length);
+
+            var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey); // As TokenReceipt
+            Assert.Equal(ResponseCode.Success, signingReceipt.Status);
+            // We should be able to do this.
+            //Assert.Equal(expectedCirculation, signingReceipt.Circulation);
+
+            await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, expectedCirculation);
+
+            var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
+            Assert.Equal(fxAsset.Record.Token, info.Token);
+            Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+            Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(expectedCirculation, info.Circulation);
+            Assert.Equal(0ul, info.Decimals);
+            Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+            Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+            Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+
+            Assert.Empty(info.Commissions);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxAsset.Params.Memo, info.Memo);
         }
     }
 }
