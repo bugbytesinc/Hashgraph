@@ -736,46 +736,65 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(1UL, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxAsset));
             Assert.Equal((ulong)fxAsset.Metadata.Length - 2, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
         }
-        [Fact(DisplayName = "Transfer Assets: Metadata and Serial Numbers Transfer Properly")]
-        public async Task MetadataAndSerialNumbersTransferProperly()
+        [Fact(DisplayName = "NETWORK BUG: Transfer Assets: Metadata and Serial Numbers Transfer Properly FAILS")]
+        public async Task MetadataAndSerialNumbersTransferProperlyFails()
         {
-            await using var fxAccount = await TestAccount.CreateAsync(_network);
-            await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
+            // tokenGetAccountNftInfos is just plain 'ol borken now.
+            var testFailException = (await Assert.ThrowsAsync<PrecheckException>(MetadataAndSerialNumbersTransferProperly));
+            Assert.StartsWith("Transaction Failed Pre-Check", testFailException.Message);
+            Assert.Equal(ResponseCode.NotSupported, testFailException.Status);
 
-            var circulation = (ulong)fxAsset.Metadata.Length;
-            var serialNumbers = Enumerable.Range(1, fxAsset.Metadata.Length).Where(i => i % 2 == 0).Select(i => (long)i).ToArray();
-            var xferCount = (ulong)serialNumbers.Length;
-            var expectedTreasury = circulation - xferCount;
-
-            var transfers = new TransferParams
+            //[Fact(DisplayName = "Transfer Assets: Metadata and Serial Numbers Transfer Properly")]
+            async Task MetadataAndSerialNumbersTransferProperly()
             {
-                AssetTransfers = serialNumbers.Select(sn => new AssetTransfer(new Asset(fxAsset, sn), fxAsset.TreasuryAccount, fxAccount)),
-                Signatory = fxAsset.TreasuryAccount.PrivateKey
-            };
-            var receipt = await fxAsset.Client.TransferAsync(transfers);
+                await using var fxAccount = await TestAccount.CreateAsync(_network);
+                await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
 
-            // Double check balances.
-            Assert.Equal(xferCount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
-            Assert.Equal(circulation - xferCount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+                var circulation = (ulong)fxAsset.Metadata.Length;
+                var serialNumbers = Enumerable.Range(1, fxAsset.Metadata.Length).Where(i => i % 2 == 0).Select(i => (long)i).ToArray();
+                var xferCount = (ulong)serialNumbers.Length;
+                var expectedTreasury = circulation - xferCount;
 
-            var assets = await fxAsset.Client.GetAccountAssetInfoAsync(fxAccount, 0, (long)xferCount);
-            Assert.Equal(xferCount, (ulong)assets.Count);
-            foreach (var asset in assets)
-            {
-                Assert.Equal(0, asset.Asset.SerialNum % 2);
-                Assert.Equal(fxAsset.Record.Token, asset.Asset);
-                Assert.Equal(fxAccount.Record.Address, asset.Owner);
-                Assert.True(fxAsset.Metadata[(int)asset.Asset.SerialNum - 1].Span.SequenceEqual(asset.Metadata.Span));
-            }
+                var transfers = new TransferParams
+                {
+                    AssetTransfers = serialNumbers.Select(sn => new AssetTransfer(new Asset(fxAsset, sn), fxAsset.TreasuryAccount, fxAccount)),
+                    Signatory = fxAsset.TreasuryAccount.PrivateKey
+                };
+                var receipt = await fxAsset.Client.TransferAsync(transfers);
 
-            assets = await fxAsset.Client.GetAccountAssetInfoAsync(fxAsset.TreasuryAccount, 0, (long)expectedTreasury);
-            Assert.Equal(expectedTreasury, (ulong)assets.Count);
-            foreach (var asset in assets)
-            {
-                Assert.Equal(1, asset.Asset.SerialNum % 2);
-                Assert.Equal(fxAsset.Record.Token, asset.Asset);
-                Assert.Equal(fxAsset.TreasuryAccount.Record.Address, asset.Owner);
-                Assert.True(fxAsset.Metadata[(int)asset.Asset.SerialNum - 1].Span.SequenceEqual(asset.Metadata.Span));
+                // Double check balances.
+                Assert.Equal(xferCount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
+                Assert.Equal(circulation - xferCount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+
+                try
+                {
+                    var assets = await fxAsset.Client.GetAccountAssetInfoAsync(fxAccount, 0, (long)xferCount);
+                    Assert.Equal(xferCount, (ulong)assets.Count);
+                    foreach (var asset in assets)
+                    {
+                        Assert.Equal(0, asset.Asset.SerialNum % 2);
+                        Assert.Equal(fxAsset.Record.Token, asset.Asset);
+                        Assert.Equal(fxAccount.Record.Address, asset.Owner);
+                        Assert.True(fxAsset.Metadata[(int)asset.Asset.SerialNum - 1].Span.SequenceEqual(asset.Metadata.Span));
+                    }
+
+                    assets = await fxAsset.Client.GetAccountAssetInfoAsync(fxAsset.TreasuryAccount, 0, (long)expectedTreasury);
+                    Assert.Equal(expectedTreasury, (ulong)assets.Count);
+                    foreach (var asset in assets)
+                    {
+                        Assert.Equal(1, asset.Asset.SerialNum % 2);
+                        Assert.Equal(fxAsset.Record.Token, asset.Asset);
+                        Assert.Equal(fxAsset.TreasuryAccount.Record.Address, asset.Owner);
+                        Assert.True(fxAsset.Metadata[(int)asset.Asset.SerialNum - 1].Span.SequenceEqual(asset.Metadata.Span));
+                    }
+
+                    Assert.True(false, "REVISE TEST, NETWORK BUG FIXED");
+                }
+                catch (Xunit.Sdk.EqualException xex)
+                {
+                    Assert.StartsWith("Assert.Equal() Failure", xex.Message);
+                    Assert.EndsWith("0", xex.Actual);
+                }
             }
         }
     }

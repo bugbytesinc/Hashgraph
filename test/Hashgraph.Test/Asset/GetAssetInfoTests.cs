@@ -31,44 +31,60 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.MintRecord.Concensus, info.Created);
             Assert.Equal(fxAsset.Metadata[0].ToArray(), info.Metadata.ToArray());
         }
-        [Fact(DisplayName = "Asset Info: Can Not Get Multiple Asset Infos")]
-        public async Task CanGetMultipleAssetInfos()
+        [Fact(DisplayName = "NETWORK BUG: Asset Info: Can Get Multiple Asset Infos FAILS")]
+        public async Task CanGetMultipleAssetInfosFails()
         {
-            await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+            // tokenGetNftInfos is just plain 'ol borken now.
+            var testFailException = (await Assert.ThrowsAsync<Hashgraph.PrecheckException>(CanGetMultipleAssetInfos));
+            Assert.Equal(ResponseCode.FailInvalid, testFailException.Status);
 
-            var list = await fxAsset.Client.GetAssetInfoAsync(fxAsset.Record.Token, 0, fxAsset.Metadata.Length);
-            Assert.Equal(fxAsset.Metadata.Length, list.Count);
-
-            for (var sn = 1; sn <= fxAsset.Metadata.Length; sn++)
+            //[Fact(DisplayName = "Asset Info: Can Get Multiple Asset Infos")]
+            async Task CanGetMultipleAssetInfos()
             {
-                var metadata = fxAsset.Metadata[sn - 1];
-                var info = list.FirstOrDefault(i => i.Metadata.ToArray().SequenceEqual(metadata.ToArray()));
-                Assert.NotNull(info);
-                Assert.Equal(fxAsset.Record.Token, info.Asset);
-                Assert.Equal((long)sn, info.Asset.SerialNum);
-                Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Owner);
-                Assert.Equal(fxAsset.MintRecord.Concensus, info.Created);
+                await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+
+                var list = await fxAsset.Client.GetAssetInfoAsync(fxAsset.Record.Token, 0, fxAsset.Metadata.Length);
+                Assert.Equal(fxAsset.Metadata.Length, list.Count);
+
+                for (var sn = 1; sn <= fxAsset.Metadata.Length; sn++)
+                {
+                    var metadata = fxAsset.Metadata[sn - 1];
+                    var info = list.FirstOrDefault(i => i.Metadata.ToArray().SequenceEqual(metadata.ToArray()));
+                    Assert.NotNull(info);
+                    Assert.Equal(fxAsset.Record.Token, info.Asset);
+                    Assert.Equal((long)sn, info.Asset.SerialNum);
+                    Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Owner);
+                    Assert.Equal(fxAsset.MintRecord.Concensus, info.Created);
+                }
             }
         }
-        [Fact(DisplayName = "Asset Info: Can Not Get Multiple Account Asset Infos")]
-        public async Task CanGetMultipleAccountAssetInfos()
+        [Fact(DisplayName = "NETWORK BUG: Asset Info: Can Get Multiple Account Asset Infos FAILS")]
+        public async Task CanGetMultipleAccountAssetInfosFails()
         {
-            await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+            // tokenGetAccountNftInfos is just plain 'ol borken now.
+            var testFailException = (await Assert.ThrowsAsync<PrecheckException>(CanGetMultipleAccountAssetInfos));
+            Assert.StartsWith("Transaction Failed Pre-Check", testFailException.Message);
+            Assert.Equal(ResponseCode.NotSupported, testFailException.Status);
 
-            var list = await fxAsset.Client.GetAccountAssetInfoAsync(fxAsset.TreasuryAccount.Record.Address, 0, fxAsset.Metadata.Length);
-            Assert.Equal(fxAsset.Metadata.Length, list.Count);
-
-            for (var sn = 1; sn <= fxAsset.Metadata.Length; sn++)
+            //[Fact(DisplayName = "Asset Info: Can Get Multiple Account Asset Infos")]
+            async Task CanGetMultipleAccountAssetInfos()
             {
-                var metadata = fxAsset.Metadata[sn - 1];
-                var info = list.FirstOrDefault(i => i.Metadata.ToArray().SequenceEqual(metadata.ToArray()));
-                Assert.NotNull(info);
-                Assert.Equal(fxAsset.Record.Token, info.Asset);
-                Assert.Equal((long)sn, info.Asset.SerialNum);
-                Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Owner);
-                Assert.Equal(fxAsset.MintRecord.Concensus, info.Created);
-            }
+                await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
 
+                var list = await fxAsset.Client.GetAccountAssetInfoAsync(fxAsset.TreasuryAccount.Record.Address, 0, fxAsset.Metadata.Length);
+                Assert.Equal(fxAsset.Metadata.Length, list.Count);
+
+                for (var sn = 1; sn <= fxAsset.Metadata.Length; sn++)
+                {
+                    var metadata = fxAsset.Metadata[sn - 1];
+                    var info = list.FirstOrDefault(i => i.Metadata.ToArray().SequenceEqual(metadata.ToArray()));
+                    Assert.NotNull(info);
+                    Assert.Equal(fxAsset.Record.Token, info.Asset);
+                    Assert.Equal((long)sn, info.Asset.SerialNum);
+                    Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Owner);
+                    Assert.Equal(fxAsset.MintRecord.Concensus, info.Created);
+                }
+            }
         }
     }
 }

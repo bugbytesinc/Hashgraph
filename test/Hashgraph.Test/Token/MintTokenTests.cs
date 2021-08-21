@@ -276,11 +276,14 @@ namespace Hashgraph.Test.Token
 
             var schedulingReceipt = await fxToken.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey); // as TokenReceipt
             Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
-            // We should be able to do this.
-            //Assert.Equal(expectedCirculation, signingReceipt.Circulation);
 
-            // Instead we can get it from the record
+            // Can get receipt for original scheduled tx.
+            var executedReceipt = await fxToken.Client.GetReceiptAsync(pendingReceipt.Pending.TxId) as TokenReceipt;
             var expectedTreasury = 2 * fxToken.Params.Circulation;
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(expectedTreasury, executedReceipt.Circulation);
+
+            // Can get record for original scheduled tx.
             var record = await fxToken.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as TokenRecord;
             Assert.Equal(expectedTreasury, record.Circulation);
 

@@ -281,8 +281,14 @@ namespace Hashgraph.Test.Token
 
             var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey);
             Assert.Equal(ResponseCode.Success, signingReceipt.Status);
-            // This should be considered a network bug.
-            Assert.Equal(0UL, pendingReceipt.Circulation);
+
+            var executedReceipt = await fxPayer.Client.GetReceiptAsync(pendingReceipt.Pending.TxId) as TokenReceipt;
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(expectedCirculation, executedReceipt.Circulation);
+
+            var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as TokenRecord;
+            Assert.Equal(ResponseCode.Success, executedRecord.Status);
+            Assert.Equal(expectedCirculation, executedRecord.Circulation);
 
             await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, expectedCirculation);
 

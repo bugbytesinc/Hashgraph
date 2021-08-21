@@ -260,16 +260,19 @@ namespace Hashgraph.Test.AssetTokens
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)fxAsset.Metadata.Length);
 
-            var schedulingReceipt = await fxAsset.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey); //as AssetMintReceipt;
+            var schedulingReceipt = await fxAsset.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey);
             Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
-            // Should be able to do this but can't yet
-            //Assert.Equal(metadata.Length, schedulingReceipt.SerialNumbers.Count);
-            //foreach (var serialNumber in schedulingReceipt.SerialNumbers)
-            //{
-            //    Assert.True(serialNumber > 0);
-            //}
 
-            // Can also get them via Record.
+            // Can get receipt for original scheduled tx.
+            var executedReceipt = await fxAsset.Client.GetReceiptAsync(pendingReceipt.Pending.TxId) as AssetMintReceipt;
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(metadata.Length, executedReceipt.SerialNumbers.Count);
+            foreach (var serialNumber in executedReceipt.SerialNumbers)
+            {
+                Assert.True(serialNumber > 0);
+            }
+
+            // Can get record for original scheduled tx.
             var record = await fxAsset.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as AssetMintRecord;
             Assert.Equal(metadata.Length, record.SerialNumbers.Count);
             foreach (var serialNumber in record.SerialNumbers)
