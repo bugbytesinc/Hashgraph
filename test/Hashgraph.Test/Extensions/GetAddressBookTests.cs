@@ -35,9 +35,9 @@ namespace Hashgraph.Test.Extensions
             var node = book.FirstOrDefault(n => n.Address == nodeAddress);
             Assert.NotNull(node);
             Assert.NotNull(node.RsaPublicKey);
-            Assert.NotEmpty(node.Endpoints);
+            Assert.NotEqual(0, node.CertificateHash.Length);
             // Not implemented Yet
-            Assert.Equal(0, node.CertificateHash.Length);
+            Assert.Empty(node.Endpoints);
             // Can't say or not.
             //Assert.Equal(0, node.Stake);
         }
