@@ -62,9 +62,9 @@ namespace Hashgraph.Test.AssetTokens
         public async Task CanGetMultipleAccountAssetInfosFails()
         {
             // tokenGetAccountNftInfos is just plain 'ol borken now.
-            var testFailException = (await Assert.ThrowsAsync<PrecheckException>(CanGetMultipleAccountAssetInfos));
-            Assert.StartsWith("Transaction Failed Pre-Check", testFailException.Message);
-            Assert.Equal(ResponseCode.NotSupported, testFailException.Status);
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanGetMultipleAccountAssetInfos));
+            Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
+            Assert.Equal("0", testFailException.Actual);
 
             //[Fact(DisplayName = "Asset Info: Can Get Multiple Account Asset Infos")]
             async Task CanGetMultipleAccountAssetInfos()
