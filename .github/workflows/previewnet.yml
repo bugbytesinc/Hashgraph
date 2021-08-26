@@ -17,7 +17,7 @@ on:
 
 jobs:
   build_and_test:
-    runs-on: [windows-latest, ubuntu-latest, macOS-latest]
+    runs-on: windows-latest
     timeout-minutes: 360
     strategy:
       fail-fast: false
