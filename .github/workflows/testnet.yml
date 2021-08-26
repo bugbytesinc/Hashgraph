@@ -1,0 +1,58 @@
+#  Required secrets managed by GitHub.
+#
+#  ACCOUNT_NUMBER:       The Hedera Test Account Address Number (assumes Shard = 0, Realm = 0)
+#  ACCOUNT_PUBLIC_KEY:   Public Key for the root payer account, encoded in Hex
+#  ACCOUNT_PRIVATE_KEY:  Private Key for the root payer account, encoded in Hex
+#  MIRROR_ADDRESS:       Mirror Node DNS name, for example 'testnet.mirrornode.hedera.com'
+#  MIRROR_PORT:          Mirror Node port number
+#  NETWORK_ADDRESS:      Test Network DNS name, for example 'testnet.hedera.com'
+#  NETWORK_PORT:         Test Network port number
+#  SERVER_NUMBER:        Network Node Address Number receiving Network Requests (assumes Shard = 0, Realm = 0)
+
+name: 'TESTNET Build & Test'
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_and_test:
+    name: 'Build and Test'
+    environment: TESTNET    
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
+    env:
+      BUILD_CONFIGURATION: Release
+      DOTNET_NOLOGO: true
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Build
+      run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
+
+    - name: Integration Tests
+      run: dotnet test --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+      env:
+        'account:number': ${{ secrets.ACCOUNT_NUMBER }}
+        'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
+        'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
+        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
+        'mirror:port': ${{ secrets.MIRROR_PORT }}
+        'network:address': ${{ secrets.NETWORK_ADDRESS }}
+        'network:port': ${{ secrets.NETWORK_PORT }}
+        'server:number': ${{ secrets.SERVER_NUMBER }}
