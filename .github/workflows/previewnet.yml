@@ -1,0 +1,29 @@
+#  Required secrets managed by GitHub.
+#
+#  PREVIEWNET_ACCOUNT_NUMBER:       The Hedera Test Account Address Number (assumes Shard = 0, Realm = 0)
+#  PREVIEWNET_ACCOUNT_PUBLIC_KEY:   Public Key for the root payer account, encoded in Hex
+#  PREVIEWNET_ACCOUNT_PRIVATE_KEY:  Private Key for the root payer account, encoded in Hex
+#  PREVIEWNET_MIRROR_ADDRESS:       Mirror Node DNS name, for example 'PREVIEWNET.mirrornode.hedera.com'
+#  PREVIEWNET_MIRROR_PORT:          Mirror Node port number
+#  PREVIEWNET_NETWORK_ADDRESS:      Test Network DNS name, for example 'PREVIEWNET.hedera.com'
+#  PREVIEWNET_NETWORK_PORT:         Test Network port number
+#  PREVIEWNET_SERVER_NUMBER:        Network Node Address Number receiving Network Requests (assumes Shard = 0, Realm = 0)
+
+name: 'PREVIEWNET Continuous Integration Build & Test'
+
+on:
+  push:
+    branches: [ previewnet ]
+
+jobs:
+  build_and_test:
+    runs-on: [windows-latest, ubuntu-latest, macOS-latest]
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+
+    steps:
+    - name: 'Build and Test'
+      uses: './github/actions/integration-tests'
+      with:
+        network: PREVIEWNET
