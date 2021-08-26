@@ -1,0 +1,69 @@
+#  Required secrets managed by GitHub.  Note: each target network has its own
+#  set of accounts and keys, the NETWORK input will be used to match against the
+#  target secret.
+#
+#  <NETWORK>_ACCOUNT_NUMBER:       The Hedera Test Account Address Number (assumes Shard = 0, Realm = 0)
+#  <NETWORK>_ACCOUNT_PUBLIC_KEY:   Public Key for the root payer account, encoded in Hex
+#  <NETWORK>_ACCOUNT_PRIVATE_KEY:  Private Key for the root payer account, encoded in Hex
+#  <NETWORK>_MIRROR_ADDRESS:       Mirror Node DNS name, for example 'testnet.mirrornode.hedera.com'
+#  <NETWORK>_MIRROR_PORT:          Mirror Node port number
+#  <NETWORK>_NETWORK_ADDRESS:      Test Network DNS name, for example 'testnet.hedera.com'
+#  <NETWORK>_NETWORK_PORT:         Test Network port number
+#  <NETWORK>_SERVER_NUMBER:        Network Node Address Number receiving Network Requests (assumes Shard = 0, Realm = 0)
+
+name: 'Continuous Integration Build & Test'
+description: 'Builds the SDK and Executes Integration Tests against the target Network'
+
+inputs:
+  network:
+    description: 'Identifies the target network, typically TESTNET or PREVIEWNET'
+    required: true
+    default: 'TESTNET'
+
+env:
+  BUILD_CONFIGURATION: Release
+  DOTNET_NOLOGO: true
+  ACCOUNT_NUMBER: ${{ format('{0}_ACCOUNT_NUMBER', inputs.network ) }}
+  ACCOUNT_PUBLIC_KEY: ${{ format('{0}_ACCOUNT_PUBLIC_KEY', inputs.network ) }}
+  ACCOUNT_PRIVATE_KEY: ${{ format('{0}_ACCOUNT_PRIVATE_KEY', inputs.network ) }}
+  MIRROR_ADDRESS: ${{ format('{0}_MIRROR_ADDRESS', inputs.network ) }}
+  MIRROR_PORT: ${{ format('{0}_MIRROR_PORT', inputs.network ) }}
+  NETWORK_ADDRESS: ${{ format('{0}_NETWORK_ADDRESS', inputs.network ) }}
+  NETWORK_PORT: ${{ format('{0}_NETWORK_PORT', inputs.network ) }}
+  SERVER_NUMBER: ${{ format('{0}_SERVER_NUMBER', inputs.network ) }}
+
+runs:
+  
+  using: 'composite'
+
+  steps:
+
+  - name: Checkout
+    uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+      submodules: true
+
+  - name: Setup .NET
+    uses: actions/setup-dotnet@v1
+    with:
+      dotnet-version: 5.0.x
+
+  - name: Build
+    run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
+
+  # Commented out for now while we configure
+  # the action pipeline in general.  Once we
+  # get this working for just builds, we'll 
+  # enable tests as well.
+  # - name: Integration Tests
+  #   run: dotnet test --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+  #   env:
+  #     'account:number': ${{ secrets[env.ACCOUNT_NUMBER] }}
+  #     'account:publicKey': ${{ secrets[env.ACCOUNT_PUBLIC_KEY] }}
+  #     'account:privateKey': ${{ secrets[env.ACCOUNT_PRIVATE_KEY] }}
+  #     'mirror:address': ${{ secrets[env.MIRROR_ADDRESS] }}
+  #     'mirror:port': ${{ secrets[env.MIRROR_PORT] }}
+  #     'network:address': ${{ secrets[env.NETWORK_ADDRESS] }}
+  #     'network:port': ${{ secrets[env.NETWORK_PORT] }}
+  #     'server:number': ${{ secrets[env.SERVER_NUMBER] }}

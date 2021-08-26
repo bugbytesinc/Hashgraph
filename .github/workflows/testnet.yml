@@ -1,76 +1,29 @@
-#  Required variables set by GitHub environment secrets
+#  Required secrets managed by GitHub.
 #
-#  TESTNET_ACCOUNT_NUMBER_MACOS:         Address number for MaxOS tests of account making requests (assumes Realm = 0, Shard = 0)
-#  TESTNET_ACCOUNT_NUMBER_UBUNTU:        Address number for Ubuntu tests
-#  TESTNET_ACCOUNT_NUMBER_WINDOWS:       Address number for Windows tests
-#  TESTNET_ACCOUNT_PRIVATE_KEY_MACOS:    Private Key for MaxOS tests of account making requests of the network, encoded in Hex
-#  TESTNET_ACCOUNT_PRIVATE_KEY_UBUNTU:   Private Key for Ubuntu tests
-#  TESTNET_ACCOUNT_PRIVATE_KEY_WINDOWS:  Private Key for Windows tests
-#  TESTNET_ACCOUNT_PUBLIC_KEY_MACOS:     Public Key for MaxOS tests of account making requests of the network, encoded in Hex (last 32 bytes)
-#  TESTNET_ACCOUNT_PUBLIC_KEY_UBUNTU:    Public Key for Ubuntu tests
-#  TESTNET_ACCOUNT_PUBLIC_KEY_WINDOWS:   Public Key for Windows tests
-#  TESTNET_MIRROR_ADDRESS:               Mirror Node DNS name, for example 'testnet.mirrornode.hedera.com'
-#  TESTNET_MIRROR_PORT:                  Mirror Node port number
-#  TESTNET_NETWORK_ADDRESS:              Test Network DNS name, for example 'testnet.hedera.com'
-#  TESTNET_NETWORK_PORT:                 Test Network port number
-#  TESTNET_SERVER_NUMBER:                Network Node Address Number receiving Network Requests (assumes Realm = 0, Shard = 0)
+#  TESTNET_ACCOUNT_NUMBER:       The Hedera Test Account Address Number (assumes Shard = 0, Realm = 0)
+#  TESTNET_ACCOUNT_PUBLIC_KEY:   Public Key for the root payer account, encoded in Hex
+#  TESTNET_ACCOUNT_PRIVATE_KEY:  Private Key for the root payer account, encoded in Hex
+#  TESTNET_MIRROR_ADDRESS:       Mirror Node DNS name, for example 'testnet.mirrornode.hedera.com'
+#  TESTNET_MIRROR_PORT:          Mirror Node port number
+#  TESTNET_NETWORK_ADDRESS:      Test Network DNS name, for example 'testnet.hedera.com'
+#  TESTNET_NETWORK_PORT:         Test Network port number
+#  TESTNET_SERVER_NUMBER:        Network Node Address Number receiving Network Requests (assumes Shard = 0, Realm = 0)
 
-name: CI build on testnet
+name: 'TESTNET Continuous Integration Build & Test'
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-  build:
-    environment: Testnet
-    runs-on: ${{ format('{0}-latest', matrix.os) }}
+  build_and_test:
+    runs-on: [windows-latest, ubuntu-latest, macOS-latest]
     timeout-minutes: 360
-    env:
-      buildConfiguration: Release
-      minimumBalance: 2500 # ~2,200ℏ needed per test run
-      DOTNET_NOLOGO: true
-      TESTNET_ACCOUNT_NUMBER: ${{ secrets[format('TESTNET_ACCOUNT_NUMBER_{0}', matrix.os)] }}
-      TESTNET_ACCOUNT_PUBLIC_KEY: ${{ secrets[format('TESTNET_ACCOUNT_PUBLIC_KEY_{0}', matrix.os)] }}
-      TESTNET_ACCOUNT_PRIVATE_KEY: ${{ secrets[format('TESTNET_ACCOUNT_PRIVATE_KEY_{0}', matrix.os)] }}
-
     strategy:
       fail-fast: false
-      matrix:
-        os: [ubuntu, windows, macOS]
 
     steps:
-    - name: Checkout 🛎️
-      uses: actions/checkout@v2
+    - name: 'Build and Test'
+      uses: './github/actions/integration-tests'
       with:
-        fetch-depth: 0
-        submodules: true # TODO: .nuget package for hedera-protobufs?
-
-    - name: Setup .NET 👷
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-
-    - name: Build 🚀
-      run: dotnet build --configuration ${{ env.buildConfiguration }}
-
-    - name: Check Ħ account balance 💰
-      uses: si618/hedera-check-balance@latest
-      with:
-        operator-id: '0.0.${{ env.TESTNET_ACCOUNT_NUMBER }}'
-        operator-key: ${{ env.TESTNET_ACCOUNT_PRIVATE_KEY }}
-        minimum-balance: ${{ env.minimumBalance }}
-
-    - name: Test ✅
-      run: dotnet test --configuration ${{ env.buildConfiguration }} --no-build --verbosity normal
-      env:
-        'account:number': ${{ env.TESTNET_ACCOUNT_NUMBER }}
-        'account:publicKey': ${{ env.TESTNET_ACCOUNT_PUBLIC_KEY }}
-        'account:privateKey': ${{ env.TESTNET_ACCOUNT_PRIVATE_KEY }}
-        'mirror:address': ${{ secrets.TESTNET_MIRROR_ADDRESS }}
-        'mirror:port': ${{ secrets.TESTNET_MIRROR_PORT }}
-        'network:address': ${{ secrets.TESTNET_NETWORK_ADDRESS }}
-        'network:port': ${{ secrets.TESTNET_NETWORK_PORT }}
-        'server:number': ${{ secrets.TESTNET_SERVER_NUMBER }}
+        network: TESTNET
