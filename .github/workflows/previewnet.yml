@@ -10,7 +10,6 @@
 #  PREVIEWNET_SERVER_NUMBER:        Network Node Address Number receiving Network Requests (assumes Shard = 0, Realm = 0)
 
 name: 'PREVIEWNET Continuous Integration Build & Test'
-description: 'Builds the SDK and Executes Integration Tests against the Preview Network'
 
 on:
   push:
