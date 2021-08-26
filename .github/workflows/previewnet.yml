@@ -17,13 +17,14 @@ on:
 
 jobs:
   build_and_test:
+    name: 'Build and Test'
     environment: PREVIEWNET    
     runs-on: ${{ matrix.os }}
     timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest, ubuntu-latest ]
+        os: [ windows-latest, ubuntu-latest, macos-latest ]
     env:
       BUILD_CONFIGURATION: Release
       DOTNET_NOLOGO: true
