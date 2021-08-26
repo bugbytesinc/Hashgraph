@@ -9,7 +9,7 @@
 #  NETWORK_PORT:         Test Network port number
 #  SERVER_NUMBER:        Network Node Address Number receiving Network Requests (assumes Shard = 0, Realm = 0)
 
-name: 'PREVIEWNET Continuous Integration Build & Test'
+name: 'PREVIEWNET Build & Test'
 
 on:
   push:
