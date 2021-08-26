@@ -24,6 +24,6 @@ jobs:
 
     steps:
     - name: 'Build and Test'
-      uses: './github/actions/integration-tests'
+      uses: './.github/actions/integration-tests'
       with:
         network: PREVIEWNET
