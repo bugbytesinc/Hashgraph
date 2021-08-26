@@ -10,6 +10,7 @@
 #  PREVIEWNET_SERVER_NUMBER:        Network Node Address Number receiving Network Requests (assumes Shard = 0, Realm = 0)
 
 name: 'PREVIEWNET Continuous Integration Build & Test'
+description: 'Builds the SDK and Executes Integration Tests against the Preview Network'
 
 on:
   push:
@@ -17,13 +18,45 @@ on:
 
 jobs:
   build_and_test:
-    runs-on: windows-latest
+    environment: PREVIEWNET    
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 360
     strategy:
       fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest ]
+    env:
+      BUILD_CONFIGURATION: Release
+      DOTNET_NOLOGO: true
 
     steps:
-    - name: 'Build and Test'
-      uses: './.github/actions/integration-tests'
+
+    - name: Checkout
+      uses: actions/checkout@v2
       with:
-        network: PREVIEWNET
+        fetch-depth: 0
+        submodules: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Build
+      run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
+
+    # Commented out for now while we configure
+    # the action pipeline in general.  Once we
+    # get this working for just builds, we'll 
+    # enable tests as well.
+    # - name: Integration Tests
+    #   run: dotnet test --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+    #   env:
+    #     'account:number': ${{ secrets.PREVIEWNET_ACCOUNT_NUMBER }}
+    #     'account:publicKey': ${{ secrets.PREVIEWNET_ACCOUNT_PUBLIC_KEY }}
+    #     'account:privateKey': ${{ secrets.PREVIEWNET_ACCOUNT_PRIVATE_KEY }}
+    #     'mirror:address': ${{ secrets.PREVIEWNET_MIRROR_ADDRESS }}
+    #     'mirror:port': ${{ secrets.PREVIEWNET_MIRROR_PORT }}
+    #     'network:address': ${{ secrets.PREVIEWNET_NETWORK_ADDRESS }}
+    #     'network:port': ${{ secrets.PREVIEWNET_NETWORK_PORT }}
+    #     'server:number': ${{ secrets.PREVIEWNET_SERVER_NUMBER }}
