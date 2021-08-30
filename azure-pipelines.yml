@@ -68,7 +68,7 @@ jobs:
 
     - task: NuGetCommand@2
       displayName: Publish NugGet Packages  
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), not(eq('n/a',coalesce(variables['nugetConnection'],'n/a'))))
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), not(eq('n/a',coalesce(variables['nugetConnection'],'n/a'))))
       inputs:
         command: push
         nuGetFeedType: external
