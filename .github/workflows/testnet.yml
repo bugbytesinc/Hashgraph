@@ -13,7 +13,7 @@ name: 'TESTNET Build & Test'
 
 on:
   push:
-    branches: [ TESTNET ]
+    branches: [ main ]
 
 env:
   BUILD_CONFIGURATION: Release
