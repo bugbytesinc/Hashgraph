@@ -13,21 +13,96 @@ name: 'TESTNET Build & Test'
 
 on:
   push:
-    branches: [ main ]
+    branches: [ TESTNET ]
+
+env:
+  BUILD_CONFIGURATION: Release
+  DOTNET_NOLOGO: true
+
+concurrency: TESTNET  
 
 jobs:
-  build_and_test:
-    name: 'Build and Test'
+  build_and_test_windows:
+    name: 'Build and Test Windows'
     environment: TESTNET    
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
     timeout-minutes: 360
     strategy:
       fail-fast: false
-      matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
-    env:
-      BUILD_CONFIGURATION: Release
-      DOTNET_NOLOGO: true
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Build
+      run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
+
+    - name: Integration Tests
+      run: dotnet test --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+      env:
+        'account:number': ${{ secrets.ACCOUNT_NUMBER }}
+        'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
+        'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
+        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
+        'mirror:port': ${{ secrets.MIRROR_PORT }}
+        'network:address': ${{ secrets.NETWORK_ADDRESS }}
+        'network:port': ${{ secrets.NETWORK_PORT }}
+        'server:number': ${{ secrets.SERVER_NUMBER }}
+
+  build_and_test_linux:
+    name: 'Build and Test Linux'
+    needs: build_and_test_windows
+    environment: TESTNET    
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Build
+      run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
+
+    - name: Integration Tests
+      run: dotnet test --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+      env:
+        'account:number': ${{ secrets.ACCOUNT_NUMBER }}
+        'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
+        'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
+        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
+        'mirror:port': ${{ secrets.MIRROR_PORT }}
+        'network:address': ${{ secrets.NETWORK_ADDRESS }}
+        'network:port': ${{ secrets.NETWORK_PORT }}
+        'server:number': ${{ secrets.SERVER_NUMBER }}
+
+  build_and_test_macos:
+    name: 'Build and Test MacOS'
+    needs: build_and_test_linux
+    environment: TESTNET    
+    runs-on: macos-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
 
     steps:
 

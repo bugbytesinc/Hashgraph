@@ -20,7 +20,8 @@ namespace Hashgraph
         /// </summary>
         public Address Token { get; set; }
         /// <summary>
-        /// The treasury account holding the reserve balance of tokens.
+        /// If specified, changes the treasury account holding the reserve 
+        /// balance of tokens.
         /// </summary>
         public Address? Treasury { get; set; }
         /// <summary>
@@ -35,33 +36,38 @@ namespace Hashgraph
         /// </remarks>
         public Endorsement? Administrator { get; set; }
         /// <summary>
-        /// Administrator key for signing transactions updating the grant or revoke 
-        /// KYC status of an account.
+        /// Changes the administrator key for signing transactions updating 
+        /// the grant or revoke KYC status of an account.
         /// </summary>
         public Endorsement? GrantKycEndorsement { get; set; }
         /// <summary>
-        /// Administrator key for signing transactions for freezing or unfreezing an 
-        /// account's ability to transfer tokens.
+        /// Changes the administrator key for signing transactions for freezing 
+        /// or unfreezing an account's ability to transfer tokens.
         /// </summary>
         public Endorsement? SuspendEndorsement { get; set; }
         /// <summary>
-        /// Administrator key for signing transaction that completely remove tokens
-        /// from an crypto address.
+        /// Changes the administrator key for signing transaction that completely 
+        /// remove tokens from an crypto address.
         /// </summary>
         public Endorsement? ConfiscateEndorsement { get; set; }
         /// <summary>
-        /// Administrator key for signing transactions for minting or unminting 
-        /// tokens in the treasury account.
+        /// Changes the administrator key for signing transactions for minting 
+        /// or unminting tokens in the treasury account.
         /// </summary>
         public Endorsement? SupplyEndorsement { get; set; }
         /// <summary>
-        /// If specified, replaces the current symbol for this token with
-        /// the new Symbol.  The new symbol must not already be in use.
+        /// Changes the administrator key for signing transactions updating the 
+        /// commissions (custom transfer fees) associated with this token.
+        /// </summary>
+        public Endorsement? CommissionsEndorsement { get; set; }
+        /// <summary>
+        /// If specified, replaces the current symbol for this 
+        /// token with the new Symbol.
         /// </summary>
         public string Symbol { get; set; }
         /// <summary>
-        /// If specified, replaces the current name of this token with
-        /// the new name. The new name must not already be in use.
+        /// If specified, replaces the current name of this
+        /// token with the new name.
         /// </summary>
         public string Name { get; set; }
         /// <summary>
@@ -69,8 +75,8 @@ namespace Hashgraph
         /// </summary>
         public DateTime? Expiration { get; set; }
         /// <summary>
-        /// If specified, update the interval of the topic and auto-renewal period. If
-        /// the associated renewal account does not have sufficient funds to 
+        /// If specified, update the interval of the topic and auto-renewal period. 
+        /// If the associated renewal account does not have sufficient funds to 
         /// renew at the expiration time, it will be renewed for a period 
         /// of time the remaining funds can support.  If no funds remain, the
         /// topic instance will be deleted.
@@ -102,7 +108,8 @@ namespace Hashgraph
         /// </remarks>
         public Signatory? Signatory { get; set; }
         /// <summary>
-        /// The publicly visible memo to be associated with the token.
+        /// If specified, updates the publicly visible memo to be associated 
+        /// with the token.
         /// </summary>
         public string? Memo { get; set; }
     }

@@ -24,7 +24,7 @@ namespace Hashgraph.Test.Fixtures
             {
                 Endorsement = fx.PublicKey,
                 InitialBalance = (ulong)Generator.Integer(10, 20),
-                Memo = Generator.String(10,20)
+                Memo = Generator.String(10, 20)
             };
             customize?.Invoke(fx);
             fx.Record = await fx.Client.CreateAccountWithRecordAsync(fx.CreateParams, ctx =>
@@ -48,7 +48,19 @@ namespace Hashgraph.Test.Fixtures
             }
             catch
             {
-                //noop
+                // Try to recover any funds if possible(unit tests are getting hBar Hungry)
+                try
+                {
+                    var balance = await Client.GetAccountBalanceAsync(Record.Address);
+                    if (balance > 500)
+                    {
+                        await Client.TransferAsync(Record.Address, Network.Payer, (long)balance, PrivateKey);
+                    }
+                }
+                catch
+                {
+                    // Nothing else to try, move on.
+                }
             }
             await Client.DisposeAsync();
             Network.Output?.WriteLine("TEARDOWN COMPLETED: Test Account Instance");

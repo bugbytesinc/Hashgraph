@@ -22,6 +22,11 @@ namespace Hashgraph
         /// </summary>
         public IEnumerable<TokenTransfer>? TokenTransfers { get; set; }
         /// <summary>
+        /// A list of assets transfered from an arbitray set of accounts to
+        /// another arbitrary set of accounts.
+        /// </summary>
+        public IEnumerable<AssetTransfer>? AssetTransfers { get; set; }
+        /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to authorize the transfers.  Typically matches the
         /// Endorsement assigned to sending accounts.

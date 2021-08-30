@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS8618
 
 using System;
+using System.Collections.Generic;
 
 namespace Hashgraph
 {
@@ -47,6 +48,12 @@ namespace Hashgraph
         /// </summary>
         public uint Decimals { get; set; }
         /// <summary>
+        /// The maximum number of tokens allowed to be in circulation at any
+        /// given time. If set to a value of zero or less, the toal circulation
+        /// will be allowed to grow to the maxumin amount allowed by the network.
+        /// </summary>
+        public long Ceiling { get; set; }
+        /// <summary>
         /// The treasury account receiving the Initial Circulation balance of tokens.
         /// </summary>
         public Address Treasury { get; set; }
@@ -74,6 +81,19 @@ namespace Hashgraph
         /// tokens in the treasury account.
         /// </summary>
         public Endorsement? SupplyEndorsement { get; set; }
+        /// <summary>
+        /// Administrator key for signing transactions updating the commissions
+        /// (custom transfer fees) associated with this token
+        /// KYC status of an account.
+        /// </summary>
+        public Endorsement? CommissionsEndorsement { get; set; }
+        /// <summary>
+        /// The list of commissions applied to transactions
+        /// transferring this asset.  If a commission endorsement is not
+        /// supplied upon creation, the commissions are imutable after
+        /// creation.
+        /// </summary>
+        public IEnumerable<ICommission>? Commissions { get; set; }
         /// <summary>
         /// The default frozen setting for current and newly created accounts.  A value 
         /// of <code>true</code> will default crypto account status of <code>Frozen</code> 

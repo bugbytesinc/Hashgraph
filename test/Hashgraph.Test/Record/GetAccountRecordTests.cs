@@ -1,6 +1,5 @@
 ﻿using Hashgraph.Test.Fixtures;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,13 +35,15 @@ namespace Hashgraph.Test.Record
             var records = await fx.Client.GetAccountRecordsAsync(childAccount);
             Assert.NotNull(records);
             Assert.Equal(transactionCount, records.Length);
-            foreach(var record in records)
+            foreach (var record in records)
             {
                 Assert.Equal(ResponseCode.Success, record.Status);
                 Assert.Equal(4, record.Transfers.Count);
                 Assert.Equal(-transferAmount - (long)record.Fee, record.Transfers[childAccount]);
                 Assert.Equal(transferAmount, record.Transfers[parentAccount]);
                 Assert.Empty(record.TokenTransfers);
+                Assert.Empty(record.AssetTransfers);
+                Assert.Empty(record.Commissions);
             }
         }
         [Fact(DisplayName = "Account Records: Get with Empty Account raises Error.")]

@@ -31,18 +31,22 @@ namespace Hashgraph.Test.Token
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(TokenType.Fungible, info.Type);
             Assert.Equal(fxToken.Params.Symbol, info.Symbol);
             Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
             // Note: we doubled the circulation
             Assert.Equal(fxToken.Params.Circulation * 2, info.Circulation);
             Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
             Assert.Equal(fxToken.Params.Administrator, info.Administrator);
             Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
@@ -64,18 +68,22 @@ namespace Hashgraph.Test.Token
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(TokenType.Fungible, info.Type);
             Assert.Equal(fxToken.Params.Symbol, info.Symbol);
             Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
             // Note: we doubled the circulation
             Assert.Equal(fxToken.Params.Circulation * 2, info.Circulation);
             Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
             Assert.Equal(fxToken.Params.Administrator, info.Administrator);
             Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
@@ -105,18 +113,22 @@ namespace Hashgraph.Test.Token
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(TokenType.Fungible, info.Type);
             Assert.Equal(fxToken.Params.Symbol, info.Symbol);
             Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
             // Note: we doubled the circulation
             Assert.Equal(fxToken.Params.Circulation * 2, info.Circulation);
             Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
             Assert.Equal(fxToken.Params.Administrator, info.Administrator);
             Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
@@ -143,18 +155,22 @@ namespace Hashgraph.Test.Token
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(TokenType.Fungible, info.Type);
             Assert.Equal(fxToken.Params.Symbol, info.Symbol);
             Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
             // Note: we doubled the circulation
             Assert.Equal(fxToken.Params.Circulation * 2, info.Circulation);
             Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
             Assert.Equal(fxToken.Params.Administrator, info.Administrator);
             Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Empty(info.Commissions);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
@@ -173,6 +189,7 @@ namespace Hashgraph.Test.Token
 
             var record = await fxToken.Client.MintTokenWithRecordAsync(fxToken.Record.Token, amountToCreate, fxToken.SupplyPrivateKey);
             Assert.Single(record.TokenTransfers);
+            Assert.Empty(record.AssetTransfers);
             Assert.Equal(expectedCirculation, record.Circulation);
 
             var xfer = record.TokenTransfers[0];
@@ -221,11 +238,28 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
         }
+        [Fact(DisplayName = "Mint Tokens: Can Not Mint More than Ceiling")]
+        public async Task CanNotMintMoreThanCeiling()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.Ceiling = (long)fx.Params.Circulation);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxToken.Client.MintTokenAsync(fxToken.Record.Token, fxToken.Params.Circulation, fxToken.SupplyPrivateKey);
+            });
+            Assert.Equal(ResponseCode.TokenMaxSupplyReached, tex.Status);
+            Assert.StartsWith("Unable to Mint Token Coins, status: TokenMaxSupplyReached", tex.Message);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Params.Ceiling, (long)info.Circulation);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
+        }
         [Fact(DisplayName = "Mint Tokens: Can Not Schedule Mint Token Coins")]
         public async Task CanNotScheduleMintTokenCoins()
         {
             await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
+
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
                 await fxToken.Client.MintTokenAsync(
@@ -240,6 +274,31 @@ namespace Hashgraph.Test.Token
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+
+            Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(TokenType.Fungible, info.Type);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            // Note: we doubled the circulation
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Empty(info.Commissions);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
+
+            Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
     }
 }

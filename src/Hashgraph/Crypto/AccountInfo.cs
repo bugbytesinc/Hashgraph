@@ -46,7 +46,7 @@ namespace Hashgraph
         /// </summary>
         public ulong Balance { get; private init; }
         /// <summary>
-        /// Balances of tokens associated with this account.
+        /// Balances of tokens and assets associated with this account.
         /// </summary>
         public ReadOnlyCollection<TokenBalance> Tokens { get; private init; }
         /// <summary>
@@ -72,6 +72,11 @@ namespace Hashgraph
         /// </summary>
         public string Memo { get; private init; }
         /// <summary>
+        /// The number of assets (non fungible tokens) held
+        /// by this account.
+        /// </summary>
+        public long AssetCount { get; private init; }
+        /// <summary>
         /// Internal Constructor from Raw Response
         /// </summary>
         internal AccountInfo(Response response)
@@ -89,6 +94,7 @@ namespace Hashgraph
             AutoRenewPeriod = info.AutoRenewPeriod.ToTimeSpan();
             Expiration = info.ExpirationTime.ToDateTime();
             Memo = info.Memo;
+            AssetCount = info.OwnedNfts;
         }
     }
 }

@@ -35,6 +35,7 @@ namespace Hashgraph.Test.Crypto
             Assert.False(info.ReceiveSignatureRequired);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(0, info.AssetCount);
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Account Facet")]
         public async Task CanGetInfoForAccountFacet()
@@ -53,6 +54,7 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(fxAccount.CreateParams.Memo, info.Memo);
+            Assert.Equal(0, info.AssetCount);
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Server Node")]
         public async Task CanGetInfoForGatewayAsync()
@@ -73,6 +75,7 @@ namespace Hashgraph.Test.Crypto
             Assert.False(info.ReceiveSignatureRequired);
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(0, info.AssetCount);
         }
         [Fact(DisplayName = "Get Account Info: Getting Account Info without paying signature fails.")]
         public async Task GetInfoWithoutPayingSignatureThrowsException()
@@ -85,6 +88,24 @@ namespace Hashgraph.Test.Crypto
                 await client.GetAccountInfoAsync(account);
             });
             Assert.StartsWith("The Payer's signatory (signing key/callback) has not been configured. This is required for retreiving records and other general network Queries. Please check that", ioe.Message);
+        }
+        [Fact(DisplayName = "Get Account Info: Can Get Info for Asset Treasury Account")]
+        public async Task CanGetInfoForAssetTreasuryAccount()
+        {
+            await using var fxAsset = await TestAsset.CreateAsync(_network);
+
+            var info= await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
+            Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Address);
+            Assert.NotNull(info.SmartContractId);
+            Assert.False(info.Deleted);
+            Assert.NotNull(info.Proxy);
+            Assert.Equal(new Address(0, 0, 0), info.Proxy);
+            Assert.True(info.ProxiedToAccount > -1);
+            Assert.True(info.Balance > 0);
+            Assert.False(info.ReceiveSignatureRequired);
+            Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Equal(fxAsset.Metadata.Length, info.AssetCount);
         }
     }
 }

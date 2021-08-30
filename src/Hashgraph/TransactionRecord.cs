@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf.Collections;
 using Hashgraph.Implementation;
+using Proto;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,22 +37,37 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyDictionary<Address, long> Transfers { get; internal init; }
         /// <summary>
-        /// A list token transfers to and from accounts associated with
+        /// A list of token transfers to and from accounts associated with
         /// the record represented by this transaction.
         /// </summary>
         public ReadOnlyCollection<TokenTransfer> TokenTransfers { get; internal init; }
+        /// <summary>
+        /// A list of asset transfers to and from accounts associated with
+        /// the record represented by this transaction.
+        /// </summary>
+        public ReadOnlyCollection<AssetTransfer> AssetTransfers { get; internal init; }
+        /// <summary>
+        /// A list of token transfers applied by the network as commissions
+        /// for executing the original transaction.  Typically in the form
+        /// of royalties for transfering custom tokens and assets as defined
+        /// by the respective token definition's fees.
+        /// </summary>
+        public ReadOnlyCollection<TokenTransfer> Commissions { get; internal init; }
         /// <summary>
         /// Internal Constructor of the record.
         /// </summary>
         internal TransactionRecord(NetworkResult result) : base(result)
         {
             var record = result.Record!;
+            var (tokenTransfers, assetTransfers) = record.TokenTransferLists.AsTokenAndAssetTransferLists();
             Hash = record.TransactionHash?.ToByteArray();
             Concensus = record.ConsensusTimestamp?.ToDateTime();
             Memo = record.Memo;
             Fee = record.TransactionFee;
-            Transfers = record.TransferList?.ToTransfers() ?? new ReadOnlyDictionary<Address, long>(new Dictionary<Address,long>());
-            TokenTransfers = TokenTransferExtensions.Create(record.TokenTransferLists);
+            Transfers = record.TransferList?.ToTransfers() ?? new ReadOnlyDictionary<Address, long>(new Dictionary<Address, long>());
+            TokenTransfers = tokenTransfers;
+            AssetTransfers = assetTransfers;
+            Commissions = record.AssessedCustomFees.AsTokenTransferList();
         }
     }
 

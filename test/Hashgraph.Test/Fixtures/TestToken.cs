@@ -16,6 +16,8 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> ConfiscatePrivateKey;
         public ReadOnlyMemory<byte> SupplyPublicKey;
         public ReadOnlyMemory<byte> SupplyPrivateKey;
+        public ReadOnlyMemory<byte> CommissionsPublicKey;
+        public ReadOnlyMemory<byte> CommissionsPrivateKey;
         public TestAccount TreasuryAccount;
         public TestAccount RenewAccount;
         public Address Payer;
@@ -29,6 +31,7 @@ namespace Hashgraph.Test.Fixtures
             var wholeTokens = (ulong)(Generator.Integer(10, 20) * 100000);
             var decimals = (uint)Generator.Integer(2, 5);
             var circulation = wholeTokens * (ulong)Math.Pow(10, decimals);
+            var maxSupply = (long)(circulation * Generator.Double(2.1, 2.8));
             var fx = new TestToken
             {
                 Network = networkCredentials
@@ -39,6 +42,7 @@ namespace Hashgraph.Test.Fixtures
             (fx.SuspendPublicKey, fx.SuspendPrivateKey) = Generator.KeyPair();
             (fx.ConfiscatePublicKey, fx.ConfiscatePrivateKey) = Generator.KeyPair();
             (fx.SupplyPublicKey, fx.SupplyPrivateKey) = Generator.KeyPair();
+            (fx.CommissionsPublicKey, fx.CommissionsPrivateKey) = Generator.KeyPair();
             fx.Payer = networkCredentials.Payer;
             fx.Client = networkCredentials.NewClient();
             fx.TreasuryAccount = await TestAccount.CreateAsync(networkCredentials);
@@ -49,12 +53,14 @@ namespace Hashgraph.Test.Fixtures
                 Symbol = Generator.UppercaseAlphaCode(20),
                 Circulation = circulation,
                 Decimals = decimals,
+                Ceiling = maxSupply,
                 Treasury = fx.TreasuryAccount.Record.Address,
                 Administrator = fx.AdminPublicKey,
                 GrantKycEndorsement = fx.GrantPublicKey,
                 SuspendEndorsement = fx.SuspendPublicKey,
                 ConfiscateEndorsement = fx.ConfiscatePublicKey,
                 SupplyEndorsement = fx.SupplyPublicKey,
+                CommissionsEndorsement = fx.CommissionsPublicKey,
                 InitializeSuspended = false,
                 Expiration = Generator.TruncatedFutureDate(2000, 3000),
                 RenewAccount = fx.RenewAccount.Record.Address,
