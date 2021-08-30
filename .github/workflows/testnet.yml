@@ -19,6 +19,8 @@ env:
   BUILD_CONFIGURATION: Release
   DOTNET_NOLOGO: true
 
+concurrency: TESTNET  
+
 jobs:
   build_and_test_windows:
     name: 'Build and Test Windows'
