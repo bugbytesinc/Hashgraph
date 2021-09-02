@@ -254,28 +254,38 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Ceiling, (long)info.Circulation);
             Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
         }
-        [Fact(DisplayName = "Mint Tokens: Can Not Schedule Mint Token Coins")]
-        public async Task CanNotScheduleMintTokenCoins()
+        [Fact(DisplayName = "Mint Tokens: Can Schedule Mint Token Coins")]
+        public async Task CanScheduleMintTokenCoins()
         {
             await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
 
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await fxToken.Client.MintTokenAsync(
-                    fxToken.Record.Token,
-                    fxToken.Params.Circulation,
-                    new Signatory(
-                        fxToken.SupplyPrivateKey,
-                        new PendingParams
-                        {
-                            PendingPayer = fxPayer
-                        }));
-            });
-            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
-            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+            var pendingReceipt = await fxToken.Client.MintTokenAsync(
+                fxToken.Record.Token,
+                fxToken.Params.Circulation,
+                new Signatory(
+                    fxToken.SupplyPrivateKey,
+                    new PendingParams
+                    {
+                        PendingPayer = fxPayer
+                    }));
 
             Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+            // This should be considered a network bug.
+            Assert.Equal(0UL, pendingReceipt.Circulation);
+
+            var schedulingReceipt = await fxToken.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey); // as TokenReceipt
+            Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+
+            // Can get receipt for original scheduled tx.
+            var executedReceipt = await fxToken.Client.GetReceiptAsync(pendingReceipt.Pending.TxId) as TokenReceipt;
+            var expectedTreasury = 2 * fxToken.Params.Circulation;
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(expectedTreasury, executedReceipt.Circulation);
+
+            // Can get record for original scheduled tx.
+            var record = await fxToken.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as TokenRecord;
+            Assert.Equal(expectedTreasury, record.Circulation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
             Assert.Equal(fxToken.Record.Token, info.Token);
@@ -283,7 +293,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Symbol, info.Symbol);
             Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
             // Note: we doubled the circulation
-            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Circulation * 2, info.Circulation);
             Assert.Equal(fxToken.Params.Decimals, info.Decimals);
             Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
             Assert.Equal(fxToken.Params.Administrator, info.Administrator);
@@ -298,7 +308,7 @@ namespace Hashgraph.Test.Token
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
-            Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+            Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
     }
 }

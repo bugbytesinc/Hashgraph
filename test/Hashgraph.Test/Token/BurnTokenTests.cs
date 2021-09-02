@@ -256,31 +256,41 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
         }
-        [Fact(DisplayName = "Burn Tokens: Can Not Schedule Burn Token Coins")]
-        public async Task CanNotScheduleBurnTokenCoins()
+        [Fact(DisplayName = "Burn Tokens: Can Schedule Burn Token Coins")]
+        public async Task CanScheduleBurnTokenCoins()
         {
             await using var fxPayer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 40_00_000_000);
             await using var fxToken = await TestToken.CreateAsync(_network);
             var amountToDestory = fxToken.Params.Circulation / 3 + 1;
-            var expectedCirculation = fxToken.Params.Circulation;
+            var expectedCirculation = fxToken.Params.Circulation - amountToDestory;
+            var pendingReceipt = await fxToken.Client.BurnTokenAsync(
+                    fxToken,
+                    amountToDestory,
+                    new Signatory(
+                        fxToken.SupplyPrivateKey,
+                        new PendingParams
+                        {
+                            PendingPayer = fxPayer
+                        }));
 
-
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await fxToken.Client.BurnTokenAsync(
-                                    fxToken,
-                                    amountToDestory,
-                                    new Signatory(
-                                        fxToken.SupplyPrivateKey,
-                                        new PendingParams
-                                        {
-                                            PendingPayer = fxPayer
-                                        }));
-            });
-            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
-            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+            Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
+            // This should be considered a network bug.
+            Assert.Equal(0UL, pendingReceipt.Circulation);
 
             await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation);
+
+            var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey);
+            Assert.Equal(ResponseCode.Success, signingReceipt.Status);
+
+            var executedReceipt = await fxPayer.Client.GetReceiptAsync(pendingReceipt.Pending.TxId) as TokenReceipt;
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(expectedCirculation, executedReceipt.Circulation);
+
+            var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as TokenRecord;
+            Assert.Equal(ResponseCode.Success, executedRecord.Status);
+            Assert.Equal(expectedCirculation, executedRecord.Circulation);
+
+            await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, expectedCirculation);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
             Assert.Equal(fxToken.Record.Token, info.Token);

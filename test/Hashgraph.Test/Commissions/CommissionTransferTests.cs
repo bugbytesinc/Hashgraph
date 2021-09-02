@@ -406,7 +406,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Record.Token, commission.Token);
             Assert.Equal(50U, commission.Amount);
             Assert.Equal(fxComAccount.Record.Address, commission.Receiver);
-            Assert.Contains(fxAccount1.Record.Address, commission.Payers);
+            Assert.Contains(fxAccount2.Record.Address, commission.Payers);
 
             Assert.Equal(3, record.TokenTransfers.Count);
 

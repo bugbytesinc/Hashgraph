@@ -416,31 +416,43 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal((ulong)expectedTreasury, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
         }
-        [Fact(DisplayName = "Burn Assets: Can Not Schedule Burn Asset Coins")]
-        public async Task CanNotScheduleBurnAssetCoins()
+        [Fact(DisplayName = "Burn Assets: Can Schedule Burn Asset Coins")]
+        public async Task CanScheduleBurnAssetCoins()
         {
             await using var fxPayer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 40_00_000_000);
             await using var fxAsset = await TestAsset.CreateAsync(_network);
             var amountToDestory = fxAsset.Metadata.Length / 3 + 1;
-            var expectedCirculation = (ulong)(fxAsset.Metadata.Length);
+            var expectedCirculation = (ulong)(fxAsset.Metadata.Length - amountToDestory);
             var serialNumbers = Enumerable.Range(1, amountToDestory).Select(i => (long)i);
 
-            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-            {
-                await fxAsset.Client.BurnAssetsAsync(
-                                fxAsset.Record.Token,
-                                serialNumbers,
-                                new Signatory(
-                                    fxAsset.SupplyPrivateKey,
-                                    new PendingParams
-                                    {
-                                        PendingPayer = fxPayer
-                                    }));
-            });
-            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
-            Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+            var pendingReceipt = await fxAsset.Client.BurnAssetsAsync(
+                fxAsset.Record.Token,
+                serialNumbers,
+                new Signatory(
+                    fxAsset.SupplyPrivateKey,
+                    new PendingParams
+                    {
+                        PendingPayer = fxPayer
+                    }));
+
+            Assert.Equal(ResponseCode.Success, pendingReceipt.Status);
+            // This should be considered a network bug.
+            Assert.Equal(0UL, pendingReceipt.Circulation);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)fxAsset.Metadata.Length);
+
+            var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey); // As TokenReceipt
+            Assert.Equal(ResponseCode.Success, signingReceipt.Status);
+
+            var executedReceipt = await fxPayer.Client.GetReceiptAsync(pendingReceipt.Pending.TxId) as TokenReceipt;
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(expectedCirculation, executedReceipt.Circulation);
+
+            var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as TokenRecord;
+            Assert.Equal(ResponseCode.Success, executedRecord.Status);
+            Assert.Equal(expectedCirculation, executedRecord.Circulation);
+
+            await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, expectedCirculation);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
             Assert.Equal(fxAsset.Record.Token, info.Token);
