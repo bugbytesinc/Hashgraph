@@ -52,7 +52,7 @@ namespace Hashgraph
         /// of royalties for transfering custom tokens and assets as defined
         /// by the respective token definition's fees.
         /// </summary>
-        public ReadOnlyCollection<TokenTransfer> Commissions { get; internal init; }
+        public ReadOnlyCollection<CommissionTransfer> Commissions { get; internal init; }
         /// <summary>
         /// Internal Constructor of the record.
         /// </summary>
@@ -67,7 +67,7 @@ namespace Hashgraph
             Transfers = record.TransferList?.ToTransfers() ?? new ReadOnlyDictionary<Address, long>(new Dictionary<Address, long>());
             TokenTransfers = tokenTransfers;
             AssetTransfers = assetTransfers;
-            Commissions = record.AssessedCustomFees.AsTokenTransferList();
+            Commissions = record.AssessedCustomFees.AsCommissionTransferList();
         }
     }
 

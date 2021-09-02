@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Test.Fixtures;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -40,6 +41,59 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenType.Asset, info.Type);
             Assert.False(info.Deleted);
         }
+        [Fact(DisplayName = "Asset Token Info: Support For Defect 2088 Supply Key Not Being Recorded (Reproduce Non Reproduce)")]
+        public async Task SupportForDefect2088SupplyKeyNotBeingRecordedReproduceNonReproduce()
+        {
+            await using var fxTreasury = await TestAccount.CreateAsync(_network);
+            var (adminPublicKey, adminPrivateKey) = Generator.KeyPair();
+            var (supplyPublicKey, supplyPrivateKey) = Generator.KeyPair();
+            var (commissionPublicKey, commissionPrivateKey) = Generator.KeyPair();
+            var createParams = new CreateAssetParams
+            {
+                Name = "012345678912",
+                Symbol = "ABCD",
+                Treasury = fxTreasury,
+                Administrator = adminPublicKey,
+                SupplyEndorsement = supplyPublicKey,
+                CommissionsEndorsement = commissionPublicKey,
+                Expiration = DateTime.UtcNow.AddSeconds(7890000),
+                Signatory = new Signatory(fxTreasury, adminPrivateKey)
+            };
+            var receipt = await fxTreasury.Client.CreateTokenAsync(createParams);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var info = await fxTreasury.Client.GetTokenInfoAsync(receipt.Token);
+            Assert.Equal(createParams.CommissionsEndorsement, info.CommissionsEndorsement);
+        }
+        [Fact(DisplayName = "Asset Token Info: Support For Defect 2088 Supply Key Not Being Recorded (Demonstrate Problem)")]
+        public async Task SupportForDefect2088SupplyKeyNotBeingRecordedDemonstrateProblem()
+        {
+            await using var fxTreasury = await TestAccount.CreateAsync(_network);
+            var (adminPublicKey, adminPrivateKey) = Generator.KeyPair();
+            var (supplyPublicKey, supplyPrivateKey) = Generator.KeyPair();
+            var (commissionPublicKey, commissionPrivateKey) = Generator.KeyPair();
+            var createParams = new CreateAssetParams
+            {
+                Name = "012345678912",
+                Symbol = "ABCD",
+                Treasury = fxTreasury,
+                Administrator = adminPublicKey,
+                SupplyEndorsement = supplyPublicKey,
+                CommissionsEndorsement = commissionPublicKey,
+                Expiration = DateTime.UtcNow.AddSeconds(7890000),
+                Signatory = new Signatory(fxTreasury, adminPrivateKey)
+            };
+            var receipt = await fxTreasury.Client.CreateTokenAsync(createParams);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var metadata = Enumerable.Range(1, 10).Select(_ => Generator.SHA384Hash()).ToArray();
+            var record = await fxTreasury.Client.MintAssetWithRecordAsync(receipt.Token, metadata, supplyPrivateKey);
+            Assert.Equal(ResponseCode.Success, record.Status);
+
+            var info = await fxTreasury.Client.GetTokenInfoAsync(receipt.Token);
+            Assert.Equal(createParams.CommissionsEndorsement, info.CommissionsEndorsement);
+        }
+
         [Fact(DisplayName = "Asset Token Info: Null Asset Identifier Raises Exception")]
         public async Task NullTokenIdentifierRaisesException()
         {

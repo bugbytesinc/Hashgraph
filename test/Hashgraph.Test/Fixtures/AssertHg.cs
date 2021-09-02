@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Extensions;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -62,6 +63,11 @@ namespace Hashgraph.Test.Fixtures
             var balance = await fxAsset.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset);
             Assert.Equal(expectedBalance, balance);
         }
+        public static async Task AssetBalanceAsync(TestAsset fxAsset, TestAccount fxAccount, int expectedBalance)
+        {
+            var balance = await fxAsset.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset);
+            Assert.Equal((ulong)expectedBalance, balance);
+        }
 
         internal static async Task TokenNotAssociatedAsync(TestToken fxToken, TestAccount fxAccount)
         {
@@ -112,5 +118,34 @@ namespace Hashgraph.Test.Fixtures
             var balance = await fxAccount.Client.GetAccountBalanceAsync(fxAccount);
             Assert.Equal(expectedBalance, balance);
         }
+
+        internal static void ContainsCommission(TestToken fxToken, TestAccount fxPayer, TestAccount fxReceiver, int amount, ReadOnlyCollection<CommissionTransfer> commissions)
+        {
+            var token = fxToken.Record.Token;
+            var payer = fxPayer.Record.Address;
+            var receiver = fxReceiver.Record.Address;
+            foreach(var entry in commissions)
+            {
+                if(amount == entry.Amount && token == entry.Token && receiver == entry.Receiver && entry.Payers.Contains(payer))
+                {
+                    return;
+                }
+            }
+            throw new Xunit.Sdk.XunitException($"Unable to find commission payment using token {token} involving a payer {payer} to receiver {receiver} with amount {amount}.");
+        }
+        internal static void ContainsHbarCommission(TestAccount fxPayer, TestAccount fxReceiver, int amount, ReadOnlyCollection<CommissionTransfer> commissions)
+        {
+            var payer = fxPayer.Record.Address;
+            var receiver = fxReceiver.Record.Address;
+            foreach (var entry in commissions)
+            {
+                if (amount == entry.Amount && Address.None == entry.Token && receiver == entry.Receiver && entry.Payers.Contains(payer))
+                {
+                    return;
+                }
+            }
+            throw new Xunit.Sdk.XunitException($"Unable to find commission payment using hBbar involving a payer {payer} to receiver {receiver} with amount {amount}.");
+        }
+
     }
 }

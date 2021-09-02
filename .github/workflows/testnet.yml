@@ -19,7 +19,7 @@ env:
   BUILD_CONFIGURATION: Release
   DOTNET_NOLOGO: true
 
-concurrency: TESTNET  
+concurrency: TESTNET
 
 jobs:
   build_and_test_windows:
@@ -47,7 +47,7 @@ jobs:
       run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
 
     - name: Integration Tests
-      run: dotnet test --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+      run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
       env:
         'account:number': ${{ secrets.ACCOUNT_NUMBER }}
         'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
@@ -57,6 +57,13 @@ jobs:
         'network:address': ${{ secrets.NETWORK_ADDRESS }}
         'network:port': ${{ secrets.NETWORK_PORT }}
         'server:number': ${{ secrets.SERVER_NUMBER }}
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-windows
+        path: test-results
+      if: ${{ always() }}
 
   build_and_test_linux:
     name: 'Build and Test Linux'
@@ -84,7 +91,7 @@ jobs:
       run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
 
     - name: Integration Tests
-      run: dotnet test --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+      run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
       env:
         'account:number': ${{ secrets.ACCOUNT_NUMBER }}
         'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
@@ -94,6 +101,13 @@ jobs:
         'network:address': ${{ secrets.NETWORK_ADDRESS }}
         'network:port': ${{ secrets.NETWORK_PORT }}
         'server:number': ${{ secrets.SERVER_NUMBER }}
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-linux
+        path: test-results
+      if: ${{ always() }}
 
   build_and_test_macos:
     name: 'Build and Test MacOS'
@@ -121,7 +135,7 @@ jobs:
       run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
 
     - name: Integration Tests
-      run: dotnet test --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+      run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
       env:
         'account:number': ${{ secrets.ACCOUNT_NUMBER }}
         'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
@@ -131,3 +145,10 @@ jobs:
         'network:address': ${{ secrets.NETWORK_ADDRESS }}
         'network:port': ${{ secrets.NETWORK_PORT }}
         'server:number': ${{ secrets.SERVER_NUMBER }}
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-macos
+        path: test-results
+      if: ${{ always() }}
