@@ -518,5 +518,110 @@ namespace Hashgraph.Test.Token
             await AssertHg.CryptoBalanceAsync(fxSeller, 0);
             await AssertHg.CryptoBalanceAsync(fxBenefactor, 0);
         }
+        [Fact(DisplayName = "NETWORK BUG: Commission Value Transfers: Transferring Asset Applies Multiple Value Commision Destinations FAILS")]
+        public async Task TransferringAssetAppliesMultipleValueCommisionDestinationsFails()
+        {
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(TransferringAssetAppliesMultipleValueCommisionDestinations));
+            Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
+            Assert.Equal("5", testFailException.Expected);
+            Assert.Equal("3", testFailException.Actual);
+
+            //[Fact(DisplayName = "Commission Value Transfers: Transferring Asset Applies Multiple Value Commision Destinations")]
+            async Task TransferringAssetAppliesMultipleValueCommisionDestinations()
+            {
+                await using var fxBuyer = await TestAccount.CreateAsync(_network);
+                await using var fxSeller = await TestAccount.CreateAsync(_network);
+                await using var fxBenefactor1 = await TestAccount.CreateAsync(_network);
+                await using var fxBenefactor2 = await TestAccount.CreateAsync(_network);
+                await using var fxBenefactor3 = await TestAccount.CreateAsync(_network);
+                await using var fxPaymentToken = await TestToken.CreateAsync(_network, fx =>
+                {
+                    fx.Params.GrantKycEndorsement = null;
+                    fx.Params.Decimals = 2;
+                    fx.Params.Circulation = 1_000_00;
+                }, fxBenefactor1, fxBenefactor2, fxBenefactor3, fxBuyer, fxSeller);
+                await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
+                {
+                    fx.Params.Commissions = new ValueCommission[]
+                    {
+                        new ValueCommission(fxBenefactor1, 1, 10, 1_00, fxPaymentToken),
+                        new ValueCommission(fxBenefactor2, 1, 10, 1_00, fxPaymentToken),
+                        new ValueCommission(fxBenefactor3, 1, 5, 1_00, fxPaymentToken),
+                    };
+                    fx.Params.GrantKycEndorsement = null;
+                }, fxBuyer, fxSeller);
+                Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
+
+                var movedAsset = new Asset(fxAsset, 1);
+
+                await fxPaymentToken.Client.TransferTokensAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxBuyer, 100, fxPaymentToken.TreasuryAccount);
+                await fxPaymentToken.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+
+                await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 0);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 1);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor1, 0);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor2, 0);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor3, 0);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 100);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 0);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor1, 0);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor2, 0);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor3, 0);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100);
+
+                var record = await fxAsset.Client.TransferWithRecordAsync(new TransferParams
+                {
+                    AssetTransfers = new[] {
+                    new AssetTransfer(movedAsset,fxSeller,fxBuyer)
+                },
+                    TokenTransfers = new[] {
+                    new TokenTransfer(fxPaymentToken, fxBuyer, -100),
+                    new TokenTransfer(fxPaymentToken, fxSeller, 100),
+                },
+                    Signatory = new Signatory(fxBuyer, fxSeller)
+                });
+
+                Assert.Equal(ResponseCode.Success, record.Status);
+                Assert.False(record.Hash.IsEmpty);
+                Assert.NotNull(record.Concensus);
+                Assert.NotNull(record.CurrentExchangeRate);
+                Assert.NotNull(record.NextExchangeRate);
+                Assert.Empty(record.Memo);
+                Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+                Assert.Equal(_network.Payer, record.Id.Address);
+                Assert.Equal(5, record.TokenTransfers.Count);
+                Assert.Contains(new TokenTransfer(fxPaymentToken, fxBuyer, -100), record.TokenTransfers);
+                Assert.Contains(new TokenTransfer(fxPaymentToken, fxSeller, 60), record.TokenTransfers);
+                Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor1, 10), record.TokenTransfers);
+                Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor2, 10), record.TokenTransfers);
+                Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor3, 20), record.TokenTransfers);
+                Assert.Single(record.AssetTransfers);
+                Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+                Assert.Single(record.Commissions);
+                AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor1, 10, record.Commissions);
+                AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor2, 10, record.Commissions);
+                AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor3, 20, record.Commissions);
+
+                await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor1, 0);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor2, 0);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor3, 0);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
+                await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 0);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 60);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor1, 10);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor2, 10);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor3, 20);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+                await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100);
+            }
+        }
     }
 }
