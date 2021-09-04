@@ -24,6 +24,8 @@ While we are in the process of building the preliminary infrastructure for this 
 | - | -
 | [![Build Status](https://github.com/bugbytesinc/Hashgraph/actions/workflows/testnet.yml/badge.svg)](https://github.com/bugbytesinc/Hashgraph/actions/workflows/testnet.yml) | [![Build Status](https://github.com/bugbytesinc/Hashgraph/actions/workflows/previewnet.yml/badge.svg)](https://github.com/bugbytesinc/Hashgraph/actions/workflows/previewnet.yml)
 
+**Please note:** _the tests above are integration tests and depend on the external hedera test networks’ availability, stability, performance, and features to function.  The stability and feature sets of these external networks are outside the control of the .NET SDK’s team and therefore a failing test in this context should not necessarily be interpreted as a defect in the .NET SDK.  If there is any doubt, the test results (as TRX files) are available for download and inspection by various framework tools such as Visual Studio._
+
 ## Packages
 
 | Nuget

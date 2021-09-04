@@ -60,7 +60,8 @@ namespace Proto
                         {
                             Numerator = fractionalCommission.Numerator,
                             Denominator = fractionalCommission.Denominator
-                        }
+                        },
+                        NetOfTransfers = fractionalCommission.AssessAsSurcharge
                     };
                     break;
                 default:

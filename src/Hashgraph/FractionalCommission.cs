@@ -46,6 +46,15 @@ namespace Hashgraph
         /// </summary>
         public long Maximum { get; private init; }
         /// <summary>
+        /// Determines how the fee is applied, if <code>true</code>
+        /// the fee is applied as an extra surcharge paid by the 
+        /// sender of the target token.  If <code>false</code> 
+        /// (the default) the amount of token received by the 
+        /// receiver is reduced by the fee from the total amount
+        /// sent by the sender.
+        /// </summary>
+        public bool AssessAsSurcharge { get; private init; }
+        /// <summary>
         /// Internal Constructor representing the "None" version of a commission.
         /// </summary>
         private FractionalCommission()
@@ -55,6 +64,7 @@ namespace Hashgraph
             Denominator = 0;
             Minimum = 0;
             Maximum = 0;
+            AssessAsSurcharge = false;
         }
         /// <summary>
         /// Public Constructor, an <code>FractionalCommission</code> is immutable after creation.
@@ -83,13 +93,14 @@ namespace Hashgraph
         /// The maximum allowed fee value, in terms of
         /// the smallest denomination of the payment token.
         /// </param>
-        public FractionalCommission(Address account, long numerator, long denominator, long minimum, long maximum)
+        public FractionalCommission(Address account, long numerator, long denominator, long minimum, long maximum, bool assesAsSurcharge = false)
         {
             Account = account;
             Numerator = numerator;
             Denominator = denominator;
             Minimum = minimum;
             Maximum = maximum;
+            AssessAsSurcharge = assesAsSurcharge;
         }
 
         internal FractionalCommission(CustomFee fee)
@@ -100,6 +111,7 @@ namespace Hashgraph
             Denominator = fraction.FractionalAmount.Denominator;
             Minimum = fraction.MinimumAmount;
             Maximum = fraction.MaximumAmount;
+            AssessAsSurcharge = fraction.NetOfTransfers;
         }
     }
 }
