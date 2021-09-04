@@ -7,15 +7,15 @@ using Xunit.Abstractions;
 namespace Hashgraph.Test.Token
 {
     [Collection(nameof(NetworkCredentials))]
-    public class CommissionValueTests
+    public class AssetRoyaltyTests
     {
         private readonly NetworkCredentials _network;
-        public CommissionValueTests(NetworkCredentials network, ITestOutputHelper output)
+        public AssetRoyaltyTests(NetworkCredentials network, ITestOutputHelper output)
         {
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Commission Value Transfers: Transferring Asset Applies Single Value Commision")]
+        [Fact(DisplayName = "Royalty Asset Transfers: Transferring Asset Applies Single Value Commision")]
         async Task TransferringAssetAppliesSingleValueCommision()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network);
@@ -24,9 +24,9 @@ namespace Hashgraph.Test.Token
             await using var fxPaymentToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxBenefactor, fxBuyer, fxSeller);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ValueCommission[]
+                fx.Params.Royalties = new AssetRoyalty[]
                 {
-                        new ValueCommission(fxBenefactor, 1, 2, 0, Address.None)
+                        new AssetRoyalty(fxBenefactor, 1, 2, 0, Address.None)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -75,8 +75,8 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Single(record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Commissions);
+            Assert.Single(record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -91,7 +91,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100);
         }
 
-        [Fact(DisplayName = "Commission Value Transfers: Transferring Asset Applies Single Value Hbar Commision")]
+        [Fact(DisplayName = "Royalty Asset Transfers: Transferring Asset Applies Single Value Hbar Commision")]
         async Task TransferringAssetAppliesSingleValueHbarCommision()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 10_00_000_000);
@@ -99,9 +99,9 @@ namespace Hashgraph.Test.Token
             await using var fxBenefactor = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 0);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ValueCommission[]
+                fx.Params.Royalties = new AssetRoyalty[]
                 {
-                        new ValueCommission(fxBenefactor, 1, 2, 0, Address.None)
+                        new AssetRoyalty(fxBenefactor, 1, 2, 0, Address.None)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -143,8 +143,8 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Single(record.Commissions);
-            AssertHg.ContainsHbarCommission(fxSeller, fxBenefactor, 5_00_000_000, record.Commissions);
+            Assert.Single(record.Royalties);
+            AssertHg.ContainsHbarRoyalty(fxSeller, fxBenefactor, 5_00_000_000, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -156,7 +156,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.CryptoBalanceAsync(fxBenefactor, 5_00_000_000);
         }
 
-        [Fact(DisplayName = "Commission Value Transfers: Transferring Asset Applies Value Commisions when Token And HBar Exchanged")]
+        [Fact(DisplayName = "Royalty Asset Transfers: Transferring Asset Applies Value Commisions when Token And HBar Exchanged")]
         async Task TransferringAssetAppliesValueCommisionsWhenTokenAndHBarExchanged()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 10_00_000_000);
@@ -165,9 +165,9 @@ namespace Hashgraph.Test.Token
             await using var fxPaymentToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxBenefactor, fxBuyer, fxSeller);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ValueCommission[]
+                fx.Params.Royalties = new AssetRoyalty[]
                 {
-                        new ValueCommission(fxBenefactor, 1, 2, 0, Address.None)
+                        new AssetRoyalty(fxBenefactor, 1, 2, 0, Address.None)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -224,9 +224,9 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Equal(2, record.Commissions.Count);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Commissions);
-            AssertHg.ContainsHbarCommission(fxSeller, fxBenefactor, 5_00_000_000, record.Commissions);
+            Assert.Equal(2, record.Royalties.Count);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
+            AssertHg.ContainsHbarRoyalty(fxSeller, fxBenefactor, 5_00_000_000, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -245,7 +245,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.CryptoBalanceAsync(fxBenefactor, 5_00_000_000);
         }
 
-        [Fact(DisplayName = "Commission Value Transfers: Transferring Asset Applies Single Value Commision Without Fallback")]
+        [Fact(DisplayName = "Royalty Asset Transfers: Transferring Asset Applies Single Value Commision Without Fallback")]
         async Task TransferringAssetAppliesSingleValueCommisionWithoutFallback()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network);
@@ -254,9 +254,9 @@ namespace Hashgraph.Test.Token
             await using var fxPaymentToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxBenefactor, fxBuyer, fxSeller);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ValueCommission[]
+                fx.Params.Royalties = new AssetRoyalty[]
                 {
-                        new ValueCommission(fxBenefactor, 1, 2, 10_00_000_000, Address.None)
+                        new AssetRoyalty(fxBenefactor, 1, 2, 10_00_000_000, Address.None)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -305,8 +305,8 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Single(record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Commissions);
+            Assert.Single(record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -321,7 +321,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100);
         }
 
-        [Fact(DisplayName = "Commission Value Transfers: Transferring Asset Applies Single Value Commision With hBar Fallback")]
+        [Fact(DisplayName = "Royalty Asset Transfers: Transferring Asset Applies Single Value Commision With hBar Fallback")]
         async Task TransferringAssetAppliesSingleValueCommisionWithHBarFallback()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 10_00_000_000);
@@ -329,9 +329,9 @@ namespace Hashgraph.Test.Token
             await using var fxBenefactor = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 0);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ValueCommission[]
+                fx.Params.Royalties = new AssetRoyalty[]
                 {
-                        new ValueCommission(fxBenefactor, 1, 2, 10_00_000_000, Address.None)
+                        new AssetRoyalty(fxBenefactor, 1, 2, 10_00_000_000, Address.None)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -369,8 +369,8 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Single(record.Commissions);
-            AssertHg.ContainsHbarCommission(fxBuyer, fxBenefactor, 10_00_000_000, record.Commissions);
+            Assert.Single(record.Royalties);
+            AssertHg.ContainsHbarRoyalty(fxBuyer, fxBenefactor, 10_00_000_000, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -381,7 +381,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.CryptoBalanceAsync(fxSeller, 0);
             await AssertHg.CryptoBalanceAsync(fxBenefactor, 10_00_000_000);
         }
-        [Fact(DisplayName = "Commission Value Transfers: Transferring Asset Applies Single Value Commision With Token Fallback")]
+        [Fact(DisplayName = "Royalty Asset Transfers: Transferring Asset Applies Single Value Commision With Token Fallback")]
         async Task TransferringAssetAppliesSingleValueCommisionWithTokenFallback()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 0);
@@ -390,9 +390,9 @@ namespace Hashgraph.Test.Token
             await using var fxPaymentToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxBenefactor, fxBuyer, fxSeller);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ValueCommission[]
+                fx.Params.Royalties = new AssetRoyalty[]
                 {
-                        new ValueCommission(fxBenefactor, 1, 2, 10, fxPaymentToken)
+                        new AssetRoyalty(fxBenefactor, 1, 2, 10, fxPaymentToken)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -440,8 +440,8 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 10), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Single(record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxBuyer, fxBenefactor, 10, record.Commissions);
+            Assert.Single(record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxBuyer, fxBenefactor, 10, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -459,17 +459,17 @@ namespace Hashgraph.Test.Token
             await AssertHg.CryptoBalanceAsync(fxSeller, 0);
             await AssertHg.CryptoBalanceAsync(fxBenefactor, 0);
         }
-        [Fact(DisplayName = "Commission Value Transfers: No Commission for Single Transfer When No Fallback")]
-        async Task NoCommissionForSingleTransferWhenNoFallback()
+        [Fact(DisplayName = "Royalty Asset Transfers: No Royalty for Single Transfer When No Fallback")]
+        async Task NoRoyaltyForSingleTransferWhenNoFallback()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 10_00_000_000);
             await using var fxSeller = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 0);
             await using var fxBenefactor = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 0);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ValueCommission[]
+                fx.Params.Royalties = new AssetRoyalty[]
                 {
-                        new ValueCommission(fxBenefactor, 1, 2, 0, Address.None)
+                        new AssetRoyalty(fxBenefactor, 1, 2, 0, Address.None)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -507,7 +507,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Empty(record.Commissions);
+            Assert.Empty(record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -518,7 +518,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.CryptoBalanceAsync(fxSeller, 0);
             await AssertHg.CryptoBalanceAsync(fxBenefactor, 0);
         }
-        [Fact(DisplayName = "NETWORK BUG: Commission Value Transfers: Transferring Asset Applies Multiple Value Commision Destinations FAILS")]
+        [Fact(DisplayName = "NETWORK BUG: Royalty Asset Transfers: Transferring Asset Applies Multiple Value Commision Destinations FAILS")]
         public async Task TransferringAssetAppliesMultipleValueCommisionDestinationsFails()
         {
             var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(TransferringAssetAppliesMultipleValueCommisionDestinations));
@@ -526,7 +526,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal("5", testFailException.Expected);
             Assert.Equal("3", testFailException.Actual);
 
-            //[Fact(DisplayName = "Commission Value Transfers: Transferring Asset Applies Multiple Value Commision Destinations")]
+            //[Fact(DisplayName = "Royalty Asset Transfers: Transferring Asset Applies Multiple Value Commision Destinations")]
             async Task TransferringAssetAppliesMultipleValueCommisionDestinations()
             {
                 await using var fxBuyer = await TestAccount.CreateAsync(_network);
@@ -542,11 +542,11 @@ namespace Hashgraph.Test.Token
                 }, fxBenefactor1, fxBenefactor2, fxBenefactor3, fxBuyer, fxSeller);
                 await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
                 {
-                    fx.Params.Commissions = new ValueCommission[]
+                    fx.Params.Royalties = new AssetRoyalty[]
                     {
-                        new ValueCommission(fxBenefactor1, 1, 10, 1_00, fxPaymentToken),
-                        new ValueCommission(fxBenefactor2, 1, 10, 1_00, fxPaymentToken),
-                        new ValueCommission(fxBenefactor3, 1, 5, 1_00, fxPaymentToken),
+                        new AssetRoyalty(fxBenefactor1, 1, 10, 1_00, fxPaymentToken),
+                        new AssetRoyalty(fxBenefactor2, 1, 10, 1_00, fxPaymentToken),
+                        new AssetRoyalty(fxBenefactor3, 1, 5, 1_00, fxPaymentToken),
                     };
                     fx.Params.GrantKycEndorsement = null;
                 }, fxBuyer, fxSeller);
@@ -601,10 +601,10 @@ namespace Hashgraph.Test.Token
                 Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor3, 20), record.TokenTransfers);
                 Assert.Single(record.AssetTransfers);
                 Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-                Assert.Single(record.Commissions);
-                AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor1, 10, record.Commissions);
-                AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor2, 10, record.Commissions);
-                AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor3, 20, record.Commissions);
+                Assert.Single(record.Royalties);
+                AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor1, 10, record.Royalties);
+                AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor2, 10, record.Royalties);
+                AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor3, 20, record.Royalties);
 
                 await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
                 await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);

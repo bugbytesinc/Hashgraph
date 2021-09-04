@@ -36,7 +36,7 @@ namespace Hashgraph.Test.AssetToken
                 SuspendEndorsement = fxTemplate.Params.SuspendEndorsement,
                 ConfiscateEndorsement = fxTemplate.Params.ConfiscateEndorsement,
                 SupplyEndorsement = fxTemplate.Params.SupplyEndorsement,
-                CommissionsEndorsement = fxTemplate.Params.CommissionsEndorsement,
+                RoyaltiesEndorsement = fxTemplate.Params.RoyaltiesEndorsement,
                 Symbol = newSymbol,
                 Name = newName,
                 Expiration = DateTime.UtcNow.AddDays(90),
@@ -63,10 +63,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(fxTemplate.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxTemplate.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxTemplate.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxTemplate.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxTemplate.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.Equal(fxTemplate.Params.Memo, info.Memo);
             Assert.False(info.Deleted);
         }
@@ -261,8 +261,8 @@ namespace Hashgraph.Test.AssetToken
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
             Assert.Equal(updateParams.SupplyEndorsement, info.SupplyEndorsement);
         }
-        [Fact(DisplayName = "Update Asset: Can Update Commissions Endorsement")]
-        public async Task CanUpdateCommissionsEndorsement()
+        [Fact(DisplayName = "Update Asset: Can Update Royalties Endorsement")]
+        public async Task CanUpdateRoyaltiesEndorsement()
         {
             var (newPublicKey, newPrivateKey) = Generator.KeyPair();
             await using var fxAsset = await TestAsset.CreateAsync(_network);
@@ -270,7 +270,7 @@ namespace Hashgraph.Test.AssetToken
             var updateParams = new UpdateTokenParams
             {
                 Token = fxAsset.Record.Token,
-                CommissionsEndorsement = newPublicKey,
+                RoyaltiesEndorsement = newPublicKey,
                 Signatory = fxAsset.AdminPrivateKey
             };
 
@@ -278,7 +278,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Equal(updateParams.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(updateParams.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         }
         [Fact(DisplayName = "Update Asset: Can Update Symbol")]
         public async Task CanUpdateSymbol()
@@ -613,7 +613,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
@@ -921,10 +921,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RenewAccount, info.RenewAccount);
             Assert.Equal(fxAsset.Params.RenewPeriod, info.RenewPeriod);
-            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
         }

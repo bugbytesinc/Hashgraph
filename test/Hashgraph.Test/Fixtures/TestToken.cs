@@ -16,8 +16,8 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> ConfiscatePrivateKey;
         public ReadOnlyMemory<byte> SupplyPublicKey;
         public ReadOnlyMemory<byte> SupplyPrivateKey;
-        public ReadOnlyMemory<byte> CommissionsPublicKey;
-        public ReadOnlyMemory<byte> CommissionsPrivateKey;
+        public ReadOnlyMemory<byte> RoyaltiesPublicKey;
+        public ReadOnlyMemory<byte> RoyaltiesPrivateKey;
         public TestAccount TreasuryAccount;
         public TestAccount RenewAccount;
         public Address Payer;
@@ -42,7 +42,7 @@ namespace Hashgraph.Test.Fixtures
             (fx.SuspendPublicKey, fx.SuspendPrivateKey) = Generator.KeyPair();
             (fx.ConfiscatePublicKey, fx.ConfiscatePrivateKey) = Generator.KeyPair();
             (fx.SupplyPublicKey, fx.SupplyPrivateKey) = Generator.KeyPair();
-            (fx.CommissionsPublicKey, fx.CommissionsPrivateKey) = Generator.KeyPair();
+            (fx.RoyaltiesPublicKey, fx.RoyaltiesPrivateKey) = Generator.KeyPair();
             fx.Payer = networkCredentials.Payer;
             fx.Client = networkCredentials.NewClient();
             fx.TreasuryAccount = await TestAccount.CreateAsync(networkCredentials);
@@ -60,7 +60,7 @@ namespace Hashgraph.Test.Fixtures
                 SuspendEndorsement = fx.SuspendPublicKey,
                 ConfiscateEndorsement = fx.ConfiscatePublicKey,
                 SupplyEndorsement = fx.SupplyPublicKey,
-                CommissionsEndorsement = fx.CommissionsPublicKey,
+                RoyaltyEndorsement = fx.RoyaltiesPublicKey,
                 InitializeSuspended = false,
                 Expiration = Generator.TruncatedFutureDate(2000, 3000),
                 RenewAccount = fx.RenewAccount.Record.Address,

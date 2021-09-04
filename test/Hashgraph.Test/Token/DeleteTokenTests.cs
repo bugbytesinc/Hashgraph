@@ -69,10 +69,10 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.True(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
@@ -288,10 +288,10 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
 
@@ -320,10 +320,10 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
         }

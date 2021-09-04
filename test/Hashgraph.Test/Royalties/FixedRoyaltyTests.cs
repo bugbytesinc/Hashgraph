@@ -7,15 +7,15 @@ using Xunit.Abstractions;
 namespace Hashgraph.Test.Token
 {
     [Collection(nameof(NetworkCredentials))]
-    public class CommissionFixedTests
+    public class FixedRoyaltyTests
     {
         private readonly NetworkCredentials _network;
-        public CommissionFixedTests(NetworkCredentials network, ITestOutputHelper output)
+        public FixedRoyaltyTests(NetworkCredentials network, ITestOutputHelper output)
         {
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Commission Fixed Transfers: Transferring Asset Applies Single Fixed Commision")]
+        [Fact(DisplayName = "Royalty Fixed Transfers: Transferring Asset Applies Single Fixed Commision")]
         async Task TransferringAssetAppliesSingleFixedCommision()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network);
@@ -24,9 +24,9 @@ namespace Hashgraph.Test.Token
             await using var fxPaymentToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxBenefactor, fxBuyer, fxSeller);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new FixedCommission[]
+                fx.Params.Royalties = new FixedRoyalty[]
                 {
-                        new FixedCommission(fxBenefactor, fxPaymentToken, 10)
+                        new FixedRoyalty(fxBenefactor, fxPaymentToken, 10)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -75,8 +75,8 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 10), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Single(record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor, 10, record.Commissions);
+            Assert.Single(record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 10, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -91,7 +91,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100);
         }
 
-        [Fact(DisplayName = "Commission Fixed Transfers: Transferring Asset Applies Single Fixed Hbar Commision")]
+        [Fact(DisplayName = "Royalty Fixed Transfers: Transferring Asset Applies Single Fixed Hbar Commision")]
         async Task TransferringAssetAppliesSingleFixedHbarCommision()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 10_00_000_000);
@@ -99,9 +99,9 @@ namespace Hashgraph.Test.Token
             await using var fxBenefactor = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 0);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new FixedCommission[]
+                fx.Params.Royalties = new FixedRoyalty[]
                 {
-                        new FixedCommission(fxBenefactor, Address.None, 1_00_000_000)
+                        new FixedRoyalty(fxBenefactor, Address.None, 1_00_000_000)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -143,8 +143,8 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Single(record.Commissions);
-            AssertHg.ContainsHbarCommission(fxSeller, fxBenefactor, 1_00_000_000, record.Commissions);
+            Assert.Single(record.Royalties);
+            AssertHg.ContainsHbarRoyalty(fxSeller, fxBenefactor, 1_00_000_000, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -156,7 +156,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.CryptoBalanceAsync(fxBenefactor, 1_00_000_000);
         }
 
-        [Fact(DisplayName = "Commission Fixed Transfers: Transferring Asset Applies Fixed Commisions when Token And HBar Exchanged")]
+        [Fact(DisplayName = "Royalty Fixed Transfers: Transferring Asset Applies Fixed Commisions when Token And HBar Exchanged")]
         async Task TransferringAssetAppliesFixedCommisionsWhenTokenAndHBarExchanged()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.InitialBalance = 10_00_000_000);
@@ -165,9 +165,9 @@ namespace Hashgraph.Test.Token
             await using var fxPaymentToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxBenefactor, fxBuyer, fxSeller);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new FixedCommission[]
+                fx.Params.Royalties = new FixedRoyalty[]
                 {
-                        new FixedCommission(fxBenefactor, fxPaymentToken, 50)
+                        new FixedRoyalty(fxBenefactor, fxPaymentToken, 50)
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -224,8 +224,8 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Single(record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Commissions);
+            Assert.Single(record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -244,7 +244,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.CryptoBalanceAsync(fxBenefactor, 0);
         }
 
-        [Fact(DisplayName = "Commission Fixed Transfers: Transferring Asset Applies Multiple Fixed Commision Deduction Destinations")]
+        [Fact(DisplayName = "Royalty Fixed Transfers: Transferring Asset Applies Multiple Fixed Commision Deduction Destinations")]
         public async Task TransferringAssetAppliesMultipleFixedCommisionDeductionDestinations()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network);
@@ -260,11 +260,11 @@ namespace Hashgraph.Test.Token
             }, fxBenefactor1, fxBenefactor2, fxBenefactor3, fxBuyer, fxSeller);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new FixedCommission[]
+                fx.Params.Royalties = new FixedRoyalty[]
                 {
-                        new FixedCommission(fxBenefactor1, fxPaymentToken, 20),
-                        new FixedCommission(fxBenefactor2, fxPaymentToken, 20),
-                        new FixedCommission(fxBenefactor3, fxPaymentToken, 40),
+                        new FixedRoyalty(fxBenefactor1, fxPaymentToken, 20),
+                        new FixedRoyalty(fxBenefactor2, fxPaymentToken, 20),
+                        new FixedRoyalty(fxBenefactor3, fxPaymentToken, 40),
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -319,10 +319,10 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor3, 40), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Equal(3, record.Commissions.Count);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor1, 20, record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor2, 20, record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor3, 40, record.Commissions);
+            Assert.Equal(3, record.Royalties.Count);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor1, 20, record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor2, 20, record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor3, 40, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -341,7 +341,7 @@ namespace Hashgraph.Test.Token
             await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100_00);
         }
 
-        [Fact(DisplayName = "Commission Fixed Transfers: Transferring Asset Applies Multiple Fixed Commision Fee Even Without Payment")]
+        [Fact(DisplayName = "Royalty Fixed Transfers: Transferring Asset Applies Multiple Fixed Commision Fee Even Without Payment")]
         public async Task TransferringAssetAppliesMultipleFixedCommisionFeeEvenWithoutPayment()
         {
             await using var fxBuyer = await TestAccount.CreateAsync(_network);
@@ -357,11 +357,11 @@ namespace Hashgraph.Test.Token
             }, fxBenefactor1, fxBenefactor2, fxBenefactor3, fxBuyer, fxSeller);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new FixedCommission[]
+                fx.Params.Royalties = new FixedRoyalty[]
                 {
-                        new FixedCommission(fxBenefactor1, fxPaymentToken, 20),
-                        new FixedCommission(fxBenefactor2, fxPaymentToken, 20),
-                        new FixedCommission(fxBenefactor3, fxPaymentToken, 40),
+                        new FixedRoyalty(fxBenefactor1, fxPaymentToken, 20),
+                        new FixedRoyalty(fxBenefactor2, fxPaymentToken, 20),
+                        new FixedRoyalty(fxBenefactor3, fxPaymentToken, 40),
                 };
                 fx.Params.GrantKycEndorsement = null;
             }, fxBuyer, fxSeller);
@@ -411,10 +411,10 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor3, 40), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
-            Assert.Equal(3, record.Commissions.Count);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor1, 20, record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor2, 20, record.Commissions);
-            AssertHg.ContainsCommission(fxPaymentToken, fxSeller, fxBenefactor3, 40, record.Commissions);
+            Assert.Equal(3, record.Royalties.Count);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor1, 20, record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor2, 20, record.Royalties);
+            AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor3, 40, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);

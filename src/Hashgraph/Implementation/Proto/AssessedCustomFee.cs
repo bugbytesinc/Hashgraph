@@ -8,12 +8,12 @@ namespace Proto
 {
     internal static class AssessedCustomFeeExtensions
     {
-        private static ReadOnlyCollection<CommissionTransfer> EMPTY_RESULT = new List<CommissionTransfer>().AsReadOnly();
-        internal static ReadOnlyCollection<CommissionTransfer> AsCommissionTransferList(this RepeatedField<AssessedCustomFee> list)
+        private static ReadOnlyCollection<RoyaltyTransfer> EMPTY_RESULT = new List<RoyaltyTransfer>().AsReadOnly();
+        internal static ReadOnlyCollection<RoyaltyTransfer> AsRoyaltyTransferList(this RepeatedField<AssessedCustomFee> list)
         {
             if (list != null && list.Count > 0)
             {
-                return list.Select(fee => new CommissionTransfer(fee)).ToList().AsReadOnly();
+                return list.Select(fee => new RoyaltyTransfer(fee)).ToList().AsReadOnly();
             }
             return EMPTY_RESULT;
         }

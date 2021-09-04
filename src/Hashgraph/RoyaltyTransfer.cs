@@ -5,35 +5,34 @@ using System.Linq;
 namespace Hashgraph
 {
     /// <summary>
-    /// Represents a token transfer (Token, Payer, Amount, Receiver)
-    /// fufilling a royalty or commission payment for the transfer
-    /// of a token or asset.
+    /// Represents a token or hBar transfer 
+    /// (Token, Payer, Amount, Receiver) fufilling a royalty 
+    /// payment for the transfer of a token or asset.
     /// </summary>
-    public sealed record CommissionTransfer
+    public sealed record RoyaltyTransfer
     {
         /// <summary>
-        /// The Address of the token who's coins have transferred 
-        /// to pay the commisison.
+        /// The Address of the token who's coins (or crypto)
+        /// have been transferred to pay the royalty.
         /// </summary>
         public Address Token { get; private init; }
         /// <summary>
-        /// The effective paying Address receiving the commission 
-        /// transfer value.
+        /// The Address(s) that were charged the assessed fee.
         /// </summary>
         public IReadOnlyCollection<Address> Payers { get; private init; }
         /// <summary>
-        /// The Address receiving the commission transfer value.
+        /// The Address receiving the transferred token or crypto.
         /// </summary>
         public Address Receiver { get; private init; }
         /// <summary>
-        /// The (divisible) amount of coins transferred.
+        /// The (divisible) amount of tokens or crypto transferred.
         /// </summary>
         public long Amount { get; init; }
         /// <summary>
         /// Internal Constructor representing the "None" 
-        /// version of an commission transfer.
+        /// version of an royalty transfer.
         /// </summary>
-        private CommissionTransfer()
+        private RoyaltyTransfer()
         {
             Token = Address.None;
             Payers = new List<Address>().AsReadOnly();
@@ -41,10 +40,10 @@ namespace Hashgraph
             Amount = 0;
         }
         /// <summary>
-        /// Intenral Helper Class to Create Commission Transfer
+        /// Intenral Helper Class to Create Royalty Transfer
         /// from raw protobuf.
         /// </summary>        
-        internal CommissionTransfer(AssessedCustomFee fee)
+        internal RoyaltyTransfer(AssessedCustomFee fee)
         {
             Token = fee.TokenId.AsAddress();
             Receiver = fee.FeeCollectorAccountId.AsAddress();

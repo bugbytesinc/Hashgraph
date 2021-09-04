@@ -7,204 +7,204 @@ using Xunit.Abstractions;
 namespace Hashgraph.Test.Token
 {
     [Collection(nameof(NetworkCredentials))]
-    public class CreateCommissionsTests
+    public class CreateRoyaltiesTests
     {
         private readonly NetworkCredentials _network;
-        public CreateCommissionsTests(NetworkCredentials network, ITestOutputHelper output)
+        public CreateRoyaltiesTests(NetworkCredentials network, ITestOutputHelper output)
         {
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Commissions: Can Create Token with Fixed Commission")]
-        public async Task CanCreateTokenWithFixedCommission()
+        [Fact(DisplayName = "Royalties: Can Create Token with Fixed Royalty")]
+        public async Task CanCreateTokenWithFixedRoyalty()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new FixedCommission[]
+                fx.Params.Royalties = new FixedRoyalty[]
                 {
-                    new FixedCommission(fxAccount, comToken, 100)
+                    new FixedRoyalty(fxAccount, comToken, 100)
                 };
             }, fxAccount);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Single(info.Commissions);
+            Assert.Single(info.Royalties);
 
-            Assert.Equal(fxToken.Params.Commissions.First(), info.Commissions[0]);
+            Assert.Equal(fxToken.Params.Royalties.First(), info.Royalties[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Create Token with Fractional Commission")]
-        public async Task CanCreateTokenWithFractionalCommission()
+        [Fact(DisplayName = "Royalties: Can Create Token with Fractional Royalty")]
+        public async Task CanCreateTokenWithFractionalRoyalty()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new FractionalCommission[]
+                fx.Params.Royalties = new TokenRoyalty[]
                 {
-                    new FractionalCommission(fxAccount, 1, 2, 1, 100)
+                    new TokenRoyalty(fxAccount, 1, 2, 1, 100)
                 };
                 fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Single(info.Commissions);
+            Assert.Single(info.Royalties);
 
-            Assert.Equal(fxToken.Params.Commissions.First(), info.Commissions[0]);
+            Assert.Equal(fxToken.Params.Royalties.First(), info.Royalties[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Create Token with Fixed and Fractional Commissions")]
-        public async Task CanCreateTokenWithFixedAndFractionalCommissions()
+        [Fact(DisplayName = "Royalties: Can Create Token with Fixed and Fractional Royalties")]
+        public async Task CanCreateTokenWithFixedAndFractionalRoyalties()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
-            var fixedCommission = new FixedCommission(fxAccount, comToken, 100);
-            var fractionalCommission = new FractionalCommission(fxAccount, 1, 2, 1, 100);
+            var fixedRoyalty = new FixedRoyalty(fxAccount, comToken, 100);
+            var fractionalRoyalty = new TokenRoyalty(fxAccount, 1, 2, 1, 100);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ICommission[] { fixedCommission, fractionalCommission };
+                fx.Params.Royalties = new IRoyalty[] { fixedRoyalty, fractionalRoyalty };
                 fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Equal(2, info.Commissions.Count);
+            Assert.Equal(2, info.Royalties.Count);
 
-            Assert.Equal(fixedCommission, info.Commissions.First(f => f.CommissionType == CommissionType.Fixed));
-            Assert.Equal(fractionalCommission, info.Commissions.First(f => f.CommissionType == CommissionType.Fractional));
+            Assert.Equal(fixedRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Fixed));
+            Assert.Equal(fractionalRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Token));
         }
-        [Fact(DisplayName = "Commissions: Can Add Fixed Commission to Token Definition")]
-        public async Task CanAddFixedCommissionToTokenDefinition()
+        [Fact(DisplayName = "Royalties: Can Add Fixed Royalty to Token Definition")]
+        public async Task CanAddFixedRoyaltyToTokenDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
-            var fixedCommissions = new FixedCommission[] { new FixedCommission(fxAccount, comToken, 100) };
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, fixedCommissions, fxToken.CommissionsPrivateKey);
+            var fixedRoyalties = new FixedRoyalty[] { new FixedRoyalty(fxAccount, comToken, 100) };
+            var receipt = await fxToken.Client.UpdateRoyaltiesAsync(fxToken, fixedRoyalties, fxToken.RoyaltiesPrivateKey);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Single(info.Commissions);
+            Assert.Single(info.Royalties);
 
-            Assert.Equal(fixedCommissions[0], info.Commissions[0]);
+            Assert.Equal(fixedRoyalties[0], info.Royalties[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Add Fractional Commission to Token Definition")]
-        public async Task CanAddFractionalCommissionToTokenDefinition()
+        [Fact(DisplayName = "Royalties: Can Add Fractional Royalty to Token Definition")]
+        public async Task CanAddFractionalRoyaltyToTokenDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
-            var fractionalCommissions = new FractionalCommission[] { new FractionalCommission(fxAccount, 1, 2, 1, 100) };
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, fractionalCommissions, fxToken.CommissionsPrivateKey);
+            var fractionalRoyalties = new TokenRoyalty[] { new TokenRoyalty(fxAccount, 1, 2, 1, 100) };
+            var receipt = await fxToken.Client.UpdateRoyaltiesAsync(fxToken, fractionalRoyalties, fxToken.RoyaltiesPrivateKey);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Single(info.Commissions);
+            Assert.Single(info.Royalties);
 
-            Assert.Equal(fractionalCommissions[0], info.Commissions[0]);
+            Assert.Equal(fractionalRoyalties[0], info.Royalties[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Add Fixed and Fractional Commissions to Token Definition")]
-        public async Task CanAddFixedAndFractionalCommissionsToTokenDefinition()
+        [Fact(DisplayName = "Royalties: Can Add Fixed and Fractional Royalties to Token Definition")]
+        public async Task CanAddFixedAndFractionalRoyaltiesToTokenDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
-            var fixedCommission = new FixedCommission(fxAccount, comToken, 100);
-            var fractionalCommission = new FractionalCommission(fxAccount, 1, 2, 1, 100);
-            var receipt = await fxToken.Client.UpdateCommissionsAsync(fxToken, new ICommission[] { fixedCommission, fractionalCommission }, fxToken.CommissionsPrivateKey);
+            var fixedRoyalty = new FixedRoyalty(fxAccount, comToken, 100);
+            var fractionalRoyalty = new TokenRoyalty(fxAccount, 1, 2, 1, 100);
+            var receipt = await fxToken.Client.UpdateRoyaltiesAsync(fxToken, new IRoyalty[] { fixedRoyalty, fractionalRoyalty }, fxToken.RoyaltiesPrivateKey);
             Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
-            Assert.Equal(2, info.Commissions.Count);
+            Assert.Equal(2, info.Royalties.Count);
 
-            Assert.Equal(fixedCommission, info.Commissions.First(f => f.CommissionType == CommissionType.Fixed));
-            Assert.Equal(fractionalCommission, info.Commissions.First(f => f.CommissionType == CommissionType.Fractional));
+            Assert.Equal(fixedRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Fixed));
+            Assert.Equal(fractionalRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Token));
         }
-        [Fact(DisplayName = "Commissions: Can Create Asset with Fixed Commission")]
-        public async Task CanCreateAssetWithFixedCommission()
+        [Fact(DisplayName = "Royalties: Can Create Asset with Fixed Royalty")]
+        public async Task CanCreateAssetWithFixedRoyalty()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comAsset = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new FixedCommission[]
+                fx.Params.Royalties = new FixedRoyalty[]
                 {
-                    new FixedCommission(fxAccount, comAsset, 100)
+                    new FixedRoyalty(fxAccount, comAsset, 100)
                 };
             }, fxAccount);
             Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Single(info.Commissions);
+            Assert.Single(info.Royalties);
 
-            Assert.Equal(fxAsset.Params.Commissions.First(), info.Commissions[0]);
+            Assert.Equal(fxAsset.Params.Royalties.First(), info.Royalties[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Create Asset with Value Commission")]
-        public async Task CanCreateAssetWithValueCommission()
+        [Fact(DisplayName = "Royalties: Can Create Asset with Value Royalty")]
+        public async Task CanCreateAssetWithValueRoyalty()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comAsset = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
             {
-                fx.Params.Commissions = new ValueCommission[]
+                fx.Params.Royalties = new AssetRoyalty[]
                 {
-                    new ValueCommission(fxAccount, 1, 2, 1, comAsset.Record.Token)
+                    new AssetRoyalty(fxAccount, 1, 2, 1, comAsset.Record.Token)
                 };
             }, fxAccount);
             Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Single(info.Commissions);
+            Assert.Single(info.Royalties);
 
-            Assert.Equal(fxAsset.Params.Commissions.First(), info.Commissions[0]);
+            Assert.Equal(fxAsset.Params.Royalties.First(), info.Royalties[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Add Fixed Commission to Asset Definition")]
-        public async Task CanAddFixedCommissionToAssetDefinition()
+        [Fact(DisplayName = "Royalties: Can Add Fixed Royalty to Asset Definition")]
+        public async Task CanAddFixedRoyaltyToAssetDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var comAsset = await TestToken.CreateAsync(_network, null, fxAccount);
             await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
 
-            var fixedCommissions = new FixedCommission[] { new FixedCommission(fxAccount, comAsset, 100) };
-            var receipt = await fxAsset.Client.UpdateCommissionsAsync(fxAsset, fixedCommissions, fxAsset.CommissionsPrivateKey);
+            var fixedRoyalties = new FixedRoyalty[] { new FixedRoyalty(fxAccount, comAsset, 100) };
+            var receipt = await fxAsset.Client.UpdateRoyaltiesAsync(fxAsset, fixedRoyalties, fxAsset.RoyaltiesPrivateKey);
             Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Single(info.Commissions);
+            Assert.Single(info.Royalties);
 
-            Assert.Equal(fixedCommissions[0], info.Commissions[0]);
+            Assert.Equal(fixedRoyalties[0], info.Royalties[0]);
         }
-        [Fact(DisplayName = "Commissions: Can Not Add Fractional Commission to Asset Definition")]
-        public async Task CanNotAddFractionalCommissionToAssetDefinition()
+        [Fact(DisplayName = "Royalties: Can Not Add Fractional Royalty to Asset Definition")]
+        public async Task CanNotAddFractionalRoyaltyToAssetDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
 
-            var fractionalCommissions = new FractionalCommission[] { new FractionalCommission(fxAccount, 1, 2, 1, 100) };
+            var fractionalRoyalties = new TokenRoyalty[] { new TokenRoyalty(fxAccount, 1, 2, 1, 100) };
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fxAsset.Client.UpdateCommissionsAsync(fxAsset, fractionalCommissions, fxAsset.CommissionsPrivateKey);
+                await fxAsset.Client.UpdateRoyaltiesAsync(fxAsset, fractionalRoyalties, fxAsset.RoyaltiesPrivateKey);
             });
             Assert.Equal(ResponseCode.CustomFractionalFeeOnlyAllowedForFungibleCommon, tex.Status);
-            Assert.StartsWith("Unable to Update Token Transfer Commissions, status: CustomFractionalFeeOnlyAllowedForFungibleCommon", tex.Message);
+            Assert.StartsWith("Unable to Update Royalties, status: CustomFractionalFeeOnlyAllowedForFungibleCommon", tex.Message);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
         }
-        [Fact(DisplayName = "Commissions: Can Not Create Token with Royalty Commission")]
-        public async Task CanNotCreateTokenWithRoyaltyCommission()
+        [Fact(DisplayName = "Royalties: Can Not Create Token with Royalty Royalty")]
+        public async Task CanNotCreateTokenWithRoyaltyRoyalty()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
                 await TestToken.CreateAsync(_network, fx =>
                 {
-                    fx.Params.Commissions = new ValueCommission[]
+                    fx.Params.Royalties = new AssetRoyalty[]
                     {
-                        new ValueCommission(fxAccount, 1, 2, 0, Address.None)
+                        new AssetRoyalty(fxAccount, 1, 2, 0, Address.None)
                     };
                     fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxAccount.PrivateKey);
                 });
@@ -212,23 +212,23 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique, tex.Status);
             Assert.StartsWith("Unable to create Token, status: CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique", tex.Message);
         }
-        [Fact(DisplayName = "Commissions: Can Not Add Royalty Commission to Token Definition")]
-        public async Task CanNotAddRoyaltyCommissionToTokenDefinition()
+        [Fact(DisplayName = "Royalties: Can Not Add Royalty Royalty to Token Definition")]
+        public async Task CanNotAddRoyaltyRoyaltyToTokenDefinition()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxAsset = await TestToken.CreateAsync(_network, null, fxAccount);
 
-            var valueCommissions = new ValueCommission[] { new ValueCommission(fxAccount, 1, 2, 0, Address.None) };
+            var valueRoyalties = new AssetRoyalty[] { new AssetRoyalty(fxAccount, 1, 2, 0, Address.None) };
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fxAsset.Client.UpdateCommissionsAsync(fxAsset, valueCommissions, fxAsset.CommissionsPrivateKey);
+                await fxAsset.Client.UpdateRoyaltiesAsync(fxAsset, valueRoyalties, fxAsset.RoyaltiesPrivateKey);
             });
             Assert.Equal(ResponseCode.CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique, tex.Status);
-            Assert.StartsWith("Unable to Update Token Transfer Commissions, status: CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique", tex.Message);
+            Assert.StartsWith("Unable to Update Royalties, status: CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique", tex.Message);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
         }
     }
 }

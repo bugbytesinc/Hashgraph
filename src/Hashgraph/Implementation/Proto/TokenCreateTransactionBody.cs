@@ -115,13 +115,13 @@ namespace Proto
             {
                 SupplyKey = new Key(createParameters.SupplyEndorsement);
             }
-            if (!createParameters.CommissionsEndorsement.IsNullOrNone())
+            if (!createParameters.RoyaltyEndorsement.IsNullOrNone())
             {
-                FeeScheduleKey = new Key(createParameters.CommissionsEndorsement);
+                FeeScheduleKey = new Key(createParameters.RoyaltyEndorsement);
             }
-            if (createParameters.Commissions is not null)
+            if (createParameters.Royalties is not null)
             {
-                CustomFees.AddRange(createParameters.Commissions.Select(commission => new CustomFee(commission)));
+                CustomFees.AddRange(createParameters.Royalties.Select(royalty => new CustomFee(royalty)));
             }
             FreezeDefault = createParameters.InitializeSuspended;
             Expiry = new Timestamp(createParameters.Expiration);
@@ -213,13 +213,13 @@ namespace Proto
             {
                 SupplyKey = new Key(createParameters.SupplyEndorsement);
             }
-            if (!createParameters.CommissionsEndorsement.IsNullOrNone())
+            if (!createParameters.RoyaltiesEndorsement.IsNullOrNone())
             {
-                FeeScheduleKey = new Key(createParameters.CommissionsEndorsement);
+                FeeScheduleKey = new Key(createParameters.RoyaltiesEndorsement);
             }
-            if (createParameters.Commissions is not null)
+            if (createParameters.Royalties is not null)
             {
-                CustomFees.AddRange(createParameters.Commissions.Select(commission => new CustomFee(commission)));
+                CustomFees.AddRange(createParameters.Royalties.Select(royalty => new CustomFee(royalty)));
             }
             FreezeDefault = createParameters.InitializeSuspended;
             Expiry = new Timestamp(createParameters.Expiration);

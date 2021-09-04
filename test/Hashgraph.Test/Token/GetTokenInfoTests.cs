@@ -33,10 +33,10 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fx.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fx.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fx.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fx.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fx.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(TokenType.Fungible, info.Type);
             Assert.Equal(fx.Params.Symbol, info.Symbol);

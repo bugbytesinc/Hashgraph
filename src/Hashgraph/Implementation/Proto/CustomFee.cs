@@ -5,79 +5,79 @@ namespace Proto
 {
     public sealed partial class CustomFee
     {
-        internal CustomFee(ICommission commission) : this()
+        internal CustomFee(IRoyalty royalty) : this()
         {
-            FeeCollectorAccountId = new AccountID(commission.Account);
-            switch (commission.CommissionType)
+            FeeCollectorAccountId = new AccountID(royalty.Account);
+            switch (royalty.RoyaltyType)
             {
-                case CommissionType.Fixed:
-                    var fixedCommission = commission as FixedCommission;
-                    if (fixedCommission is null)
+                case RoyaltyType.Fixed:
+                    var fixedRoyalty = royalty as FixedRoyalty;
+                    if (fixedRoyalty is null)
                     {
-                        throw new ArgumentException("Commission had type of Fixed but was not a Fixed Commission", nameof(commission));
+                        throw new ArgumentException("Royalty had type of Fixed but was not a Fixed Royalty", nameof(royalty));
                     }
                     FixedFee = new FixedFee
                     {
-                        Amount = fixedCommission.Amount,
-                        DenominatingTokenId = fixedCommission.Token != Address.None ? new TokenID(fixedCommission.Token) : null
+                        Amount = fixedRoyalty.Amount,
+                        DenominatingTokenId = fixedRoyalty.Token != Address.None ? new TokenID(fixedRoyalty.Token) : null
                     };
                     break;
-                case CommissionType.Value:
-                    var valueCommission = commission as ValueCommission;
-                    if (valueCommission is null)
+                case RoyaltyType.Asset:
+                    var assetRoyalty = royalty as AssetRoyalty;
+                    if (assetRoyalty is null)
                     {
-                        throw new ArgumentException("Commission had type of Value (Royalty) but was not a Value Commission", nameof(commission));
+                        throw new ArgumentException("Royalty had type of Value (Royalty) but was not a Value Royalty", nameof(royalty));
                     }
                     RoyaltyFee = new RoyaltyFee
                     {
                         ExchangeValueFraction = new Fraction
                         {
-                            Numerator = valueCommission.Numerator,
-                            Denominator = valueCommission.Denominator
+                            Numerator = assetRoyalty.Numerator,
+                            Denominator = assetRoyalty.Denominator
                         }
                     };
-                    if (valueCommission.FallbackAmount > 0 || !valueCommission.FallbackToken.IsNullOrNone())
+                    if (assetRoyalty.FallbackAmount > 0 || !assetRoyalty.FallbackToken.IsNullOrNone())
                     {
                         RoyaltyFee.FallbackFee = new FixedFee
                         {
-                            Amount = valueCommission.FallbackAmount,
-                            DenominatingTokenId = valueCommission.FallbackToken != Address.None ? new TokenID(valueCommission.FallbackToken) : null
+                            Amount = assetRoyalty.FallbackAmount,
+                            DenominatingTokenId = assetRoyalty.FallbackToken != Address.None ? new TokenID(assetRoyalty.FallbackToken) : null
                         };
                     }
 
                     break;
-                case CommissionType.Fractional:
-                    var fractionalCommission = commission as FractionalCommission;
-                    if (fractionalCommission is null)
+                case RoyaltyType.Token:
+                    var tokenRoyalty = royalty as TokenRoyalty;
+                    if (tokenRoyalty is null)
                     {
-                        throw new ArgumentException("Commission had type of Fractional but was not a Fractional Commission", nameof(commission));
+                        throw new ArgumentException("Royalty had type of Fractional but was not a Fractional Royalty", nameof(royalty));
                     }
                     FractionalFee = new FractionalFee
                     {
-                        MinimumAmount = fractionalCommission.Minimum,
-                        MaximumAmount = fractionalCommission.Maximum,
+                        MinimumAmount = tokenRoyalty.Minimum,
+                        MaximumAmount = tokenRoyalty.Maximum,
                         FractionalAmount = new Fraction
                         {
-                            Numerator = fractionalCommission.Numerator,
-                            Denominator = fractionalCommission.Denominator
+                            Numerator = tokenRoyalty.Numerator,
+                            Denominator = tokenRoyalty.Denominator
                         },
-                        NetOfTransfers = fractionalCommission.AssessAsSurcharge
+                        NetOfTransfers = tokenRoyalty.AssessAsSurcharge
                     };
                     break;
                 default:
-                    throw new ArgumentException("Unrecognized Commission Type", nameof(commission));
+                    throw new ArgumentException("Unrecognized Royalty Type", nameof(royalty));
             }
         }
 
-        internal ICommission ToCommission()
+        internal IRoyalty ToRoyalty()
         {
             return feeCase_ switch
             {
-                FeeOneofCase.RoyaltyFee => new ValueCommission(this),
-                FeeOneofCase.FractionalFee => new FractionalCommission(this),
-                FeeOneofCase.FixedFee => new FixedCommission(this),
+                FeeOneofCase.RoyaltyFee => new AssetRoyalty(this),
+                FeeOneofCase.FractionalFee => new TokenRoyalty(this),
+                FeeOneofCase.FixedFee => new FixedRoyalty(this),
                 // Should not get here?, if its invalid info, what do we do?
-                _ => new FixedCommission(Address.None, Address.None, 0),
+                _ => new FixedRoyalty(Address.None, Address.None, 0),
             };
         }
     }

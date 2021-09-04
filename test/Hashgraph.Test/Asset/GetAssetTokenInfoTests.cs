@@ -34,10 +34,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(fx.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fx.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fx.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fx.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fx.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.Equal(TokenType.Asset, info.Type);
             Assert.False(info.Deleted);
         }
@@ -47,7 +47,7 @@ namespace Hashgraph.Test.AssetToken
             await using var fxTreasury = await TestAccount.CreateAsync(_network);
             var (adminPublicKey, adminPrivateKey) = Generator.KeyPair();
             var (supplyPublicKey, supplyPrivateKey) = Generator.KeyPair();
-            var (commissionPublicKey, commissionPrivateKey) = Generator.KeyPair();
+            var (royaltyPublicKey, royaltyPrivateKey) = Generator.KeyPair();
             var createParams = new CreateAssetParams
             {
                 Name = "012345678912",
@@ -55,7 +55,7 @@ namespace Hashgraph.Test.AssetToken
                 Treasury = fxTreasury,
                 Administrator = adminPublicKey,
                 SupplyEndorsement = supplyPublicKey,
-                CommissionsEndorsement = commissionPublicKey,
+                RoyaltiesEndorsement = royaltyPublicKey,
                 Expiration = DateTime.UtcNow.AddSeconds(7890000),
                 Signatory = new Signatory(fxTreasury, adminPrivateKey)
             };
@@ -63,7 +63,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
             var info = await fxTreasury.Client.GetTokenInfoAsync(receipt.Token);
-            Assert.Equal(createParams.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(createParams.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         }
         [Fact(DisplayName = "Asset Token Info: Support For Defect 2088 Supply Key Not Being Recorded (Demonstrate Problem)")]
         public async Task SupportForDefect2088SupplyKeyNotBeingRecordedDemonstrateProblem()
@@ -71,7 +71,7 @@ namespace Hashgraph.Test.AssetToken
             await using var fxTreasury = await TestAccount.CreateAsync(_network);
             var (adminPublicKey, adminPrivateKey) = Generator.KeyPair();
             var (supplyPublicKey, supplyPrivateKey) = Generator.KeyPair();
-            var (commissionPublicKey, commissionPrivateKey) = Generator.KeyPair();
+            var (royaltyPublicKey, royaltyPrivateKey) = Generator.KeyPair();
             var createParams = new CreateAssetParams
             {
                 Name = "012345678912",
@@ -79,7 +79,7 @@ namespace Hashgraph.Test.AssetToken
                 Treasury = fxTreasury,
                 Administrator = adminPublicKey,
                 SupplyEndorsement = supplyPublicKey,
-                CommissionsEndorsement = commissionPublicKey,
+                RoyaltiesEndorsement = royaltyPublicKey,
                 Expiration = DateTime.UtcNow.AddSeconds(7890000),
                 Signatory = new Signatory(fxTreasury, adminPrivateKey)
             };
@@ -91,7 +91,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(ResponseCode.Success, record.Status);
 
             var info = await fxTreasury.Client.GetTokenInfoAsync(receipt.Token);
-            Assert.Equal(createParams.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(createParams.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         }
 
         [Fact(DisplayName = "Asset Token Info: Null Asset Identifier Raises Exception")]

@@ -44,11 +44,11 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
 
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
 
@@ -126,10 +126,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
 
@@ -260,7 +260,7 @@ namespace Hashgraph.Test.AssetTokens
             var record = await fxAsset.Client.BurnAssetsWithRecordAsync(fxAsset, serialNumbers, fxAsset.SupplyPrivateKey);
             Assert.Empty(record.TokenTransfers);
             Assert.Equal(amountToDestroy, record.AssetTransfers.Count);
-            Assert.Empty(record.Commissions);
+            Assert.Empty(record.Royalties);
             Assert.Equal(expectedCirculation, record.Circulation);
 
             for (int ssn = 1; ssn <= amountToDestroy; ssn++)
@@ -466,11 +466,11 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
 
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
         }

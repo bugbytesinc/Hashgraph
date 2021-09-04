@@ -71,10 +71,10 @@ namespace Hashgraph
         /// </summary>
         public Endorsement? SupplyEndorsement { get; private init; }
         /// <summary>
-        /// Administrator key for signing transactions updating the commissions
+        /// Administrator key for signing transactions updating the royalties
         /// (custom transfer fees) associated with this token.
         /// </summary>
-        public Endorsement? CommissionsEndorsement { get; set; }
+        public Endorsement? RoyaltiesEndorsement { get; set; }
         /// <summary>
         /// The current default suspended/frozen status of the token.
         /// </summary>
@@ -84,10 +84,10 @@ namespace Hashgraph
         /// </summary>
         public TokenKycStatus KycStatus { get; private init; }
         /// <summary>
-        /// The list of fixed commissions assessed on transactions
+        /// The list of fixed royalties assessed on transactions
         /// by the network when transferring this token.
         /// </summary>
-        public ReadOnlyCollection<ICommission> Commissions { get; internal init; }
+        public ReadOnlyCollection<IRoyalty> Royalties { get; internal init; }
         /// <summary>
         /// Expiration date for the token.  Will renew as determined by the
         /// renew period and balance of auto renew account.
@@ -138,8 +138,8 @@ namespace Hashgraph
             SuspendEndorsement = info.FreezeKey?.ToEndorsement();
             ConfiscateEndorsement = info.WipeKey?.ToEndorsement();
             SupplyEndorsement = info.SupplyKey?.ToEndorsement();
-            CommissionsEndorsement = info.FeeScheduleKey?.ToEndorsement();
-            Commissions = info.CustomFees.Select(fee => fee.ToCommission()).ToList().AsReadOnly();
+            RoyaltiesEndorsement = info.FeeScheduleKey?.ToEndorsement();
+            Royalties = info.CustomFees.Select(fee => fee.ToRoyalty()).ToList().AsReadOnly();
             TradableStatus = (TokenTradableStatus)info.DefaultFreezeStatus;
             KycStatus = (TokenKycStatus)info.DefaultKycStatus;
             Expiration = info.Expiry.ToDateTime();
