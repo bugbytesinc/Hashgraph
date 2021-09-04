@@ -1044,6 +1044,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(2, commission.Denominator);
             Assert.Equal(1, commission.Minimum);
             Assert.Equal(100, commission.Maximum);
+            Assert.False(commission.AssessAsSurcharge);
         }
         [Fact(DisplayName = "Update Token: Can Clear Commission Tables")]
         public async Task CanClearAndFreezeCommissionTables()

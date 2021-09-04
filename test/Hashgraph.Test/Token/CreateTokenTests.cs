@@ -927,6 +927,51 @@ namespace Hashgraph.Test.Token
             Assert.Equal(2, commission.Denominator);
             Assert.Equal(1, commission.Minimum);
             Assert.Equal(10, commission.Maximum);
+            Assert.False(commission.AssessAsSurcharge);
+        }
+        [Fact(DisplayName = "Create Token: Can Create Token with Fractional Commission As Surcharge")]
+        public async Task CanCreateTokenWithFractionalCommissionAsSurcharge()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+            {
+                fx.Params.Commissions = new FractionalCommission[]
+                {
+                    new FractionalCommission(fx.TreasuryAccount, 1, 2, 1, 10, true)
+                };
+            });
+            Assert.NotNull(fxToken.Record);
+            Assert.NotNull(fxToken.Record.Token);
+            Assert.True(fxToken.Record.Token.AccountNum > 0);
+            Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.Params.Name, info.Name);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+            Assert.Single(info.Commissions);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
+
+            var commission = info.Commissions[0] as FractionalCommission;
+            Assert.NotNull(commission);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, commission.Account);
+            Assert.Equal(1, commission.Numerator);
+            Assert.Equal(2, commission.Denominator);
+            Assert.Equal(1, commission.Minimum);
+            Assert.Equal(10, commission.Maximum);
+            Assert.True(commission.AssessAsSurcharge);
         }
     }
 }
