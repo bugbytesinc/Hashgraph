@@ -3,23 +3,22 @@
 namespace Hashgraph
 {
     /// <summary>
-    /// Represents a commission on the toltal value of
-    /// fungible token exchange or hBar exhange in payment
-    /// for a Asset or Token.
+    /// Represents a Royalty type computed from value 
+    /// given in exchange for receiving an Asset (NFT).
     /// </summary>
-    public sealed record ValueCommission : ICommission
+    public sealed record AssetRoyalty : IRoyalty
     {
         /// <summary>
-        /// A Royalty Commission Fee based on overall Value Transferred
+        /// Identifies this royalty as an Asset Royalty type.
         /// </summary>
-        public CommissionType CommissionType => CommissionType.Value;
+        public RoyaltyType RoyaltyType => RoyaltyType.Asset;
         /// <summary>
-        /// The account receiving the commision fee.
+        /// Account receiving the royalty assessment.
         /// </summary>
         public Address Account { get; private init; }
         /// <summary>
-        /// The numerator portion of the fraction of the 
-        /// transferred units to assess as a fee.
+        /// The numerator portion of the assement fraction
+        /// of the value exchanged in return for the NFT.
         /// </summary>
         /// <remarks>
         /// This is not expressed as a floating point number
@@ -28,8 +27,8 @@ namespace Hashgraph
         /// </remarks>
         public long Numerator { get; private init; }
         /// <summary>
-        /// The denominator portion of the fraction of the 
-        /// transferred units to assess as a fee.
+        /// The denominator portion of the assement fraction
+        /// of the value exchanged in return for the NFT.
         /// </summary>
         /// <remarks>
         /// This is not expressed as a floating point number
@@ -50,16 +49,16 @@ namespace Hashgraph
         public long FallbackAmount { get; private init; }
         /// <summary>
         /// The address id of the token type used to pay
-        /// the commission if no other transfer value exists
+        /// the royalty if no other transfer value exists
         /// in payment for the tranfer of the associated token
         /// or asset, if set to <code>None</code> then
         /// native hBar crypto is assumed.
         /// </summary>
         public Address FallbackToken { get; private init; }
         /// <summary>
-        /// Internal Constructor representing the "None" version of a commission.
+        /// Internal Constructor representing the "None" version of this royalty definition.
         /// </summary>
-        private ValueCommission()
+        private AssetRoyalty()
         {
             Account = Address.None;
             Numerator = 0;
@@ -68,18 +67,18 @@ namespace Hashgraph
             FallbackAmount = 0;
         }
         /// <summary>
-        /// Public Constructor, an <code>ValueCommission</code> is immutable after creation.
+        /// Public Constructor, an <code>AssetRoyalty</code> is immutable after creation.
         /// </summary>
         /// <param name="account">
-        /// The account receiving the commision fee.
+        /// Account receiving the royalty assessment.
         /// </param>
         /// <param name="numerator">
-        /// The numerator portion of the fraction of the 
-        /// transferred units to assess as a fee.
+        /// The denominator portion of the assement fraction
+        /// of the value exchanged in return for the NFT.
         /// </param>
         /// <param name="denominator">
-        /// The denominator portion of the fraction of the 
-        /// transferred units to assess as a fee.
+        /// The denominator portion of the assement fraction
+        /// of the value exchanged in return for the NFT.
         /// </param>
         /// <param name="fallbackAmount">
         /// The fixed amount of token or cryptocurrency
@@ -91,12 +90,12 @@ namespace Hashgraph
         /// </param>
         /// <param name="fallbackToken">
         /// The address id of the token type used to pay
-        /// the commission if no other transfer value exists
+        /// the royalty if no other transfer value exists
         /// in payment for the tranfer of the associated token
         /// or asset, if set to <code>None</code> then
         /// native hBar crypto is assumed.
         /// </param>
-        public ValueCommission(Address account, long numerator, long denominator, long fallbackAmount, Address fallbackToken)
+        public AssetRoyalty(Address account, long numerator, long denominator, long fallbackAmount, Address fallbackToken)
         {
             Account = account;
             Numerator = numerator;
@@ -104,8 +103,11 @@ namespace Hashgraph
             FallbackAmount = fallbackAmount;
             FallbackToken = fallbackToken;
         }
-
-        internal ValueCommission(CustomFee fee)
+        /// <summary>
+        /// Internal Helper Constructor converting raw protobuf 
+        /// into this royalty definition.
+        /// </summary>
+        internal AssetRoyalty(CustomFee fee)
         {
             Account = fee.FeeCollectorAccountId.AsAddress();
             var royalty = fee.RoyaltyFee;

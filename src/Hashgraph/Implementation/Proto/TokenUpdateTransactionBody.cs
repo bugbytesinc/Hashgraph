@@ -41,7 +41,7 @@ namespace Proto
                 updateParameters.SuspendEndorsement is null &&
                 updateParameters.ConfiscateEndorsement is null &&
                 updateParameters.SupplyEndorsement is null &&
-                updateParameters.CommissionsEndorsement is null &&
+                updateParameters.RoyaltiesEndorsement is null &&
                 string.IsNullOrWhiteSpace(updateParameters.Symbol) &&
                 string.IsNullOrWhiteSpace(updateParameters.Name) &&
                 !updateParameters.Expiration.HasValue &&
@@ -124,9 +124,9 @@ namespace Proto
             {
                 SupplyKey = new Key(updateParameters.SupplyEndorsement);
             }
-            if (!(updateParameters.CommissionsEndorsement is null))
+            if (!(updateParameters.RoyaltiesEndorsement is null))
             {
-                FeeScheduleKey = new Key(updateParameters.CommissionsEndorsement);
+                FeeScheduleKey = new Key(updateParameters.RoyaltiesEndorsement);
             }
             if (!(updateParameters.RenewAccount is null))
             {

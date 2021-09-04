@@ -47,12 +47,12 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyCollection<AssetTransfer> AssetTransfers { get; internal init; }
         /// <summary>
-        /// A list of token transfers applied by the network as commissions
+        /// A list of token transfers applied by the network as royalties
         /// for executing the original transaction.  Typically in the form
         /// of royalties for transfering custom tokens and assets as defined
         /// by the respective token definition's fees.
         /// </summary>
-        public ReadOnlyCollection<CommissionTransfer> Commissions { get; internal init; }
+        public ReadOnlyCollection<RoyaltyTransfer> Royalties { get; internal init; }
         /// <summary>
         /// Internal Constructor of the record.
         /// </summary>
@@ -67,7 +67,7 @@ namespace Hashgraph
             Transfers = record.TransferList?.ToTransfers() ?? new ReadOnlyDictionary<Address, long>(new Dictionary<Address, long>());
             TokenTransfers = tokenTransfers;
             AssetTransfers = assetTransfers;
-            Commissions = record.AssessedCustomFees.AsCommissionTransferList();
+            Royalties = record.AssessedCustomFees.AsRoyaltyTransferList();
         }
     }
 

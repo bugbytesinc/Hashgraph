@@ -3,26 +3,29 @@
 namespace Hashgraph
 {
     /// <summary>
-    /// Represents a Fractional Commission associated with transfers of a token or asset.
+    /// The definition of a Royalty computed from the amount of 
+    /// Fungible token exchanged, can be in the form as a deduction 
+    /// of the token echanged, or an exise amount taken from the 
+    /// sender of the fungible token.
     /// </summary>
-    public sealed record FractionalCommission : ICommission
+    public sealed record TokenRoyalty : IRoyalty
     {
         /// <summary>
-        /// A Porpotional Commission Fee based on the amount of Token Transferred.
+        /// Identifies this royalty as a Token Royalty type.
         /// </summary>
-        public CommissionType CommissionType => CommissionType.Fractional;
+        public RoyaltyType RoyaltyType => RoyaltyType.Token;
         /// <summary>
-        /// The account receiving the commision fee.
+        /// Account receiving the royalty assessment.
         /// </summary>
         public Address Account { get; private init; }
         /// <summary>
-        /// The minimum fee value, in terms of the 
-        /// smallest denomination of the payment token.
+        /// The minimum assessed value, in terms of the 
+        /// smallest denomination of the associated token.
         /// </summary>
         public long Minimum { get; private init; }
         /// <summary>
         /// The numerator portion of the fraction of the 
-        /// transferred units to assess as a fee.
+        /// transferred units to assess.
         /// </summary>
         /// <remarks>
         /// This is not expressed as a floating point number
@@ -32,7 +35,7 @@ namespace Hashgraph
         public long Numerator { get; private init; }
         /// <summary>
         /// The denominator portion of the fraction of the 
-        /// transferred units to assess as a fee.
+        /// transferred units to assess.
         /// </summary>
         /// <remarks>
         /// This is not expressed as a floating point number
@@ -42,22 +45,23 @@ namespace Hashgraph
         public long Denominator { get; private init; }
         /// <summary>
         /// The maximum allowed fee value, in terms of
-        /// the smallest denomination of the payment token.
+        /// the smallest denomination of the associated token.
         /// </summary>
         public long Maximum { get; private init; }
         /// <summary>
-        /// Determines how the fee is applied, if <code>true</code>
-        /// the fee is applied as an extra surcharge paid by the 
-        /// sender of the target token.  If <code>false</code> 
-        /// (the default) the amount of token received by the 
-        /// receiver is reduced by the fee from the total amount
-        /// sent by the sender.
+        /// Determines how the royalty assessment is applied, 
+        /// if <code>true</code> the amount is added as an extra 
+        /// surcharge paid by the sender of the associated token.
+        /// If <code>false</code> (the default) the amount of token 
+        /// received by the receiving account is reduced by the 
+        /// assement computed from the total amount of the associated
+        /// fungible token sent by the sender.
         /// </summary>
         public bool AssessAsSurcharge { get; private init; }
         /// <summary>
-        /// Internal Constructor representing the "None" version of a commission.
+        /// Internal Constructor representing the "None" version of this royalty.
         /// </summary>
-        private FractionalCommission()
+        private TokenRoyalty()
         {
             Account = Address.None;
             Numerator = 0;
@@ -67,33 +71,37 @@ namespace Hashgraph
             AssessAsSurcharge = false;
         }
         /// <summary>
-        /// Public Constructor, an <code>FractionalCommission</code> is immutable after creation.
+        /// Public Constructor, an <code>TokenRoyalty</code> is immutable after creation.
         /// </summary>
         /// <param name="account">
-        /// The account receiving the commision fee.
-        /// </param>
-        /// <param name="token">
-        /// The address id of the token type used to pay
-        /// the commission, if <code>None</code> then
-        /// native hBar crypto is assumed.
+        /// Account receiving the royalty assessment.
         /// </param>
         /// <param name="numerator">
         /// The numerator portion of the fraction of the 
-        /// transferred units to assess as a fee.
+        /// transferred units to assess.
         /// </param>
         /// <param name="denominator">
         /// The denominator portion of the fraction of the 
-        /// transferred units to assess as a fee.
+        /// transferred units to assess.
         /// </param>
         /// <param name="minimum">
-        /// The minimum fee value, in terms of the 
-        /// smallest denomination of the payment token.
+        /// The minimum assessed value, in terms of the 
+        /// smallest denomination of the associated token.
         /// </param>
         /// <param name="maximum">
         /// The maximum allowed fee value, in terms of
-        /// the smallest denomination of the payment token.
+        /// the smallest denomination of the associated token.
         /// </param>
-        public FractionalCommission(Address account, long numerator, long denominator, long minimum, long maximum, bool assesAsSurcharge = false)
+        /// <param name="assesAsSurcharge">
+        /// Determines how the royalty assessment is applied, 
+        /// if <code>true</code> the amount is added as an extra 
+        /// surcharge paid by the sender of the associated token.
+        /// If <code>false</code> (the default) the amount of token 
+        /// received by the receiving account is reduced by the 
+        /// assement computed from the total amount of the associated
+        /// fungible token sent by the sender.
+        /// </param>
+        public TokenRoyalty(Address account, long numerator, long denominator, long minimum, long maximum, bool assesAsSurcharge = false)
         {
             Account = account;
             Numerator = numerator;
@@ -102,8 +110,11 @@ namespace Hashgraph
             Maximum = maximum;
             AssessAsSurcharge = assesAsSurcharge;
         }
-
-        internal FractionalCommission(CustomFee fee)
+        /// <summary>
+        /// Internal Helper Constructor converting raw protobuf 
+        /// into this royalty definition.
+        /// </summary>
+        internal TokenRoyalty(CustomFee fee)
         {
             Account = fee.FeeCollectorAccountId.AsAddress();
             var fraction = fee.FractionalFee;

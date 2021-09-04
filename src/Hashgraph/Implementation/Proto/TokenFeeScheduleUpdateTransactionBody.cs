@@ -10,11 +10,11 @@ namespace Proto
 {
     public sealed partial class TokenFeeScheduleUpdateTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Update Token Transfer Commissions, status: {0}";
+        string INetworkTransaction.TransactionExceptionMessage => "Unable to Update Royalties, status: {0}";
 
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
-            throw new InvalidOperationException("Updating Token Commissions is not a schedulable transaction.");
+            throw new InvalidOperationException("Updating Token Royalties is not a schedulable transaction.");
         }
 
         TransactionBody INetworkTransaction.CreateTransactionBody()
@@ -27,13 +27,13 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).updateTokenFeeScheduleAsync;
         }
 
-        internal TokenFeeScheduleUpdateTransactionBody(Address token, IEnumerable<ICommission>? commissions) : this()
+        internal TokenFeeScheduleUpdateTransactionBody(Address token, IEnumerable<IRoyalty>? royalties) : this()
         {
             TokenId = new TokenID(token);
             // Note: Null & Empty are Valid, they will clear the list of fees.
-            if (commissions is not null)
+            if (royalties is not null)
             {
-                CustomFees.AddRange(commissions.Select(commission => new CustomFee(commission)));
+                CustomFees.AddRange(royalties.Select(royalty => new CustomFee(royalty)));
             }
         }
     }

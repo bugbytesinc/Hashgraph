@@ -41,10 +41,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
 
@@ -80,7 +80,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(_network.Payer, record.Id.Address);
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
-            Assert.Empty(record.Commissions);
+            Assert.Empty(record.Royalties);
 
             var xfer = record.AssetTransfers.First(x => x.To == fxAccount.Record.Address);
             Assert.NotNull(xfer);
@@ -139,7 +139,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(_network.Payer, record.Id.Address);
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
-            Assert.Empty(record.Commissions);
+            Assert.Empty(record.Royalties);
 
             var xfer = record.AssetTransfers.First(x => x.To == fxAccount.Record.Address);
             Assert.NotNull(xfer);

@@ -119,32 +119,32 @@ namespace Hashgraph.Test.Fixtures
             Assert.Equal(expectedBalance, balance);
         }
 
-        internal static void ContainsCommission(TestToken fxToken, TestAccount fxPayer, TestAccount fxReceiver, int amount, ReadOnlyCollection<CommissionTransfer> commissions)
+        internal static void ContainsRoyalty(TestToken fxToken, TestAccount fxPayer, TestAccount fxReceiver, int amount, ReadOnlyCollection<RoyaltyTransfer> royalties)
         {
             var token = fxToken.Record.Token;
             var payer = fxPayer.Record.Address;
             var receiver = fxReceiver.Record.Address;
-            foreach(var entry in commissions)
+            foreach(var entry in royalties)
             {
                 if(amount == entry.Amount && token == entry.Token && receiver == entry.Receiver && entry.Payers.Contains(payer))
                 {
                     return;
                 }
             }
-            throw new Xunit.Sdk.XunitException($"Unable to find commission payment using token {token} involving a payer {payer} to receiver {receiver} with amount {amount}.");
+            throw new Xunit.Sdk.XunitException($"Unable to find royalty payment using token {token} involving a payer {payer} to receiver {receiver} with amount {amount}.");
         }
-        internal static void ContainsHbarCommission(TestAccount fxPayer, TestAccount fxReceiver, int amount, ReadOnlyCollection<CommissionTransfer> commissions)
+        internal static void ContainsHbarRoyalty(TestAccount fxPayer, TestAccount fxReceiver, int amount, ReadOnlyCollection<RoyaltyTransfer> royalties)
         {
             var payer = fxPayer.Record.Address;
             var receiver = fxReceiver.Record.Address;
-            foreach (var entry in commissions)
+            foreach (var entry in royalties)
             {
                 if (amount == entry.Amount && Address.None == entry.Token && receiver == entry.Receiver && entry.Payers.Contains(payer))
                 {
                     return;
                 }
             }
-            throw new Xunit.Sdk.XunitException($"Unable to find commission payment using hBbar involving a payer {payer} to receiver {receiver} with amount {amount}.");
+            throw new Xunit.Sdk.XunitException($"Unable to find royalty payment using hBbar involving a payer {payer} to receiver {receiver} with amount {amount}.");
         }
 
     }

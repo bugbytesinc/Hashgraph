@@ -57,9 +57,9 @@ namespace Hashgraph
         public Endorsement? SupplyEndorsement { get; set; }
         /// <summary>
         /// Changes the administrator key for signing transactions updating the 
-        /// commissions (custom transfer fees) associated with this token.
+        /// royalties (custom transfer fees) associated with this token.
         /// </summary>
-        public Endorsement? CommissionsEndorsement { get; set; }
+        public Endorsement? RoyaltiesEndorsement { get; set; }
         /// <summary>
         /// If specified, replaces the current symbol for this 
         /// token with the new Symbol.

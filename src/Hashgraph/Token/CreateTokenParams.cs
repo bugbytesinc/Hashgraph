@@ -82,18 +82,17 @@ namespace Hashgraph
         /// </summary>
         public Endorsement? SupplyEndorsement { get; set; }
         /// <summary>
-        /// Administrator key for signing transactions updating the commissions
-        /// (custom transfer fees) associated with this token
-        /// KYC status of an account.
+        /// Administrator key for signing transactions updating the royalty
+        /// (custom transfer fees) associated with this token.
         /// </summary>
-        public Endorsement? CommissionsEndorsement { get; set; }
+        public Endorsement? RoyaltyEndorsement { get; set; }
         /// <summary>
-        /// The list of commissions applied to transactions
-        /// transferring this asset.  If a commission endorsement is not
-        /// supplied upon creation, the commissions are imutable after
+        /// The list of royalties applied to transactions
+        /// transferring this token.  If a royalty endorsement is not
+        /// supplied upon creation, the royalties are imutable after
         /// creation.
         /// </summary>
-        public IEnumerable<ICommission>? Commissions { get; set; }
+        public IEnumerable<IRoyalty>? Royalties { get; set; }
         /// <summary>
         /// The default frozen setting for current and newly created accounts.  A value 
         /// of <code>true</code> will default crypto account status of <code>Frozen</code> 

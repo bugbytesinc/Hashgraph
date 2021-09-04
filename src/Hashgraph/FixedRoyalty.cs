@@ -3,62 +3,70 @@
 namespace Hashgraph
 {
     /// <summary>
-    /// Represents a fixed commission associated with transfers of a token or asset.
+    /// The definition of a single Fixed Royalty applied to 
+    /// the transaction as a whole when transferring an asset or token.
     /// </summary>
-    public sealed record FixedCommission : ICommission
+    public sealed record FixedRoyalty : IRoyalty
     {
         /// <summary>
-        /// A Fixed Commission Fee
+        /// Identifies this royalty as a Fixed Royalty type.
         /// </summary>
-        public CommissionType CommissionType => CommissionType.Fixed;
+        public RoyaltyType RoyaltyType => RoyaltyType.Fixed;
         /// <summary>
-        /// The account receiving the commision fee.
+        /// Account receiving the royalty assessment.
         /// </summary>
         public Address Account { get; private init; }
         /// <summary>
         /// The address id of the token type used to pay
-        /// the commission, if <code>None</code> then
+        /// the royalty, if <code>None</code> then
         /// native hBar crypto is assumed.
         /// </summary>
         public Address Token { get; private init; }
         /// <summary>
         /// The amount of token or cryptocurrency
-        /// that will be assessed from the sending
-        /// account.
+        /// that will be assessed and deducted from
+        /// the account sending the associated token
+        /// or asset.
         /// </summary>
         public long Amount { get; private init; }
         /// <summary>
-        /// Internal Constructor representing the "None" version of a commission.
+        /// Internal Constructor representing the "None" version of a 
+        /// fixed royalty.
         /// </summary>
-        private FixedCommission()
+        private FixedRoyalty()
         {
             Account = Address.None;
             Token = Address.None;
             Amount = 0;
         }
         /// <summary>
-        /// Public Constructor, an <code>FixedCommission</code> is immutable after creation.
+        /// Public Constructor, an <code>FixedRoyalty</code> is immutable after creation.
         /// </summary>
         /// <param name="account">
-        /// The account receiving the commision fee.
+        /// Account receiving the royalty assessment.
         /// </param>
         /// <param name="token">
         /// The address id of the token type used to pay
-        /// the commission, if <code>None</code> then
+        /// the royalty, if <code>None</code> then
         /// native hBar crypto is assumed.
         /// </param>
         /// <param name="amount">
         /// The amount of token or cryptocurrency
-        /// that will be assessed from the sending
-        /// account.
+        /// that will be assessed and deducted from
+        /// the account sending the associated token
+        /// or asset.
         /// </param>
-        public FixedCommission(Address account, Address token, long amount)
+        public FixedRoyalty(Address account, Address token, long amount)
         {
             Account = account;
             Token = token;
             Amount = amount;
         }
-        internal FixedCommission(CustomFee fee)
+        /// <summary>
+        /// Internal Helper Constructor converting raw protobuf 
+        /// into this royalty definition.
+        /// </summary>
+        internal FixedRoyalty(CustomFee fee)
         {
             Account = fee.FeeCollectorAccountId.AsAddress();
             Token = fee.FixedFee.DenominatingTokenId.AsAddress();

@@ -47,10 +47,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
 
@@ -195,7 +195,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(metadata.Length, record.SerialNumbers.Count);
             Assert.Empty(record.TokenTransfers);
             Assert.Equal(metadata.Length, record.AssetTransfers.Count);
-            Assert.Empty(record.Commissions);
+            Assert.Empty(record.Royalties);
 
             for (var i = 0; i < metadata.Length; i++)
             {
@@ -294,10 +294,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(fxAsset.Params.CommissionsEndorsement, info.CommissionsEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
-            Assert.Empty(info.Commissions);
+            Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
         }
