@@ -152,3 +152,48 @@ jobs:
         name: test-results-macos
         path: test-results
       if: ${{ always() }}
+
+  build_and_test_net6:
+    name: 'Build and Test .NET 6.0'
+    needs: build_and_test_macos
+    environment: TESTNET    
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+        include-prerelease: true
+
+    - name: Build
+      run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
+
+    - name: Integration Tests
+      run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
+      env:
+        'account:number': ${{ secrets.ACCOUNT_NUMBER }}
+        'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
+        'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
+        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
+        'mirror:port': ${{ secrets.MIRROR_PORT }}
+        'network:address': ${{ secrets.NETWORK_ADDRESS }}
+        'network:port': ${{ secrets.NETWORK_PORT }}
+        'server:number': ${{ secrets.SERVER_NUMBER }}
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-net6
+        path: test-results
+      if: ${{ always() }}
