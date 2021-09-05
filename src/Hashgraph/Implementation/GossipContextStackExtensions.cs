@@ -119,10 +119,10 @@ namespace Hashgraph
                             $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
                         callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
 
-                        // If this was a transaction, it may have actully successfully been processed, in which case 
-                        // the receipt will already be in the system.  Check to see if it is there.
                         if (request is Transaction transaction)
                         {
+                            // If this was a transaction, it may have actully successfully been processed, in which case 
+                            // the receipt will already be in the system.  Check to see if it is there.
                             await Task.Delay(retryDelay * retryCount).ConfigureAwait(false);
                             var receiptResponse = await CheckForReceipt(transaction).ConfigureAwait(false);
                             callOnResponseReceivedHandlers(retryCount, receiptResponse);
@@ -131,6 +131,23 @@ namespace Hashgraph
                                 !shouldRetryRequest(tenativeResponse))
                             {
                                 return tenativeResponse;
+                            }
+                        }
+                        else if (request is Query query)
+                        {
+                            // If this was a query, it may not have made it to the node and we can retry.  However,
+                            // if we receive a duplicate transaction error, it means the node accepted the payment
+                            // and terminated the connection before returning results, in which case funds are lost.
+                            // For that scenario, re-throw the original exception and it will be caught and translated
+                            // into a PrecheckException with the appropriate error message.
+                            var retryQueryResponse = await RetryQuery();
+                            if ((retryQueryResponse as Response)?.ResponseHeader?.NodeTransactionPrecheckCode == ResponseCodeEnum.DuplicateTransaction)
+                            {
+                                throw;
+                            }
+                            if (!shouldRetryRequest(retryQueryResponse))
+                            {
+                                return retryQueryResponse;
                             }
                         }
                     }
@@ -179,6 +196,35 @@ namespace Hashgraph
                     }
                     return new TransactionResponse { NodeTransactionPrecheckCode = ResponseCodeEnum.Unknown };
                 }
+
+                async Task<TResponse> RetryQuery()
+                {
+                    while (true)
+                    {
+                        try
+                        {
+                            await Task.Delay(retryDelay * retryCount).ConfigureAwait(false);
+                            return await sendRequest(request, null, null, default);
+                        }
+                        catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable && retryCount < maxRetries - 1)
+                        {
+                            var channel = context.GetChannel();
+                            var message = channel.State == ChannelState.Connecting ?
+                                $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
+                                $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
+                            callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
+                        }
+                        retryCount++;
+                    }
+                }
+            }
+            catch (RpcException rpcex) when (request is Query query)
+            {
+                var channel = context.GetChannel();
+                var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ChannelState.Connecting ?
+                    $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable, or accepted payment and terminated the connection before returning Query results." :
+                    $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}, it may have accepted payment and terminated the connection before returning Query results.";
+                throw new PrecheckException(message, TxId.None, ResponseCode.RpcError, 0, rpcex);
             }
             catch (RpcException rpcex)
             {
