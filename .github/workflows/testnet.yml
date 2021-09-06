@@ -71,6 +71,7 @@ jobs:
     environment: TESTNET    
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    if: always()
     strategy:
       fail-fast: false
 
@@ -115,6 +116,7 @@ jobs:
     environment: TESTNET    
     runs-on: macos-latest
     timeout-minutes: 360
+    if: always()
     strategy:
       fail-fast: false
 
@@ -159,6 +161,7 @@ jobs:
     environment: TESTNET    
     runs-on: ubuntu-latest
     timeout-minutes: 360
+    if: always()
     strategy:
       fail-fast: false
 
