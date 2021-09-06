@@ -4,11 +4,11 @@
 #  ACCOUNT_PUBLIC_KEY:   Public Key for the root payer account, encoded in Hex
 #  ACCOUNT_PRIVATE_KEY:  Private Key for the root payer account, encoded in Hex
 
-name: 'TESTNET Build & Test'
+name: 'TESTNET Build & Test .NET 6'
 
 on:
   push:
-    branches: [ main ]
+    branches: [ net6 ]
 
 env:
   BUILD_CONFIGURATION: Release
@@ -36,7 +36,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
+        include-prerelease: true
 
     - name: Build
       run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
@@ -77,7 +78,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
+        include-prerelease: true
 
     - name: Build
       run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
@@ -118,7 +120,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
+        include-prerelease: true
 
     - name: Build
       run: dotnet build --configuration ${{ env.BUILD_CONFIGURATION }}
