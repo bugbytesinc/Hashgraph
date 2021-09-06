@@ -200,12 +200,12 @@ namespace Hashgraph.Test.Crypto
             {
                 Address = fx.Record.Address,
                 Signatory = fx.PrivateKey,
-                Proxy = _network.Gateway
+                Proxy = _network.Gateways[0]
             });
             Assert.Equal(ResponseCode.Success, updateResult.Status);
 
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
-            Assert.Equal(_network.Gateway, updatedInfo.Proxy);
+            Assert.Equal(_network.Gateways[0], updatedInfo.Proxy);
         }
         [Fact(DisplayName = "Update Account: Can Update Proxy Stake to Invalid Address")]
         public async Task CanUpdateProxyStakeToInvalidAddress()
@@ -216,11 +216,11 @@ namespace Hashgraph.Test.Crypto
             {
                 Address = fx.Record.Address,
                 Signatory = fx.PrivateKey,
-                Proxy = _network.Gateway
+                Proxy = _network.Gateways[0]
             });
 
             var originalInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
-            Assert.Equal(_network.Gateway, originalInfo.Proxy);
+            Assert.Equal(_network.Gateways[0], originalInfo.Proxy);
 
             var updateResult = await fx.Client.UpdateAccountAsync(new UpdateAccountParams
             {

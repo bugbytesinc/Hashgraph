@@ -240,7 +240,7 @@ namespace Hashgraph.Test.Record
                 var tasks = new Task[duplicates];
                 for (var i = 0; i < duplicates; i++)
                 {
-                    tasks[i] = client.TransferAsync(_network.Payer, _network.Gateway, 1, ctx => ctx.Transaction = txid);
+                    tasks[i] = client.TransferAsync(_network.Payer, _network.Gateways[0], 1, ctx => ctx.Transaction = txid);
                 }
                 for (var i = 0; i < duplicates; i++)
                 {
@@ -270,7 +270,7 @@ namespace Hashgraph.Test.Record
         public async Task CanGetListOfOneRecord()
         {
             await using var client = _network.NewClient();
-            var receipt = await client.TransferAsync(_network.Payer, _network.Gateway, 1);
+            var receipt = await client.TransferAsync(_network.Payer, _network.Gateways[0], 1);
             var receipts = await client.GetAllTransactionRecordsAsync(receipt.Id);
             Assert.Single(receipts);
             Assert.Equal(ResponseCode.Success, receipts[0].Status);

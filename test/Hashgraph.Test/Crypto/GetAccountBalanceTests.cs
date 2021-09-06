@@ -27,7 +27,7 @@ namespace Hashgraph.Test.Crypto
         public async Task CanGetTinybarBalanceForGatewayAsync()
         {
             await using var client = _network.NewClient();
-            var account = _network.Gateway;
+            var account = _network.Gateways[0];
             var balance = await client.GetAccountBalanceAsync(account);
             Assert.True(balance > 0, "Gateway Account Balance should be greater than zero.");
         }
@@ -46,7 +46,7 @@ namespace Hashgraph.Test.Crypto
         public async Task MissingPayerAccountThrowsException()
         {
             var account = _network.Payer;
-            await using var client = new Client(ctx => { ctx.Gateway = _network.Gateway; });
+            await using var client = new Client(ctx => { ctx.Gateway = _network.Gateways[0]; });
             var balance = await client.GetAccountBalanceAsync(account);
             Assert.True(balance > 0);
         }
@@ -78,7 +78,7 @@ namespace Hashgraph.Test.Crypto
             await using var client = _network.NewClient();
             client.Configure(cfg =>
             {
-                cfg.Gateway = new Gateway($"{_network.NetworkAddress}:{_network.NetworkPort}", 0, 0, 999);
+                cfg.Gateway = new Gateway(_network.Gateways[0].Url, 0, 0, 999);
             });
             var balance = await client.GetAccountBalanceAsync(_network.Payer);
             Assert.True(balance > 0);

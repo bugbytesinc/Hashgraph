@@ -39,14 +39,14 @@ namespace Hashgraph.Test.Crypto
         public async Task MissingPayerAccountDosNotThrowException()
         {
             await using var fx = await PayableContract.CreateAsync(_network);
-            await using var client = new Client(ctx => { ctx.Gateway = _network.Gateway; });
+            await using var client = new Client(ctx => { ctx.Gateway = _network.Gateways[0]; });
             var balance = await client.GetContractBalanceAsync(fx.ContractRecord.Contract);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, balance);
         }
         [Fact(DisplayName = "Get Contract Balance: Querying a non-contract address raises an error.")]
         public async Task QueryingBalanceForNonContractAddressRaisesError()
         {
-            await using var client = new Client(ctx => { ctx.Gateway = _network.Gateway; });
+            await using var client = new Client(ctx => { ctx.Gateway = _network.Gateways[0]; });
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
                 await client.GetContractBalanceAsync(_network.Payer);
@@ -83,10 +83,10 @@ namespace Hashgraph.Test.Crypto
             await using var client = _network.NewClient();
             client.Configure(cfg =>
             {
-                cfg.Gateway = new Gateway($"{_network.NetworkAddress}:{_network.NetworkPort}", 0, 0, 999);
+                cfg.Gateway = new Gateway(_network.Gateways[0].Url, 0, 0, 999);
             });
             var balance = await client.GetContractBalanceAsync(fx.ContractRecord.Contract);
-            Assert.Equal(0ul, balance);            
+            Assert.Equal(0ul, balance);
         }
         [Fact(DisplayName = "Get Contract Balance: Can Set FeeLimit to Zero")]
         public async Task GetContractBalanceRequiresNoFee()
@@ -104,7 +104,7 @@ namespace Hashgraph.Test.Crypto
         public async Task RetrievingAccountBalanceDoesNotCreateReceipt()
         {
             await using var fx = await PayableContract.CreateAsync(_network);
-            await using var client = _network.NewClient();            
+            await using var client = _network.NewClient();
             var txId = client.CreateNewTxId();
             var balance = await client.GetContractBalanceAsync(fx.ContractRecord.Contract, ctx => ctx.Transaction = txId);
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>

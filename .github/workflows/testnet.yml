@@ -52,22 +52,18 @@ jobs:
         'account:number': ${{ secrets.ACCOUNT_NUMBER }}
         'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
         'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
-        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
-        'mirror:port': ${{ secrets.MIRROR_PORT }}
-        'network:address': ${{ secrets.NETWORK_ADDRESS }}
-        'network:port': ${{ secrets.NETWORK_PORT }}
-        'server:number': ${{ secrets.SERVER_NUMBER }}
+        'network': TESTNET
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v2
       with:
         name: test-results-windows
         path: test-results
-      if: ${{ always() }}
+      if: always()
 
   build_and_test_linux:
     name: 'Build and Test Linux'
-    needs: build_and_test_windows
+    #needs: build_and_test_windows
     environment: TESTNET    
     runs-on: ubuntu-latest
     timeout-minutes: 360
@@ -97,11 +93,7 @@ jobs:
         'account:number': ${{ secrets.ACCOUNT_NUMBER }}
         'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
         'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
-        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
-        'mirror:port': ${{ secrets.MIRROR_PORT }}
-        'network:address': ${{ secrets.NETWORK_ADDRESS }}
-        'network:port': ${{ secrets.NETWORK_PORT }}
-        'server:number': ${{ secrets.SERVER_NUMBER }}
+        'network': TESTNET
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v2
@@ -112,7 +104,7 @@ jobs:
 
   build_and_test_macos:
     name: 'Build and Test MacOS'
-    needs: build_and_test_linux
+    #needs: build_and_test_linux
     environment: TESTNET    
     runs-on: macos-latest
     timeout-minutes: 360
@@ -142,22 +134,18 @@ jobs:
         'account:number': ${{ secrets.ACCOUNT_NUMBER }}
         'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
         'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
-        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
-        'mirror:port': ${{ secrets.MIRROR_PORT }}
-        'network:address': ${{ secrets.NETWORK_ADDRESS }}
-        'network:port': ${{ secrets.NETWORK_PORT }}
-        'server:number': ${{ secrets.SERVER_NUMBER }}
+        'network': TESTNET
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v2
       with:
         name: test-results-macos
         path: test-results
-      if: ${{ always() }}
+      if: always()
 
   build_and_test_net6:
     name: 'Build and Test .NET 6.0'
-    needs: build_and_test_macos
+    #needs: build_and_test_macos
     environment: TESTNET    
     runs-on: ubuntu-latest
     timeout-minutes: 360
@@ -188,15 +176,11 @@ jobs:
         'account:number': ${{ secrets.ACCOUNT_NUMBER }}
         'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
         'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
-        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
-        'mirror:port': ${{ secrets.MIRROR_PORT }}
-        'network:address': ${{ secrets.NETWORK_ADDRESS }}
-        'network:port': ${{ secrets.NETWORK_PORT }}
-        'server:number': ${{ secrets.SERVER_NUMBER }}
+        'network': TESTNET
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v2
       with:
         name: test-results-net6
         path: test-results
-      if: ${{ always() }}
+      if: always()

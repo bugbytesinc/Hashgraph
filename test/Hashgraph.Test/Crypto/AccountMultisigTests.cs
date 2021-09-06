@@ -30,8 +30,8 @@ namespace Hashgraph.Test.Crypto
             });
             Assert.NotNull(createResult);
             Assert.NotNull(createResult.Address);
-            Assert.Equal(_network.ServerRealm, createResult.Address.RealmNum);
-            Assert.Equal(_network.ServerShard, createResult.Address.ShardNum);
+            Assert.Equal(_network.AccountRealm, createResult.Address.RealmNum);
+            Assert.Equal(_network.AccountShard, createResult.Address.ShardNum);
             Assert.True(createResult.Address.AccountNum > 0);
             var info = await client.GetAccountInfoAsync(createResult.Address);
             Assert.Equal(initialBalance, info.Balance);
