@@ -60,7 +60,7 @@ namespace Hashgraph.Test.Crypto
         public async Task CanGetInfoForGatewayAsync()
         {
             await using var client = _network.NewClient();
-            var account = _network.Gateways[0];
+            var account = _network.Gateway;
             var info = await client.GetAccountInfoAsync(account);
             Assert.NotNull(info.Address);
             Assert.Equal(account.ShardNum, info.Address.ShardNum);
@@ -94,7 +94,7 @@ namespace Hashgraph.Test.Crypto
         {
             await using var fxAsset = await TestAsset.CreateAsync(_network);
 
-            var info = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
+            var info= await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Address);
             Assert.NotNull(info.SmartContractId);
             Assert.False(info.Deleted);

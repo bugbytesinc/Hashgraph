@@ -36,13 +36,13 @@ namespace Hashgraph.Test.System
             });
             transfers.AccountAmounts.Add(new Proto.AccountAmount
             {
-                AccountID = new Proto.AccountID(_network.Gateways[0]),
+                AccountID = new Proto.AccountID(_network.Gateway),
                 Amount = 1
             });
             var body = new Proto.TransactionBody
             {
                 TransactionID = new Proto.TransactionID(txid),
-                NodeAccountID = new Proto.AccountID(_network.Gateways[0]),
+                NodeAccountID = new Proto.AccountID(_network.Gateway),
                 TransactionFee = 30_00_000_000,
                 TransactionValidDuration = new Proto.Duration { Seconds = 180 },
                 Memo = "Unsafe Test",
@@ -79,13 +79,13 @@ namespace Hashgraph.Test.System
             });
             transfers.AccountAmounts.Add(new Proto.AccountAmount
             {
-                AccountID = new Proto.AccountID(_network.Gateways[0]),
+                AccountID = new Proto.AccountID(_network.Gateway),
                 Amount = 1
             });
             var body = new Proto.TransactionBody
             {
                 TransactionID = new Proto.TransactionID(txid),
-                NodeAccountID = new Proto.AccountID(_network.Gateways[0]),
+                NodeAccountID = new Proto.AccountID(_network.Gateway),
                 TransactionFee = 30_00_000_000,
                 TransactionValidDuration = new Proto.Duration { Seconds = 180 },
                 Memo = "Unsafe Test",

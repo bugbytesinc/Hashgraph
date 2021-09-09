@@ -31,7 +31,7 @@ namespace Hashgraph.Test.Extensions
         {
             var client = _network.NewClient();
             var book = await client.GetAddressBookAsync();
-            Address nodeAddress = _network.Gateways[0];
+            Address nodeAddress = _network.Gateway;
             var node = book.FirstOrDefault(n => n.Address == nodeAddress);
             Assert.NotNull(node);
             Assert.NotNull(node.RsaPublicKey);

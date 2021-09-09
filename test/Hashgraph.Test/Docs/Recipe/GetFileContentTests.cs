@@ -58,8 +58,8 @@ namespace Hashgraph.Tests.Docs.Recipe
 
             using (new ConsoleRedirector(_network.Output))
             {
-                var arg0 = _network.Gateways[0].Url;
-                var arg1 = _network.Gateways[0].AccountNum.ToString();
+                var arg0 = _network.Gateway.Url;
+                var arg1 = _network.Gateway.AccountNum.ToString();
                 var arg2 = _network.Payer.AccountNum.ToString();
                 var arg3 = Hex.FromBytes(_network.PrivateKey);
                 var arg4 = file.File.AccountNum.ToString();

@@ -106,7 +106,7 @@ namespace Hashgraph.Test.Record
                 var tasks = new Task[duplicates];
                 for (var i = 0; i < duplicates; i++)
                 {
-                    tasks[i] = client.TransferAsync(_network.Payer, _network.Gateways[0], 1, ctx => ctx.Transaction = txid);
+                    tasks[i] = client.TransferAsync(_network.Payer, _network.Gateway, 1, ctx => ctx.Transaction = txid);
                 }
                 for (var i = 0; i < duplicates; i++)
                 {
@@ -134,7 +134,7 @@ namespace Hashgraph.Test.Record
                         Assert.Equal(passedPrecheck - 1, receipts.Count(t => t.Status == ResponseCode.DuplicateTransaction));
                         return;
                     }
-                }
+                }    
                 await Task.Delay(1000);
             }
             _network.Output?.WriteLine("TEST INCONCLUSIVE, UNABLE TO CREATE DUPLICATE TRANSACTIONS THIS TIME AROUND.");
@@ -143,7 +143,7 @@ namespace Hashgraph.Test.Record
         public async Task CanGetListOfOneReceipt()
         {
             await using var client = _network.NewClient();
-            var receipt = await client.TransferAsync(_network.Payer, _network.Gateways[0], 1);
+            var receipt = await client.TransferAsync(_network.Payer, _network.Gateway, 1);
             var receipts = await client.GetAllReceiptsAsync(receipt.Id);
             Assert.Single(receipts);
             Assert.Equal(ResponseCode.Success, receipts[0].Status);

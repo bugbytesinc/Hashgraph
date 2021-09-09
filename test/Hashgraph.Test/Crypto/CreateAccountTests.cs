@@ -28,8 +28,8 @@ namespace Hashgraph.Test.Crypto
             });
             Assert.NotNull(createResult);
             Assert.NotNull(createResult.Address);
-            Assert.Equal(_network.AccountRealm, createResult.Address.RealmNum);
-            Assert.Equal(_network.AccountShard, createResult.Address.ShardNum);
+            Assert.Equal(_network.ServerRealm, createResult.Address.RealmNum);
+            Assert.Equal(_network.ServerShard, createResult.Address.ShardNum);
             Assert.True(createResult.Address.AccountNum > 0);
 
             var info = await client.GetAccountInfoAsync(createResult.Address);
@@ -115,12 +115,12 @@ namespace Hashgraph.Test.Crypto
             {
                 InitialBalance = 1,
                 Endorsement = publicKey,
-                Proxy = _network.Gateways[0],
+                Proxy = _network.Gateway,
             });
             Assert.Equal(ResponseCode.Success, createResult.Status);
 
             var info = await client.GetAccountInfoAsync(createResult.Address);
-            Assert.Equal(_network.Gateways[0], info.Proxy);
+            Assert.Equal(_network.Gateway, info.Proxy);
         }
         [Fact(DisplayName = "Create Account: Empty Endorsement is Not Allowed")]
         public async Task EmptyEndorsementIsNotAllowed()

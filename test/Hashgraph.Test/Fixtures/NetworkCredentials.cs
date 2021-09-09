@@ -1,8 +1,8 @@
 ﻿using Google.Protobuf;
+using Hashgraph.Extensions;
 using Microsoft.Extensions.Configuration;
 using Proto;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -11,23 +11,28 @@ namespace Hashgraph.Test.Fixtures
 {
     public class NetworkCredentials
     {
-        private ulong _roundRobinCount = 0;
-
         private readonly IConfiguration _configuration;
+        private readonly Client _rootClient = null;
         private Address _systemAccountAddress = null;
         private Address _systemDeleteAdminAddress = null;
         private Address _systemUndeleteAdminAddress = null;
         private Address _systemFreezeAdminAddress = null;
 
+        public string NetworkAddress { get { return _configuration["network:address"]; } }
+        public int NetworkPort { get { return GetAsInt("network:port"); } }
+        public long ServerShard { get { return GetAsInt("server:shard"); } }
+        public long ServerRealm { get { return GetAsInt("server:realm"); } }
+        public long ServerNumber { get { return GetAsInt("server:number"); } }
         public long AccountShard { get { return GetAsInt("account:shard"); } }
         public long AccountRealm { get { return GetAsInt("account:realm"); } }
         public long AccountNumber { get { return GetAsInt("account:number"); } }
+        public string MirrorAddress { get { return _configuration["mirror:address"]; } }
+        public int MirrorPort { get { return GetAsInt("mirror:port"); } }
         public ReadOnlyMemory<byte> PrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
         public ReadOnlyMemory<byte> PublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
         public Address Payer { get { return new Address(AccountShard, AccountRealm, AccountNumber); } }
         public Signatory Signatory { get { return new Signatory(PrivateKey); } }
-        public Gateway[] Gateways { get; private init; }
-        public string MirrorUrl { get; private init; }
+        public Gateway Gateway { get { return new Gateway($"{NetworkAddress}:{NetworkPort}", ServerShard, ServerRealm, ServerNumber); } }
         public ITestOutputHelper Output { get; set; }
         public NetworkCredentials()
         {
@@ -36,55 +41,9 @@ namespace Hashgraph.Test.Fixtures
                 .AddEnvironmentVariables()
                 .AddUserSecrets<NetworkCredentials>(true)
                 .Build();
-            // Generally we would not hard-code the list of
-            // network codes into a code-base, however, it is
-            // difficult with the current configuration layout
-            // to configure lists of multiple servers, so we
-            // will name the list of nodes "testnet" and
-            // "previewnet".  We can always fall back to the 
-            // original developer secrets layout for local and
-            // specialized configurations.
-            var networkName = _configuration["network"]?.ToLower();
-            Gateways = networkName switch
+            _rootClient = new Client(ctx =>
             {
-                // Utilize all known testnet nodes 
-                // in a round-robin fashon.
-                "testnet" => new[]
-                {
-                    new Gateway("34.94.106.61:50211", new Address(0,0,3)),
-                    new Gateway("35.237.119.55:50211", new Address(0,0,4)),
-                    new Gateway("35.245.27.193:50211", new Address(0,0,5)),
-                    new Gateway("34.83.112.116:50211", new Address(0,0,6)),
-                },
-                // Utilize all known previewnet nodes
-                // in a round-robin fashon.
-                "previewnet" => new[]
-                {
-                    new Gateway("35.231.208.148:50211", new Address(0, 0, 3)),
-                    new Gateway("35.199.15.177:50211", new Address(0, 0, 4)),
-                    new Gateway("35.225.201.195:50211", new Address(0, 0, 5)),
-                    new Gateway("35.247.109.135:50211", new Address(0, 0, 6)),
-                },
-                // Fall back to the original design using
-                // a specific gateway configured by network:*
-                // and server:* properties.
-                _ => new[]
-                {
-                    new Gateway($"{_configuration["network:address"]}:{GetAsInt("network:port")}", GetAsInt("server:shard"), GetAsInt("server:realm"), GetAsInt("server:number")),
-                },
-            };
-            MirrorUrl = networkName switch
-            {
-                "testnet" => "hcs.testnet.mirrornode.hedera.com:5600",
-                "previewnet" => "hcs.previewnet.mirrornode.hedera.com:5600",
-                _ => $"{_configuration["mirror:address"]}:{GetAsInt("mirror:port")}"
-            };
-        }
-        public Client NewClient()
-        {
-            return new Client(ctx =>
-            {
-                ctx.Gateway = Gateways[Interlocked.Increment(ref _roundRobinCount) % (ulong)Gateways.Length];
+                ctx.Gateway = Gateway;
                 ctx.Payer = Payer;
                 ctx.Signatory = Signatory;
                 ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
@@ -94,11 +53,15 @@ namespace Hashgraph.Test.Fixtures
                 ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
             });
         }
+        public Client NewClient()
+        {
+            return _rootClient.Clone();
+        }
         public MirrorClient NewMirror()
         {
             return new MirrorClient(ctx =>
             {
-                ctx.Url = MirrorUrl;
+                ctx.Url = $"{MirrorAddress}:{MirrorPort}";
                 ctx.OnSendingRequest = OutputSendingRequest;
             });
         }
@@ -128,8 +91,8 @@ namespace Hashgraph.Test.Fixtures
                     //}
                     //else
                     //{
-                    Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
-                    Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
+                        Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
+                        Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
                     //}
                 }
                 else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.SignedTransactionBytes != null)

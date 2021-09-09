@@ -27,7 +27,7 @@ namespace Hashgraph.Test.Crypto
             await using var client = _network.NewClient();
             client.Configure(ctx => fee = ctx.FeeLimit);
             var fromAccount = _network.Payer;
-            var toAddress = _network.Gateways[0];
+            var toAddress = _network.Gateway;
             var balanceBefore = await client.GetAccountBalanceAsync(fromAccount);
             var receipt = await client.TransferAsync(fromAccount, toAddress, transferAmount);
             var balanceAfter = await client.GetAccountBalanceAsync(fromAccount);
@@ -428,7 +428,7 @@ namespace Hashgraph.Test.Crypto
                 invoice.AddSignature(KeyType.Ed25519, publicPrefix, goodSignature2);
                 return Task.CompletedTask;
             }
-            var record = await client.TransferWithRecordAsync(_network.Payer, _network.Gateways[0], 100, ctx =>
+            var record = await client.TransferWithRecordAsync(_network.Payer, _network.Gateway, 100, ctx =>
             {
                 ctx.Signatory = new Signatory(CustomSigner);
             });
@@ -454,7 +454,7 @@ namespace Hashgraph.Test.Crypto
             }
             var aex1 = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await client.TransferWithRecordAsync(_network.Payer, _network.Gateways[0], 100, ctx =>
+                await client.TransferWithRecordAsync(_network.Payer, _network.Gateway, 100, ctx =>
                 {
                     ctx.Signatory = new Signatory(CustomSigner);
                 });
@@ -472,7 +472,7 @@ namespace Hashgraph.Test.Crypto
             }
             var aex2 = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await client.TransferWithRecordAsync(_network.Payer, _network.Gateways[0], 100, ctx =>
+                await client.TransferWithRecordAsync(_network.Payer, _network.Gateway, 100, ctx =>
                 {
                     ctx.Signatory = new Signatory(CustomSignerReverse);
                 });
@@ -492,7 +492,7 @@ namespace Hashgraph.Test.Crypto
             // expecting an Argument exception and not a PreCheck exception.
             var aex3 = await Assert.ThrowsAsync<ArgumentException>(async () =>
             {
-                await client.TransferWithRecordAsync(_network.Payer, _network.Gateways[0], 100, ctx =>
+                await client.TransferWithRecordAsync(_network.Payer, _network.Gateway, 100, ctx =>
                 {
                     ctx.Signatory = new Signatory(CustomSignerBothBad);
                 });

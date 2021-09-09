@@ -29,78 +29,58 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Test Prerequisites: Network Address Exists and Resolves to IP Address")]
         public void NetworkAddressExists()
         {
-            foreach (var gateway in _networkCredentials.Gateways)
-            {
-                Assert.NotNull(gateway.Url);
-                var ip = Dns.GetHostAddresses(gateway.Url.Split(':')[0]);
-                Assert.True(ip.Length > 0, "Unable to resolve Network Address to live IP Address");
-            }
+            Assert.NotNull(_networkCredentials.NetworkAddress);
+            var ip = Dns.GetHostAddresses(_networkCredentials.NetworkAddress);
+            Assert.True(ip.Length > 0, "Unable to resolve Network Address to live IP Address");
         }
 
         [Fact(DisplayName = "Test Prerequisites: Network Port Exists")]
         public void NetworkPortExists()
         {
-            foreach (var gateway in _networkCredentials.Gateways)
-            {
-                Assert.True(int.Parse(gateway.Url.Split(':')[1]) > 0, "Network Port Number should be greater than zero.");
-            }
+            Assert.True(_networkCredentials.NetworkPort > 0, "Network Port Number should be greater than zero.");
         }
 
         [Fact(DisplayName = "Test Prerequisites: Test Network is Reachable on Configured Port")]
         public void NetworkIsReachable()
         {
-            foreach (var gateway in _networkCredentials.Gateways)
-            {
-                using var client = new TcpClient();
-                client.Connect(gateway.Url.Split(':')[0], int.Parse(gateway.Url.Split(':')[1]));
-            }
+            using var client = new TcpClient();
+            client.Connect(_networkCredentials.NetworkAddress, _networkCredentials.NetworkPort);
         }
 
         [Fact(DisplayName = "Test Prerequisites: Mirror Address Exists and Resolves to IP Address")]
         public void MirrorkAddressExists()
         {
-            Assert.NotNull(_networkCredentials.MirrorUrl);
-            var ip = Dns.GetHostAddresses(_networkCredentials.MirrorUrl.Split(':')[0]);
+            Assert.NotNull(_networkCredentials.MirrorAddress);
+            var ip = Dns.GetHostAddresses(_networkCredentials.MirrorAddress);
             Assert.True(ip.Length > 0, "Unable to resolve Mirror Address to live IP Address");
         }
 
         [Fact(DisplayName = "Test Prerequisites: Mirror Port Exists")]
         public void MirrorPortExists()
         {
-            Assert.NotNull(_networkCredentials.MirrorUrl);
-            Assert.True(int.Parse(_networkCredentials.MirrorUrl.Split(':')[1]) > 0, "Mirror Port Number should be greater than zero.");
+            Assert.True(_networkCredentials.MirrorPort > 0, "Mirror Port Number should be greater than zero.");
         }
 
         [Fact(DisplayName = "Test Prerequisites: Mirror Node is Reachable on Configured Port")]
         public void MirrorIsReachable()
         {
-            Assert.NotNull(_networkCredentials.MirrorUrl);
             using var client = new TcpClient();
-            client.Connect(_networkCredentials.MirrorUrl.Split(':')[0], int.Parse(_networkCredentials.MirrorUrl.Split(':')[1]));
+            client.Connect(_networkCredentials.MirrorAddress, _networkCredentials.MirrorPort);
         }
         [Fact(DisplayName = "Test Prerequisites: Server Realm is Non-Negative")]
         public void ServerRealmIsNonNegative()
         {
-            foreach (var gateway in _networkCredentials.Gateways)
-            {
-                Assert.True(gateway.RealmNum >= 0, "Server Node Realm should be greater than or equal to zero.");
-            }
+            Assert.True(_networkCredentials.ServerRealm >= 0, "Server Node Realm should be greater than or equal to zero.");
         }
         [Fact(DisplayName = "Test Prerequisites: Server Shard is Non-Negative")]
         public void ServerShardIsNonNegative()
         {
-            foreach (var gateway in _networkCredentials.Gateways)
-            {
-                Assert.True(gateway.ShardNum >= 0, "Server Node Shard should be greater than or equal to zero.");
-            }
+            Assert.True(_networkCredentials.ServerShard >= 0, "Server Node Shard should be greater than or equal to zero.");
         }
         [Fact(DisplayName = "Test Prerequisites: Server Account Number is Non-Negative")]
         public void ServerAccountNumberIsNonNegative()
         {
-            foreach (var gateway in _networkCredentials.Gateways)
-            {
-                Assert.True(gateway.AccountNum >= 0, "Server Node Account Number should be greater than or equal to zero.");
-            }
+            Assert.True(_networkCredentials.ServerNumber >= 0, "Server Node Account Number should be greater than or equal to zero.");
         }
         [Fact(DisplayName = "Test Prerequisites: Test Account Realm is Non-Negative")]
         public void AccountRealmIsNonNegative()
