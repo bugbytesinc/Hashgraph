@@ -279,9 +279,21 @@ namespace Hashgraph.Test.Topic
             await using var fx = await TestTopicMessage.CreateAsync(_network);
             await fx.TestTopic.Client.SubmitMessageAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey);
             await fx.TestTopic.Client.SubmitMessageAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey);
+            await fx.TestTopic.Client.SubmitMessageAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey);
+            await fx.TestTopic.Client.SubmitMessageAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey);
 
-            await Task.Delay(8000); // give the beta net time to sync
+            // Wait for enough messages to be available 
+            // in the mirror node's database.
+            for(int waitTries = 0; waitTries < 20; waitTries++)
+            {
+                var captured = await TopicMessageCapture.CaptureOrTimeoutAsync(_network.NewMirror(), fx.TestTopic.Record.Topic, 4, 5000);
+                if(captured.Length > 2 )
+                {
+                    break;
+                }
+            }
 
+            // Now we can try the real test on the limits.
             var capture = new TopicMessageCapture(10);
             await using var mirror = _network.NewMirror();
             using var cts = new CancellationTokenSource();

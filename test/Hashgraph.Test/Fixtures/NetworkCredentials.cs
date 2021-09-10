@@ -12,7 +12,7 @@ namespace Hashgraph.Test.Fixtures
     public class NetworkCredentials
     {
         private readonly IConfiguration _configuration;
-        private ExchangeRate _exchangeRate = null;
+        private readonly Client _rootClient = null;
         private Address _systemAccountAddress = null;
         private Address _systemDeleteAdminAddress = null;
         private Address _systemUndeleteAdminAddress = null;
@@ -41,10 +41,7 @@ namespace Hashgraph.Test.Fixtures
                 .AddEnvironmentVariables()
                 .AddUserSecrets<NetworkCredentials>(true)
                 .Build();
-        }
-        public Client NewClient()
-        {
-            return new Client(ctx =>
+            _rootClient = new Client(ctx =>
             {
                 ctx.Gateway = Gateway;
                 ctx.Payer = Payer;
@@ -55,6 +52,10 @@ namespace Hashgraph.Test.Fixtures
                 ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
                 ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
             });
+        }
+        public Client NewClient()
+        {
+            return _rootClient.Clone();
         }
         public MirrorClient NewMirror()
         {

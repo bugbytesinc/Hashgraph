@@ -97,11 +97,18 @@ namespace Hashgraph.Test.Crypto
         [Fact(DisplayName = "Get Account Balance: Retreiving Account Balances is Free")]
         public async Task RetrievingAccountBalanceIsFree()
         {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var client = _network.NewClient();
+            client.Configure(ctx =>
+            {
+                ctx.Payer = fxAccount.Record.Address;
+                ctx.Signatory = fxAccount.PrivateKey;
+            });
             var account = _network.Payer;
-            var balance1 = await client.GetAccountBalanceAsync(account);
-            var balance2 = await client.GetAccountBalanceAsync(account);
+            var balance1 = await client.GetAccountBalanceAsync(fxAccount.Record.Address);
+            var balance2 = await client.GetAccountBalanceAsync(fxAccount.Record.Address);
             Assert.Equal(balance1, balance2);
+            Assert.Equal(fxAccount.CreateParams.InitialBalance, balance1);
         }
         [Fact(DisplayName = "Get Account Balance: No Receipt is created for a Balance Query")]
         public async Task RetrievingAccountBalanceDoesNotCreateReceipt()
