@@ -261,6 +261,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(record.TokenTransfers);
             Assert.Equal(amountToDestroy, record.AssetTransfers.Count);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
             Assert.Equal(expectedCirculation, record.Circulation);
 
             for (int ssn = 1; ssn <= amountToDestroy; ssn++)

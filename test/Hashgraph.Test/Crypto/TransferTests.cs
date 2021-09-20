@@ -78,6 +78,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Empty(record.TokenTransfers);
             Assert.Empty(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
             Assert.Equal(fx.CreateParams.InitialBalance + (ulong)transferAmount, newBalanceAfterTransfer);

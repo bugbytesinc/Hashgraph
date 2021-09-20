@@ -34,12 +34,17 @@ namespace Proto
             {
                 throw new ArgumentOutOfRangeException(nameof(createParameters), "The Endorsement for the account is missing, it is required.");
             }
+            if (createParameters.AutoAssociationLimit < 0 || createParameters.AutoAssociationLimit > 1000)
+            {
+                throw new ArgumentOutOfRangeException(nameof(createParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be between zero and 1000.");
+            }
             Key = new Key(createParameters.Endorsement);
             InitialBalance = createParameters.InitialBalance;
             ReceiverSigRequired = createParameters.RequireReceiveSignature;
             AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod);
             ProxyAccountID = createParameters.Proxy is null ? null : new AccountID(createParameters.Proxy);
             Memo = createParameters.Memo ?? string.Empty;
+            MaxAutomaticTokenAssociations = createParameters.AutoAssociationLimit;
         }
     }
 }

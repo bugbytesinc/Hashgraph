@@ -431,6 +431,7 @@ namespace Hashgraph.Test.Token
 
             var record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, 100, fxToken.TreasuryAccount);
             Assert.Empty(record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Empty(record.Royalties);
             await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 100);
 
@@ -438,6 +439,7 @@ namespace Hashgraph.Test.Token
 
             record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
             Assert.Empty(record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Single(record.Royalties);
 
             var royalty = record.Royalties[0];
@@ -485,6 +487,7 @@ namespace Hashgraph.Test.Token
 
             var record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxAccount1, fxAccount2, 100, fxAccount1);
             Assert.Empty(record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Single(record.Royalties);
 
             var royalty = record.Royalties[0];
@@ -564,6 +567,7 @@ namespace Hashgraph.Test.Token
             var record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxToken.TreasuryAccount, fxAccount, 100, fxToken.TreasuryAccount);
             Assert.Empty(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             Assert.Equal(2, record.TokenTransfers.Count);
 
@@ -776,6 +780,7 @@ namespace Hashgraph.Test.Token
 
             var record = await fxToken.Client.TransferTokensWithRecordAsync(fxToken, fxAccount, fxAccount2, 100, fxAccount);
             Assert.Empty(record.AssetTransfers);
+            Assert.Empty(record.Associations);
 
             Assert.Equal(2, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxComToken1, fxAccount, fxComAccount, 50, record.Royalties);
@@ -887,6 +892,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor3, 40), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(4, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor2, 20, record.Royalties);
@@ -1004,6 +1010,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor4, 2_00), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(4, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor2, 20, record.Royalties);
@@ -1136,6 +1143,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor4, 2_00), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(4, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor2, 20, record.Royalties);
@@ -1257,6 +1265,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor4, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(4, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor2, 20, record.Royalties);
@@ -1373,6 +1382,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor4, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(4, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor2, 20, record.Royalties);
@@ -1496,6 +1506,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor4, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(4, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxGasToken, fxSeller, fxBenefactor2, 20, record.Royalties);
@@ -1611,6 +1622,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor2, 20), record.TokenTransfers);
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor3, 40), record.TokenTransfers);
             Assert.Empty(record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(3, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxGasToken, fxSender, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxGasToken, fxSender, fxBenefactor2, 20, record.Royalties);
@@ -1663,6 +1675,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor2, 20), record.TokenTransfers);
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor3, 40), record.TokenTransfers);
             Assert.Empty(record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(3, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxGasToken, fxSender, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxGasToken, fxSender, fxBenefactor2, 20, record.Royalties);
@@ -1802,6 +1815,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxGasToken, fxBenefactor3, 80), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(7, record.Royalties.Count);
             // Note: This behavior does not match the intent of the protobuf, it will probably
             // change, right now it is being reported in detail, but the protobuf allows for the

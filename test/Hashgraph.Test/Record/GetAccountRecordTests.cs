@@ -44,6 +44,7 @@ namespace Hashgraph.Test.Record
                 Assert.Empty(record.TokenTransfers);
                 Assert.Empty(record.AssetTransfers);
                 Assert.Empty(record.Royalties);
+                Assert.Empty(record.Associations);
             }
         }
         [Fact(DisplayName = "Account Records: Get with Empty Account raises Error.")]

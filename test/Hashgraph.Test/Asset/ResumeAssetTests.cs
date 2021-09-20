@@ -143,6 +143,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(0Ul, info.Balance);
             Assert.Equal(0U, info.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.False(info.AutoAssociated);
 
             await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
@@ -150,6 +151,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(1UL, info.Balance);
             Assert.Equal(0U, info.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.False(info.AutoAssociated);
         }
         [Fact(DisplayName = "Resume Assets: Can Resume a Suspended Account")]
         public async Task CanResumeASuspendedAccount()
@@ -202,6 +204,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(0Ul, info.Balance);
             Assert.Equal(0U, info.Decimals);
             Assert.Equal(TokenTradableStatus.Suspended, info.TradableStatus);
+            Assert.False(info.AutoAssociated);
 
             tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -236,6 +239,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(0Ul, info.Balance);
             Assert.Equal(0U, info.Decimals);
             Assert.Equal(TokenTradableStatus.NotApplicable, info.TradableStatus);
+            Assert.False(info.AutoAssociated);
 
             await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 

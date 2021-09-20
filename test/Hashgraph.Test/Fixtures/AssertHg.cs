@@ -146,6 +146,23 @@ namespace Hashgraph.Test.Fixtures
             }
             throw new Xunit.Sdk.XunitException($"Unable to find royalty payment using hBbar involving a payer {payer} to receiver {receiver} with amount {amount}.");
         }
-
+        internal static void SingleAssociation(TestToken fxToken, TestAccount fxAccount, ReadOnlyCollection<Association> associations)
+        {
+            Assert.NotNull(associations);
+            Assert.Single(associations);
+            if(fxToken.Record.Token != associations[0].Token || fxAccount.Record.Address != associations[0].Account)
+            {
+                throw new Xunit.Sdk.XunitException($"Unable to find association record using token {fxToken.Record.Token} with account {fxAccount.Record.Address} .");
+            }
+        }
+        internal static void SingleAssociation(TestAsset fxAsset, TestAccount fxAccount, ReadOnlyCollection<Association> associations)
+        {
+            Assert.NotNull(associations);
+            Assert.Single(associations);
+            if (fxAsset.Record.Token != associations[0].Token || fxAccount.Record.Address != associations[0].Account)
+            {
+                throw new Xunit.Sdk.XunitException($"Unable to find association record using asset {fxAsset.Record.Token} with account {fxAccount.Record.Address} .");
+            }
+        }
     }
 }

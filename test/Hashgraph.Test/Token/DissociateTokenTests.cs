@@ -30,6 +30,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             var receipt = await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
@@ -49,6 +50,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             var record = await fxAccount.Client.DissociateTokenWithRecordAsync(fxToken.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
@@ -77,6 +79,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             var receipt = await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, fxAccount.Record.Address, ctx =>
             {
@@ -100,6 +103,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             var record = await fxAccount.Client.DissociateTokenWithRecordAsync(fxToken.Record.Token, fxAccount.Record.Address, ctx =>
             {
@@ -230,6 +234,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             var receipt = await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
@@ -249,6 +254,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -264,6 +270,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Dissociate Tokens: Dissociation Requires Token Account")]
         public async Task DissociationRequiresTokenAccount()
@@ -385,6 +392,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             receipt = await fxContract.Client.DissociateTokenAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);

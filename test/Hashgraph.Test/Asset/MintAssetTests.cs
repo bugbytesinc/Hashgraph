@@ -196,6 +196,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(record.TokenTransfers);
             Assert.Equal(metadata.Length, record.AssetTransfers.Count);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             for (var i = 0; i < metadata.Length; i++)
             {

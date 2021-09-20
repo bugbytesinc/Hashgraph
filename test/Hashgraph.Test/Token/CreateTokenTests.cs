@@ -57,6 +57,21 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, tokens.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
+            Assert.False(tokens.AutoAssociated);
+
+            var record = fxToken.Record;
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.NotEmpty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Single(record.TokenTransfers);
+            Assert.Empty(record.AssetTransfers);
+            AssertHg.SingleAssociation(fxToken, fxToken.TreasuryAccount, record.Associations);
         }
         [Fact(DisplayName = "Create Token: Can Create (Receipt Version)")]
         public async Task CanCreateATokenWithReceipt()
@@ -372,6 +387,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, tokens.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
+            Assert.False(tokens.AutoAssociated);
         }
         [Fact(DisplayName = "Create Token: Duplicate Symbols Are Allowed")]
         public async Task TaskDuplicateSymbolsAreAllowed()
@@ -418,6 +434,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, tokens.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
+            Assert.False(tokens.AutoAssociated);
         }
         [Fact(DisplayName = "Create Token: Null Name is Not Allowed")]
         public async Task NullNameIsNotAllowed()
@@ -500,6 +517,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, tokens.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
+            Assert.False(tokens.AutoAssociated);
         }
         [Fact(DisplayName = "Create Token: Initialize Supended Can Be True")]
         public async Task InitializeSupendedCanBeFalse()
@@ -693,6 +711,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, tokens.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
+            Assert.False(tokens.AutoAssociated);
         }
         [Fact(DisplayName = "Create Token: Can Create With ReUsed Name From Deleted Token")]
         public async Task CanCreateWithReUsedNameFromDeletedToken()
@@ -740,6 +759,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, tokens.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
+            Assert.False(tokens.AutoAssociated);
         }
         [Fact(DisplayName = "Create Token: Can Create with Contract as Treasury")]
         public async Task CanCreateWithContractAsTreasury()
@@ -823,6 +843,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, tokens.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokens.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokens.TradableStatus);
+            Assert.False(tokens.AutoAssociated);
         }
         [Fact(DisplayName = "Create Token: Can Not Schedule a Create Token")]
         public async Task CanNotScheduleACreateToken()

@@ -40,6 +40,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(new Address(0, 0, 0), info.Proxy);
             Assert.Empty(info.Tokens);
             Assert.False(info.Deleted);
+            Assert.Equal(0, info.AutoAssociationLimit);
 
             // Move remaining funds back to primary account.
             var from = createResult.Address;

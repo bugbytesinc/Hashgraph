@@ -75,6 +75,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Single(record.Royalties);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
 
@@ -143,6 +144,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Single(record.Royalties);
             AssertHg.ContainsHbarRoyalty(fxSeller, fxBenefactor, 5_00_000_000, record.Royalties);
 
@@ -224,6 +226,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(2, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
             AssertHg.ContainsHbarRoyalty(fxSeller, fxBenefactor, 5_00_000_000, record.Royalties);
@@ -306,6 +309,7 @@ namespace Hashgraph.Test.Token
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
             Assert.Single(record.Royalties);
+            Assert.Empty(record.Associations);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
@@ -369,6 +373,7 @@ namespace Hashgraph.Test.Token
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Single(record.Royalties);
             AssertHg.ContainsHbarRoyalty(fxBuyer, fxBenefactor, 10_00_000_000, record.Royalties);
 
@@ -440,6 +445,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 10), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Single(record.Royalties);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxBuyer, fxBenefactor, 10, record.Royalties);
 
@@ -508,6 +514,7 @@ namespace Hashgraph.Test.Token
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
             await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
@@ -594,6 +601,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor3, 20), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(3, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor1, 10, record.Royalties);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor2, 10, record.Royalties);

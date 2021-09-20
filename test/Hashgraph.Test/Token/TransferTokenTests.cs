@@ -81,6 +81,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(2, record.TokenTransfers.Count);
             Assert.Empty(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             var xferFrom = record.TokenTransfers.First(x => x.Address == fxToken.TreasuryAccount.Record.Address);
             Assert.NotNull(xferFrom);
@@ -146,6 +147,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(2, record.TokenTransfers.Count);
             Assert.Empty(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             var xferFrom = record.TokenTransfers.First(x => x.Address == fxToken.TreasuryAccount.Record.Address);
             Assert.NotNull(xferFrom);
@@ -247,6 +249,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(3, record.TokenTransfers.Count);
             Assert.Empty(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             var xferFrom = record.TokenTransfers.First(x => x.Address == fxToken.TreasuryAccount.Record.Address);
             Assert.NotNull(xferFrom);
@@ -343,6 +346,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(3, record.TokenTransfers.Count);
             Assert.Empty(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             Assert.Equal(cryptoAmount, record.Transfers[fxAccount1]);
             Assert.Equal(cryptoAmount, record.Transfers[fxAccount2]);
@@ -617,6 +621,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins to Contract and Back")]
         public async Task CanTransferTokensToContractAndBack()

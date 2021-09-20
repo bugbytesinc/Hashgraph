@@ -34,6 +34,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0UL, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Can Associate asset with Account and get Record")]
         public async Task CanAssociateAssetWithAccountAndGetRecord()
@@ -61,6 +62,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0u, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Can Associate asset with Account (No Extra Signatory)")]
         public async Task CanAssociateAssetWithAccountNoExtraSignatory()
@@ -84,6 +86,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Can Associate asset with Account and get Record (No Extra Signatory)")]
         public async Task CanAssociateAssetWithAccountAndGetRecordNoExtraSignatory()
@@ -116,6 +119,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Can Associate Multpile Assets with Account")]
         public async Task CanAssociateMultipleAssetsWithAccount()
@@ -141,6 +145,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             association = await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);
             Assert.Equal(fxAsset2.Record.Token, association.Token);
@@ -149,6 +154,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             association = await AssertHg.TokenIsAssociatedAsync(fxToken3, fxAccount);
             Assert.Equal(fxToken3.Record.Token, association.Token);
@@ -157,6 +163,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxToken3.Params.Decimals, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Can Associate Multiple Assets with Account and get Record")]
         public async Task CanAssociateMultipleAssetsWithAccountAndGetRecord()
@@ -189,6 +196,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             association = await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);
             Assert.Equal(fxAsset2.Record.Token, association.Token);
@@ -197,6 +205,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Can Associate Multiple Asset with Account (No Extra Signatory)")]
         public async Task CanAssociateMultipleAssetsWithAccountNoExtraSignatory()
@@ -224,6 +233,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             association = await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);
             Assert.Equal(fxAsset2.Record.Token, association.Token);
@@ -232,6 +242,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Can Associate Multiple Asset with Account and get Record (No Extra Signatory)")]
         public async Task CanAssociateMultipleAssetsWithAccountAndGetRecordNoExtraSignatory()
@@ -268,6 +279,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
 
             association = await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);
             Assert.Equal(fxAsset2.Record.Token, association.Token);
@@ -276,6 +288,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: No Asset Balance Record Exists When not Associated")]
         public async Task NoAssetBalanceRecordExistsWhenNotAssociated()
@@ -295,6 +308,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Association Requires Signing by Target Account")]
         public async Task AssociationRequiresSigningByTargetAccount()
@@ -432,6 +446,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Associate Assets: Can Not Schedule Associate asset with Account")]
         public async Task CanNotScheduleAssociateAssetWithAccount()

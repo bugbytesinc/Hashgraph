@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-
 namespace Hashgraph
 {
     /// <summary>
@@ -20,15 +19,17 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_TRANSACTION")] InvalidTransaction = 1,
         /// <summary>
-        ///Payer account does not exist.
+        /// Payer account does not exist.
         /// </summary>
         [Description("PAYER_ACCOUNT_NOT_FOUND")] PayerAccountNotFound = 2,
         /// <summary>
-        ///Node Account provided does not match the node account of the node the transaction was submitted to.
+        /// Node Account provided does not match the node account of the node the transaction was submitted
+        /// to.
         /// </summary>
         [Description("INVALID_NODE_ACCOUNT")] InvalidNodeAccount = 3,
         /// <summary>
-        /// Pre-Check error when TransactionValidStart + transactionValidDuration is less than current consensus time.
+        /// Pre-Check error when TransactionValidStart + transactionValidDuration is less than current
+        /// consensus time.
         /// </summary>
         [Description("TRANSACTION_EXPIRED")] TransactionExpired = 4,
         /// <summary>
@@ -36,7 +37,7 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_TRANSACTION_START")] InvalidTransactionStart = 5,
         /// <summary>
-        ///valid transaction duration is a positive non zero number that does not exceed 120 seconds
+        /// valid transaction duration is a positive non zero number that does not exceed 120 seconds
         /// </summary>
         [Description("INVALID_TRANSACTION_DURATION")] InvalidTransactionDuration = 6,
         /// <summary>
@@ -44,7 +45,7 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_SIGNATURE")] InvalidSignature = 7,
         /// <summary>
-        ///Transaction memo size exceeded 100 bytes
+        /// Transaction memo size exceeded 100 bytes
         /// </summary>
         [Description("MEMO_TOO_LONG")] MemoTooLong = 8,
         /// <summary>
@@ -56,47 +57,49 @@ namespace Hashgraph
         /// </summary>
         [Description("INSUFFICIENT_PAYER_BALANCE")] InsufficientPayerBalance = 10,
         /// <summary>
-        /// This transaction ID is a duplicate of one that was submitted to this node or reached consensus in the last 180 seconds (receipt period)
+        /// This transaction ID is a duplicate of one that was submitted to this node or reached consensus
+        /// in the last 180 seconds (receipt period)
         /// </summary>
         [Description("DUPLICATE_TRANSACTION")] DuplicateTransaction = 11,
         /// <summary>
-        ///If API is throttled out
+        /// If API is throttled out
         /// </summary>
         [Description("BUSY")] Busy = 12,
         /// <summary>
-        ///The API is not currently supported
+        /// The API is not currently supported
         /// </summary>
         [Description("NOT_SUPPORTED")] NotSupported = 13,
         /// <summary>
-        ///The file id is invalid or does not exist
+        /// The file id is invalid or does not exist
         /// </summary>
         [Description("INVALID_FILE_ID")] InvalidFileId = 14,
         /// <summary>
-        ///The account id is invalid or does not exist
+        /// The account id is invalid or does not exist
         /// </summary>
         [Description("INVALID_ACCOUNT_ID")] InvalidAccountId = 15,
         /// <summary>
-        ///The contract id is invalid or does not exist
+        /// The contract id is invalid or does not exist
         /// </summary>
         [Description("INVALID_CONTRACT_ID")] InvalidContractId = 16,
         /// <summary>
-        ///Transaction id is not valid
+        /// Transaction id is not valid
         /// </summary>
         [Description("INVALID_TRANSACTION_ID")] InvalidTransactionId = 17,
         /// <summary>
-        ///Receipt for given transaction id does not exist
+        /// Receipt for given transaction id does not exist
         /// </summary>
         [Description("RECEIPT_NOT_FOUND")] ReceiptNotFound = 18,
         /// <summary>
-        ///Record for given transaction id does not exist
+        /// Record for given transaction id does not exist
         /// </summary>
         [Description("RECORD_NOT_FOUND")] RecordNotFound = 19,
         /// <summary>
-        ///The solidity id is invalid or entity with this solidity id does not exist
+        /// The solidity id is invalid or entity with this solidity id does not exist
         /// </summary>
         [Description("INVALID_SOLIDITY_ID")] InvalidSolidityId = 20,
         /// <summary>
-        /// The responding node has submitted the transaction to the network. Its final status is still unknown.
+        /// The responding node has submitted the transaction to the network. Its final status is still
+        /// unknown.
         /// </summary>
         [Description("UNKNOWN")] Unknown = 21,
         /// <summary>
@@ -116,43 +119,44 @@ namespace Hashgraph
         /// </summary>
         [Description("FAIL_BALANCE")] FailBalance = 25,
         /// <summary>
-        ///Key not provided in the transaction body
+        /// Key not provided in the transaction body
         /// </summary>
         [Description("KEY_REQUIRED")] KeyRequired = 26,
         /// <summary>
-        ///Unsupported algorithm/encoding used for keys in the transaction
+        /// Unsupported algorithm/encoding used for keys in the transaction
         /// </summary>
         [Description("BAD_ENCODING")] BadEncoding = 27,
         /// <summary>
-        ///When the account balance is not sufficient for the transfer
+        /// When the account balance is not sufficient for the transfer
         /// </summary>
         [Description("INSUFFICIENT_ACCOUNT_BALANCE")] InsufficientAccountBalance = 28,
         /// <summary>
-        ///During an update transaction when the system is not able to find the Users Solidity address
+        /// During an update transaction when the system is not able to find the Users Solidity address
         /// </summary>
         [Description("INVALID_SOLIDITY_ADDRESS")] InvalidSolidityAddress = 29,
         /// <summary>
-        ///Not enough gas was supplied to execute transaction
+        /// Not enough gas was supplied to execute transaction
         /// </summary>
         [Description("INSUFFICIENT_GAS")] InsufficientGas = 30,
         /// <summary>
-        ///contract byte code size is over the limit
+        /// contract byte code size is over the limit
         /// </summary>
         [Description("CONTRACT_SIZE_LIMIT_EXCEEDED")] ContractSizeLimitExceeded = 31,
         /// <summary>
-        ///local execution (query) is requested for a function which changes state
+        /// local execution (query) is requested for a function which changes state
         /// </summary>
         [Description("LOCAL_CALL_MODIFICATION_EXCEPTION")] LocalCallModificationException = 32,
         /// <summary>
-        ///Contract REVERT OPCODE executed
+        /// Contract REVERT OPCODE executed
         /// </summary>
         [Description("CONTRACT_REVERT_EXECUTED")] ContractRevertExecuted = 33,
         /// <summary>
-        ///For any contract execution related error not handled by specific error codes listed above.
+        /// For any contract execution related error not handled by specific error codes listed above.
         /// </summary>
         [Description("CONTRACT_EXECUTION_EXCEPTION")] ContractExecutionException = 34,
         /// <summary>
-        ///In Query validation, account with +ve(amount) value should be Receiving node account, the receiver account should be only one account in the list
+        /// In Query validation, account with +ve(amount) value should be Receiving node account, the
+        /// receiver account should be only one account in the list
         /// </summary>
         [Description("INVALID_RECEIVING_NODE_ACCOUNT")] InvalidReceivingNodeAccount = 35,
         /// <summary>
@@ -196,11 +200,11 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_EXPIRATION_TIME")] InvalidExpirationTime = 45,
         /// <summary>
-        ///WriteAccess Control Keys are not provided for the file
+        /// WriteAccess Control Keys are not provided for the file
         /// </summary>
         [Description("NO_WACL_KEY")] NoWaclKey = 46,
         /// <summary>
-        ///The contents of file are provided as empty.
+        /// The contents of file are provided as empty.
         /// </summary>
         [Description("FILE_CONTENT_EMPTY")] FileContentEmpty = 47,
         /// <summary>
@@ -216,11 +220,14 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_TRANSACTION_BODY")] InvalidTransactionBody = 50,
         /// <summary>
-        /// the type of key (base ed25519 key, KeyList, or ThresholdKey) does not match the type of signature (base ed25519 signature, SignatureList, or ThresholdKeySignature)
+        /// the type of key (base ed25519 key, KeyList, or ThresholdKey) does not match the type of
+        /// signature (base ed25519 signature, SignatureList, or ThresholdKeySignature)
         /// </summary>
         [Description("INVALID_SIGNATURE_TYPE_MISMATCHING_KEY")] InvalidSignatureTypeMismatchingKey = 51,
         /// <summary>
-        /// the number of key (KeyList, or ThresholdKey) does not match that of signature (SignatureList, or ThresholdKeySignature). e.g. if a keyList has 3 base keys, then the corresponding signatureList should also have 3 base signatures.
+        /// the number of key (KeyList, or ThresholdKey) does not match that of signature (SignatureList,
+        /// or ThresholdKeySignature). e.g. if a keyList has 3 base keys, then the corresponding
+        /// signatureList should also have 3 base signatures.
         /// </summary>
         [Description("INVALID_SIGNATURE_COUNT_MISMATCHING_KEY")] InvalidSignatureCountMismatchingKey = 52,
         /// <summary>
@@ -276,7 +283,7 @@ namespace Hashgraph
         /// </summary>
         [Description("TRANSACTION_TOO_MANY_LAYERS")] TransactionTooManyLayers = 65,
         /// <summary>
-        ///Contract is marked as deleted
+        /// Contract is marked as deleted
         /// </summary>
         [Description("CONTRACT_DELETED")] ContractDeleted = 66,
         /// <summary>
@@ -316,23 +323,26 @@ namespace Hashgraph
         /// </summary>
         [Description("SETTING_NEGATIVE_ACCOUNT_BALANCE")] SettingNegativeAccountBalance = 75,
         /// <summary>
-        /// when deleting smart contract that has crypto balance either transfer account or transfer smart contract is required
+        /// when deleting smart contract that has crypto balance either transfer account or transfer smart
+        /// contract is required
         /// </summary>
         [Description("OBTAINER_REQUIRED")] ObtainerRequired = 76,
         /// <summary>
-        ///when deleting smart contract that has crypto balance you can not use the same contract id as transferContractId as the one being deleted
+        /// when deleting smart contract that has crypto balance you can not use the same contract id as
+        /// transferContractId as the one being deleted
         /// </summary>
         [Description("OBTAINER_SAME_CONTRACT_ID")] ObtainerSameContractId = 77,
         /// <summary>
-        ///transferAccountId or transferContractId specified for contract delete does not exist
+        /// transferAccountId or transferContractId specified for contract delete does not exist
         /// </summary>
         [Description("OBTAINER_DOES_NOT_EXIST")] ObtainerDoesNotExist = 78,
         /// <summary>
-        ///attempting to modify (update or delete a immutable smart contract, i.e. one created without a admin key)
+        /// attempting to modify (update or delete a immutable smart contract, i.e. one created without a
+        /// admin key)
         /// </summary>
         [Description("MODIFYING_IMMUTABLE_CONTRACT")] ModifyingImmutableContract = 79,
         /// <summary>
-        ///Unexpected exception thrown by file system functions
+        /// Unexpected exception thrown by file system functions
         /// </summary>
         [Description("FILE_SYSTEM_EXCEPTION")] FileSystemException = 80,
         /// <summary>
@@ -340,7 +350,8 @@ namespace Hashgraph
         /// </summary>
         [Description("AUTORENEW_DURATION_NOT_IN_RANGE")] AutorenewDurationNotInRange = 81,
         /// <summary>
-        /// Decoding the smart contract binary to a byte array failed. Check that the input is a valid hex string.
+        /// Decoding the smart contract binary to a byte array failed. Check that the input is a valid hex
+        /// string.
         /// </summary>
         [Description("ERROR_DECODING_BYTESTRING")] ErrorDecodingBytestring = 82,
         /// <summary>
@@ -364,7 +375,8 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_SEND_RECORD_THRESHOLD")] InvalidSendRecordThreshold = 87,
         /// <summary>
-        /// Special Account Operations should be performed by only Genesis account, return this code if it is not Genesis Account
+        /// Special Account Operations should be performed by only Genesis account, return this code if it
+        /// is not Genesis Account
         /// </summary>
         [Description("ACCOUNT_IS_NOT_GENESIS_ACCOUNT")] AccountIsNotGenesisAccount = 88,
         /// <summary>
@@ -380,7 +392,7 @@ namespace Hashgraph
         /// </summary>
         [Description("FREEZE_TRANSACTION_BODY_NOT_FOUND")] FreezeTransactionBodyNotFound = 91,
         /// <summary>
-        ///Exceeded the number of accounts (both from and to) allowed for crypto transfer list
+        /// Exceeded the number of accounts (both from and to) allowed for crypto transfer list
         /// </summary>
         [Description("TRANSFER_LIST_SIZE_LIMIT_EXCEEDED")] TransferListSizeLimitExceeded = 92,
         /// <summary>
@@ -388,7 +400,7 @@ namespace Hashgraph
         /// </summary>
         [Description("RESULT_SIZE_LIMIT_EXCEEDED")] ResultSizeLimitExceeded = 93,
         /// <summary>
-        ///The payer account is not a special account(account 0.0.55)
+        /// The payer account is not a special account(account 0.0.55)
         /// </summary>
         [Description("NOT_SPECIAL_ACCOUNT")] NotSpecialAccount = 94,
         /// <summary>
@@ -416,7 +428,12 @@ namespace Hashgraph
         /// </summary>
         [Description("ENTITY_NOT_ALLOWED_TO_DELETE")] EntityNotAllowedToDelete = 100,
         /// <summary>
-        /// Violating one of these rules: 1) treasury account can update all entities below 0.0.1000, 2) account 0.0.50 can update all entities from 0.0.51 - 0.0.80, 3) Network Function Master Account A/c 0.0.50 - Update all Network Function accounts &amp; perform all the Network Functions listed below, 4) Network Function Accounts: i) A/c 0.0.55 - Update Address Book files (0.0.101/102), ii) A/c 0.0.56 - Update Fee schedule (0.0.111), iii) A/c 0.0.57 - Update Exchange Rate (0.0.112).
+        /// Violating one of these rules: 1) treasury account can update all entities below 0.0.1000, 2)
+        /// account 0.0.50 can update all entities from 0.0.51 - 0.0.80, 3) Network Function Master Account
+        /// A/c 0.0.50 - Update all Network Function accounts &amp; perform all the Network Functions listed
+        /// below, 4) Network Function Accounts: i) A/c 0.0.55 - Update Address Book files (0.0.101/102),
+        /// ii) A/c 0.0.56 - Update Fee schedule (0.0.111), iii) A/c 0.0.57 - Update Exchange Rate
+        /// (0.0.112).
         /// </summary>
         [Description("AUTHORIZATION_FAILED")] AuthorizationFailed = 101,
         /// <summary>
@@ -449,7 +466,7 @@ namespace Hashgraph
         /// </summary>
         [Description("EXPIRATION_REDUCTION_NOT_ALLOWED")] ExpirationReductionNotAllowed = 110,
         /// <summary>
-        ///Gas exceeded currently allowable gas limit per transaction
+        /// Gas exceeded currently allowable gas limit per transaction
         /// </summary>
         [Description("MAX_GAS_LIMIT_EXCEEDED")] MaxGasLimitExceeded = 111,
         /// <summary>
@@ -489,9 +506,9 @@ namespace Hashgraph
         /// </summary>
         [Description("AUTORENEW_ACCOUNT_NOT_ALLOWED")] AutorenewAccountNotAllowed = 160,
         /// <summary>
-        /// The topic has expired, was not automatically renewed, and is in a 7 day grace period before the topic will be
-        /// deleted unrecoverably. This error response code will not be returned until autoRenew functionality is supported
-        /// by HAPI.
+        /// The topic has expired, was not automatically renewed, and is in a 7 day grace period before the
+        /// topic will be deleted unrecoverably. This error response code will not be returned until
+        /// autoRenew functionality is supported by HAPI.
         /// </summary>
         [Description("TOPIC_EXPIRED")] TopicExpired = 162,
         /// <summary>
@@ -890,5 +907,17 @@ namespace Hashgraph
         /// Only tokens of type NON_FUNGIBLE_UNIQUE can have royalty fees
         /// </summary>
         [Description("CUSTOM_ROYALTY_FEE_ONLY_ALLOWED_FOR_NON_FUNGIBLE_UNIQUE")] CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique = 261,
+        /// <summary>
+        /// The account has reached the limit on the automatic associations count.
+        /// </summary>
+        [Description("NO_REMAINING_AUTOMATIC_ASSOCIATIONS")] NoRemainingAutomaticAssociations = 262,
+        /// <summary>
+        /// Already existing automatic associations are more than the new maximum automatic associations.
+        /// </summary>
+        [Description("EXISTING_AUTOMATIC_ASSOCIATIONS_EXCEED_GIVEN_LIMIT")] ExistingAutomaticAssociationsExceedGivenLimit = 263,
+        /// <summary>
+        /// Cannot set the number of automatic associations for an account more than the maximum allowed token associations &lt;tt>tokens.maxPerAccount&lt;/tt>
+        /// </summary>
+        [Description("REQUESTED_NUM_AUTOMATIC_ASSOCIATIONS_EXCEEDS_ASSOCIATION_LIMIT")] RequestedNumAutomaticAssociationsExceedsAssociationLimit = 264,
     }
 }
