@@ -404,13 +404,8 @@ namespace Hashgraph.Test.AssetTokens
             {
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, fxAsset.TreasuryAccount.PrivateKey);
             });
-            // NETWORK BUG - THIS IS THE WRONG ERROR CODE.
-            Assert.Equal(ResponseCode.TokenAlreadyAssociatedToAccount, tex.Status);
-            Assert.StartsWith("Unable to execute transfers, status: TokenAlreadyAssociatedToAccount", tex.Message);
-
-            // NETWORK BUG - THIS IS WHAT SHOULD BE RETURNED
-            //Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
-            //Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
+            Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
+            Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
 
             Assert.Equal(0UL, await fxAsset.Client.GetContractTokenBalanceAsync(fxContract, fxAsset));
             Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
