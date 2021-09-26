@@ -36,8 +36,7 @@ namespace Hashgraph.Test.Extensions
             Assert.NotNull(node);
             Assert.NotNull(node.RsaPublicKey);
             Assert.NotEqual(0, node.CertificateHash.Length);
-            // Not implemented Yet
-            Assert.Empty(node.Endpoints);
+            Assert.NotEmpty(node.Endpoints);
             // Can't say or not.
             //Assert.Equal(0, node.Stake);
         }
