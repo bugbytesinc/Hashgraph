@@ -91,6 +91,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(xferAmount, asset.Balance);
             Assert.Equal(0U, asset.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+            Assert.False(asset.AutoAssociated);
             Assert.Equal(TokenKycStatus.NotApplicable, asset.KycStatus);
 
             var treasuryInfo = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
@@ -101,6 +102,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(expectedTreasury, asset.Balance);
             Assert.Equal(0U, asset.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+            Assert.False(asset.AutoAssociated);
             Assert.Equal(TokenKycStatus.NotApplicable, asset.KycStatus);
         }
         [Fact(DisplayName = "Asset Delete: Deleting Asset Prevents Asset Transfers")]

@@ -36,6 +36,7 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(0, info.AssetCount);
+            Assert.Equal(0, info.AutoAssociationLimit);
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Account Facet")]
         public async Task CanGetInfoForAccountFacet()
@@ -55,6 +56,8 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(fxAccount.CreateParams.Memo, info.Memo);
             Assert.Equal(0, info.AssetCount);
+            Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
+
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Server Node")]
         public async Task CanGetInfoForGatewayAsync()
@@ -94,7 +97,7 @@ namespace Hashgraph.Test.Crypto
         {
             await using var fxAsset = await TestAsset.CreateAsync(_network);
 
-            var info= await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
+            var info = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Address);
             Assert.NotNull(info.SmartContractId);
             Assert.False(info.Deleted);
@@ -106,6 +109,7 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(fxAsset.Metadata.Length, info.AssetCount);
+            Assert.Equal(fxAsset.TreasuryAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         }
     }
 }

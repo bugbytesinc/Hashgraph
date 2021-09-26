@@ -47,6 +47,7 @@ namespace Hashgraph.Test.Fixtures
                 ctx.Payer = Payer;
                 ctx.Signatory = Signatory;
                 ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
+                ctx.RetryDelay = TimeSpan.FromMilliseconds(100); // Use this setting for a while to see if we can trim a few ms off of each test
                 ctx.OnSendingRequest = OutputSendingRequest;
                 ctx.OnResponseReceived = OutputReceivResponse;
                 ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues

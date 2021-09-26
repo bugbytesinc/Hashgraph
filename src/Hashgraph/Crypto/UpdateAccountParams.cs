@@ -73,5 +73,11 @@ namespace Hashgraph
         /// If not null, a new description of the account.
         /// </summary>
         public string? Memo { get; set; }
+        /// <summary>
+        /// If set, updates the maximum number of token or assets that this account may
+        /// be implicitly assoicated with (by means of being made a treasury
+        /// or other related actions).
+        /// </summary>
+        public int? AutoAssociationLimit { get; set; }
     }
 }

@@ -63,11 +63,11 @@ jobs:
       with:
         name: test-results-windows
         path: test-results
-      if: ${{ always() }}
+      if: always()
 
   build_and_test_linux:
     name: 'Build and Test Linux'
-    needs: build_and_test_windows
+    #needs: build_and_test_windows
     environment: PREVIEWNET    
     runs-on: ubuntu-latest
     timeout-minutes: 360
@@ -107,11 +107,11 @@ jobs:
       with:
         name: test-results-linux
         path: test-results
-      if: ${{ always() }}
+      if: always()
 
   build_and_test_macos:
     name: 'Build and Test MacOS'
-    needs: build_and_test_linux
+    #needs: build_and_test_linux
     environment: PREVIEWNET    
     runs-on: macos-latest
     timeout-minutes: 360
@@ -151,4 +151,4 @@ jobs:
       with:
         name: test-results-macos
         path: test-results
-      if: ${{ always() }}
+      if: always()

@@ -189,6 +189,7 @@ namespace Hashgraph.Test.Token
             Assert.Single(record.TokenTransfers);
             Assert.Empty(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             var xfer = record.TokenTransfers[0];
             Assert.Equal(fxToken.Record.Token, xfer.Token);

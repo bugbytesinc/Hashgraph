@@ -1,30 +1,20 @@
 ﻿using Google.Protobuf.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Proto
 {
     public static class TokenRelationshipExtensions
     {
+        private static ReadOnlyCollection<Hashgraph.TokenBalance> EMPTY_RESULT = new List<Hashgraph.TokenBalance>().AsReadOnly();
         internal static ReadOnlyCollection<Hashgraph.TokenBalance> ToBalances(this RepeatedField<TokenRelationship> list)
         {
-            var result = new List<Hashgraph.TokenBalance>(list.Count);
             if (list != null && list.Count > 0)
             {
-                foreach (var entry in list)
-                {
-                    result.Add(new Hashgraph.TokenBalance
-                    {
-                        Token = entry.TokenId.AsAddress(),
-                        Symbol = entry.Symbol,
-                        Balance = entry.Balance,
-                        KycStatus = (Hashgraph.TokenKycStatus)entry.KycStatus,
-                        TradableStatus = (Hashgraph.TokenTradableStatus)entry.FreezeStatus, 
-                        Decimals = entry.Decimals
-                    });
-                }
+                return list.Select(record => new Hashgraph.TokenBalance(record)).ToList().AsReadOnly();
             }
-            return result.AsReadOnly();
+            return EMPTY_RESULT;
         }
     }
 }

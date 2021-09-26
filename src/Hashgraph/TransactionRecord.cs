@@ -54,6 +54,12 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyCollection<RoyaltyTransfer> Royalties { get; internal init; }
         /// <summary>
+        /// A list of token associations that were created 
+        /// as a result of this transaction.
+        /// </summary>
+        public ReadOnlyCollection<Association> Associations { get; internal init; }
+
+        /// <summary>
         /// Internal Constructor of the record.
         /// </summary>
         internal TransactionRecord(NetworkResult result) : base(result)
@@ -68,6 +74,7 @@ namespace Hashgraph
             TokenTransfers = tokenTransfers;
             AssetTransfers = assetTransfers;
             Royalties = record.AssessedCustomFees.AsRoyaltyTransferList();
+            Associations = record.AutomaticTokenAssociations.AsAssociationList();
         }
     }
 

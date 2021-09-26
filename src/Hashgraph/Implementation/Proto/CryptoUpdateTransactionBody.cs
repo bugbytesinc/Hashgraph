@@ -43,7 +43,8 @@ namespace Proto
                 updateParameters.Expiration is null &&
                 updateParameters.AutoRenewPeriod is null &&
                 updateParameters.Proxy is null &&
-                updateParameters.Memo is null)
+                updateParameters.Memo is null &&
+                updateParameters.AutoAssociationLimit is null)
             {
                 throw new ArgumentException(nameof(updateParameters), "The Account Updates contains no update properties, it is blank.");
             }
@@ -71,6 +72,15 @@ namespace Proto
             if (!(updateParameters.Memo is null))
             {
                 Memo = updateParameters.Memo;
+            }
+            if (!(updateParameters.AutoAssociationLimit is null))
+            {
+                var limit = updateParameters.AutoAssociationLimit.Value;
+                if (limit < 0 || limit > 1000)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(updateParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be between zero and 1000.");
+                }
+                MaxAutomaticTokenAssociations = updateParameters.AutoAssociationLimit.Value;
             }
         }
     }

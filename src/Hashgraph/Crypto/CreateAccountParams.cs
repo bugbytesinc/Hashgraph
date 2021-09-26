@@ -27,6 +27,15 @@ namespace Hashgraph
         /// </summary>
         public bool RequireReceiveSignature { get; set; } = false;
         /// <summary>
+        /// The maximum number of token or assets that this account may
+        /// be implicitly assoicated with (by means of being made a treasury
+        /// or other related actions).
+        /// </summary>
+        /// <remarks>
+        /// Defaults to zero with a maximum value of 1,000.
+        /// </remarks>
+        public int AutoAssociationLimit { get; set; } = 0;
+        /// <summary>
         /// The auto-renew period for the newly created account, it will continue 
         /// to be renewed at the given interval for as long as the account contains 
         /// hbars sufficient to cover the renewal charge.

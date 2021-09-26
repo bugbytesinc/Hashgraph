@@ -77,6 +77,12 @@ namespace Hashgraph
         /// </summary>
         public long AssetCount { get; private init; }
         /// <summary>
+        /// The maximum number of token or assets that this account may
+        /// be implicitly assoicated with (by means of being made a treasury
+        /// or other related actions).
+        /// </summary>
+        public int AutoAssociationLimit { get; private init; }
+        /// <summary>
         /// Internal Constructor from Raw Response
         /// </summary>
         internal AccountInfo(Response response)
@@ -95,6 +101,7 @@ namespace Hashgraph
             Expiration = info.ExpirationTime.ToDateTime();
             Memo = info.Memo;
             AssetCount = info.OwnedNfts;
+            AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
         }
     }
 }

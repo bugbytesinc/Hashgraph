@@ -75,6 +75,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 10), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Single(record.Royalties);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 10, record.Royalties);
 
@@ -224,6 +225,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor, 50), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Single(record.Royalties);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
 
@@ -317,8 +319,9 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor1, 20), record.TokenTransfers);
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor2, 20), record.TokenTransfers);
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor3, 40), record.TokenTransfers);
-            Assert.Single(record.AssetTransfers);
+            Assert.Single(record.AssetTransfers);            
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Equal(3, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor1, 20, record.Royalties);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor2, 20, record.Royalties);
@@ -410,6 +413,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor2, 20), record.TokenTransfers);
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor3, 40), record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
+            Assert.Empty(record.Associations);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
             Assert.Equal(3, record.Royalties.Count);
             AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor1, 20, record.Royalties);

@@ -81,6 +81,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             var xfer = record.AssetTransfers.First(x => x.To == fxAccount.Record.Address);
             Assert.NotNull(xfer);
@@ -140,6 +141,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(record.TokenTransfers);
             Assert.Single(record.AssetTransfers);
             Assert.Empty(record.Royalties);
+            Assert.Empty(record.Associations);
 
             var xfer = record.AssetTransfers.First(x => x.To == fxAccount.Record.Address);
             Assert.NotNull(xfer);
@@ -588,6 +590,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, association.Decimals);
             Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.False(association.AutoAssociated);
         }
         [Fact(DisplayName = "Transfer Assets: Can Transfer Asset Coins to Contract and Back")]
         public async Task CanTransferAssetsToContractAndBack()

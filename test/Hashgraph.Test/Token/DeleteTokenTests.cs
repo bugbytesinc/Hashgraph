@@ -84,6 +84,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(xferAmount, token.Balance);
             Assert.Equal(fxToken.Params.Decimals, token.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
+            Assert.False(token.AutoAssociated);
             Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
 
             var treasuryInfo = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
@@ -94,6 +95,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(totalTinytokens - xferAmount, token.Balance);
             Assert.Equal(fxToken.Params.Decimals, token.Decimals);
             Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
+            Assert.False(token.AutoAssociated);
             Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
         }
         [Fact(DisplayName = "Token Delete: Deleting Token Prevents Token Transfers")]

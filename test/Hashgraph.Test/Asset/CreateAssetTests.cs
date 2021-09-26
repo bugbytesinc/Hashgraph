@@ -58,7 +58,23 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0UL, tokInfo.Decimals);
             Assert.Equal(TokenKycStatus.Granted, tokInfo.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, tokInfo.TradableStatus);
+            Assert.False(tokInfo.AutoAssociated);
             Assert.Empty(info.Royalties);
+
+            var record = fxAsset.Record;
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.NotEmpty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Empty(record.TokenTransfers);
+            Assert.Empty(record.AssetTransfers);
+            Assert.Empty(record.Royalties);
+            AssertHg.SingleAssociation(fxAsset, fxAsset.TreasuryAccount, record.Associations);
         }
         [Fact(DisplayName = "Create Asset: Can Create Asset Definition with Fixed Royalty")]
         public async Task CanCreateAssetDefinitionWithFixedRoyalty()
@@ -408,6 +424,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, assets.Decimals);
             Assert.Equal(TokenKycStatus.Granted, assets.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, assets.TradableStatus);
+            Assert.False(assets.AutoAssociated);
         }
         [Fact(DisplayName = "Create Asset: Duplicate Symbols Are Allowed")]
         public async Task TaskDuplicateSymbolsAreAllowed()
@@ -452,6 +469,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, asset.Decimals);
             Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+            Assert.False(asset.AutoAssociated);
         }
         [Fact(DisplayName = "Create Asset: Null Name is Not Allowed")]
         public async Task NullNameIsNotAllowed()
@@ -532,6 +550,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, asset.Decimals);
             Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+            Assert.False(asset.AutoAssociated);
         }
         [Fact(DisplayName = "Create Asset: Initialize Supended Can Be True")]
         public async Task InitializeSupendedCanBeFalse()
@@ -723,6 +742,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, asset.Decimals);
             Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+            Assert.False(asset.AutoAssociated);
         }
         [Fact(DisplayName = "Create Asset: Can Create With ReUsed Name From Deleted Asset")]
         public async Task CanCreateWithReUsedNameFromDeletedAsset()
@@ -768,6 +788,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, asset.Decimals);
             Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+            Assert.False(asset.AutoAssociated);
         }
         [Fact(DisplayName = "Create Asset: Can Create with Contract as Treasury")]
         public async Task CanCreateWithContractAsTreasury()
@@ -847,6 +868,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(0U, asset.Decimals);
             Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
             Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+            Assert.False(asset.AutoAssociated);
         }
         [Fact(DisplayName = "Create Asset: Can Not Schedule a Create Asset")]
         public async Task CanNotScheduleACreateAsset()

@@ -353,6 +353,93 @@ namespace Hashgraph.Test.Crypto
             var newBalance = await client.GetAccountBalanceAsync(createResult.Address);
             Assert.Equal(5ul, newBalance);
         }
+        [Fact(DisplayName = "Update Account: Can Update AutoAssociationLimit")]
+        public async Task CanUpdateAutoAssociaitonLimit()
+        {
+            var newLimit = Generator.Integer(20, 40);
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+            {
+                Address = fxAccount,
+                AutoAssociationLimit = newLimit,
+                Signatory = fxAccount
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.Equal(newLimit, info.AutoAssociationLimit);
+        }
+        [Fact(DisplayName = "Update Account: Can Update Auto Association Limit to Zero")]
+        public async Task CanUpdateAutoAssociationLimitToZero()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+            {
+                Address = fxAccount,
+                AutoAssociationLimit = 0,
+                Signatory = fxAccount
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.Equal(0, info.AutoAssociationLimit);
+        }
+        [Fact(DisplayName = "Update Account: Can't Update Auto Associate Value to Less Than Zero")]
+        public async Task CantUpdateAutoAssociateValueToLessThanZero()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            var ex = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            {
+
+                var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+                {
+                    Address = fxAccount,
+                    AutoAssociationLimit = -5,
+                    Signatory = fxAccount
+                });
+            });
+            Assert.Equal("AutoAssociationLimit", ex.ParamName);
+            Assert.StartsWith("The maximum number of auto-associaitons must be between zero and 1000.", ex.Message);
+
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
+        }
+        [Fact(DisplayName = "Update Account: Can't Update Auto Associate Value to Greater Than One Thousand")]
+        public async Task CantUpdateAutoAssociateValueToGreatherThanOneThousand()
+        {
+            await using var fxAccount = await TestAccount.CreateAsync(_network);
+            var ex = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+            {
+
+                var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+                {
+                    Address = fxAccount,
+                    AutoAssociationLimit = 1001,
+                    Signatory = fxAccount
+                });
+            });
+            Assert.Equal("AutoAssociationLimit", ex.ParamName);
+            Assert.StartsWith("The maximum number of auto-associaitons must be between zero and 1000.", ex.Message);
+
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
+        }
         [Fact(DisplayName = "Update Account: Can Not Schedule Update Account")]
         public async Task CanNotScheduleUpdateAccount()
         {
@@ -412,6 +499,7 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(fxTempate.CreateParams.Memo, info.Memo);
             Assert.Equal(0, info.AssetCount);
+            Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         }
     }
 }
