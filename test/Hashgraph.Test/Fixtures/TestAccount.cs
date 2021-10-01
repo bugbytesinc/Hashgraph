@@ -28,10 +28,25 @@ namespace Hashgraph.Test.Fixtures
                 AutoAssociationLimit = Generator.Integer(500, 999)
             };
             customize?.Invoke(fx);
-            fx.Record = await fx.Client.CreateAccountWithRecordAsync(fx.CreateParams, ctx =>
-             {
-                 ctx.Memo = "Test Account Instance: Creating Test Account on Network";
-             });
+            try
+            {
+                fx.Record = await fx.Client.CreateAccountWithRecordAsync(fx.CreateParams, ctx =>
+                 {
+                     ctx.Memo = "Test Account Instance: Creating Test Account on Network";
+                 });
+            }
+            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+            {
+                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId) as CreateAccountRecord;
+                if (record is not null)
+                {
+                    fx.Record = record;
+                }
+                else
+                {
+                    throw;
+                }
+            }
             Assert.Equal(ResponseCode.Success, fx.Record.Status);
             networkCredentials.Output?.WriteLine("SETUP COMPLETED: Test Account Instance");
             return fx;
