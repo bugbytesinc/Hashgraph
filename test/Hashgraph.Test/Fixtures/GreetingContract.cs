@@ -38,10 +38,25 @@ namespace Hashgraph.Test.Fixtures
                 Contents = Encoding.UTF8.GetBytes(GREETING_CONTRACT_BYTECODE)
             };
             fx.Client = networkCredentials.NewClient();
-            fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
+            try
             {
-                ctx.Memo = "Greeting Contract Create: Uploading Contract File " + fx.TestInstanceId;
-            });
+                fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
+                {
+                    ctx.Memo = "Greeting Contract Create: Uploading Contract File " + fx.TestInstanceId;
+                });
+            }
+            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+            {
+                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId) as FileRecord;
+                if (record is not null)
+                {
+                    fx.FileRecord = record;
+                }
+                else
+                {
+                    throw;
+                }
+            }
             Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
             fx.ContractParams = new CreateContractParams
             {
@@ -53,10 +68,25 @@ namespace Hashgraph.Test.Fixtures
                 Memo = "Greeting Contract " + Generator.Code(10)
             };
             customize?.Invoke(fx);
-            fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
+            try
             {
-                ctx.Memo = fx.Memo;
-            });
+                fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
+                {
+                    ctx.Memo = fx.Memo;
+                });
+            }
+            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+            {
+                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId) as CreateContractRecord;
+                if (record is not null)
+                {
+                    fx.ContractRecord = record;
+                }
+                else
+                {
+                    throw;
+                }
+            }
             Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
             fx.Network.Output?.WriteLine("SETUP COMPLETED: Greeting Contract Instance Created");
             return fx;

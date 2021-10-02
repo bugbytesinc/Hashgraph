@@ -48,7 +48,22 @@ namespace Hashgraph.Test.Fixtures
                     })
             };
             customize?.Invoke(fx);
-            fx.Record = await fx.Client.TransferWithRecordAsync(fx.TransferParams);
+            try
+            {
+                fx.Record = await fx.Client.TransferWithRecordAsync(fx.TransferParams);
+            }
+            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+            {
+                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId);
+                if (record is not null)
+                {
+                    fx.Record = record;
+                }
+                else
+                {
+                    throw;
+                }
+            }
             Assert.Equal(ResponseCode.Success, fx.Record.Status);
             networkCredentials.Output?.WriteLine("SETUP COMPLETED: Scheduled Transfer Crypto Transaction");
             return fx;

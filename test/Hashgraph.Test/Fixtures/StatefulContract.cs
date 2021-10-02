@@ -33,10 +33,25 @@ namespace Hashgraph.Test.Fixtures
                 Contents = Encoding.UTF8.GetBytes(STATEFUL_CONTRACT_BYTECODE)
             };
             fx.Client = networkCredentials.NewClient();
-            fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
+            try
             {
-                ctx.Memo = "Stateful Contract Create: Uploading Contract File " + Generator.Code(10);
-            });
+                fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
+                {
+                    ctx.Memo = "Stateful Contract Create: Uploading Contract File " + Generator.Code(10);
+                });
+            }
+            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+            {
+                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId) as FileRecord;
+                if (record is not null)
+                {
+                    fx.FileRecord = record;
+                }
+                else
+                {
+                    throw;
+                }
+            }
             Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
             fx.ContractParams = new CreateContractParams
             {
@@ -49,10 +64,25 @@ namespace Hashgraph.Test.Fixtures
                 Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
             };
             customize?.Invoke(fx);
-            fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
+            try
             {
-                ctx.Memo = "Stateful Contract Create: Instantiating Stateful Instance " + Generator.Code(10);
-            });
+                fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
+                {
+                    ctx.Memo = "Stateful Contract Create: Instantiating Stateful Instance " + Generator.Code(10);
+                });
+            }
+            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+            {
+                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId) as CreateContractRecord;
+                if (record is not null)
+                {
+                    fx.ContractRecord = record;
+                }
+                else
+                {
+                    throw;
+                }
+            }
             fx.Network.Output?.WriteLine("SETUP COMPLETED: Stateful Contract Instance Created");
             return fx;
         }
