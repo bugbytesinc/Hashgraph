@@ -33,25 +33,13 @@ namespace Hashgraph.Test.Fixtures
                 Signatory = test.PrivateKey
             };
             customize?.Invoke(test);
-            try
+            test.Record = await test.Client.RetryKnownNetworkIssues(async client =>
             {
-                test.Record = await test.Client.CreateFileWithRecordAsync(test.CreateParams, ctx =>
+                return await test.Client.CreateFileWithRecordAsync(test.CreateParams, ctx =>
                 {
                     ctx.Memo = "TestFileInstance Setup: Creating Test File on Network";
                 });
-            }
-            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
-            {
-                var record = await test.Client.GetTransactionRecordAsync(ex.TxId) as FileRecord;
-                if (record is not null)
-                {
-                    test.Record = record;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            });
             Assert.Equal(ResponseCode.Success, test.Record.Status);
             networkCredentials.Output?.WriteLine("SETUP COMPLETED: Test File Instance");
             return test;

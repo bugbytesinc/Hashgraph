@@ -99,7 +99,7 @@ namespace Hashgraph
                 var transactionId = context.GetOrCreateTransactionID();
                 query.SetHeader(await createSignedQueryHeader((long)cost + supplementalCost, transactionId).ConfigureAwait(false));
                 response = await executeSignedQuery().ConfigureAwait(false);
-                response.Validate(transactionId);
+                response.ValidateQueryResponse(transactionId);
             }
             return response;
 
