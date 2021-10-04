@@ -34,25 +34,13 @@ namespace Hashgraph.Test.Fixtures
                 Contents = Encoding.UTF8.GetBytes(EVENTEMIT_CONTRACT_BYTECODE)
             };
             fx.Client = networkCredentials.NewClient();
-            try
+            fx.FileRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
             {
-                fx.FileRecord = await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
+                return await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
                 {
                     ctx.Memo = "Event Emit Contract Create: Uploading Contract File " + Generator.Code(10);
                 });
-            }
-            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
-            {
-                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId) as FileRecord;
-                if (record is not null)
-                {
-                    fx.FileRecord = record;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            });
             Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
             fx.ContractParams = new CreateContractParams
             {
@@ -64,25 +52,13 @@ namespace Hashgraph.Test.Fixtures
                 RenewPeriod = TimeSpan.FromSeconds(7890000),//TimeSpan.FromDays(Generator.Integer(2, 4))
             };
             customize?.Invoke(fx);
-            try
+            fx.ContractRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
             {
-                fx.ContractRecord = await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
+                return await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
                 {
                     ctx.Memo = "Event Emit Contract Create: Instantiating Event Emit Instance " + Generator.Code(10);
                 });
-            }
-            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
-            {
-                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId) as CreateContractRecord;
-                if (record is not null)
-                {
-                    fx.ContractRecord = record;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            });
             Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
             fx.Network.Output?.WriteLine("SETUP COMPLETED: Event Emit Contract Instance Created");
             return fx;

@@ -69,25 +69,13 @@ namespace Hashgraph.Test.Fixtures
                 Memo = "Test Token: " + Generator.Code(20)
             };
             customize?.Invoke(fx);
-            try
+            fx.Record = await fx.Client.RetryKnownNetworkIssues(async client =>
             {
-                fx.Record = await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
+                return await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
                 {
                     ctx.Memo = "TestToken Setup: " + fx.Params.Symbol ?? "(null symbol)";
                 });
-            }
-            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
-            {
-                var record = await fx.Client.GetTransactionRecordAsync(ex.TxId) as CreateTokenRecord;
-                if (record is not null)
-                {
-                    fx.Record = record;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            });
             Assert.Equal(ResponseCode.Success, fx.Record.Status);
             await fx.AssociateAccounts(associate);
             networkCredentials.Output?.WriteLine("SETUP COMPLETED: Test Token Instance");

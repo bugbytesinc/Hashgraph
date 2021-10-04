@@ -20,25 +20,13 @@ namespace Hashgraph.Test.Fixtures
             fx.TestTopic = await TestTopic.CreateAsync(networkCredentials);
             fx.Message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
             customize?.Invoke(fx);
-            try
+            fx.Record = await fx.TestTopic.Client.RetryKnownNetworkIssues(async client =>
             {
-                fx.Record = await fx.TestTopic.Client.SubmitMessageWithRecordAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey, ctx =>
+                return await fx.TestTopic.Client.SubmitMessageWithRecordAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey, ctx =>
                 {
                     ctx.Memo = "TestTopicMessage Setup: " + fx.TestTopic.Memo ?? "(null memo)";
                 });
-            }
-            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
-            {
-                var record = await fx.TestTopic.Client.GetTransactionRecordAsync(ex.TxId) as SubmitMessageRecord;
-                if (record is not null)
-                {
-                    fx.Record = record;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            });
             Assert.Equal(ResponseCode.Success, fx.Record.Status);
             networkCredentials.Output?.WriteLine("SETUP COMPLETED: Test Topic Message Instance");
             return fx;
