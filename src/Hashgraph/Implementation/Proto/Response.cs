@@ -35,6 +35,7 @@ namespace Proto
                     ResponseOneofCase.TokenGetAccountNftInfos => (response_ as TokenGetAccountNftInfosResponse)?.Header,
                     ResponseOneofCase.TokenGetNftInfo => (response_ as TokenGetNftInfoResponse)?.Header,
                     ResponseOneofCase.TokenGetNftInfos => (response_ as TokenGetNftInfosResponse)?.Header,
+                    ResponseOneofCase.NetworkGetExecutionTime => (response_ as NetworkGetExecutionTimeResponse)?.Header,
                     _ => null
                 };
             }
@@ -107,6 +108,9 @@ namespace Proto
                         break;
                     case ResponseOneofCase.TokenGetNftInfos:
                         ((TokenGetNftInfosResponse)response_).Header = value;
+                        break;
+                    case ResponseOneofCase.NetworkGetExecutionTime:
+                        ((NetworkGetExecutionTimeResponse)response_).Header = value;
                         break;
                     default:
                         throw new InvalidOperationException("Query has No Type Set, unable to set Query Header of Unknown Query Type.");
@@ -185,6 +189,9 @@ namespace Proto
                     break;
                 case ResponseOneofCase.TokenGetNftInfos:
                     defaultValidate(transactionId, ((TokenGetNftInfosResponse)response_).Header);
+                    break;
+                case ResponseOneofCase.NetworkGetExecutionTime:
+                    defaultValidate(transactionId, ((NetworkGetExecutionTimeResponse)response_).Header);
                     break;
                 default:
                     throw new InvalidOperationException("Query has No Type Set, unable to set Query Header of Unknown Query Type.");

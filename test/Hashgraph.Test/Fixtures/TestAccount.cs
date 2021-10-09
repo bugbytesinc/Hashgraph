@@ -25,7 +25,7 @@ namespace Hashgraph.Test.Fixtures
                 Endorsement = fx.PublicKey,
                 InitialBalance = (ulong)Generator.Integer(10, 20),
                 Memo = Generator.String(10, 20),
-                AutoAssociationLimit = Generator.Integer(500, 999)
+                AutoAssociationLimit = Generator.Integer(5, 10)
             };
             customize?.Invoke(fx);
             fx.Record = await fx.Client.RetryKnownNetworkIssues(async client =>

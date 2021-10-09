@@ -164,5 +164,16 @@ namespace Hashgraph.Test.Fixtures
                 throw new Xunit.Sdk.XunitException($"Unable to find association record using asset {fxAsset.Record.Token} with account {fxAccount.Record.Address} .");
             }
         }
+
+        internal static void SemanticVersionGreaterOrEqualThan(SemanticVersion expected, SemanticVersion actual)
+        {
+            if (expected.Major > actual.Major || 
+                (expected.Major == actual.Major && expected.Minor > actual.Minor) ||
+                (expected.Major == actual.Major && expected.Minor == actual.Minor &&  expected.Patch > actual.Patch))
+            {
+                throw new Xunit.Sdk.XunitException($"Semantic Version {actual.Major}.{actual.Minor}.{actual.Patch} is not greater than {expected.Major}.{expected.Minor}.{expected.Patch}");
+            }
+
+        }
     }
 }

@@ -233,7 +233,7 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(emptyAddress, updatedInfo.Proxy);
         }
-        [Fact(DisplayName = "NETWORK V0.14.0 REGRESSION: Update Account: Update with Insufficient Funds Returns Required Fee Fails")]
+        [Fact(DisplayName = "NETWORK V0.14.0 DEFECT: Update Account: Update with Insufficient Funds Returns Required Fee Fails")]
         public async Task UpdateWithInsufficientFundsReturnsRequiredFeeNetwork14Regression()
         {
             var testFailException = (await Assert.ThrowsAsync<TransactionException>(UpdateWithInsufficientFundsReturnsRequiredFee));
