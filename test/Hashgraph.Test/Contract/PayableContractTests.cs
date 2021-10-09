@@ -334,7 +334,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(finalBalance, callBalanceAfter);
         }
 
-        [Fact(DisplayName = "NETWORK V0.7.0 REGRESSION: Payable Contract: Transfer Funds to External Payable Default Function Raises Contract's Account Balance")]
+        [Fact(DisplayName = "NETWORK V0.7.0 DEFECT: Payable Contract: Transfer Funds to External Payable Default Function Raises Contract's Account Balance")]
         public async Task TransferFundsToPayableContractWithExternalPayableRaisesContractBalanceVersion070Regression()
         {
             // Version 0.6.0 allowed for transfer of crypto to an account using the

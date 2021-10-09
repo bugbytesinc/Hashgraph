@@ -49,7 +49,7 @@ namespace Hashgraph.Test.Record
             Assert.StartsWith("Transaction is missing. Please check that it is not null.", ane.Message);
         }
 
-        [Fact(DisplayName = "NETWORK V0.7.0 REGRESSION: Get Record: Invalid Transaction ID throws error.")]
+        [Fact(DisplayName = "NETWORK V0.7.0 DEFECT: Get Record: Invalid Transaction ID throws error.")]
         public async Task InvalidTransactionIdThrowsErrorNetVersion070Regression()
         {
             // The following unit test used to throw a precheck exception because
