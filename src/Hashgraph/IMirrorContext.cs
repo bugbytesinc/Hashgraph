@@ -9,8 +9,8 @@ namespace Hashgraph
     /// <remarks>
     /// This interface exposes the current configuration context for a 
     /// <see cref="MirrorClient"/> instance.  When accessed thru a 
-    /// <see cref="MirrorClient.Configure(Action{IContext})"/>, 
-    /// <see cref="MirrorClient.Clone(Action{IContext})"/> or one of the 
+    /// <see cref="MirrorClient.Configure(Action{IMirrorContext})"/>, 
+    /// <see cref="MirrorClient.Clone(Action{IMirrorContext}?)"/> or one of the 
     /// network request methods, calling code can interrogate the 
     /// object for configuration details and update as necessary.  
     /// Typically, the bare minimum that must be configured in a 

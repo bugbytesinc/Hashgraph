@@ -17,15 +17,15 @@
     public enum KeyType
     {
         /// <summary>
-        /// Ed25519 Public Key (Stored as a <see cref="NSec.Cryptography.PublicKey"/>).
+        /// Ed25519 Public Key (Stored as a <see cref="Org.BouncyCastle.Crypto.Parameters.Ed25519PublicKeyParameters"/>).
         /// </summary>
         Ed25519 = 1,
         /// <summary>
-        /// RSA-3072 Public Key (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
+        /// RSA-3072 Public Key (Stored as a <see cref="System.ReadOnlyMemory{Byte}"/>).
         /// </summary>
         RSA3072 = 2,
         /// <summary>
-        /// ECDSA with the p-384 curve (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
+        /// ECDSA with the p-384 curve (Stored as a <see cref="System.ReadOnlyMemory{Byte}"/>).
         /// </summary>
         ECDSA384 = 3,
         /// <summary>

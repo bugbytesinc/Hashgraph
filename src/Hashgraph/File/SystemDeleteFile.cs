@@ -70,7 +70,7 @@ namespace Hashgraph
         /// </param>
         /// <returns>
         /// A transaction record indicating success of the file deletion,
-        /// fees & other transaction details.
+        /// fees &amp; other transaction details.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
@@ -99,7 +99,7 @@ namespace Hashgraph
         /// </param>
         /// <returns>
         /// A transaction record indicating success of the file deletion,
-        /// fees & other transaction details.
+        /// fees &amp; other transaction details.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
