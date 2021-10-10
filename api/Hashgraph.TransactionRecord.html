@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class TransactionRecord
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -82,6 +82,7 @@ has been reached for a network request.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="Hashgraph.TransactionReceipt.html">TransactionReceipt</a></div>
     <div class="level2"><span class="xref">TransactionRecord</span></div>
+      <div class="level3"><a class="xref" href="Hashgraph.AssetMintRecord.html">AssetMintRecord</a></div>
       <div class="level3"><a class="xref" href="Hashgraph.CallContractRecord.html">CallContractRecord</a></div>
       <div class="level3"><a class="xref" href="Hashgraph.CreateAccountRecord.html">CreateAccountRecord</a></div>
       <div class="level3"><a class="xref" href="Hashgraph.CreateContractRecord.html">CreateContractRecord</a></div>
@@ -89,6 +90,12 @@ has been reached for a network request.</p>
       <div class="level3"><a class="xref" href="Hashgraph.CreateTopicRecord.html">CreateTopicRecord</a></div>
       <div class="level3"><a class="xref" href="Hashgraph.FileRecord.html">FileRecord</a></div>
       <div class="level3"><a class="xref" href="Hashgraph.SubmitMessageRecord.html">SubmitMessageRecord</a></div>
+      <div class="level3"><a class="xref" href="Hashgraph.TokenRecord.html">TokenRecord</a></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TransactionReceipt.html">TransactionReceipt</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TransactionRecord.html">TransactionRecord</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -103,6 +110,9 @@ has been reached for a network request.</p>
     </div>
     <div>
       <a class="xref" href="Hashgraph.TransactionReceipt.html#Hashgraph_TransactionReceipt_NextExchangeRate">TransactionReceipt.NextExchangeRate</a>
+    </div>
+    <div>
+      <a class="xref" href="Hashgraph.TransactionReceipt.html#Hashgraph_TransactionReceipt_Pending">TransactionReceipt.Pending</a>
     </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
@@ -130,16 +140,80 @@ has been reached for a network request.</p>
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
   <h5 id="Hashgraph_TransactionRecord_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class TransactionRecord : TransactionReceipt</code></pre>
+    <pre><code class="lang-csharp hljs">public class TransactionRecord : TransactionReceipt, IEquatable&lt;TransactionReceipt&gt;, IEquatable&lt;TransactionRecord&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionRecord_Concensus.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Concensus%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_AssetTransfers.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.AssetTransfers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionRecord.cs/#L20">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L48">View Source</a>
+  </span>
+  <a id="Hashgraph_TransactionRecord_AssetTransfers_" data-uid="Hashgraph.TransactionRecord.AssetTransfers*"></a>
+  <h4 id="Hashgraph_TransactionRecord_AssetTransfers" data-uid="Hashgraph.TransactionRecord.AssetTransfers">AssetTransfers</h4>
+  <div class="markdown level1 summary"><p>A list of asset transfers to and from accounts associated with
+the record represented by this transaction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlyCollection&lt;AssetTransfer&gt; AssetTransfers { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.objectmodel.readonlycollection-1">ReadOnlyCollection</a>&lt;<a class="xref" href="Hashgraph.AssetTransfer.html">AssetTransfer</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_Associations.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Associations%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L60">View Source</a>
+  </span>
+  <a id="Hashgraph_TransactionRecord_Associations_" data-uid="Hashgraph.TransactionRecord.Associations*"></a>
+  <h4 id="Hashgraph_TransactionRecord_Associations" data-uid="Hashgraph.TransactionRecord.Associations">Associations</h4>
+  <div class="markdown level1 summary"><p>A list of token associations that were created
+as a result of this transaction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlyCollection&lt;Association&gt; Associations { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.objectmodel.readonlycollection-1">ReadOnlyCollection</a>&lt;<a class="xref" href="Hashgraph.Association.html">Association</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_Concensus.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Concensus%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L23">View Source</a>
   </span>
   <a id="Hashgraph_TransactionRecord_Concensus_" data-uid="Hashgraph.TransactionRecord.Concensus*"></a>
   <h4 id="Hashgraph_TransactionRecord_Concensus" data-uid="Hashgraph.TransactionRecord.Concensus">Concensus</h4>
@@ -167,10 +241,10 @@ has been reached for a network request.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionRecord_Fee.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Fee%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_Fee.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Fee%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionRecord.cs/#L29">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L32">View Source</a>
   </span>
   <a id="Hashgraph_TransactionRecord_Fee_" data-uid="Hashgraph.TransactionRecord.Fee*"></a>
   <h4 id="Hashgraph_TransactionRecord_Fee" data-uid="Hashgraph.TransactionRecord.Fee">Fee</h4>
@@ -199,10 +273,10 @@ transaction and generating associated receipts and records.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionRecord_Hash.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Hash%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_Hash.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Hash%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionRecord.cs/#L16">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L19">View Source</a>
   </span>
   <a id="Hashgraph_TransactionRecord_Hash_" data-uid="Hashgraph.TransactionRecord.Hash*"></a>
   <h4 id="Hashgraph_TransactionRecord_Hash" data-uid="Hashgraph.TransactionRecord.Hash">Hash</h4>
@@ -230,10 +304,10 @@ transaction and generating associated receipts and records.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionRecord_Memo.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Memo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_Memo.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Memo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionRecord.cs/#L24">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L27">View Source</a>
   </span>
   <a id="Hashgraph_TransactionRecord_Memo_" data-uid="Hashgraph.TransactionRecord.Memo*"></a>
   <h4 id="Hashgraph_TransactionRecord_Memo" data-uid="Hashgraph.TransactionRecord.Memo">Memo</h4>
@@ -261,14 +335,48 @@ transaction and generating associated receipts and records.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionRecord_TokenTransfers.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.TokenTransfers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_Royalties.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Royalties%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionRecord.cs/#L40">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L55">View Source</a>
+  </span>
+  <a id="Hashgraph_TransactionRecord_Royalties_" data-uid="Hashgraph.TransactionRecord.Royalties*"></a>
+  <h4 id="Hashgraph_TransactionRecord_Royalties" data-uid="Hashgraph.TransactionRecord.Royalties">Royalties</h4>
+  <div class="markdown level1 summary"><p>A list of token transfers applied by the network as royalties
+for executing the original transaction.  Typically in the form
+of royalties for transfering custom tokens and assets as defined
+by the respective token definition's fees.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlyCollection&lt;RoyaltyTransfer&gt; Royalties { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.objectmodel.readonlycollection-1">ReadOnlyCollection</a>&lt;<a class="xref" href="Hashgraph.RoyaltyTransfer.html">RoyaltyTransfer</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_TokenTransfers.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.TokenTransfers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L43">View Source</a>
   </span>
   <a id="Hashgraph_TransactionRecord_TokenTransfers_" data-uid="Hashgraph.TransactionRecord.TokenTransfers*"></a>
   <h4 id="Hashgraph_TransactionRecord_TokenTransfers" data-uid="Hashgraph.TransactionRecord.TokenTransfers">TokenTransfers</h4>
-  <div class="markdown level1 summary"><p>A list token transfers to and from accounts associated with
+  <div class="markdown level1 summary"><p>A list of token transfers to and from accounts associated with
 the record represented by this transaction.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -293,10 +401,10 @@ the record represented by this transaction.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionRecord_Transfers.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Transfers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord_Transfers.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord.Transfers%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionRecord.cs/#L35">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L38">View Source</a>
   </span>
   <a id="Hashgraph_TransactionRecord_Transfers_" data-uid="Hashgraph.TransactionRecord.Transfers*"></a>
   <h4 id="Hashgraph_TransactionRecord_Transfers" data-uid="Hashgraph.TransactionRecord.Transfers">Transfers</h4>
@@ -324,6 +432,13 @@ the record represented by this transaction.
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
 </article>
           </div>
           
@@ -332,10 +447,10 @@ the record represented by this transaction.
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionRecord.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionRecord.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionRecord%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionRecord.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionRecord.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

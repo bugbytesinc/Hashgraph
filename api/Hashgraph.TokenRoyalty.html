@@ -1,0 +1,486 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class TokenRoyalty
+   | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class TokenRoyalty
+   | Hashgraph ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.TokenRoyalty">
+  
+  
+  <h1 id="Hashgraph_TokenRoyalty" data-uid="Hashgraph.TokenRoyalty" class="text-break">Class TokenRoyalty
+  </h1>
+  <div class="markdown level0 summary"><p>The definition of a Royalty computed from the amount of
+Fungible token exchanged, can be in the form as a deduction
+of the token echanged, or an exise amount taken from the
+sender of the fungible token.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">TokenRoyalty</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="Hashgraph.IRoyalty.html">IRoyalty</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TokenRoyalty.html">TokenRoyalty</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
+  <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
+  <h5 id="Hashgraph_TokenRoyalty_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class TokenRoyalty : IRoyalty, IEquatable&lt;TokenRoyalty&gt;</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty__ctor_Hashgraph_Address_System_Int64_System_Int64_System_Int64_System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty.%23ctor(Hashgraph.Address%2CSystem.Int64%2CSystem.Int64%2CSystem.Int64%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L104">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenRoyalty__ctor_" data-uid="Hashgraph.TokenRoyalty.#ctor*"></a>
+  <h4 id="Hashgraph_TokenRoyalty__ctor_Hashgraph_Address_System_Int64_System_Int64_System_Int64_System_Int64_System_Boolean_" data-uid="Hashgraph.TokenRoyalty.#ctor(Hashgraph.Address,System.Int64,System.Int64,System.Int64,System.Int64,System.Boolean)">TokenRoyalty(Address, Int64, Int64, Int64, Int64, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Public Constructor, an <pre><code>TokenRoyalty</code></pre> is immutable after creation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TokenRoyalty(Address account, long numerator, long denominator, long minimum, long maximum, bool assesAsSurcharge = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td><span class="parametername">account</span></td>
+        <td><p>Account receiving the royalty assessment.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">numerator</span></td>
+        <td><p>The numerator portion of the fraction of the
+transferred units to assess.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">denominator</span></td>
+        <td><p>The denominator portion of the fraction of the
+transferred units to assess.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">minimum</span></td>
+        <td><p>The minimum assessed value, in terms of the
+smallest denomination of the associated token.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">maximum</span></td>
+        <td><p>The maximum allowed fee value, in terms of
+the smallest denomination of the associated token.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">assesAsSurcharge</span></td>
+        <td><p>Determines how the royalty assessment is applied,
+if <pre><code>true</code></pre> the amount is added as an extra
+surcharge paid by the sender of the associated token.
+If <pre><code>false</code></pre> (the default) the amount of token
+received by the receiving account is reduced by the
+assement computed from the total amount of the associated
+fungible token sent by the sender.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty_Account.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty.Account%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L20">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenRoyalty_Account_" data-uid="Hashgraph.TokenRoyalty.Account*"></a>
+  <h4 id="Hashgraph_TokenRoyalty_Account" data-uid="Hashgraph.TokenRoyalty.Account">Account</h4>
+  <div class="markdown level1 summary"><p>Account receiving the royalty assessment.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address Account { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty_AssessAsSurcharge.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty.AssessAsSurcharge%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L60">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenRoyalty_AssessAsSurcharge_" data-uid="Hashgraph.TokenRoyalty.AssessAsSurcharge*"></a>
+  <h4 id="Hashgraph_TokenRoyalty_AssessAsSurcharge" data-uid="Hashgraph.TokenRoyalty.AssessAsSurcharge">AssessAsSurcharge</h4>
+  <div class="markdown level1 summary"><p>Determines how the royalty assessment is applied,
+if <pre><code>true</code></pre> the amount is added as an extra
+surcharge paid by the sender of the associated token.
+If <pre><code>false</code></pre> (the default) the amount of token
+received by the receiving account is reduced by the
+assement computed from the total amount of the associated
+fungible token sent by the sender.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AssessAsSurcharge { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty_Denominator.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty.Denominator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L45">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenRoyalty_Denominator_" data-uid="Hashgraph.TokenRoyalty.Denominator*"></a>
+  <h4 id="Hashgraph_TokenRoyalty_Denominator" data-uid="Hashgraph.TokenRoyalty.Denominator">Denominator</h4>
+  <div class="markdown level1 summary"><p>The denominator portion of the fraction of the
+transferred units to assess.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Denominator { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_TokenRoyalty_Denominator_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is not expressed as a floating point number
+in order to avoid rounding fees inheret in
+computing platforms.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty_Maximum.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty.Maximum%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L50">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenRoyalty_Maximum_" data-uid="Hashgraph.TokenRoyalty.Maximum*"></a>
+  <h4 id="Hashgraph_TokenRoyalty_Maximum" data-uid="Hashgraph.TokenRoyalty.Maximum">Maximum</h4>
+  <div class="markdown level1 summary"><p>The maximum allowed fee value, in terms of
+the smallest denomination of the associated token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Maximum { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty_Minimum.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty.Minimum%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L25">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenRoyalty_Minimum_" data-uid="Hashgraph.TokenRoyalty.Minimum*"></a>
+  <h4 id="Hashgraph_TokenRoyalty_Minimum" data-uid="Hashgraph.TokenRoyalty.Minimum">Minimum</h4>
+  <div class="markdown level1 summary"><p>The minimum assessed value, in terms of the
+smallest denomination of the associated token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Minimum { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty_Numerator.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty.Numerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L35">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenRoyalty_Numerator_" data-uid="Hashgraph.TokenRoyalty.Numerator*"></a>
+  <h4 id="Hashgraph_TokenRoyalty_Numerator" data-uid="Hashgraph.TokenRoyalty.Numerator">Numerator</h4>
+  <div class="markdown level1 summary"><p>The numerator portion of the fraction of the
+transferred units to assess.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Numerator { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_TokenRoyalty_Numerator_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This is not expressed as a floating point number
+in order to avoid rounding fees inheret in
+computing platforms.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty_RoyaltyType.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty.RoyaltyType%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L16">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenRoyalty_RoyaltyType_" data-uid="Hashgraph.TokenRoyalty.RoyaltyType*"></a>
+  <h4 id="Hashgraph_TokenRoyalty_RoyaltyType" data-uid="Hashgraph.TokenRoyalty.RoyaltyType">RoyaltyType</h4>
+  <div class="markdown level1 summary"><p>Identifies this royalty as a Token Royalty type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RoyaltyType RoyaltyType { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.RoyaltyType.html">RoyaltyType</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="Hashgraph.IRoyalty.html">IRoyalty</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenRoyalty.md&amp;value=---%0Auid%3A%20Hashgraph.TokenRoyalty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TokenRoyalty.cs/#L11" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

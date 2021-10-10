@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class MessageSegmentInfo
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -84,6 +84,10 @@ segment correlates with.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">MessageSegmentInfo</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.MessageSegmentInfo.html">MessageSegmentInfo</a>&gt;</div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -112,16 +116,47 @@ segment correlates with.</p>
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
   <h5 id="Hashgraph_MessageSegmentInfo_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class MessageSegmentInfo</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class MessageSegmentInfo : IEquatable&lt;MessageSegmentInfo&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MessageSegmentInfo_ParentTxId.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo.ParentTxId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_MessageSegmentInfo_Index.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo.Index%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L19">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L23">View Source</a>
+  </span>
+  <a id="Hashgraph_MessageSegmentInfo_Index_" data-uid="Hashgraph.MessageSegmentInfo.Index*"></a>
+  <h4 id="Hashgraph_MessageSegmentInfo_Index" data-uid="Hashgraph.MessageSegmentInfo.Index">Index</h4>
+  <div class="markdown level1 summary"><p>The index of this segment (one based).</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Index { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_MessageSegmentInfo_ParentTxId.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo.ParentTxId%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L19">View Source</a>
   </span>
   <a id="Hashgraph_MessageSegmentInfo_ParentTxId_" data-uid="Hashgraph.MessageSegmentInfo.ParentTxId*"></a>
   <h4 id="Hashgraph_MessageSegmentInfo_ParentTxId" data-uid="Hashgraph.MessageSegmentInfo.ParentTxId">ParentTxId</h4>
@@ -150,6 +185,42 @@ message int one.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_MessageSegmentInfo_TotalSegmentCount.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo.TotalSegmentCount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L28">View Source</a>
+  </span>
+  <a id="Hashgraph_MessageSegmentInfo_TotalSegmentCount_" data-uid="Hashgraph.MessageSegmentInfo.TotalSegmentCount*"></a>
+  <h4 id="Hashgraph_MessageSegmentInfo_TotalSegmentCount" data-uid="Hashgraph.MessageSegmentInfo.TotalSegmentCount">TotalSegmentCount</h4>
+  <div class="markdown level1 summary"><p>The total number of segments making up
+the whole of the message when assembled.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int TotalSegmentCount { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
 </article>
           </div>
           
@@ -158,10 +229,10 @@ message int one.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_MessageSegmentInfo.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_MessageSegmentInfo.md&amp;value=---%0Auid%3A%20Hashgraph.MessageSegmentInfo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/MessageSegmentInfo.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

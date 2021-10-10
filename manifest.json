@@ -1,6 +1,6 @@
 {
   "homepages": [],
-  "source_base_path": "D:/Hashgraph/Main - for doc/docs",
+  "source_base_path": "D:/Hashgraph/Main/docs",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
@@ -97,7 +97,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "2v54V0F7CmfWf3S4gxcWKg=="
+          "hash": "9fjkySjfvkIHVvJDRzwCbxyFM7+oCln3TOLHFj0NL0M="
         }
       },
       "is_incremental": false,
@@ -109,7 +109,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.AccountBalances.html",
-          "hash": "bdNgt8O2zknHthsbvA/cNQ=="
+          "hash": "otbhgzPY2pTmEjBJyD3DJgPNxemiM2wrfYvy/QrUVrE="
         }
       },
       "is_incremental": false,
@@ -121,7 +121,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.AccountInfo.html",
-          "hash": "ypCKEQaqcqPjiYzSoKNmdQ=="
+          "hash": "A8k1E4lQtuzhDEPndsDigk1PzUQ9H6gLDq6MCN05S1Q="
         }
       },
       "is_incremental": false,
@@ -133,7 +133,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Address.html",
-          "hash": "Vo1pegLZ9Cr7uKX8fDxNug=="
+          "hash": "DIqVoehfTekuxgiT+BvrhxEHKKSVXi4f0FscDbqiUdQ="
         }
       },
       "is_incremental": false,
@@ -145,7 +145,91 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.AppendFileParams.html",
-          "hash": "JOdTLh7FP7b2qT8oQtrV1A=="
+          "hash": "zRa0pOD+dJhoJPxDzhmeDbHsS5UsMq9Dazg7FzxDGd8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.Asset.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.Asset.html",
+          "hash": "aWqAy0xkVlmEkn9xJpFX8+0kwviqHpwioJ+QXdtmd20="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.AssetInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.AssetInfo.html",
+          "hash": "EJ1h+NTLYEv6NkBSmujBM0hgXI4C+sB70PjBb4k6Xl4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.AssetMintReceipt.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.AssetMintReceipt.html",
+          "hash": "+y7m/7txFZPFkUEh/hlAiVpAsHgUBxH2Gs2HVLIDlIM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.AssetMintRecord.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.AssetMintRecord.html",
+          "hash": "VlOj12ZuaACPny5l+wxUbjvU6wd0PmVANCMv+SvLuoE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.AssetRoyalty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.AssetRoyalty.html",
+          "hash": "tJsmjQrSI1TLr9OIGzTlxdy9gH5NnRElcaMJSZIMeOc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.AssetTransfer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.AssetTransfer.html",
+          "hash": "twptav5cxTJo+d9vkMtWtAVL5QljjGXkGRet5FGfKe8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.Association.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.Association.html",
+          "hash": "fyCvbnbLfsmwkgN2Al579tuWShIWYU22UoPraCpBY4k="
         }
       },
       "is_incremental": false,
@@ -157,7 +241,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CallContractParams.html",
-          "hash": "j9zjOSvsUyukYLZ00VlGJg=="
+          "hash": "/Lg8O6wuSP7LPXSNsMsLE8ywtRrsWv9jJmGdxHIUQw4="
         }
       },
       "is_incremental": false,
@@ -169,7 +253,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CallContractRecord.html",
-          "hash": "ekFu6m6laTIXc9U3FeC8jg=="
+          "hash": "VdsaXHHj3NupSlwphP5Fw4Hc7dlUXQnUtHzLDq5pYE0="
         }
       },
       "is_incremental": false,
@@ -181,7 +265,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Client.html",
-          "hash": "I2MxM0JUhv5ts3jj0wY/Xw=="
+          "hash": "NTQGiol4rbTYpd+vBXu1i6o0bLLzi0ezgu+FaQasDQ0="
         }
       },
       "is_incremental": false,
@@ -193,7 +277,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.ConsensusException.html",
-          "hash": "7nfDGRSTDpiszttBNvgPbg=="
+          "hash": "nRuhKD/twsRZMCyeCspZvFpIAxW7bRd5elJdKvqRsjM="
         }
       },
       "is_incremental": false,
@@ -205,7 +289,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.ContractCallResult.html",
-          "hash": "ZT+p+xsE4wNOpHrafQwI8g=="
+          "hash": "1ftEosI3GHq17McMH+1z0QCvP9fddLKuSj/+zb5H1mM="
         }
       },
       "is_incremental": false,
@@ -217,7 +301,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.ContractCallResultData.html",
-          "hash": "tDlrt1fUOS/EwV4zITpZPA=="
+          "hash": "XQN5OGVcrdsS26d5qZ48yIM9/F76XD83GncFKULEExA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.ContractEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.ContractEvent.html",
+          "hash": "kl+Rj8a5nVJJwiv2HYmVYVKt+ve7A1cJFx1cSttbRTg="
         }
       },
       "is_incremental": false,
@@ -229,7 +325,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.ContractException.html",
-          "hash": "UJUuU2OSuTRng4n4DxLk9w=="
+          "hash": "ZbnZoRkRcvIwojhp/oaTUaWvClZ+EaoO2oN8AFj3thA="
         }
       },
       "is_incremental": false,
@@ -241,7 +337,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.ContractInfo.html",
-          "hash": "V21ffCh+dvhocYOhOL1doA=="
+          "hash": "l94FpHV2mLhlBfC1smTE3z97WQKY2rcpTMWixCpnH+Y="
         }
       },
       "is_incremental": false,
@@ -253,7 +349,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateAccountParams.html",
-          "hash": "JwIQlIMd/W6xDd/UicjJeQ=="
+          "hash": "ly73Ec0sjFBThBfa7uLN7zNsfJeZQbzJ+LdJWHwmDD0="
         }
       },
       "is_incremental": false,
@@ -265,7 +361,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateAccountReceipt.html",
-          "hash": "uEXiP0W06eCpjJjyzp0jPQ=="
+          "hash": "uBwKgIMgY9u7gOr0S/A/2IUhTPxJG6A2KZiQSmJ5WIE="
         }
       },
       "is_incremental": false,
@@ -277,7 +373,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateAccountRecord.html",
-          "hash": "N6cOhMHIB8Q5VQQs1dihkA=="
+          "hash": "MvUDf8Z/INehAUxKmabQDko96c4Yem3P8udGzkOPEEM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.CreateAssetParams.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.CreateAssetParams.html",
+          "hash": "V0dF7wj+sxVPnoSANO9z2Ro78wnoy/zRamOAEORACDk="
         }
       },
       "is_incremental": false,
@@ -289,7 +397,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateContractParams.html",
-          "hash": "jZ4OI6ogCrxDKYF4+Ubisw=="
+          "hash": "chkzI84ffN0L3xBNSBYrWekSQnSc+QvkAQMzeAdYLkQ="
         }
       },
       "is_incremental": false,
@@ -301,7 +409,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateContractReceipt.html",
-          "hash": "iqoLkq6pu/9IzCpQZ2c+mQ=="
+          "hash": "VkaMSyf4RwjXO7QaX9mIzcQcCeSernT9RJ13RQK0tvM="
         }
       },
       "is_incremental": false,
@@ -313,7 +421,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateContractRecord.html",
-          "hash": "BuecHr/FfDe4BXi6ZZf+JA=="
+          "hash": "4YMCxx30VQD8s6aQ03xKduTLdHv3eS066GXPkC3DxG8="
         }
       },
       "is_incremental": false,
@@ -325,7 +433,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateFileParams.html",
-          "hash": "wcq0CiaLwOp/YGf9HTIPBA=="
+          "hash": "+0lb0Rt2CG7boeJnazrL4P9/A9TsgQ+sU9I1U/wJP/c="
         }
       },
       "is_incremental": false,
@@ -337,7 +445,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateTokenParams.html",
-          "hash": "pdXZAfxZafL1V1e+/CbAHA=="
+          "hash": "LRkVnxGkLET6QQseICO4wsWqVyNLRKThdgmuc/jm2pI="
         }
       },
       "is_incremental": false,
@@ -349,7 +457,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateTokenReceipt.html",
-          "hash": "r01twzTZxjFApNp33zHZ+w=="
+          "hash": "hD0pL07lhgfFul7/c9NO+kJYM5z+ODuRTlJcPVK5HBc="
         }
       },
       "is_incremental": false,
@@ -361,7 +469,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateTokenRecord.html",
-          "hash": "ixu9K8X7VHZecHp7UjGp7A=="
+          "hash": "Rs4aO2s0LK4wuZ14cn9wqbglXps7sLhyEDmmWRMDoi8="
         }
       },
       "is_incremental": false,
@@ -373,7 +481,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateTopicParams.html",
-          "hash": "SR+JEVChSrn//2yzY0dMkQ=="
+          "hash": "4ReNGrFTgCA9x+Nxpd+W5LOhfGLMuJftYcULx9Mh77U="
         }
       },
       "is_incremental": false,
@@ -385,7 +493,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateTopicReceipt.html",
-          "hash": "BwjkdN1P0TVlQhx313jjFA=="
+          "hash": "lehYCJg+hUGVn2tYxpR66xHmGub/+j8zORG3GuuD/l4="
         }
       },
       "is_incremental": false,
@@ -397,7 +505,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.CreateTopicRecord.html",
-          "hash": "nSV9EN9TpJq62IgxImqBtA=="
+          "hash": "2wmaRRXDqab1Cij0M4z/X8GrgxhyWPNh1Hll936yhO8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.CryptoBalance.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.CryptoBalance.html",
+          "hash": "CvFkOM7+t9wWONnKGriMW15skeMR14+9WXPd5Xf38/U="
         }
       },
       "is_incremental": false,
@@ -409,7 +529,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Endorsement.html",
-          "hash": "UOcdZJG5aWB3gq14rQQADQ=="
+          "hash": "E88FaI4p6XlOEaGViFFtIbarDC4puIAv+FmYX/qYP7k="
         }
       },
       "is_incremental": false,
@@ -421,7 +541,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.ExchangeRate.html",
-          "hash": "S4BOq7J7lLrg8QMziKhPbQ=="
+          "hash": "KcLSpBJ+d2AQaaI0W/HBAbbicoeqa8TviYgEztjtHNw="
         }
       },
       "is_incremental": false,
@@ -433,7 +553,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.AddressBookExtension.html",
-          "hash": "P8B0Z5ZcBYII+lypoBAvDw=="
+          "hash": "DHMckDZNF5dlXCLEfi6fCR98fm4oMzqy9wtODRQgm+o="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.Extensions.Endpoint.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.Extensions.Endpoint.html",
+          "hash": "/ffHqMa/XIz84/7wMLKhMuCLRQs9Qbl0QXudDpgPbZ0="
         }
       },
       "is_incremental": false,
@@ -445,7 +577,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.ExchangeRateExtension.html",
-          "hash": "6ib5Jj+ABCgBiGxi/ddl/g=="
+          "hash": "7pa0+MmLC+JLM+/TO/xPO/wuBPYOYpYbnGZXVex5u4E="
         }
       },
       "is_incremental": false,
@@ -457,7 +589,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.ExchangeRates.html",
-          "hash": "Z/o95lh2mLZcmimTButQlQ=="
+          "hash": "VfI5K1+2b8AaZzFgk+D/VCIx2SA9fIfOL9bVPY676O0="
         }
       },
       "is_incremental": false,
@@ -469,7 +601,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.FeeSchedule.html",
-          "hash": "MirAnCDrDARWtfrBoo01gA=="
+          "hash": "q+Z+R+mCkVWb39yDR/lruKzONu+POleVtlNNYHxI+u0="
         }
       },
       "is_incremental": false,
@@ -481,7 +613,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.FeeScheduleExtension.html",
-          "hash": "cwj9u5kS3scJQ1v26Intrw=="
+          "hash": "rpFkEp9/gOsJRgKa+Pwi+wB7a5jduYz5faMoYXJI1OY="
         }
       },
       "is_incremental": false,
@@ -493,7 +625,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.FeeSchedules.html",
-          "hash": "64P3tSEANyv9MX0ErAwzoQ=="
+          "hash": "TG1ZjoEYZ6rmPbUgHfIrQCDF+48jhgWEk8wpx4gsmx8="
         }
       },
       "is_incremental": false,
@@ -505,7 +637,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.GetTokenBalanceExtension.html",
-          "hash": "dIlgLh+2M6YMuTxJ39wm6g=="
+          "hash": "29Lx9rR8uSwY8kciUXyWOL/P1/z/aQ3QD7vifuoDGbk="
         }
       },
       "is_incremental": false,
@@ -517,7 +649,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.NodeInfo.html",
-          "hash": "vEeJjmQfB1HT2ZWZOJROmA=="
+          "hash": "Xb8EfS3gxTx7FcuK66f3kLKaO/UQ2Pd9DKK2h/qgXwA="
         }
       },
       "is_incremental": false,
@@ -529,7 +661,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.SubmitLargeMessageExtension.html",
-          "hash": "mRlYl19fk9i8wsMQk2hzFw=="
+          "hash": "+yjd2wr4NqFTsJqkKiaPFKo8W3No5XxZSSBFYYNmtcg="
         }
       },
       "is_incremental": false,
@@ -541,7 +673,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Extensions.html",
-          "hash": "3tjeIXAJeyfopahUvxR5ng=="
+          "hash": "2fgzOmQwDQ9QuOahLmAHmA7oNpV1asCYM6MD7qZXi70="
         }
       },
       "is_incremental": false,
@@ -553,7 +685,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.FileInfo.html",
-          "hash": "CoVR6flTXz0P5WGZvLqXLw=="
+          "hash": "xo83sAtpkA4cplIa0cc/Pnqb2A9ldJh+dYQJoaxcKX0="
         }
       },
       "is_incremental": false,
@@ -565,7 +697,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.FileReceipt.html",
-          "hash": "rYV1Hy2u+AEh66Hf+mYRvA=="
+          "hash": "dj/G/Bg120Nm0m728hQVkfXlb85AwqUMoJBvvN/aa1E="
         }
       },
       "is_incremental": false,
@@ -577,7 +709,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.FileRecord.html",
-          "hash": "ou2oNTbVY+aqYQ2Fn1+Y4Q=="
+          "hash": "+ehQL4gqXhE4DN9tLjllwgIK5QGKBskP+iUD0cOTHAc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.FixedRoyalty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.FixedRoyalty.html",
+          "hash": "xivBsrDvBWbgUinFZMzKFUPC5SPaSehouEkShxfTAjQ="
         }
       },
       "is_incremental": false,
@@ -589,7 +733,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Gateway.html",
-          "hash": "IhHV30Czv/3/RQSujLHaDw=="
+          "hash": "qfTelJUpA9H0YZudCxGy5BhHOqTqzUpF5QrZk0Zn6aY="
         }
       },
       "is_incremental": false,
@@ -601,7 +745,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Hex.html",
-          "hash": "xm8AbTwCTOs/rdy8uzZowA=="
+          "hash": "daRx5Tx0wzmTIyMW9OJcfWKa5WihgUTJ1LZR8hPIdb4="
         }
       },
       "is_incremental": false,
@@ -613,7 +757,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.IContext.html",
-          "hash": "kTJuzYA4/m972fpqnV8Bkg=="
+          "hash": "DixS5EvMymnlroH14U68mr4VBc+VHuY8uLevDjZjE7w="
         }
       },
       "is_incremental": false,
@@ -625,7 +769,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.IInvoice.html",
-          "hash": "mzHdXW7H8wBVypB2KhbgJA=="
+          "hash": "ByirfkGFQogYZ2V2/Szcdhx6T48rzQC3kQcHIjTrUZ4="
         }
       },
       "is_incremental": false,
@@ -637,7 +781,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.IMirrorContext.html",
-          "hash": "xnzz/txD5TIy4dwQCnEdzw=="
+          "hash": "LDcqnc4034OrnS65pA7sPvvUcmUMFqQ3qwmLQqBHiW8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.IRoyalty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.IRoyalty.html",
+          "hash": "sL3QH/xyNdIK8JyE0j948TNrejANbMZb8rKxpA84DOA="
         }
       },
       "is_incremental": false,
@@ -649,7 +805,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.KeyType.html",
-          "hash": "C/zEuCzX5yixeVPElXqLHw=="
+          "hash": "Y/sT3vTMVUkOZ2BkH6jO5oqGJ/yGbidgtBnkHfuC5WU="
         }
       },
       "is_incremental": false,
@@ -661,7 +817,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.MessageSegmentInfo.html",
-          "hash": "9+tIKIw3vsgbrxFW//Drhg=="
+          "hash": "wajhSX7rud72JlfB/nUMHYB7077oIRyQ0qnSXB0aekk="
         }
       },
       "is_incremental": false,
@@ -673,7 +829,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.MirrorClient.html",
-          "hash": "2PrSDsGEP2n5Dy7jamIG+g=="
+          "hash": "hm1YQD2jJvu+g4edvWVIRI6qU9WYEx6SSKNa+HnZ3Xs="
         }
       },
       "is_incremental": false,
@@ -685,7 +841,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.MirrorException.html",
-          "hash": "0ejjdX6A40zMLHrSSMd2mg=="
+          "hash": "tG8WfFp3NfSdJ5xm1vupseB26I+mzGWXRxh1OyU2CpU="
         }
       },
       "is_incremental": false,
@@ -697,7 +853,43 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.MirrorExceptionCode.html",
-          "hash": "ncDOf0HbtvsGSsMs9i5Tpg=="
+          "hash": "Y8r16GCCCtsM9SjaaZwoTJa6nAMl97idWHh32QuVvH8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.PendingParams.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.PendingParams.html",
+          "hash": "Z5zI+LTG/7y8iMFJksqNKCBkQwosoF3WU7NOlqoCbXE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.PendingTransaction.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.PendingTransaction.html",
+          "hash": "CTwXAqWb9FqFJlKx53uxngzRI8RLQIvqoNYzJqBdTdY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.PendingTransactionInfo.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.PendingTransactionInfo.html",
+          "hash": "HZrTNUPwtImuETpPfBSjXbzk/o7fwSEPoqj4VUiCpQw="
         }
       },
       "is_incremental": false,
@@ -709,7 +901,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.PrecheckException.html",
-          "hash": "ZC7t6D1ezrWhGzDDimJPwQ=="
+          "hash": "YxzUDRn/Doh1uN3QdKOI5Y2vl0X+/FdbkEl0s2gZn5o="
         }
       },
       "is_incremental": false,
@@ -721,7 +913,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.QueryContractParams.html",
-          "hash": "NfaAqUK4IrbD0+9s/JbJ8Q=="
+          "hash": "NWiREHbnVjSGUThUjPMqThJOImXjBx4ZWHfvwEaexrk="
         }
       },
       "is_incremental": false,
@@ -733,7 +925,31 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.ResponseCode.html",
-          "hash": "Y8R6sOcyyxXy9l4Kxsq/Gg=="
+          "hash": "IaCBAtPQ6I30cYTTy6xJSFHBOqEVjvk8BBMtvPX2AfY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.RoyaltyTransfer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.RoyaltyTransfer.html",
+          "hash": "LmbVdL6BrsolRoa5GRLnQA0KshDn9VbmTj0mKKAtCfo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.RoyaltyType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.RoyaltyType.html",
+          "hash": "Hp8ToZcqcgnK4zO4AH2L7kMyzTm7pSFlHbh7nYAj7Sw="
         }
       },
       "is_incremental": false,
@@ -745,7 +961,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.SemanticVersion.html",
-          "hash": "pf1P4rvzz4g4gjlR3PSXig=="
+          "hash": "kDD7wnqwST2oWXP2xRCcfqKX/QB8ePgur5JB8wpjL1Y="
         }
       },
       "is_incremental": false,
@@ -757,7 +973,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.Signatory.html",
-          "hash": "qwpeyv3KSfeli2scg+YRrA=="
+          "hash": "c7tDOjEs4Zp5PPxCpg3nK5o4r1JZgCdpbsz0XFL2KrI="
         }
       },
       "is_incremental": false,
@@ -769,7 +985,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.SubmitMessageParams.html",
-          "hash": "UtHFemO7gyUvdu8Oa2eujw=="
+          "hash": "Yt/ujlEzvQYC0NzSQyf1Cdr2WjTrrs6zP7fhYbJL4kE="
         }
       },
       "is_incremental": false,
@@ -781,7 +997,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.SubmitMessageReceipt.html",
-          "hash": "puGCiCLqMPJqG82OjwUBAQ=="
+          "hash": "WzTCblJbWFglOpseG1R86mGf0T1+NZVfXmdEHwxHbKg="
         }
       },
       "is_incremental": false,
@@ -793,7 +1009,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.SubmitMessageRecord.html",
-          "hash": "rUSdmm+lCaLzpxY5ihqHfw=="
+          "hash": "u1gpbjlInCauHeTwAVFFxroS9yt0CNpxya7f/+SX8Lk="
         }
       },
       "is_incremental": false,
@@ -805,7 +1021,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.SubscribeTopicParams.html",
-          "hash": "5/wRmxGGGMj0NkRAU6jb4g=="
+          "hash": "O1v41r6cslgHdw6VL5xomCt54CwDvXylVxA8ZzYMLoQ="
         }
       },
       "is_incremental": false,
@@ -817,7 +1033,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.SuspendNetworkParams.html",
-          "hash": "51KWiojwnjB2FaosCdg2Wg=="
+          "hash": "sUfTK2H7e+gp9ka4jnWPzo1KlxrLkVqYnNeAoP6XAao="
         }
       },
       "is_incremental": false,
@@ -829,7 +1045,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TokenBalance.html",
-          "hash": "0/cCa5LIrSwSBMg37arrpQ=="
+          "hash": "32DGt5ZRvrRbTPD17MsCxLz8f0IxH2sdWtfW9e84in0="
         }
       },
       "is_incremental": false,
@@ -841,7 +1057,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TokenInfo.html",
-          "hash": "OaV2ojNZ1pWnisKdwxGyDw=="
+          "hash": "mLXO2iFq/lG5HQ54HIpaVKO7/yjs2T81WgQVEdLMk7o="
         }
       },
       "is_incremental": false,
@@ -853,7 +1069,43 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TokenKycStatus.html",
-          "hash": "gjv95K9S+t4eZ0ZCk+/Ezw=="
+          "hash": "p7xLRH/XaFRZ84B6LVeoV+xJGXmD80TvmVgCasYnyUk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.TokenReceipt.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.TokenReceipt.html",
+          "hash": "+B750qqf4N3QuOF3TbmScGcZsuK6HINEhNSGQAy7pAQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.TokenRecord.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.TokenRecord.html",
+          "hash": "tZy0pa5praYxno51Bp09KmtLJZOvrrcsrI00Z3n6Css="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.TokenRoyalty.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.TokenRoyalty.html",
+          "hash": "PzvuqvmbU/Yj6Mz+tAzaEO6itRqC5v+MBdsE2ah1sLY="
         }
       },
       "is_incremental": false,
@@ -865,7 +1117,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TokenTradableStatus.html",
-          "hash": "ch1St/amgxbTpczb2aOypg=="
+          "hash": "UWtEK19lDHjf3pE4oMDbCB63cl+V4cs6jMnxMNg8e+U="
         }
       },
       "is_incremental": false,
@@ -877,7 +1129,19 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TokenTransfer.html",
-          "hash": "F8r/C877fuHyy2ZuDu9hfA=="
+          "hash": "iCqumjryPm7sLxla9JuXPEf+4WQ6Ti/rwKkOba25PkE="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "obj/temp/apiyml/Hashgraph.TokenType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Hashgraph.TokenType.html",
+          "hash": "njp3Y8NHpd3Ir1u1FmAKn6xRxiS8gf6ZHkLf4Svdyoo="
         }
       },
       "is_incremental": false,
@@ -889,7 +1153,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TopicInfo.html",
-          "hash": "h/nyZ4mGLjiR1M6I3nGw9w=="
+          "hash": "TmYFMwdC30TTyCyWyOgyBsuEeecNX0D57ciuHaVaNX8="
         }
       },
       "is_incremental": false,
@@ -901,7 +1165,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TopicMessage.html",
-          "hash": "sG6SOPJqnrPJcewG3qlwxw=="
+          "hash": "25eh4Imwu6b+4qbHvE2c7g0GH6MCnF7tPwDOpjEO1rM="
         }
       },
       "is_incremental": false,
@@ -913,7 +1177,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TransactionException.html",
-          "hash": "gxI0r12F5zIAWJLoRla49A=="
+          "hash": "9VsRpRY8pKfKAtvjMajIOyjH45AJ9saOCOvOaFGEIDo="
         }
       },
       "is_incremental": false,
@@ -925,7 +1189,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TransactionReceipt.html",
-          "hash": "dBn8NxzfBx17WYPaF55rpg=="
+          "hash": "5bOYQZR71+fZ5U7ac2BOu3NO2DpZ5D6i9tdc1hdzu+k="
         }
       },
       "is_incremental": false,
@@ -937,7 +1201,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TransactionRecord.html",
-          "hash": "wCFYgbfBuLvFdn8YzCbk9w=="
+          "hash": "hWBAWdP+XKVwr9ABmmbjW+NyjsCHZMHKUcpcTigABS4="
         }
       },
       "is_incremental": false,
@@ -949,7 +1213,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TransferParams.html",
-          "hash": "Sd+YVmImyUAXQLZav4g5qA=="
+          "hash": "+x+gpXNVRFxZypWLwGiUVs6S4GlK9ZEa8Q3c6g+zSKo="
         }
       },
       "is_incremental": false,
@@ -961,7 +1225,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.TxId.html",
-          "hash": "3K7a4EOE3buXvC514zQuCQ=="
+          "hash": "QMoa/EzZWrD1CxyEfHOnYYqY0szG/OKlrSSX6t2m+7Q="
         }
       },
       "is_incremental": false,
@@ -973,7 +1237,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.UpdateAccountParams.html",
-          "hash": "yFLUAUWIdwsRGHxOVcxhBw=="
+          "hash": "/NeTyjms/1QlVbOG+lVROJzxfkoG1zpQoy8wCsFEvfI="
         }
       },
       "is_incremental": false,
@@ -985,7 +1249,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.UpdateContractParams.html",
-          "hash": "UEA9mBpVNCVJpvSmpM8pCA=="
+          "hash": "Rru22XXPwGAqY5+bC0fUAF10jN8bHPJiw5BZRxs7T5o="
         }
       },
       "is_incremental": false,
@@ -997,7 +1261,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.UpdateFileParams.html",
-          "hash": "BHaALrlLa7bYp0owZY7uww=="
+          "hash": "FtgFubHWP2ncdi3EjwBUQ0kPyMIoYgANTzJCgsp8fHo="
         }
       },
       "is_incremental": false,
@@ -1009,7 +1273,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.UpdateTokenParams.html",
-          "hash": "rrBW0c7TC0mc0wR5sEyBXA=="
+          "hash": "B1DGEFSBckoIjisbDKnisK9prbQZH5DDg/M77NDCmTY="
         }
       },
       "is_incremental": false,
@@ -1021,7 +1285,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.UpdateTopicParams.html",
-          "hash": "OtQd5eohroYXAuzTfWu1Dw=="
+          "hash": "pxOY0Rhm0IwUrtkYVo8iXJHd7+p+Rf0f0unZ6XPbaBU="
         }
       },
       "is_incremental": false,
@@ -1033,7 +1297,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.VersionInfo.html",
-          "hash": "gRR51eIXfrSzc2fXT67fJg=="
+          "hash": "tZwuH9NchiZhOfDyGlRTNpFFZJNoQukw4bvSQFobFK0="
         }
       },
       "is_incremental": false,
@@ -1045,7 +1309,7 @@
       "output": {
         ".html": {
           "relative_path": "api/Hashgraph.html",
-          "hash": "hUFfSHNM67VZAz1XjI9pkg=="
+          "hash": "YpcQalK/dj+C44kEVKZ71FojyX3SNLMEXpf1Bx+F/9U="
         }
       },
       "is_incremental": false,
@@ -1057,7 +1321,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "n7eACRJWu/tOprvJqV+mGQ=="
+          "hash": "D6mZST2N07wkN2m7X0tWzpwyoehGcIeXT0z2HXkfENM="
         }
       },
       "is_incremental": false,
@@ -1080,7 +1344,7 @@
       "output": {
         ".html": {
           "relative_path": "toc.html",
-          "hash": "NyIwaE2r9QlHBLC/5l9Cvw=="
+          "hash": "n8yYT4pul0KmW9aQEmiZG0dmOyNjTVOgpOdLGJ+TpjQ="
         }
       },
       "is_incremental": false,
@@ -1092,7 +1356,7 @@
       "output": {
         ".html": {
           "relative_path": "tutorials/concepts.html",
-          "hash": "rIpF8lxkN66vKh8ibTgxLQ=="
+          "hash": "rHbxkbfCAs9VxQx32SbAw6LNjrtVcnVnoXbcNyxhfr8="
         }
       },
       "is_incremental": false,
@@ -1104,7 +1368,7 @@
       "output": {
         ".html": {
           "relative_path": "tutorials/crypto/balance.html",
-          "hash": "UrXS0a3jDGo5TZBP7FH2fA=="
+          "hash": "v452oK8EADM9PDEr5RCL7ix4emV1h2AIzySg0BaNuMU="
         }
       },
       "is_incremental": false,
@@ -1116,7 +1380,19 @@
       "output": {
         ".html": {
           "relative_path": "tutorials/crypto/create.html",
-          "hash": "ISLvJgcc347XecFhAt5ifw=="
+          "hash": "p2bCrKXLq9kRE+vKAuAqFNCbTr6H1FZosIFu2dMm6Ho="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/crypto/delete.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/crypto/delete.html",
+          "hash": "MgLM5Uqrdnc2IyBhPhfWG8ZbSE/BZ67sK6AEyfRL2jE="
         }
       },
       "is_incremental": false,
@@ -1128,7 +1404,7 @@
       "output": {
         ".html": {
           "relative_path": "tutorials/crypto/info.html",
-          "hash": "M9yBlSlsL6tJhSbE8qxERA=="
+          "hash": "/okEL9T/kYn51Kn1RncWGDFz35DsSaXx2G5LV9Xz5GQ="
         }
       },
       "is_incremental": false,
@@ -1140,7 +1416,19 @@
       "output": {
         ".html": {
           "relative_path": "tutorials/crypto/transfer.html",
-          "hash": "6bk+xOnDmR1iWoE8cirREA=="
+          "hash": "JiCG2noPBHziuT2hpUloYBDurPMF3tCOcd1xD/hTiBc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/crypto/update.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/crypto/update.html",
+          "hash": "ZL35mTPhs3V5HP/7cG/rcvI42i7ii7Ium5Mz/L1ghpY="
         }
       },
       "is_incremental": false,
@@ -1152,7 +1440,7 @@
       "output": {
         ".html": {
           "relative_path": "tutorials/file/getfilecontent.html",
-          "hash": "r0iA3f2UtPXsPsGt+XZvMg=="
+          "hash": "D8C12wz9xW9KckQ0TPwvq9eE68/E4hH42mjjjRshdMQ="
         }
       },
       "is_incremental": false,
@@ -1164,7 +1452,91 @@
       "output": {
         ".html": {
           "relative_path": "tutorials/index.html",
-          "hash": "x14r2o652dq6C8833WpNlw=="
+          "hash": "EMnZLZ9ij2iMyift93xl6MHmktOVJWAwfv3x9IsQ18Y="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/misc/book.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/misc/book.html",
+          "hash": "asepSCd6tCW3yTME/U0w3dXCQH+8hY5R0cY2hifCmME="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/misc/fees.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/misc/fees.html",
+          "hash": "TqRw+UAkPw0wFuNHUBnXoTh3TLIi1ny1sadXvE3Gbgo="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/misc/info.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/misc/info.html",
+          "hash": "f1L8BEobT4LAesKGZIDPJLsdcfpIAIelLAyhsjfMpyM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/misc/rate.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/misc/rate.html",
+          "hash": "/v5FD93z5gJ5KDdxWvkqIgVCrfF2c+5KB/+qsROzcQk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/misc/suspend.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/misc/suspend.html",
+          "hash": "l3w/TzmUJcfBR8FIrujcuNDZfyaq71ZtTK35UXUIUGA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/misc/timing.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/misc/timing.html",
+          "hash": "CQ+5Ig7EgAeX85jhl6lrAjillq3v/q/FBxsgP3VYWgc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "tutorials/misc/unsafe.md",
+      "output": {
+        ".html": {
+          "relative_path": "tutorials/misc/unsafe.html",
+          "hash": "lpxw9ahgOjdjLJ3eZz+oxTnx5KOxXqpC6CJd8o1zpPY="
         }
       },
       "is_incremental": false,
@@ -1176,7 +1548,7 @@
       "output": {
         ".html": {
           "relative_path": "tutorials/toc.html",
-          "hash": "8hbjLE+G/VPscyJOBunr4w=="
+          "hash": "SaQEa5U0fylYYUMpDPbbiN1rO3dy2XFIyLiv2JzYpg8="
         }
       },
       "is_incremental": false,
@@ -1197,13 +1569,13 @@
         "ConceptualDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 8,
+          "total_file_count": 17,
           "skipped_file_count": 0
         },
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": false,
           "incrementalPhase": "build",
-          "total_file_count": 79,
+          "total_file_count": 101,
           "skipped_file_count": 0
         },
         "ResourceDocumentProcessor": {

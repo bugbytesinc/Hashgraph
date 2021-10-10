@@ -8,7 +8,7 @@
     <title>Concepts | Hashgraph </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Concepts | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,9 +80,9 @@
 <h2 id="payer">Payer</h2>
 <p>Whereas querying the Hedera network for balances is presently free other actions, particularly those changing network state, require the payment of a small fee to execute.  The .NET library refers to the account paying these transaction fees as the <strong>Payer</strong>.  The payer consists of two pieces of information, the <em>Account</em> identifying the payer, and a <em>Signatory</em> authorizing the spending of funds from the account.</p>
 <h2 id="signatory">Signatory</h2>
-<p>The <strong>Signatory</strong> is a private key, or callback method that can sign a transaction.  Typically, a signatory is an account holder’s private key.  The .NET framework will accept Ed25519 keys as signatories and use them to sign transactions.  It also accepts callback functions for advanced scenarios such as distributed cooperative systems coordinating the signatures of a sigle transaction.</p>
+<p>The <strong>Signatory</strong> is a private key, or callback method that can sign a transaction.  Typically, a signatory is an account holder’s private key.  The .NET framework will accept Ed25519 keys as signatories and use them to sign transactions.  It also accepts callback functions for advanced scenarios such as distributed cooperative systems coordinating the signatures of a single transaction.</p>
 <h2 id="endorsement">Endorsement</h2>
-<p>Most accounts are secured by a single private Ed25519 key.  The hedera network never sees these private keys but has been given the public key corresponding to each account's private key during creation.  Accounts are not the only thing protected by keys in the hedera network.  Contracts, Topics and Tokens can be administered (modified) by parties holding administrative keys assigned to these assets.  For example, when creating a Token, there is an opportunity to provide a public key enabling access to various administrative functions against the token.  The .NET SDK provides the Endorsement object to hold this public key value.</p>
+<p>Most accounts are secured by a single private Ed25519 key.  The Hedera network never sees these private keys but has been given the public key corresponding to each account's private key during creation.  Accounts are not the only thing protected by keys in the Hedera network.  Contracts, Topics and Tokens can be administered (modified) by parties holding administrative keys assigned to these assets.  For example, when creating a Token, there is an opportunity to provide a public key enabling access to various administrative functions against the token.  The .NET SDK provides the Endorsement object to hold this public key value.</p>
 </article>
           </div>
           
@@ -91,7 +91,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/docs/tutorials/concepts.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/docs/tutorials/concepts.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class TransactionReceipt
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,13 +81,19 @@ has been reached for a network request.</p>
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">TransactionReceipt</span></div>
+      <div class="level2"><a class="xref" href="Hashgraph.AssetMintReceipt.html">AssetMintReceipt</a></div>
       <div class="level2"><a class="xref" href="Hashgraph.CreateAccountReceipt.html">CreateAccountReceipt</a></div>
       <div class="level2"><a class="xref" href="Hashgraph.CreateContractReceipt.html">CreateContractReceipt</a></div>
       <div class="level2"><a class="xref" href="Hashgraph.CreateTokenReceipt.html">CreateTokenReceipt</a></div>
       <div class="level2"><a class="xref" href="Hashgraph.CreateTopicReceipt.html">CreateTopicReceipt</a></div>
       <div class="level2"><a class="xref" href="Hashgraph.FileReceipt.html">FileReceipt</a></div>
       <div class="level2"><a class="xref" href="Hashgraph.SubmitMessageReceipt.html">SubmitMessageReceipt</a></div>
+      <div class="level2"><a class="xref" href="Hashgraph.TokenReceipt.html">TokenReceipt</a></div>
       <div class="level2"><a class="xref" href="Hashgraph.TransactionRecord.html">TransactionRecord</a></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TransactionReceipt.html">TransactionReceipt</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -117,16 +123,16 @@ has been reached for a network request.</p>
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
   <h5 id="Hashgraph_TransactionReceipt_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class TransactionReceipt</code></pre>
+    <pre><code class="lang-csharp hljs">public class TransactionReceipt : IEquatable&lt;TransactionReceipt&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt_CurrentExchangeRate.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.CurrentExchangeRate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionReceipt_CurrentExchangeRate.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.CurrentExchangeRate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L27">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionReceipt.cs/#L31">View Source</a>
   </span>
   <a id="Hashgraph_TransactionReceipt_CurrentExchangeRate_" data-uid="Hashgraph.TransactionReceipt.CurrentExchangeRate*"></a>
   <h4 id="Hashgraph_TransactionReceipt_CurrentExchangeRate" data-uid="Hashgraph.TransactionReceipt.CurrentExchangeRate">CurrentExchangeRate</h4>
@@ -159,10 +165,10 @@ returned from the network.  This value can be <pre><code>null</code></pre>.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt_Id.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.Id%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionReceipt_Id.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.Id%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L14">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionReceipt.cs/#L18">View Source</a>
   </span>
   <a id="Hashgraph_TransactionReceipt_Id_" data-uid="Hashgraph.TransactionReceipt.Id*"></a>
   <h4 id="Hashgraph_TransactionReceipt_Id" data-uid="Hashgraph.TransactionReceipt.Id">Id</h4>
@@ -190,10 +196,10 @@ returned from the network.  This value can be <pre><code>null</code></pre>.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt_NextExchangeRate.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.NextExchangeRate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionReceipt_NextExchangeRate.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.NextExchangeRate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L36">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionReceipt.cs/#L40">View Source</a>
   </span>
   <a id="Hashgraph_TransactionReceipt_NextExchangeRate_" data-uid="Hashgraph.TransactionReceipt.NextExchangeRate*"></a>
   <h4 id="Hashgraph_TransactionReceipt_NextExchangeRate" data-uid="Hashgraph.TransactionReceipt.NextExchangeRate">NextExchangeRate</h4>
@@ -226,10 +232,46 @@ returned from the network.  This value can be <pre><code>null</code></pre>.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt_Status.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.Status%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionReceipt_Pending.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.Pending%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L18">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionReceipt.cs/#L49">View Source</a>
+  </span>
+  <a id="Hashgraph_TransactionReceipt_Pending_" data-uid="Hashgraph.TransactionReceipt.Pending*"></a>
+  <h4 id="Hashgraph_TransactionReceipt_Pending" data-uid="Hashgraph.TransactionReceipt.Pending">Pending</h4>
+  <div class="markdown level1 summary"><p>If this transaction resulted in the pending (to be scheduled)
+transaction retained by the network, this property will contain
+the identifier of the pending transaction record.  This includes
+the identifier of the pending transaction as well as the bytes
+representing the transaction which must be signed by the
+remaining parties.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PendingTransaction Pending { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.PendingTransaction.html">PendingTransaction</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionReceipt_Status.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt.Status%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionReceipt.cs/#L22">View Source</a>
   </span>
   <a id="Hashgraph_TransactionReceipt_Status_" data-uid="Hashgraph.TransactionReceipt.Status*"></a>
   <h4 id="Hashgraph_TransactionReceipt_Status" data-uid="Hashgraph.TransactionReceipt.Status">Status</h4>
@@ -255,6 +297,10 @@ returned from the network.  This value can be <pre><code>null</code></pre>.</p>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
 </article>
           </div>
           
@@ -263,10 +309,10 @@ returned from the network.  This value can be <pre><code>null</code></pre>.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TransactionReceipt.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TransactionReceipt.md&amp;value=---%0Auid%3A%20Hashgraph.TransactionReceipt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/TransactionReceipt.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/TransactionReceipt.cs/#L13" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

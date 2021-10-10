@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace Hashgraph
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -91,6 +91,36 @@ the public key value to use in smart contract interaction.</p>
       <h4><a class="xref" href="Hashgraph.AppendFileParams.html">AppendFileParams</a></h4>
       <section><p>File content append parameters.</p>
 </section>
+      <h4><a class="xref" href="Hashgraph.Asset.html">Asset</a></h4>
+      <section><p>Class representing an asset instance.  An asset instance is an
+non fungible token address in addition to an instance serial number.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.AssetInfo.html">AssetInfo</a></h4>
+      <section><p>The information returned from the GetTokenInfo Client
+method call.  It represents the details concerning a
+Hedera Fungable Token.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.AssetMintReceipt.html">AssetMintReceipt</a></h4>
+      <section><p>A transaction receipt containing information regarding
+new token coin balance, typically returned from methods
+that can affect a change on the total circulation supply.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.AssetMintRecord.html">AssetMintRecord</a></h4>
+      <section><p>A transaction record containing information regarding
+new token coin balance, typically returned from methods
+that can affect a change on the total circulation supply.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.AssetRoyalty.html">AssetRoyalty</a></h4>
+      <section><p>Represents a Royalty type computed from value
+given in exchange for receiving an Asset (NFT).</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.AssetTransfer.html">AssetTransfer</a></h4>
+      <section><p>Represents a token transfer (Token, Account, Amount)</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.Association.html">Association</a></h4>
+      <section><p>Identifies which assets/tokens and accounts were associated
+as the result of a transaciton.</p>
+</section>
       <h4><a class="xref" href="Hashgraph.CallContractParams.html">CallContractParams</a></h4>
       <section><p>Provides the details of the request to the client when invoking a contract function.</p>
 </section>
@@ -112,6 +142,9 @@ timeout of the transaction request occurred.</p>
       <section><p>Provides services to decode smart contract ABI data into .net primitives.
 Typically represents data returned from a smart contract invocation.</p>
 </section>
+      <h4><a class="xref" href="Hashgraph.ContractEvent.html">ContractEvent</a></h4>
+      <section><p>Represents the log events returned by a contract function call.</p>
+</section>
       <h4><a class="xref" href="Hashgraph.ContractException.html">ContractException</a></h4>
       <section><p>Represents an error with a contract query that passed the gateway node
 pre-check and was processed by the gossip node but did not succeed.  It
@@ -132,6 +165,9 @@ the public key value to use in smart contract interaction.</p>
       <h4><a class="xref" href="Hashgraph.CreateAccountRecord.html">CreateAccountRecord</a></h4>
       <section><p>A transaction record containing information concerning the newly created account.</p>
 </section>
+      <h4><a class="xref" href="Hashgraph.CreateAssetParams.html">CreateAssetParams</a></h4>
+      <section><p>Asset Creation Parameters.</p>
+</section>
       <h4><a class="xref" href="Hashgraph.CreateContractParams.html">CreateContractParams</a></h4>
       <section><p>Smart Contract creation properties.</p>
 </section>
@@ -145,7 +181,8 @@ the public key value to use in smart contract interaction.</p>
       <section><p>File creation parameters.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.CreateTokenParams.html">CreateTokenParams</a></h4>
-      <section></section>
+      <section><p>Token Creation Parameters.</p>
+</section>
       <h4><a class="xref" href="Hashgraph.CreateTokenReceipt.html">CreateTokenReceipt</a></h4>
       <section><p>Receipt produced from creating a new token.</p>
 </section>
@@ -161,6 +198,8 @@ the public key value to use in smart contract interaction.</p>
       <h4><a class="xref" href="Hashgraph.CreateTopicRecord.html">CreateTopicRecord</a></h4>
       <section><p>Record produced from creating a new contract.</p>
 </section>
+      <h4><a class="xref" href="Hashgraph.CryptoBalance.html">CryptoBalance</a></h4>
+      <section></section>
       <h4><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></h4>
       <section><p>Represents the key signing requirements for various
 transactions available within the network.</p>
@@ -178,6 +217,10 @@ denominator.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.FileRecord.html">FileRecord</a></h4>
       <section><p>A transaction record containing information concerning the newly created file.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.FixedRoyalty.html">FixedRoyalty</a></h4>
+      <section><p>The definition of a single Fixed Royalty applied to
+the transaction as a whole when transferring an asset or token.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.Gateway.html">Gateway</a></h4>
       <section><p>Class representing the Network Address and Node
@@ -199,12 +242,36 @@ segment correlates with.</p>
       <section><p>Represents an unexpected termination or exception received
 from a mirror stream.</p>
 </section>
+      <h4><a class="xref" href="Hashgraph.PendingParams.html">PendingParams</a></h4>
+      <section><p>Pending (Scheduled) Transaction Parameters.  Used for creating
+a <a class="xref" href="Hashgraph.Signatory.html">Signatory</a> signaling that the transaction should
+be accepted but not immediately executed.  It includes optional
+details descrbing the details of how the transaction is to be
+scheduled for execution.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.PendingTransaction.html">PendingTransaction</a></h4>
+      <section><p>Information identifying a pending transaction, includes the
+address of the pending transaction record, plus the transaction
+id that will exist representing the executed transaction if it
+is ultimately executed (and not timed out or delted).</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.PendingTransactionInfo.html">PendingTransactionInfo</a></h4>
+      <section><p>The information returned from the GetPendingTransactionInfo
+Client  method call.  It represents the details concerning a
+pending (scheduled, not yet executed) transaction held by the
+network awaiting signatures.</p>
+</section>
       <h4><a class="xref" href="Hashgraph.PrecheckException.html">PrecheckException</a></h4>
       <section><p>Represents the condition where a submitted transaction
 failed the pre-check validation by the network gateway node.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.QueryContractParams.html">QueryContractParams</a></h4>
       <section><p>Provides the details of the request to the client when invoking a contract local query function.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.RoyaltyTransfer.html">RoyaltyTransfer</a></h4>
+      <section><p>Represents a token or hBar transfer
+(Token, Payer, Amount, Receiver) fufilling a royalty
+payment for the transfer of a token or asset.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.SemanticVersion.html">SemanticVersion</a></h4>
       <section><p>Represents a Semantic Version Number (major, minor, patch)</p>
@@ -238,8 +305,24 @@ including the amount of coins held, KYC status and Freeze status.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.TokenInfo.html">TokenInfo</a></h4>
       <section><p>The information returned from the GetTokenInfo Client
-method call.  It represents the details concerning a
-Hedera Fungable Token.</p>
+method call.  It represents the details concerning
+Tokens and Assets.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenReceipt.html">TokenReceipt</a></h4>
+      <section><p>A transaction receipt containing information regarding
+new token coin balance, typically returned from methods
+that can affect a change on the total circulation supply.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenRecord.html">TokenRecord</a></h4>
+      <section><p>A transaction record containing information regarding
+new token coin balance, typically returned from methods
+that can affect a change on the total circulation supply.</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenRoyalty.html">TokenRoyalty</a></h4>
+      <section><p>The definition of a Royalty computed from the amount of
+Fungible token exchanged, can be in the form as a deduction
+of the token echanged, or an exise amount taken from the
+sender of the fungible token.</p>
 </section>
       <h4><a class="xref" href="Hashgraph.TokenTransfer.html">TokenTransfer</a></h4>
       <section><p>Represents a token transfer (Token, Account, Amount)</p>
@@ -343,6 +426,10 @@ collected from the signatories.</p>
       <h4><a class="xref" href="Hashgraph.IMirrorContext.html">IMirrorContext</a></h4>
       <section><p>A <a class="xref" href="Hashgraph.MirrorClient.html">MirrorClient</a> instance’s configuration.</p>
 </section>
+      <h4><a class="xref" href="Hashgraph.IRoyalty.html">IRoyalty</a></h4>
+      <section><p>Represents a royalty (fee or royalty) associated
+with transfers of a token or asset.</p>
+</section>
     <h3 id="enums">Enums
   </h3>
       <h4><a class="xref" href="Hashgraph.KeyType.html">KeyType</a></h4>
@@ -365,11 +452,18 @@ the callback form.</p>
       <h4><a class="xref" href="Hashgraph.ResponseCode.html">ResponseCode</a></h4>
       <section><p>Pre-Check and Receipt Response Codes - 1to1 mapping with protobuf ResponseCodeEnum</p>
 </section>
+      <h4><a class="xref" href="Hashgraph.RoyaltyType.html">RoyaltyType</a></h4>
+      <section><p>The known types of Royalties applied to token and
+asset transfers.</p>
+</section>
       <h4><a class="xref" href="Hashgraph.TokenKycStatus.html">TokenKycStatus</a></h4>
       <section><p>KYC Status of a Token</p>
 </section>
       <h4><a class="xref" href="Hashgraph.TokenTradableStatus.html">TokenTradableStatus</a></h4>
       <section><p>The Frozen Status of a Token</p>
+</section>
+      <h4><a class="xref" href="Hashgraph.TokenType.html">TokenType</a></h4>
+      <section><p>The type of token.</p>
 </section>
 </article>
           </div>

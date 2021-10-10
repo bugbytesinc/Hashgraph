@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class TokenInfo
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -74,14 +74,18 @@
   <h1 id="Hashgraph_TokenInfo" data-uid="Hashgraph.TokenInfo" class="text-break">Class TokenInfo
   </h1>
   <div class="markdown level0 summary"><p>The information returned from the GetTokenInfo Client
-method call.  It represents the details concerning a
-Hedera Fungable Token.</p>
+method call.  It represents the details concerning
+Tokens and Assets.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">TokenInfo</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TokenInfo.html">TokenInfo</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -111,16 +115,594 @@ Hedera Fungable Token.</p>
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
   <h5 id="Hashgraph_TokenInfo_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class TokenInfo</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class TokenInfo : IEquatable&lt;TokenInfo&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenInfo_Token.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Token%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Administrator.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Administrator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenInfo.cs/#L16">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L52">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Administrator_" data-uid="Hashgraph.TokenInfo.Administrator*"></a>
+  <h4 id="Hashgraph_TokenInfo_Administrator" data-uid="Hashgraph.TokenInfo.Administrator">Administrator</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions modifying this token's properties.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement Administrator { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Ceiling.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Ceiling%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L48">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Ceiling_" data-uid="Hashgraph.TokenInfo.Ceiling*"></a>
+  <h4 id="Hashgraph_TokenInfo_Ceiling" data-uid="Hashgraph.TokenInfo.Ceiling">Ceiling</h4>
+  <div class="markdown level1 summary"><p>The maximum number of tokens allowed in circulation at a given time.
+The value of 0 is unbounded.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Ceiling { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Circulation.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Circulation%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L39">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Circulation_" data-uid="Hashgraph.TokenInfo.Circulation*"></a>
+  <h4 id="Hashgraph_TokenInfo_Circulation" data-uid="Hashgraph.TokenInfo.Circulation">Circulation</h4>
+  <div class="markdown level1 summary"><p>The total balance of tokens in all accounts (the whole denomination).</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ulong Circulation { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint64">UInt64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_ConfiscateEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.ConfiscateEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L67">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_ConfiscateEndorsement_" data-uid="Hashgraph.TokenInfo.ConfiscateEndorsement*"></a>
+  <h4 id="Hashgraph_TokenInfo_ConfiscateEndorsement" data-uid="Hashgraph.TokenInfo.ConfiscateEndorsement">ConfiscateEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transaction that completely remove tokens
+from an crypto address.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement ConfiscateEndorsement { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Decimals.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Decimals%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L43">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Decimals_" data-uid="Hashgraph.TokenInfo.Decimals*"></a>
+  <h4 id="Hashgraph_TokenInfo_Decimals" data-uid="Hashgraph.TokenInfo.Decimals">Decimals</h4>
+  <div class="markdown level1 summary"><p>The number of decimal places which each token may be subdivided.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public uint Decimals { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Deleted.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Deleted%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L119">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Deleted_" data-uid="Hashgraph.TokenInfo.Deleted*"></a>
+  <h4 id="Hashgraph_TokenInfo_Deleted" data-uid="Hashgraph.TokenInfo.Deleted">Deleted</h4>
+  <div class="markdown level1 summary"><p>Flag indicating the token has been deleted.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Deleted { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Expiration.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Expiration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L95">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Expiration_" data-uid="Hashgraph.TokenInfo.Expiration*"></a>
+  <h4 id="Hashgraph_TokenInfo_Expiration" data-uid="Hashgraph.TokenInfo.Expiration">Expiration</h4>
+  <div class="markdown level1 summary"><p>Expiration date for the token.  Will renew as determined by the
+renew period and balance of auto renew account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DateTime Expiration { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_GrantKycEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.GrantKycEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L57">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_GrantKycEndorsement_" data-uid="Hashgraph.TokenInfo.GrantKycEndorsement*"></a>
+  <h4 id="Hashgraph_TokenInfo_GrantKycEndorsement" data-uid="Hashgraph.TokenInfo.GrantKycEndorsement">GrantKycEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions updating the grant or revoke
+KYC status of an account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement GrantKycEndorsement { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_KycStatus.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.KycStatus%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L85">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_KycStatus_" data-uid="Hashgraph.TokenInfo.KycStatus*"></a>
+  <h4 id="Hashgraph_TokenInfo_KycStatus" data-uid="Hashgraph.TokenInfo.KycStatus">KycStatus</h4>
+  <div class="markdown level1 summary"><p>The current default KYC status of the token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TokenKycStatus KycStatus { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.TokenKycStatus.html">TokenKycStatus</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Memo.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Memo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L123">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Memo_" data-uid="Hashgraph.TokenInfo.Memo*"></a>
+  <h4 id="Hashgraph_TokenInfo_Memo" data-uid="Hashgraph.TokenInfo.Memo">Memo</h4>
+  <div class="markdown level1 summary"><p>The memo associated with the token instance.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Memo { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Name.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L31">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Name_" data-uid="Hashgraph.TokenInfo.Name*"></a>
+  <h4 id="Hashgraph_TokenInfo_Name" data-uid="Hashgraph.TokenInfo.Name">Name</h4>
+  <div class="markdown level1 summary"><p>Name of this token</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Name { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_RenewAccount.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.RenewAccount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L115">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_RenewAccount_" data-uid="Hashgraph.TokenInfo.RenewAccount*"></a>
+  <h4 id="Hashgraph_TokenInfo_RenewAccount" data-uid="Hashgraph.TokenInfo.RenewAccount">RenewAccount</h4>
+  <div class="markdown level1 summary"><p>Optional address of the account supporting the auto renewal of
+the token at expiration time.  The topic lifetime will be
+extended by the RenewPeriod at expiration time if this account
+contains sufficient funds.  The private key associated with
+this account must sign the transaction if RenewAccount is
+specified.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address RenewAccount { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_TokenInfo_RenewAccount_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If specified, an Administrator Endorsement must also be specified.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_RenewPeriod.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.RenewPeriod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L103">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_RenewPeriod_" data-uid="Hashgraph.TokenInfo.RenewPeriod*"></a>
+  <h4 id="Hashgraph_TokenInfo_RenewPeriod" data-uid="Hashgraph.TokenInfo.RenewPeriod">RenewPeriod</h4>
+  <div class="markdown level1 summary"><p>Interval of the topic and auto-renewal period. If
+the associated renewal account does not have sufficient funds to
+renew at the expiration time, it will be renewed for a period
+of time the remaining funds can support.  If no funds remain, the
+topic instance will be deleted.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TimeSpan? RenewPeriod { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Royalties.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Royalties%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L90">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Royalties_" data-uid="Hashgraph.TokenInfo.Royalties*"></a>
+  <h4 id="Hashgraph_TokenInfo_Royalties" data-uid="Hashgraph.TokenInfo.Royalties">Royalties</h4>
+  <div class="markdown level1 summary"><p>The list of fixed royalties assessed on transactions
+by the network when transferring this token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ReadOnlyCollection&lt;IRoyalty&gt; Royalties { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.objectmodel.readonlycollection-1">ReadOnlyCollection</a>&lt;<a class="xref" href="Hashgraph.IRoyalty.html">IRoyalty</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_RoyaltiesEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.RoyaltiesEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L77">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_RoyaltiesEndorsement_" data-uid="Hashgraph.TokenInfo.RoyaltiesEndorsement*"></a>
+  <h4 id="Hashgraph_TokenInfo_RoyaltiesEndorsement" data-uid="Hashgraph.TokenInfo.RoyaltiesEndorsement">RoyaltiesEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions updating the royalties
+(custom transfer fees) associated with this token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement RoyaltiesEndorsement { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_SupplyEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.SupplyEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L72">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_SupplyEndorsement_" data-uid="Hashgraph.TokenInfo.SupplyEndorsement*"></a>
+  <h4 id="Hashgraph_TokenInfo_SupplyEndorsement" data-uid="Hashgraph.TokenInfo.SupplyEndorsement">SupplyEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions for minting or unminting
+tokens in the treasury account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement SupplyEndorsement { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_SuspendEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.SuspendEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L62">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_SuspendEndorsement_" data-uid="Hashgraph.TokenInfo.SuspendEndorsement*"></a>
+  <h4 id="Hashgraph_TokenInfo_SuspendEndorsement" data-uid="Hashgraph.TokenInfo.SuspendEndorsement">SuspendEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions for freezing or unfreezing an
+account's ability to transfer tokens.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement SuspendEndorsement { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Symbol.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Symbol%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L27">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Symbol_" data-uid="Hashgraph.TokenInfo.Symbol*"></a>
+  <h4 id="Hashgraph_TokenInfo_Symbol" data-uid="Hashgraph.TokenInfo.Symbol">Symbol</h4>
+  <div class="markdown level1 summary"><p>The string symbol representing this token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Symbol { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Token.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Token%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L18">View Source</a>
   </span>
   <a id="Hashgraph_TokenInfo_Token_" data-uid="Hashgraph.TokenInfo.Token*"></a>
   <h4 id="Hashgraph_TokenInfo_Token" data-uid="Hashgraph.TokenInfo.Token">Token</h4>
@@ -146,6 +728,104 @@ Hedera Fungable Token.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_TradableStatus.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.TradableStatus%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L81">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_TradableStatus_" data-uid="Hashgraph.TokenInfo.TradableStatus*"></a>
+  <h4 id="Hashgraph_TokenInfo_TradableStatus" data-uid="Hashgraph.TokenInfo.TradableStatus">TradableStatus</h4>
+  <div class="markdown level1 summary"><p>The current default suspended/frozen status of the token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TokenTradableStatus TradableStatus { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.TokenTradableStatus.html">TokenTradableStatus</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Treasury.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Treasury%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L35">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Treasury_" data-uid="Hashgraph.TokenInfo.Treasury*"></a>
+  <h4 id="Hashgraph_TokenInfo_Treasury" data-uid="Hashgraph.TokenInfo.Treasury">Treasury</h4>
+  <div class="markdown level1 summary"><p>The treasury account holding uncirculated tokens.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address Treasury { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo_Type.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo.Type%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L23">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenInfo_Type_" data-uid="Hashgraph.TokenInfo.Type*"></a>
+  <h4 id="Hashgraph_TokenInfo_Type" data-uid="Hashgraph.TokenInfo.Type">Type</h4>
+  <div class="markdown level1 summary"><p>The type of token this represents, fungible
+token or Asset (NFT).</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TokenType Type { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.TokenType.html">TokenType</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
 </article>
           </div>
           
@@ -154,10 +834,10 @@ Hedera Fungable Token.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenInfo.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenInfo.md&amp;value=---%0Auid%3A%20Hashgraph.TokenInfo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenInfo.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenInfo.cs/#L13" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

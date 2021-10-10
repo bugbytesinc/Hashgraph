@@ -1,0 +1,737 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class CreateAssetParams
+   | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class CreateAssetParams
+   | Hashgraph ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="Hashgraph.CreateAssetParams">
+  
+  
+  <h1 id="Hashgraph_CreateAssetParams" data-uid="Hashgraph.CreateAssetParams" class="text-break">Class CreateAssetParams
+  </h1>
+  <div class="markdown level0 summary"><p>Asset Creation Parameters.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">CreateAssetParams</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="Hashgraph.html">Hashgraph</a></h6>
+  <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
+  <h5 id="Hashgraph_CreateAssetParams_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class CreateAssetParams</code></pre>
+  </div>
+  <h5 id="Hashgraph_CreateAssetParams_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The Name and Symbol properties must be unique within the network.
+If there are other assets defined with the same name or symbol, respectively</p>
+<pre><code>TOKEN_SYMBOL_ALREADY_IN_USE</code></pre> and <pre><code>TOKEN_NAME_ALREADY_IN_USE</code></pre>
+<p>errors are returned.</p>
+<p>The specified Treasury Account is receiving the initial supply of assets as-well
+as the assets from Asset Mint operations when executed.  The balance of the treasury
+account is decreased when the Asset Burn operation is executed.</p>
+<p>The supply that is going to be put in circulation is going to be <pre><code>S*(10^D)</code></pre>,
+where <pre><code>S</code></pre> is initial supply and <pre><code>D</code></pre> is Decimals. The maximum supply
+a asset can have is <pre><code>S* (10^D) &lt; 2^63</code></pre>.</p>
+<p>The asset can be created as immutable if the <pre><code>Administrator</code></pre> endorsement is omitted
+or set to <pre><code>None</code></pre>.  In this case, the name, symbol, treasury, management keys, Expiration
+and renew properties cannot be updated. If a asset is created as immutable, any account is able to
+extend the expiration time by paying the fee.</p>
+</div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Administrator.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Administrator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L52">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Administrator_" data-uid="Hashgraph.CreateAssetParams.Administrator*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Administrator" data-uid="Hashgraph.CreateAssetParams.Administrator">Administrator</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions modifying this asset's properties.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement Administrator { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Ceiling.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Ceiling%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L44">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Ceiling_" data-uid="Hashgraph.CreateAssetParams.Ceiling*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Ceiling" data-uid="Hashgraph.CreateAssetParams.Ceiling">Ceiling</h4>
+  <div class="markdown level1 summary"><p>The maximum number of Assets allowed to be minted. If set to
+a value of zero or less, an infinite amount of assets can be minted.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Ceiling { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_ConfiscateEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.ConfiscateEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L67">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_ConfiscateEndorsement_" data-uid="Hashgraph.CreateAssetParams.ConfiscateEndorsement*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_ConfiscateEndorsement" data-uid="Hashgraph.CreateAssetParams.ConfiscateEndorsement">ConfiscateEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transaction that completely remove assets
+from an crypto address.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement ConfiscateEndorsement { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Expiration.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Expiration%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L95">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Expiration_" data-uid="Hashgraph.CreateAssetParams.Expiration*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Expiration" data-uid="Hashgraph.CreateAssetParams.Expiration">Expiration</h4>
+  <div class="markdown level1 summary"><p>Original expiration date for the asset, fees will be charged as appropriate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DateTime Expiration { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.datetime">DateTime</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_GrantKycEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.GrantKycEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L57">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_GrantKycEndorsement_" data-uid="Hashgraph.CreateAssetParams.GrantKycEndorsement*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_GrantKycEndorsement" data-uid="Hashgraph.CreateAssetParams.GrantKycEndorsement">GrantKycEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions updating the grant or revoke
+KYC status of an account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement GrantKycEndorsement { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_InitializeSuspended.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.InitializeSuspended%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L91">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_InitializeSuspended_" data-uid="Hashgraph.CreateAssetParams.InitializeSuspended*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_InitializeSuspended" data-uid="Hashgraph.CreateAssetParams.InitializeSuspended">InitializeSuspended</h4>
+  <div class="markdown level1 summary"><p>The default frozen setting for current and newly created accounts.  A value
+of <pre><code>true</code></pre> will default crypto account status of <pre><code>Frozen</code></pre>
+with relationship to this asset.  A value of <pre><code>false</code></pre> will default
+to an tradable/unfrozen relationship.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool InitializeSuspended { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Memo.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Memo%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L135">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Memo_" data-uid="Hashgraph.CreateAssetParams.Memo*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Memo" data-uid="Hashgraph.CreateAssetParams.Memo">Memo</h4>
+  <div class="markdown level1 summary"><p>Additional Short description of the asset, not checked for uniqueness.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Memo { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Name.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L35">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Name_" data-uid="Hashgraph.CreateAssetParams.Name*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Name" data-uid="Hashgraph.CreateAssetParams.Name">Name</h4>
+  <div class="markdown level1 summary"><p>Name of the asset, only ASCII characters are allowed, not required to be globally unique.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Name { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_RenewAccount.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.RenewAccount%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L115">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_RenewAccount_" data-uid="Hashgraph.CreateAssetParams.RenewAccount*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_RenewAccount" data-uid="Hashgraph.CreateAssetParams.RenewAccount">RenewAccount</h4>
+  <div class="markdown level1 summary"><p>Optional address of the account supporting the auto renewal of
+the asset at expiration time.  The topic lifetime will be
+extended by the RenewPeriod at expiration time if this account
+contains sufficient funds.  The private key associated with
+this account must sign the transaction if RenewAccount is
+specified.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address RenewAccount { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_CreateAssetParams_RenewAccount_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If specified, an Administrator Endorsement must also be specified.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_RenewPeriod.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.RenewPeriod%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L103">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_RenewPeriod_" data-uid="Hashgraph.CreateAssetParams.RenewPeriod*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_RenewPeriod" data-uid="Hashgraph.CreateAssetParams.RenewPeriod">RenewPeriod</h4>
+  <div class="markdown level1 summary"><p>Interval of the topic and auto-renewal period. If
+the associated renewal account does not have sufficient funds to
+renew at the expiration time, it will be renewed for a period
+of time the remaining funds can support.  If no funds remain, the
+topic instance will be deleted.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TimeSpan? RenewPeriod { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Royalties.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Royalties%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L84">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Royalties_" data-uid="Hashgraph.CreateAssetParams.Royalties*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Royalties" data-uid="Hashgraph.CreateAssetParams.Royalties">Royalties</h4>
+  <div class="markdown level1 summary"><p>The list of royalties applied to transactions
+transferring this asset.  If a royalty endorsement is not
+supplied upon creation, the royalties are imutable after
+creation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;IRoyalty&gt; Royalties { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="Hashgraph.IRoyalty.html">IRoyalty</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_RoyaltiesEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.RoyaltiesEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L77">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_RoyaltiesEndorsement_" data-uid="Hashgraph.CreateAssetParams.RoyaltiesEndorsement*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_RoyaltiesEndorsement" data-uid="Hashgraph.CreateAssetParams.RoyaltiesEndorsement">RoyaltiesEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions updating the royalty
+(custom transfer fees) associated with this token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement RoyaltiesEndorsement { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Signatory.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Signatory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L131">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Signatory_" data-uid="Hashgraph.CreateAssetParams.Signatory*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Signatory" data-uid="Hashgraph.CreateAssetParams.Signatory">Signatory</h4>
+  <div class="markdown level1 summary"><p>Additional private key, keys or signing callback method
+required to create to this asset.  Typically matches the
+Administrator, KycEndorsement, FreezeEndorsement and other
+listed endorsements associated with this asset.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Signatory Signatory { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Signatory.html">Signatory</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="Hashgraph_CreateAssetParams_Signatory_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Keys/callbacks added here will be combined with those already
+identified in the client object's context when signing this
+transaction to change the state of this account.  They will
+not be asked to sign transactions to retrieve the record
+if the &quot;WithRecord&quot; form of the method call is made.  The
+client will rely on the Signatory from the context to sign
+the transaction requesting the record.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_SupplyEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.SupplyEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L72">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_SupplyEndorsement_" data-uid="Hashgraph.CreateAssetParams.SupplyEndorsement*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_SupplyEndorsement" data-uid="Hashgraph.CreateAssetParams.SupplyEndorsement">SupplyEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions for minting or unminting
+assets in the treasury account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement SupplyEndorsement { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_SuspendEndorsement.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.SuspendEndorsement%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L62">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_SuspendEndorsement_" data-uid="Hashgraph.CreateAssetParams.SuspendEndorsement*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_SuspendEndorsement" data-uid="Hashgraph.CreateAssetParams.SuspendEndorsement">SuspendEndorsement</h4>
+  <div class="markdown level1 summary"><p>Administrator key for signing transactions for freezing or unfreezing an
+account's ability to transfer assets.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Endorsement SuspendEndorsement { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Endorsement.html">Endorsement</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Symbol.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Symbol%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L39">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Symbol_" data-uid="Hashgraph.CreateAssetParams.Symbol*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Symbol" data-uid="Hashgraph.CreateAssetParams.Symbol">Symbol</h4>
+  <div class="markdown level1 summary"><p>A string containing only upper case ASCII alpha characters identifying this asset.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Symbol { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams_Treasury.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams.Treasury%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L48">View Source</a>
+  </span>
+  <a id="Hashgraph_CreateAssetParams_Treasury_" data-uid="Hashgraph.CreateAssetParams.Treasury*"></a>
+  <h4 id="Hashgraph_CreateAssetParams_Treasury" data-uid="Hashgraph.CreateAssetParams.Treasury">Treasury</h4>
+  <div class="markdown level1 summary"><p>The treasury account receiving the Initial Circulation balance of assets.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Address Treasury { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.Address.html">Address</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateAssetParams.md&amp;value=---%0Auid%3A%20Hashgraph.CreateAssetParams%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Asset/CreateAssetParams.cs/#L30" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

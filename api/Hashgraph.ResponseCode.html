@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Enum ResponseCode
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -93,8 +93,23 @@
     <thead>
     <tbody>
       <tr>
+        <td id="Hashgraph_ResponseCode_AccountAmountTransfersOnlyAllowedForFungibleCommon">AccountAmountTransfersOnlyAllowedForFungibleCommon</td>
+        <td><p>An AccountAmount token transfers list referenced a token type other than FUNGIBLE_COMMON</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_AccountDeleted">AccountDeleted</td>
         <td><p>the account has been marked as deleted</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_AccountDoesNotOwnWipedNft">AccountDoesNotOwnWipedNft</td>
+        <td><p>An account did not own the NFT to be wiped</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_AccountExpiredAndPendingRemoval">AccountExpiredAndPendingRemoval</td>
+        <td><p>The transaction references an account which has passed its expiration without renewal funds available, and currently remains in the ledger only because of the grace period given to expired entities</p>
 </td>
       </tr>
       <tr>
@@ -109,7 +124,8 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_AccountIsNotGenesisAccount">AccountIsNotGenesisAccount</td>
-        <td><p>Special Account Operations should be performed by only Genesis account, return this code if it is not Genesis Account</p>
+        <td><p>Special Account Operations should be performed by only Genesis account, return this code if it
+is not Genesis Account</p>
 </td>
       </tr>
       <tr>
@@ -128,13 +144,23 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_AccountStillOwnsNfts">AccountStillOwnsNfts</td>
+        <td><p>An account cannot be dissociated from a unique token if it owns NFTs for the token</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_AccountUpdateFailed">AccountUpdateFailed</td>
         <td><p>The update of the account failed</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_AuthorizationFailed">AuthorizationFailed</td>
-        <td><p>Violating one of these rules: 1) treasury account can update all entities below 0.0.1000, 2) account 0.0.50 can update all entities from 0.0.51 - 0.0.80, 3) Network Function Master Account A/c 0.0.50 - Update all Network Function accounts &amp; perform all the Network Functions listed below, 4) Network Function Accounts: i) A/c 0.0.55 - Update Address Book files (0.0.101/102), ii) A/c 0.0.56 - Update Fee schedule (0.0.111), iii) A/c 0.0.57 - Update Exchange Rate (0.0.112).</p>
+        <td><p>Violating one of these rules: 1) treasury account can update all entities below 0.0.1000, 2)
+account 0.0.50 can update all entities from 0.0.51 - 0.0.80, 3) Network Function Master Account
+A/c 0.0.50 - Update all Network Function accounts &amp; perform all the Network Functions listed
+below, 4) Network Function Accounts: i) A/c 0.0.55 - Update Address Book files (0.0.101/102),
+ii) A/c 0.0.56 - Update Fee schedule (0.0.111), iii) A/c 0.0.57 - Update Exchange Rate
+(0.0.112).</p>
 </td>
       </tr>
       <tr>
@@ -153,13 +179,28 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_BatchSizeLimitExceeded">BatchSizeLimitExceeded</td>
+        <td><p>Repeated operations count exceeds the limit</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_BucketCapacityOverflow">BucketCapacityOverflow</td>
+        <td><p>The capacity needed to satisfy all opsPerSec groups in a bucket overflowed a signed 8-byte integral type</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_BucketHasNoThrottleGroups">BucketHasNoThrottleGroups</td>
+        <td><p>A bucket was defined without any throttle groups</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_Busy">Busy</td>
         <td><p>If API is throttled out</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_CannotWipeTokenTreasuryAccount">CannotWipeTokenTreasuryAccount</td>
-        <td><p>Cannot execute wipe operation on treasury account</p>
+        <td><p>The target of a wipe operation was the token treasury account</p>
 </td>
       </tr>
       <tr>
@@ -208,8 +249,64 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_CurrentTreasuryStillOwnsNfts">CurrentTreasuryStillOwnsNfts</td>
+        <td><p>The treasury for a unique token cannot be changed until it owns no NFTs</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomFeeChargingExceededMaxAccountAmounts">CustomFeeChargingExceededMaxAccountAmounts</td>
+        <td><p>More than 20 balance adjustments were to satisfy a CryptoTransfer and its implied custom fee payments</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomFeeChargingExceededMaxRecursionDepth">CustomFeeChargingExceededMaxRecursionDepth</td>
+        <td><p>The reference chain of custom fees for a transferred token exceeded the maximum length of 2</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomFeeDenominationMustBeFungibleCommon">CustomFeeDenominationMustBeFungibleCommon</td>
+        <td><p>Only tokens of type FUNGIBLE_COMMON can be used to as fee schedule denominations</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomFeeMustBePositive">CustomFeeMustBePositive</td>
+        <td><p>Only positive fees may be assessed at this time</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomFeeNotFullySpecified">CustomFeeNotFullySpecified</td>
+        <td><p>A custom fee schedule entry did not specify either a fixed or fractional fee</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomFeeOutsideNumericRange">CustomFeeOutsideNumericRange</td>
+        <td><p>A fractional custom fee exceeded the range of a 64-bit signed integer</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomFeesListTooLong">CustomFeesListTooLong</td>
+        <td><p>More than 10 custom fees were specified</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomFractionalFeeOnlyAllowedForFungibleCommon">CustomFractionalFeeOnlyAllowedForFungibleCommon</td>
+        <td><p>Only tokens of type FUNGIBLE_COMMON can have fractional fees</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique">CustomRoyaltyFeeOnlyAllowedForNonFungibleUnique</td>
+        <td><p>Only tokens of type NON_FUNGIBLE_UNIQUE can have royalty fees</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_CustomScheduleAlreadyHasNoFees">CustomScheduleAlreadyHasNoFees</td>
+        <td><p>A fee schedule update tried to clear the custom fees from a token whose fee schedule was already empty</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_DuplicateTransaction">DuplicateTransaction</td>
-        <td><p>This transaction ID is a duplicate of one that was submitted to this node or reached consensus in the last 180 seconds (receipt period)</p>
+        <td><p>This transaction ID is a duplicate of one that was submitted to this node or reached consensus
+in the last 180 seconds (receipt period)</p>
 </td>
       </tr>
       <tr>
@@ -259,12 +356,18 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_ErrorDecodingBytestring">ErrorDecodingBytestring</td>
-        <td><p>Decoding the smart contract binary to a byte array failed. Check that the input is a valid hex string.</p>
+        <td><p>Decoding the smart contract binary to a byte array failed. Check that the input is a valid hex
+string.</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_ExchangeRateChangeLimitExceeded">ExchangeRateChangeLimitExceeded</td>
         <td><p>The change on Exchange Rate exceeds Exchange_Rate_Allowed_Percentage</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_ExistingAutomaticAssociationsExceedGivenLimit">ExistingAutomaticAssociationsExceedGivenLimit</td>
+        <td><p>Already existing automatic associations are more than the new maximum automatic associations.</p>
 </td>
       </tr>
       <tr>
@@ -318,8 +421,23 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_FractionalFeeMaxAmountLessThanMinAmount">FractionalFeeMaxAmountLessThanMinAmount</td>
+        <td><p>Each fractional custom fee must have its maximum_amount, if specified, at least its minimum_amount</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_FractionDividesByZero">FractionDividesByZero</td>
+        <td><p>A custom fractional fee set a denominator of zero</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_FreezeTransactionBodyNotFound">FreezeTransactionBodyNotFound</td>
         <td><p>FreezeTransactionBody does not exist</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_IdenticalScheduleAlreadyCreated">IdenticalScheduleAlreadyCreated</td>
+        <td><p>A schedule already exists with the same identifying fields of an attempted ScheduleCreate (that is, all fields other than scheduledPayerAccountID)</p>
 </td>
       </tr>
       <tr>
@@ -340,6 +458,16 @@
       <tr>
         <td id="Hashgraph_ResponseCode_InsufficientPayerBalance">InsufficientPayerBalance</td>
         <td><p>The payer account has insufficient cryptocurrency to pay the transaction fee</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InsufficientPayerBalanceForCustomFee">InsufficientPayerBalanceForCustomFee</td>
+        <td><p>The transaction payer could not afford a custom fee</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InsufficientSenderAccountBalanceForCustomFee">InsufficientSenderAccountBalanceForCustomFee</td>
+        <td><p>The sender account in the token transfer transaction could not afford a custom fee</p>
 </td>
       </tr>
       <tr>
@@ -364,7 +492,8 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidAdminKey">InvalidAdminKey</td>
-        <td></td>
+        <td><p>A provided admin key was invalid.</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidAutorenewAccount">InvalidAutorenewAccount</td>
@@ -384,6 +513,16 @@
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidContractId">InvalidContractId</td>
         <td><p>The contract id is invalid or does not exist</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidCustomFeeCollector">InvalidCustomFeeCollector</td>
+        <td><p>Any of the feeCollector accounts for customFees is invalid</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidCustomFeeScheduleKey">InvalidCustomFeeScheduleKey</td>
+        <td><p>The provided custom fee schedule key was invalid</p>
 </td>
       </tr>
       <tr>
@@ -418,7 +557,8 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidFreezeKey">InvalidFreezeKey</td>
-        <td></td>
+        <td><p>The provided freeze key was invalid.</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidFreezeTransactionBody">InvalidFreezeTransactionBody</td>
@@ -437,7 +577,8 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidKycKey">InvalidKycKey</td>
-        <td></td>
+        <td><p>The provided KYC key was invalid.</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidLiveHashSize">InvalidLiveHashSize</td>
@@ -445,8 +586,14 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_InvalidNftId">InvalidNftId</td>
+        <td><p>Invalid nft id</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_InvalidNodeAccount">InvalidNodeAccount</td>
-        <td><p>Node Account provided does not match the node account of the node the transaction was submitted to.</p>
+        <td><p>Node Account provided does not match the node account of the node the transaction was submitted
+to.</p>
 </td>
       </tr>
       <tr>
@@ -465,18 +612,39 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_InvalidQueryRange">InvalidQueryRange</td>
+        <td><p>The range of data to be gathered is out of the set boundaries</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_InvalidReceiveRecordThreshold">InvalidReceiveRecordThreshold</td>
         <td><p>[Deprecated]. attempt to set negative receive record threshold</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidReceivingNodeAccount">InvalidReceivingNodeAccount</td>
-        <td><p>In Query validation, account with +ve(amount) value should be Receiving node account, the receiver account should be only one account in the list</p>
+        <td><p>In Query validation, account with +ve(amount) value should be Receiving node account, the
+receiver account should be only one account in the list</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidRenewalPeriod">InvalidRenewalPeriod</td>
         <td><p>auto renewal period is not a positive number of seconds</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidScheduleAccountId">InvalidScheduleAccountId</td>
+        <td><p>The Schedule Create Transaction TransactionID account does not exist</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidScheduleId">InvalidScheduleId</td>
+        <td><p>The Scheduled entity does not exist; or has now expired, been deleted, or been executed</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidSchedulePayerId">InvalidSchedulePayerId</td>
+        <td><p>The provided Scheduled Payer does not exist</p>
 </td>
       </tr>
       <tr>
@@ -491,12 +659,15 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidSignatureCountMismatchingKey">InvalidSignatureCountMismatchingKey</td>
-        <td><p>the number of key (KeyList, or ThresholdKey) does not match that of signature (SignatureList, or ThresholdKeySignature). e.g. if a keyList has 3 base keys, then the corresponding signatureList should also have 3 base signatures.</p>
+        <td><p>the number of key (KeyList, or ThresholdKey) does not match that of signature (SignatureList,
+or ThresholdKeySignature). e.g. if a keyList has 3 base keys, then the corresponding
+signatureList should also have 3 base signatures.</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidSignatureTypeMismatchingKey">InvalidSignatureTypeMismatchingKey</td>
-        <td><p>the type of key (base ed25519 key, KeyList, or ThresholdKey) does not match the type of signature (base ed25519 signature, SignatureList, or ThresholdKeySignature)</p>
+        <td><p>the type of key (base ed25519 key, KeyList, or ThresholdKey) does not match the type of
+signature (base ed25519 signature, SignatureList, or ThresholdKeySignature)</p>
 </td>
       </tr>
       <tr>
@@ -511,15 +682,28 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidSubmitKey">InvalidSubmitKey</td>
-        <td></td>
+        <td><p>A provided submit key was invalid.</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidSupplyKey">InvalidSupplyKey</td>
-        <td></td>
+        <td><p>The provided supply key was invalid.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidThrottleDefinitions">InvalidThrottleDefinitions</td>
+        <td><p>The new throttle definitions system file were invalid, and no more specific error could be divined</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenBurnAmount">InvalidTokenBurnAmount</td>
-        <td></td>
+        <td><p>The requested token burn amount would cause an invalid total supply</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenBurnMetadata">InvalidTokenBurnMetadata</td>
+        <td><p>The requested token burn metadata was invalid</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenDecimals">InvalidTokenDecimals</td>
@@ -532,13 +716,34 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenIdInCustomFees">InvalidTokenIdInCustomFees</td>
+        <td><p>Any of the token Ids in customFees is invalid</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenInitialSupply">InvalidTokenInitialSupply</td>
         <td><p>Invalid token initial supply</p>
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenMaxSupply">InvalidTokenMaxSupply</td>
+        <td><p>Invalid token max supply</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenMintAmount">InvalidTokenMintAmount</td>
-        <td></td>
+        <td><p>The requested token mint amount would cause an invalid total supply</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenMintMetadata">InvalidTokenMintMetadata</td>
+        <td><p>The requested token mint metadata was invalid</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidTokenNftSerialNumber">InvalidTokenNftSerialNumber</td>
+        <td><p>Invalid token nft serial number</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidTokenSymbol">InvalidTokenSymbol</td>
@@ -587,11 +792,17 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidWipeKey">InvalidWipeKey</td>
-        <td></td>
+        <td><p>The provided wipe key was invalid.</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_InvalidWipingAmount">InvalidWipingAmount</td>
         <td><p>The provided wipe amount must not be negative, zero or bigger than the token holder balance</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_InvalidZeroByteInString">InvalidZeroByteInString</td>
+        <td><p>A string field in the transaction has a UTF-8 encoding with the prohibited zero byte</p>
 </td>
       </tr>
       <tr>
@@ -640,8 +851,23 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_MaxNftsInPriceRegimeHaveBeenMinted">MaxNftsInPriceRegimeHaveBeenMinted</td>
+        <td><p>All the NFTs allowed in the current price regime have already been minted</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_MemoTooLong">MemoTooLong</td>
         <td><p>Transaction memo size exceeded 100 bytes</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_MessageSizeTooLarge">MessageSizeTooLarge</td>
+        <td><p>ConsensusSubmitMessage request's message size is larger than allowed.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_MetadataTooLong">MetadataTooLong</td>
+        <td><p>Nft metadata is too long</p>
 </td>
       </tr>
       <tr>
@@ -656,12 +882,28 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_MissingTokenSymbol">MissingTokenSymbol</td>
-        <td><p>Token Symbol is not provided</p>
+        <td><p>A token symbol was not provided</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_ModifyingImmutableContract">ModifyingImmutableContract</td>
-        <td><p>attempting to modify (update or delete a immutable smart contract, i.e. one created without a admin key)</p>
+        <td><p>attempting to modify (update or delete a immutable smart contract, i.e. one created without a
+admin key)</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_NodeCapacityNotSufficientForOperation">NodeCapacityNotSufficientForOperation</td>
+        <td><p>Given the network size in the address book, the node-level capacity for an operation would never be enough to accept a single request; usually means a bucket burstPeriod should be increased</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_NoNewValidSignatures">NoNewValidSignatures</td>
+        <td><p>The provided sig map did not contain any new valid signatures from required signers of the scheduled transaction</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_NoRemainingAutomaticAssociations">NoRemainingAutomaticAssociations</td>
+        <td><p>The account has reached the limit on the automatic associations count.</p>
 </td>
       </tr>
       <tr>
@@ -691,17 +933,29 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_ObtainerRequired">ObtainerRequired</td>
-        <td><p>when deleting smart contract that has crypto balance either transfer account or transfer smart contract is required</p>
+        <td><p>when deleting smart contract that has crypto balance either transfer account or transfer smart
+contract is required</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_ObtainerSameContractId">ObtainerSameContractId</td>
-        <td><p>when deleting smart contract that has crypto balance you can not use the same contract id as transferContractId as the one being deleted</p>
+        <td><p>when deleting smart contract that has crypto balance you can not use the same contract id as
+transferContractId as the one being deleted</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_Ok">Ok</td>
         <td><p>The transaction passed the precheck validations.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_OperationRepeatedInBucketGroups">OperationRepeatedInBucketGroups</td>
+        <td><p>An operation was assigned to more than one throttle group in a given bucket</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_PayerAccountDeleted">PayerAccountDeleted</td>
+        <td><p>The payer account has been marked as deleted</p>
 </td>
       </tr>
       <tr>
@@ -730,8 +984,18 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_ReceiverSigRequired">ReceiverSigRequired</td>
+        <td><p>When a valid signature is not provided for operations on account with receiverSigRequired=true</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_RecordNotFound">RecordNotFound</td>
         <td><p>Record for given transaction id does not exist</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_RequestedNumAutomaticAssociationsExceedsAssociationLimit">RequestedNumAutomaticAssociationsExceedsAssociationLimit</td>
+        <td><p>Cannot set the number of automatic associations for an account more than the maximum allowed token associations &lt;tt&gt;tokens.maxPerAccount&lt;/tt&gt;</p>
 </td>
       </tr>
       <tr>
@@ -740,8 +1004,38 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_RoyaltyFractionCannotExceedOne">RoyaltyFractionCannotExceedOne</td>
+        <td><p>A royalty cannot exceed the total fungible value exchanged for an NFT</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_RpcError">RpcError</td>
         <td><p>A RPC Error occurred preventing the transaction from being submitted to the network.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_ScheduleAlreadyDeleted">ScheduleAlreadyDeleted</td>
+        <td><p>A schedule being signed or deleted has already been deleted</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_ScheduleAlreadyExecuted">ScheduleAlreadyExecuted</td>
+        <td><p>A schedule being signed or deleted has already been executed</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_ScheduledTransactionNotInWhitelist">ScheduledTransactionNotInWhitelist</td>
+        <td><p>Only whitelisted transaction types may be scheduled</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_ScheduleIsImmutable">ScheduleIsImmutable</td>
+        <td><p>The Scheduled entity cannot be modified. Admin key not set</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_SenderDoesNotOwnNftSerialNo">SenderDoesNotOwnNftSerialNo</td>
+        <td><p>The transaction attempted to move an NFT serial number from an account other than its owner</p>
 </td>
       </tr>
       <tr>
@@ -750,8 +1044,18 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_SerialNumberLimitReached">SerialNumberLimitReached</td>
+        <td><p>Currently no more than 4,294,967,295 NFTs may be minted for a given unique token type</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_SettingNegativeAccountBalance">SettingNegativeAccountBalance</td>
         <td><p>attempting to set negative balance value for crypto account</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_SomeSignaturesWereInvalid">SomeSignaturesWereInvalid</td>
+        <td><p>At least one of the signatures in the provided sig map did not represent a valid signature for any required signer</p>
 </td>
       </tr>
       <tr>
@@ -760,8 +1064,23 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_SuccessButMissingExpectedOperation">SuccessButMissingExpectedOperation</td>
+        <td><p>The throttle definitions file was updated, but some supported operations were not assigned a bucket</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_ThrottleGroupHasZeroOpsPerSec">ThrottleGroupHasZeroOpsPerSec</td>
+        <td><p>A throttle group was granted zero opsPerSec</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_TokenAlreadyAssociatedToAccount">TokenAlreadyAssociatedToAccount</td>
         <td><p>An &lt;tt&gt;associateToken&lt;/tt&gt; operation specified a token already associated to the account</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenHasNoFeeScheduleKey">TokenHasNoFeeScheduleKey</td>
+        <td><p>Fee schedule key is not set on token</p>
 </td>
       </tr>
       <tr>
@@ -795,22 +1114,33 @@
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_TokenMaxSupplyReached">TokenMaxSupplyReached</td>
+        <td><p>A token cannot have more units minted due to its configured supply ceiling</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_TokenNameTooLong">TokenNameTooLong</td>
         <td><p>Token Name is too long</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_TokenNotAssociatedToAccount">TokenNotAssociatedToAccount</td>
-        <td></td>
+        <td><p>A required token-account relationship is missing</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TokenNotAssociatedToFeeCollector">TokenNotAssociatedToFeeCollector</td>
+        <td><p>Any of the token Ids in customFees are not associated to feeCollector</p>
+</td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_TokensPerAccountLimitExceeded">TokensPerAccountLimitExceeded</td>
-        <td><p>Maximum number of token relations for agiven account is exceeded</p>
+        <td><p>An involved account already has more than &lt;tt&gt;tokens.maxPerAccount&lt;/tt&gt; associations with non-deleted tokens.</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_TokenSymbolTooLong">TokenSymbolTooLong</td>
-        <td><p>Token Symbol is too long</p>
+        <td><p>The provided token symbol was too long</p>
 </td>
       </tr>
       <tr>
@@ -825,9 +1155,9 @@
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_TopicExpired">TopicExpired</td>
-        <td><p>The topic has expired, was not automatically renewed, and is in a 7 day grace period before the topic will be
-deleted unrecoverably. This error response code will not be returned until autoRenew functionality is supported
-by HAPI.</p>
+        <td><p>The topic has expired, was not automatically renewed, and is in a 7 day grace period before the
+topic will be deleted unrecoverably. This error response code will not be returned until
+autoRenew functionality is supported by HAPI.</p>
 </td>
       </tr>
       <tr>
@@ -836,7 +1166,13 @@ by HAPI.</p>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_TransactionExpired">TransactionExpired</td>
-        <td><p>Pre-Check error when TransactionValidStart + transactionValidDuration is less than current consensus time.</p>
+        <td><p>Pre-Check error when TransactionValidStart + transactionValidDuration is less than current
+consensus time.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_TransactionIdFieldNotAllowed">TransactionIdFieldNotAllowed</td>
+        <td><p>The scheduled field in the TransactionID may not be set to true</p>
 </td>
       </tr>
       <tr>
@@ -870,13 +1206,29 @@ by HAPI.</p>
 </td>
       </tr>
       <tr>
+        <td id="Hashgraph_ResponseCode_TreasuryMustOwnBurnedNft">TreasuryMustOwnBurnedNft</td>
+        <td><p>A NFT can only be burned when owned by the unique token's treasury</p>
+</td>
+      </tr>
+      <tr>
         <td id="Hashgraph_ResponseCode_Unauthorized">Unauthorized</td>
         <td><p>An attempted operation was not authorized (ie - a deleteTopic for a topic with no adminKey).</p>
 </td>
       </tr>
       <tr>
         <td id="Hashgraph_ResponseCode_Unknown">Unknown</td>
-        <td><p>The responding node has submitted the transaction to the network. Its final status is still unknown.</p>
+        <td><p>The responding node has submitted the transaction to the network. Its final status is still
+unknown.</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_UnparseableThrottleDefinitions">UnparseableThrottleDefinitions</td>
+        <td><p>The new contents for the throttle definitions system file were not valid protobuf</p>
+</td>
+      </tr>
+      <tr>
+        <td id="Hashgraph_ResponseCode_UnresolvableRequiredSigners">UnresolvableRequiredSigners</td>
+        <td><p>The required signers for a scheduled transaction cannot be resolved, for example because they do not exist or have been deleted</p>
 </td>
       </tr>
     </tbody>
@@ -889,10 +1241,10 @@ by HAPI.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_ResponseCode.md&amp;value=---%0Auid%3A%20Hashgraph.ResponseCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_ResponseCode.md&amp;value=---%0Auid%3A%20Hashgraph.ResponseCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/ResponseCode.cs/#L8" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/ResponseCode.cs/#L7" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

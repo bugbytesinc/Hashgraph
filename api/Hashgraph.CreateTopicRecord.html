@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CreateTopicRecord
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -83,6 +83,12 @@
     <div class="level2"><a class="xref" href="Hashgraph.TransactionRecord.html">TransactionRecord</a></div>
     <div class="level3"><span class="xref">CreateTopicRecord</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TransactionReceipt.html">TransactionReceipt</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TransactionRecord.html">TransactionRecord</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.CreateTopicRecord.html">CreateTopicRecord</a>&gt;</div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -104,6 +110,15 @@
       <a class="xref" href="Hashgraph.TransactionRecord.html#Hashgraph_TransactionRecord_TokenTransfers">TransactionRecord.TokenTransfers</a>
     </div>
     <div>
+      <a class="xref" href="Hashgraph.TransactionRecord.html#Hashgraph_TransactionRecord_AssetTransfers">TransactionRecord.AssetTransfers</a>
+    </div>
+    <div>
+      <a class="xref" href="Hashgraph.TransactionRecord.html#Hashgraph_TransactionRecord_Royalties">TransactionRecord.Royalties</a>
+    </div>
+    <div>
+      <a class="xref" href="Hashgraph.TransactionRecord.html#Hashgraph_TransactionRecord_Associations">TransactionRecord.Associations</a>
+    </div>
+    <div>
       <a class="xref" href="Hashgraph.TransactionReceipt.html#Hashgraph_TransactionReceipt_Id">TransactionReceipt.Id</a>
     </div>
     <div>
@@ -114,6 +129,9 @@
     </div>
     <div>
       <a class="xref" href="Hashgraph.TransactionReceipt.html#Hashgraph_TransactionReceipt_NextExchangeRate">TransactionReceipt.NextExchangeRate</a>
+    </div>
+    <div>
+      <a class="xref" href="Hashgraph.TransactionReceipt.html#Hashgraph_TransactionReceipt_Pending">TransactionReceipt.Pending</a>
     </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
@@ -141,16 +159,16 @@
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
   <h5 id="Hashgraph_CreateTopicRecord_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class CreateTopicRecord : TransactionRecord</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class CreateTopicRecord : TransactionRecord, IEquatable&lt;TransactionReceipt&gt;, IEquatable&lt;TransactionRecord&gt;, IEquatable&lt;CreateTopicRecord&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTopicRecord_Topic.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTopicRecord.Topic%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateTopicRecord_Topic.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTopicRecord.Topic%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/CreateTopicRecord.cs/#L13">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/CreateTopicRecord.cs/#L18">View Source</a>
   </span>
   <a id="Hashgraph_CreateTopicRecord_Topic_" data-uid="Hashgraph.CreateTopicRecord.Topic*"></a>
   <h4 id="Hashgraph_CreateTopicRecord_Topic" data-uid="Hashgraph.CreateTopicRecord.Topic">Topic</h4>
@@ -176,6 +194,20 @@
       </tr>
     </tbody>
   </table>
+  <h5 id="Hashgraph_CreateTopicRecord_Topic_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The value will be <pre><code>None</code></pre> if the create acocunt
+method was scheduled as a pending transaction.</p>
+</div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
 </article>
           </div>
           
@@ -184,10 +216,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_CreateTopicRecord.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTopicRecord%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_CreateTopicRecord.md&amp;value=---%0Auid%3A%20Hashgraph.CreateTopicRecord%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/CreateTopicRecord.cs/#L8" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/CreateTopicRecord.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

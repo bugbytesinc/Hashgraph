@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Get Network Address Book | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Get Network Address Book | Hashgraph ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../../images/favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="get-network-address-book">Get Network Address Book</h1>
+
+<p>Queries the network for the book of network node addresses and information.</p>
+<pre><code class="lang-csharp">class Program
+{
+    static async Task Main(string[] args)
+    {                                                 // For Example:
+        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
+        var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
+        var payerAccountNo = long.Parse(args[2]);     //   20 (account 0.0.20)
+        var payerPrivateKey = Hex.ToBytes(args[3]);   //   302e0201... (Ed25519 private in hex)
+        try
+        {
+            await using var client = new Client(ctx =&gt;
+            {
+                ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
+                ctx.Payer = new Address(0, 0, payerAccountNo);
+                ctx.Signatory = new Signatory(payerPrivateKey);
+            });
+
+            var nodes = await client.GetAddressBookAsync();
+            foreach (var node in nodes)
+            {
+                Console.Write($&quot;Node {node.Id}: &quot;);
+                Console.Write($&quot;{node.Address.ShardNum}.&quot;);
+                Console.Write($&quot;{node.Address.RealmNum}.&quot;);
+                Console.WriteLine($&quot;{node.Address.AccountNum}:&quot;);
+                foreach (var endpoint in node.Endpoints)
+                {
+                    var address = new IPAddress(endpoint.IpAddress.ToArray());
+                    var port = endpoint.Port;
+                    Console.WriteLine($&quot;     {address}:{port}&quot;);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+            Console.Error.WriteLine(ex.StackTrace);
+        }
+    }
+}
+</code></pre>
+<p>Example output:</p>
+<pre><code class="lang-txt">Node 0: 0.0.3:
+     35.231.208.148:50211
+     35.231.208.148:50212
+     3.211.248.172:50211
+     3.211.248.172:50212
+     40.121.64.48:50211
+     40.121.64.48:50212
+Node 1: 0.0.4:
+     35.199.15.177:50211
+     35.199.15.177:50212
+     3.133.213.146:50211
+     3.133.213.146:50212
+     40.70.11.202:50211
+     40.70.11.202:50212
+Node 2: 0.0.5:
+     35.225.201.195:50211
+     35.225.201.195:50212
+     52.15.105.130:50211
+     52.15.105.130:50212
+     104.43.248.63:50211
+     104.43.248.63:50212
+Node 3: 0.0.6:
+     35.247.109.135:50211
+     35.247.109.135:50212
+     54.241.38.1:50211
+     54.241.38.1:50212
+     13.88.22.47:50211
+     13.88.22.47:50212
+Node 4: 0.0.7:
+     35.235.65.51:50211
+     35.235.65.51:50212
+     54.177.51.127:50211
+     54.177.51.127:50212
+     13.64.170.40:50211
+     13.64.170.40:50212
+Node 5: 0.0.8:
+     34.106.247.65:50211
+     34.106.247.65:50212
+     35.83.89.171:50211
+     35.83.89.171:50212
+     13.78.232.192:50211
+     13.78.232.192:50212
+Node 6: 0.0.9:
+     34.125.23.49:50211
+     34.125.23.49:50212
+     50.18.17.93:50211
+     50.18.17.93:50212
+     20.150.136.89:50211
+     20.150.136.89:50212
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/docs/tutorials/misc/book.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

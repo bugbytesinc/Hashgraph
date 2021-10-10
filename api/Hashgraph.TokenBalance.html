@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class TokenBalance
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,10 +80,22 @@ including the amount of coins held, KYC status and Freeze status.</p>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">TokenBalance</span></div>
+    <div class="level1"><a class="xref" href="Hashgraph.CryptoBalance.html">CryptoBalance</a></div>
+    <div class="level2"><span class="xref">TokenBalance</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.CryptoBalance.html">CryptoBalance</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TokenBalance.html">TokenBalance</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="Hashgraph.CryptoBalance.html#Hashgraph_CryptoBalance_Balance">CryptoBalance.Balance</a>
+    </div>
+    <div>
+      <a class="xref" href="Hashgraph.CryptoBalance.html#Hashgraph_CryptoBalance_Decimals">CryptoBalance.Decimals</a>
+    </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
     </div>
@@ -110,16 +122,111 @@ including the amount of coins held, KYC status and Freeze status.</p>
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
   <h5 id="Hashgraph_TokenBalance_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class TokenBalance</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class TokenBalance : CryptoBalance, IEquatable&lt;CryptoBalance&gt;, IEquatable&lt;TokenBalance&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenBalance_Token.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.Token%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenBalance_AutoAssociated.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.AutoAssociated%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenBalance.cs/#L14">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenBalance.cs/#L34">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenBalance_AutoAssociated_" data-uid="Hashgraph.TokenBalance.AutoAssociated*"></a>
+  <h4 id="Hashgraph_TokenBalance_AutoAssociated" data-uid="Hashgraph.TokenBalance.AutoAssociated">AutoAssociated</h4>
+  <div class="markdown level1 summary"><p>True if this token was associated automatically by
+the network via autoassociaiton via becomming a
+token or assset treasury.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AutoAssociated { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenBalance_KycStatus.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.KycStatus%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenBalance.cs/#L24">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenBalance_KycStatus_" data-uid="Hashgraph.TokenBalance.KycStatus*"></a>
+  <h4 id="Hashgraph_TokenBalance_KycStatus" data-uid="Hashgraph.TokenBalance.KycStatus">KycStatus</h4>
+  <div class="markdown level1 summary"><p>The KYC status of the token for this account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TokenKycStatus KycStatus { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.TokenKycStatus.html">TokenKycStatus</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenBalance_Symbol.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.Symbol%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenBalance.cs/#L20">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenBalance_Symbol_" data-uid="Hashgraph.TokenBalance.Symbol*"></a>
+  <h4 id="Hashgraph_TokenBalance_Symbol" data-uid="Hashgraph.TokenBalance.Symbol">Symbol</h4>
+  <div class="markdown level1 summary"><p>The string symbol representing this token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string Symbol { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenBalance_Token.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.Token%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenBalance.cs/#L16">View Source</a>
   </span>
   <a id="Hashgraph_TokenBalance_Token_" data-uid="Hashgraph.TokenBalance.Token*"></a>
   <h4 id="Hashgraph_TokenBalance_Token" data-uid="Hashgraph.TokenBalance.Token">Token</h4>
@@ -145,6 +252,44 @@ including the amount of coins held, KYC status and Freeze status.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenBalance_TradableStatus.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance.TradableStatus%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenBalance.cs/#L28">View Source</a>
+  </span>
+  <a id="Hashgraph_TokenBalance_TradableStatus_" data-uid="Hashgraph.TokenBalance.TradableStatus*"></a>
+  <h4 id="Hashgraph_TokenBalance_TradableStatus" data-uid="Hashgraph.TokenBalance.TradableStatus">TradableStatus</h4>
+  <div class="markdown level1 summary"><p>The Frozen status of the token for this account.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TokenTradableStatus TradableStatus { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="Hashgraph.TokenTradableStatus.html">TokenTradableStatus</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
 </article>
           </div>
           
@@ -153,10 +298,10 @@ including the amount of coins held, KYC status and Freeze status.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_TokenBalance.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_TokenBalance.md&amp;value=---%0Auid%3A%20Hashgraph.TokenBalance%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Token/TokenBalance.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Token/TokenBalance.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

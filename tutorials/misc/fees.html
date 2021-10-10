@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Get Fee Schedule | Hashgraph </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Get Fee Schedule | Hashgraph ">
+    <meta name="generator" content="docfx 2.58.4.0">
+    
+    <link rel="shortcut icon" href="../../images/favicon.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../images/logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="get-fee-schedule">Get Fee Schedule</h1>
+
+<p>Queries the network for current and 'next' fee schedule.</p>
+<pre><code class="lang-csharp">class Program
+{
+    static async Task Main(string[] args)
+    {                                                 // For Example:
+        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
+        var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
+        var payerAccountNo = long.Parse(args[2]);     //   20 (account 0.0.20)
+        var payerPrivateKey = Hex.ToBytes(args[3]);   //   302e0201... (Ed25519 private in hex)
+        try
+        {
+            await using var client = new Client(ctx =&gt;
+            {
+                ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
+                ctx.Payer = new Address(0, 0, payerAccountNo);
+                ctx.Signatory = new Signatory(payerPrivateKey);
+            });
+
+            var schedules = await client.GetFeeScheduleAsync();
+
+            foreach (var schedule in schedules.Current.Data)
+            {
+                Console.WriteLine(schedule.Key);
+                foreach (var detail in schedule.Value)
+                {
+                    Console.WriteLine(detail);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+            Console.Error.WriteLine(ex.StackTrace);
+        }
+    }
+}
+</code></pre>
+<p>Example output:</p>
+<pre><code>CryptoCreate
+{ &quot;nodedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;11461413665&quot;, &quot;bpt&quot;: &quot;508982&quot;, &quot;vpt&quot;: &quot;1272455960&quot;, &quot;rbh&quot;: &quot;339&quot;, &quot;sbh&quot;: &quot;25&quot;, &quot;gas&quot;: &quot;3393&quot;, &quot;bpr&quot;: &quot;508982&quot;, &quot;sbpr&quot;: &quot;12725&quot; }, &quot;networkdata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;229228273302&quot;, &quot;bpt&quot;: &quot;10179648&quot;, &quot;vpt&quot;: &quot;25449119198&quot;, &quot;rbh&quot;: &quot;6786&quot;, &quot;sbh&quot;: &quot;509&quot;, &quot;gas&quot;: &quot;67864&quot;, &quot;bpr&quot;: &quot;10179648&quot;, &quot;sbpr&quot;: &quot;254491&quot; }, &quot;servicedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;229228273302&quot;, &quot;bpt&quot;: &quot;10179648&quot;, &quot;vpt&quot;: &quot;25449119198&quot;, &quot;rbh&quot;: &quot;6786&quot;, &quot;sbh&quot;: &quot;509&quot;, &quot;gas&quot;: &quot;67864&quot;, &quot;bpr&quot;: &quot;10179648&quot;, &quot;sbpr&quot;: &quot;254491&quot; } }
+CryptoAccountAutoRenew
+{ &quot;nodedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;59972622&quot;, &quot;bpt&quot;: &quot;95878&quot;, &quot;vpt&quot;: &quot;239695625&quot;, &quot;rbh&quot;: &quot;64&quot;, &quot;sbh&quot;: &quot;5&quot;, &quot;gas&quot;: &quot;639&quot;, &quot;bpr&quot;: &quot;95878&quot;, &quot;sbpr&quot;: &quot;2397&quot; }, &quot;networkdata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;959561945&quot;, &quot;bpt&quot;: &quot;1534052&quot;, &quot;vpt&quot;: &quot;3835129999&quot;, &quot;rbh&quot;: &quot;1023&quot;, &quot;sbh&quot;: &quot;77&quot;, &quot;gas&quot;: &quot;10227&quot;, &quot;bpr&quot;: &quot;1534052&quot;, &quot;sbpr&quot;: &quot;38351&quot; }, &quot;servicedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;959561945&quot;, &quot;bpt&quot;: &quot;1534052&quot;, &quot;vpt&quot;: &quot;3835129999&quot;, &quot;rbh&quot;: &quot;1023&quot;, &quot;sbh&quot;: &quot;77&quot;, &quot;gas&quot;: &quot;10227&quot;, &quot;bpr&quot;: &quot;1534052&quot;, &quot;sbpr&quot;: &quot;38351&quot; } }
+CryptoUpdate
+{ &quot;nodedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;16302371&quot;, &quot;bpt&quot;: &quot;26063&quot;, &quot;vpt&quot;: &quot;65156516&quot;, &quot;rbh&quot;: &quot;17&quot;, &quot;sbh&quot;: &quot;1&quot;, &quot;gas&quot;: &quot;174&quot;, &quot;bpr&quot;: &quot;26063&quot;, &quot;sbpr&quot;: &quot;652&quot; }, &quot;networkdata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;326047427&quot;, &quot;bpt&quot;: &quot;521252&quot;, &quot;vpt&quot;: &quot;1303130322&quot;, &quot;rbh&quot;: &quot;348&quot;, &quot;sbh&quot;: &quot;26&quot;, &quot;gas&quot;: &quot;3475&quot;, &quot;bpr&quot;: &quot;521252&quot;, &quot;sbpr&quot;: &quot;13031&quot; }, &quot;servicedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;326047427&quot;, &quot;bpt&quot;: &quot;521252&quot;, &quot;vpt&quot;: &quot;1303130322&quot;, &quot;rbh&quot;: &quot;348&quot;, &quot;sbh&quot;: &quot;26&quot;, &quot;gas&quot;: &quot;3475&quot;, &quot;bpr&quot;: &quot;521252&quot;, &quot;sbpr&quot;: &quot;13031&quot; } }
+CryptoTransfer
+{ &quot;nodedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;7574478&quot;, &quot;bpt&quot;: &quot;12109&quot;, &quot;vpt&quot;: &quot;30273301&quot;, &quot;rbh&quot;: &quot;8&quot;, &quot;sbh&quot;: &quot;1&quot;, &quot;gas&quot;: &quot;81&quot;, &quot;bpr&quot;: &quot;12109&quot;, &quot;sbpr&quot;: &quot;303&quot; }, &quot;networkdata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;151489557&quot;, &quot;bpt&quot;: &quot;242186&quot;, &quot;vpt&quot;: &quot;605466012&quot;, &quot;rbh&quot;: &quot;161&quot;, &quot;sbh&quot;: &quot;12&quot;, &quot;gas&quot;: &quot;1615&quot;, &quot;bpr&quot;: &quot;242186&quot;, &quot;sbpr&quot;: &quot;6055&quot; }, &quot;servicedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;151489557&quot;, &quot;bpt&quot;: &quot;242186&quot;, &quot;vpt&quot;: &quot;605466012&quot;, &quot;rbh&quot;: &quot;161&quot;, &quot;sbh&quot;: &quot;12&quot;, &quot;gas&quot;: &quot;1615&quot;, &quot;bpr&quot;: &quot;242186&quot;, &quot;sbpr&quot;: &quot;6055&quot; } }
+{ &quot;nodedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;7983519&quot;, &quot;bpt&quot;: &quot;12763&quot;, &quot;vpt&quot;: &quot;31908136&quot;, &quot;rbh&quot;: &quot;9&quot;, &quot;sbh&quot;: &quot;1&quot;, &quot;gas&quot;: &quot;85&quot;, &quot;bpr&quot;: &quot;12763&quot;, &quot;sbpr&quot;: &quot;319&quot; }, &quot;networkdata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;159670382&quot;, &quot;bpt&quot;: &quot;255265&quot;, &quot;vpt&quot;: &quot;638162730&quot;, &quot;rbh&quot;: &quot;170&quot;, &quot;sbh&quot;: &quot;13&quot;, &quot;gas&quot;: &quot;1702&quot;, &quot;bpr&quot;: &quot;255265&quot;, &quot;sbpr&quot;: &quot;6382&quot; }, &quot;servicedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;159670382&quot;, &quot;bpt&quot;: &quot;255265&quot;, &quot;vpt&quot;: &quot;638162730&quot;, &quot;rbh&quot;: &quot;170&quot;, &quot;sbh&quot;: &quot;13&quot;, &quot;gas&quot;: &quot;1702&quot;, &quot;bpr&quot;: &quot;255265&quot;, &quot;sbpr&quot;: &quot;6382&quot; }, &quot;subType&quot;: &quot;TOKEN_FUNGIBLE_COMMON&quot; }
+{ &quot;nodedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;15967037&quot;, &quot;bpt&quot;: &quot;25527&quot;, &quot;vpt&quot;: &quot;63816270&quot;, &quot;rbh&quot;: &quot;17&quot;, &quot;sbh&quot;: &quot;1&quot;, &quot;gas&quot;: &quot;170&quot;, &quot;bpr&quot;: &quot;25527&quot;, &quot;sbpr&quot;: &quot;638&quot; }, &quot;networkdata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;319340747&quot;, &quot;bpt&quot;: &quot;510530&quot;, &quot;vpt&quot;: &quot;1276325394&quot;, &quot;rbh&quot;: &quot;340&quot;, &quot;sbh&quot;: &quot;26&quot;, &quot;gas&quot;: &quot;3404&quot;, &quot;bpr&quot;: &quot;510530&quot;, &quot;sbpr&quot;: &quot;12763&quot; }, &quot;servicedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;319340747&quot;, &quot;bpt&quot;: &quot;510530&quot;, &quot;vpt&quot;: &quot;1276325394&quot;, &quot;rbh&quot;: &quot;340&quot;, &quot;sbh&quot;: &quot;26&quot;, &quot;gas&quot;: &quot;3404&quot;, &quot;bpr&quot;: &quot;510530&quot;, &quot;sbpr&quot;: &quot;12763&quot; }, &quot;subType&quot;: &quot;TOKEN_FUNGIBLE_COMMON_WITH_CUSTOM_FEES&quot; }
+{ &quot;nodedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;22833842&quot;, &quot;bpt&quot;: &quot;36504&quot;, &quot;vpt&quot;: &quot;91261178&quot;, &quot;rbh&quot;: &quot;24&quot;, &quot;sbh&quot;: &quot;2&quot;, &quot;gas&quot;: &quot;243&quot;, &quot;bpr&quot;: &quot;36504&quot;, &quot;sbpr&quot;: &quot;913&quot; }, &quot;networkdata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;456676846&quot;, &quot;bpt&quot;: &quot;730089&quot;, &quot;vpt&quot;: &quot;1825223562&quot;, &quot;rbh&quot;: &quot;487&quot;, &quot;sbh&quot;: &quot;37&quot;, &quot;gas&quot;: &quot;4867&quot;, &quot;bpr&quot;: &quot;730089&quot;, &quot;sbpr&quot;: &quot;18252&quot; }, &quot;servicedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;456676846&quot;, &quot;bpt&quot;: &quot;730089&quot;, &quot;vpt&quot;: &quot;1825223562&quot;, &quot;rbh&quot;: &quot;487&quot;, &quot;sbh&quot;: &quot;37&quot;, &quot;gas&quot;: &quot;4867&quot;, &quot;bpr&quot;: &quot;730089&quot;, &quot;sbpr&quot;: &quot;18252&quot; }, &quot;subType&quot;: &quot;TOKEN_NON_FUNGIBLE_UNIQUE&quot; }
+{ &quot;nodedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;45667678&quot;, &quot;bpt&quot;: &quot;73009&quot;, &quot;vpt&quot;: &quot;182522330&quot;, &quot;rbh&quot;: &quot;49&quot;, &quot;sbh&quot;: &quot;4&quot;, &quot;gas&quot;: &quot;487&quot;, &quot;bpr&quot;: &quot;73009&quot;, &quot;sbpr&quot;: &quot;1825&quot; }, &quot;networkdata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;913353558&quot;, &quot;bpt&quot;: &quot;1460179&quot;, &quot;vpt&quot;: &quot;3650446591&quot;, &quot;rbh&quot;: &quot;973&quot;, &quot;sbh&quot;: &quot;73&quot;, &quot;gas&quot;: &quot;9735&quot;, &quot;bpr&quot;: &quot;1460179&quot;, &quot;sbpr&quot;: &quot;36504&quot; }, &quot;servicedata&quot;: { &quot;max&quot;: &quot;1000000000000000&quot;, &quot;constant&quot;: &quot;913353558&quot;, &quot;bpt&quot;: &quot;1460179&quot;, &quot;vpt&quot;: &quot;3650446591&quot;, &quot;rbh&quot;: &quot;973&quot;, &quot;sbh&quot;: &quot;73&quot;, &quot;gas&quot;: &quot;9735&quot;, &quot;bpr&quot;: &quot;1460179&quot;, &quot;sbpr&quot;: &quot;36504&quot; }, &quot;subType&quot;: &quot;TOKEN_NON_FUNGIBLE_UNIQUE_WITH_CUSTOM_FEES&quot; }
+...
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/docs/tutorials/misc/fees.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+                <h5>In This Article</h5>
+                <div></div>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <span>.NET Client Library for Hedera Hashgraph</span>
+            
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class SubmitMessageReceipt
    | Hashgraph ">
-    <meta name="generator" content="docfx 2.56.5.0">
+    <meta name="generator" content="docfx 2.58.4.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -82,6 +82,11 @@
     <div class="level1"><a class="xref" href="Hashgraph.TransactionReceipt.html">TransactionReceipt</a></div>
     <div class="level2"><span class="xref">SubmitMessageReceipt</span></div>
   </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.TransactionReceipt.html">TransactionReceipt</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="Hashgraph.SubmitMessageReceipt.html">SubmitMessageReceipt</a>&gt;</div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -95,6 +100,9 @@
     </div>
     <div>
       <a class="xref" href="Hashgraph.TransactionReceipt.html#Hashgraph_TransactionReceipt_NextExchangeRate">TransactionReceipt.NextExchangeRate</a>
+    </div>
+    <div>
+      <a class="xref" href="Hashgraph.TransactionReceipt.html#Hashgraph_TransactionReceipt_Pending">TransactionReceipt.Pending</a>
     </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
@@ -122,16 +130,16 @@
   <h6><strong>Assembly</strong>: Hashgraph.dll</h6>
   <h5 id="Hashgraph_SubmitMessageReceipt_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class SubmitMessageReceipt : TransactionReceipt</code></pre>
+    <pre><code class="lang-csharp hljs">public class SubmitMessageReceipt : TransactionReceipt, IEquatable&lt;TransactionReceipt&gt;, IEquatable&lt;SubmitMessageReceipt&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SubmitMessageReceipt_RunningHash.md&amp;value=---%0Auid%3A%20Hashgraph.SubmitMessageReceipt.RunningHash%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_SubmitMessageReceipt_RunningHash.md&amp;value=---%0Auid%3A%20Hashgraph.SubmitMessageReceipt.RunningHash%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/SubmitMessageReceipt.cs/#L17">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/SubmitMessageReceipt.cs/#L16">View Source</a>
   </span>
   <a id="Hashgraph_SubmitMessageReceipt_RunningHash_" data-uid="Hashgraph.SubmitMessageReceipt.RunningHash*"></a>
   <h4 id="Hashgraph_SubmitMessageReceipt_RunningHash" data-uid="Hashgraph.SubmitMessageReceipt.RunningHash">RunningHash</h4>
@@ -161,10 +169,10 @@ Submission.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SubmitMessageReceipt_RunningHashVersion.md&amp;value=---%0Auid%3A%20Hashgraph.SubmitMessageReceipt.RunningHashVersion%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_SubmitMessageReceipt_RunningHashVersion.md&amp;value=---%0Auid%3A%20Hashgraph.SubmitMessageReceipt.RunningHashVersion%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/SubmitMessageReceipt.cs/#L23">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/SubmitMessageReceipt.cs/#L22">View Source</a>
   </span>
   <a id="Hashgraph_SubmitMessageReceipt_RunningHashVersion_" data-uid="Hashgraph.SubmitMessageReceipt.RunningHashVersion*"></a>
   <h4 id="Hashgraph_SubmitMessageReceipt_RunningHashVersion" data-uid="Hashgraph.SubmitMessageReceipt.RunningHashVersion">RunningHashVersion</h4>
@@ -194,10 +202,10 @@ generating the running hash digest.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SubmitMessageReceipt_SequenceNumber.md&amp;value=---%0Auid%3A%20Hashgraph.SubmitMessageReceipt.SequenceNumber%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_SubmitMessageReceipt_SequenceNumber.md&amp;value=---%0Auid%3A%20Hashgraph.SubmitMessageReceipt.SequenceNumber%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/SubmitMessageReceipt.cs/#L27">View Source</a>
+    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/SubmitMessageReceipt.cs/#L26">View Source</a>
   </span>
   <a id="Hashgraph_SubmitMessageReceipt_SequenceNumber_" data-uid="Hashgraph.SubmitMessageReceipt.SequenceNumber*"></a>
   <h4 id="Hashgraph_SubmitMessageReceipt_SequenceNumber" data-uid="Hashgraph.SubmitMessageReceipt.SequenceNumber">SequenceNumber</h4>
@@ -223,6 +231,13 @@ generating the running hash digest.</p>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
 </article>
           </div>
           
@@ -231,10 +246,10 @@ generating the running hash digest.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/new/master/apiSpec/new?filename=Hashgraph_SubmitMessageReceipt.md&amp;value=---%0Auid%3A%20Hashgraph.SubmitMessageReceipt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/new/main/apiSpec/new?filename=Hashgraph_SubmitMessageReceipt.md&amp;value=---%0Auid%3A%20Hashgraph.SubmitMessageReceipt%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/master/src/Hashgraph/Consensus/SubmitMessageReceipt.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/bugbytesinc/Hashgraph/blob/main/src/Hashgraph/Consensus/SubmitMessageReceipt.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
