@@ -20,7 +20,7 @@ namespace Hashgraph
     /// 
     /// The supply that is going to be put in circulation is going to be <code>S*(10^D)</code>,
     /// where <code>S</code> is initial supply and <code>D</code> is Decimals. The maximum supply 
-    /// a asset can have is <code>S* (10^D) < 2^63</code>.
+    /// a asset can have is <code>S* (10^D) &lt; 2^63</code>.
     /// 
     /// The asset can be created as immutable if the <code>Administrator</code> endorsement is omitted
     /// or set to <code>None</code>.  In this case, the name, symbol, treasury, management keys, Expiration

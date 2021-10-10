@@ -41,7 +41,7 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction receipt containing the details of the transaction & fees.
+        /// A transaction receipt containing the details of the transaction &amp; fees.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>

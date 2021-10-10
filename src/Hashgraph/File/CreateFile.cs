@@ -42,7 +42,7 @@ namespace Hashgraph
         /// It is executed prior to submitting the request to the network.
         /// </param>
         /// <returns>
-        /// A transaction record with a description of the newly created file & fees.
+        /// A transaction record with a description of the newly created file &amp; fees.
         /// and record information.
         /// </returns>
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>

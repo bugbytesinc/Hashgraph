@@ -44,23 +44,28 @@ namespace Hashgraph
         /// Public constructor.
         /// </summary>
         /// <param name="address">
-        /// Address associated with 
-        /// and paying for this transaction.
+        /// The address of the account that is
+        /// both associated with and pays the
+        /// transaction fees for this transaction.
         /// </param>
         /// <param name="seconds">
-        /// The total number of seconds elapsed since
-        /// the Epoch.
+        /// The total number of seconds elapsed
+        /// since the Epoch.  Represents the 
+        /// earliest point in time the network
+        /// will consider the transaction valid.
         /// </param>
         /// <param name="nanos">
-        /// Total number of nanoseconds elapsed past the
-        /// seconds past the Epoch.
+        /// The number of nanoseconds elapsed past
+        /// the seconds portion of the time period
+        /// identified in the seconds parameter.
         /// </param>
         /// <param name="pending">
-        /// Flag indicating that this transaction ID represents
-        /// a pending transaction and not the transaction that
-        /// scheduled it.  Useful for retrieving receipts and
-        /// records, but cannot be set to true for creating new
-        /// transactions (via setting it in the context).
+        /// Flag indicating that this transaction ID
+        /// represents a pending transaction and not 
+        /// the transaction that scheduled it.  Useful
+        /// retreiving receipts and records, but cannot
+        /// be set to true for creating new transactions
+        /// (via setting it in the context).
         /// </param>
         public TxId(Address address, long seconds, int nanos, bool pending = false)
         {
@@ -76,19 +81,22 @@ namespace Hashgraph
         /// Epoch for use by the network.
         /// </summary>
         /// <param name="address">
-        /// Address associated with 
-        /// and paying for this transaction.
+        /// The address of the account that is
+        /// both associated with and pays the
+        /// transaction fees for this transaction.
         /// </param>
         /// <param name="dateTime">
-        /// The Date & Time stamp associated with the
-        /// transaction.
+        /// The date and time stamp for this transaction.
+        /// Represents the earliest point in time the 
+        /// network will consider the transaction valid.
         /// </param>
         /// <param name="pending">
-        /// Flag indicating that this transaction ID represents
-        /// a pending transaction and not the transaction that
-        /// scheduled it.  Useful for retrieving receipts and
-        /// records, but cannot be set to true for creating new
-        /// transactions (via setting it in the context).
+        /// Flag indicating that this transaction ID
+        /// represents a pending transaction and not 
+        /// the transaction that scheduled it.  Useful
+        /// retreiving receipts and records, but cannot
+        /// be set to true for creating new transactions
+        /// (via setting it in the context).
         /// </param>
         public TxId(Address address, DateTime dateTime, bool pending = false)
         {

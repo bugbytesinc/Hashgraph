@@ -13,7 +13,7 @@ namespace Hashgraph
         /// the confiscate/wipe admin key.
         /// </summary>
         /// <param name="asset">
-        /// The identifier (Address & Serial Number) of the asset to confiscate.
+        /// The identifier (Address &amp; Serial Number) of the asset to confiscate.
         /// </param>
         /// <param name="address">
         /// Address of the account holding the asset to remove.
@@ -72,7 +72,7 @@ namespace Hashgraph
         /// confiscate/wipe admin key.
         /// </summary>
         /// <param name="asset">
-        /// The identifier (Address & Serial Number) of the asset to confiscate.
+        /// The identifier (Address &amp; Serial Number) of the asset to confiscate.
         /// </param>
         /// <param name="address">
         /// Address of the account holding the asset to remove.
@@ -139,7 +139,7 @@ namespace Hashgraph
         /// confiscate/wipe admin key.
         /// </summary>
         /// <param name="asset">
-        /// The identifier (Address & Serial Number) of the asset to confiscate.
+        /// The identifier (Address &amp; Serial Number) of the asset to confiscate.
         /// </param>
         /// <param name="address">
         /// Address of the account holding the asset to remove.
@@ -198,7 +198,7 @@ namespace Hashgraph
         /// confiscate/wipe admin key.
         /// </summary>
         /// <param name="asset">
-        /// The identifier (Address & Serial Number) of the asset to confiscate.
+        /// The identifier (Address &amp; Serial Number) of the asset to confiscate.
         /// </param>
         /// <param name="address">
         /// Address of the account holding the asset to remove.

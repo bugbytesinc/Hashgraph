@@ -57,6 +57,7 @@ namespace Hashgraph
         /// the topic at expiration time.  The topic lifetime will be
         /// extended by the RenewPeriod at expiration time if this account
         /// contains sufficient funds.
+        /// </summary>
         public Address? RenewAccount { get; private init; }
         /// <summary>
         /// Internal constructor from raw response.

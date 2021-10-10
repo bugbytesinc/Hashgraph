@@ -217,7 +217,7 @@ namespace Hashgraph
         }
         /// <summary>
         /// Convenience implicit cast for creating a <code>Signatory</code> 
-        /// directly from a <code>Func<IInvoice, Task> signingCallback</code> 
+        /// directly from a <code>Func&lt;IInvoice, Task&gt; signingCallback</code> 
         /// callback
         /// method.
         /// </summary>
