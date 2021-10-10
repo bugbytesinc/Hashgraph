@@ -6,3 +6,5 @@
   href: ./crypto/toc.yml
 - name: File Manipulation
   href: ./file/toc.yml
+- name: Miscelaneous
+  href: ./misc/toc.yml  

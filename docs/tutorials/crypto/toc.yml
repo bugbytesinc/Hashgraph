@@ -6,3 +6,7 @@
   href: info.md
 - name: Create New Account
   href: create.md
+- name: Update Account
+  href: update.md
+- name: Delete Account
+  href: delete.md
