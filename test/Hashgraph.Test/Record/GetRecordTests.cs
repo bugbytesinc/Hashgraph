@@ -152,7 +152,7 @@ namespace Hashgraph.Test.Record
             Assert.Equal(record1.Memo, callRecord.Memo);
             Assert.Equal(record1.Fee, callRecord.Fee);
             Assert.Equal(record1.CallResult.Error, callRecord.CallResult.Error);
-            Assert.Equal(record1.CallResult.Bloom, callRecord.CallResult.Bloom);
+            Assert.Equal(record1.CallResult.Bloom.ToArray(), callRecord.CallResult.Bloom.ToArray());
             Assert.Equal(record1.CallResult.Gas, callRecord.CallResult.Gas);
             Assert.Equal(record1.CallResult.Events, callRecord.CallResult.Events);
             Assert.Equal(record1.CallResult.CreatedContracts, callRecord.CallResult.CreatedContracts);
@@ -174,7 +174,7 @@ namespace Hashgraph.Test.Record
             Assert.Equal(fx.ContractRecord.Fee, createRecord.Fee);
             Assert.Equal(fx.ContractRecord.Contract, createRecord.Contract);
             Assert.Equal(fx.ContractRecord.CallResult.Error, createRecord.CallResult.Error);
-            Assert.Equal(fx.ContractRecord.CallResult.Bloom, createRecord.CallResult.Bloom);
+            Assert.Equal(fx.ContractRecord.CallResult.Bloom.ToArray(), createRecord.CallResult.Bloom.ToArray());
             Assert.Equal(fx.ContractRecord.CallResult.Gas, createRecord.CallResult.Gas);
             Assert.Equal(fx.ContractRecord.CallResult.Events, createRecord.CallResult.Events);
             Assert.Equal(fx.ContractRecord.CallResult.CreatedContracts, createRecord.CallResult.CreatedContracts);

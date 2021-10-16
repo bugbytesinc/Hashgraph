@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Fixtures
                 Administrator = fx.PublicKey,
                 Signatory = fx.PrivateKey,
                 Memo = "Stateful Contract " + Generator.Code(10),
-                Gas = 2000,
+                Gas = 89532,
                 RenewPeriod = TimeSpan.FromSeconds(7890000),
                 Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
             };
