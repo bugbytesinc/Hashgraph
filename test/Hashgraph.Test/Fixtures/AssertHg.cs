@@ -30,7 +30,6 @@ namespace Hashgraph.Test.Fixtures
             Assert.Equal(status, tokenRecord.KycStatus);
         }
 
-
         public static async Task TokenStatusAsync(TestToken fxToken, TestAccount fxAccount, TokenTradableStatus status)
         {
             var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
@@ -51,6 +50,22 @@ namespace Hashgraph.Test.Fixtures
             Assert.NotNull(tokenRecord);
 
             Assert.Equal(status, tokenRecord.TradableStatus);
+        }
+
+        public static async Task TokenPausedAsync(TestToken fxToken, TokenTradableStatus status)
+        {
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
+            Assert.NotNull(info);
+
+            Assert.Equal(status, info.PauseStatus);
+        }
+
+        public static async Task AssetPausedAsync(TestAsset fxAsset, TokenTradableStatus status)
+        {
+            var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
+            Assert.NotNull(info);
+
+            Assert.Equal(status, info.PauseStatus);
         }
 
         public static async Task TokenBalanceAsync(TestToken fxToken, TestAccount fxAccount, ulong expectedBalance)

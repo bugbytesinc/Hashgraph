@@ -12,6 +12,8 @@ namespace Hashgraph.Test.Fixtures
         public ReadOnlyMemory<byte> GrantPrivateKey;
         public ReadOnlyMemory<byte> SuspendPublicKey;
         public ReadOnlyMemory<byte> SuspendPrivateKey;
+        public ReadOnlyMemory<byte> PausePublicKey;
+        public ReadOnlyMemory<byte> PausePrivateKey;
         public ReadOnlyMemory<byte> ConfiscatePublicKey;
         public ReadOnlyMemory<byte> ConfiscatePrivateKey;
         public ReadOnlyMemory<byte> SupplyPublicKey;
@@ -40,6 +42,7 @@ namespace Hashgraph.Test.Fixtures
             (fx.AdminPublicKey, fx.AdminPrivateKey) = Generator.KeyPair();
             (fx.GrantPublicKey, fx.GrantPrivateKey) = Generator.KeyPair();
             (fx.SuspendPublicKey, fx.SuspendPrivateKey) = Generator.KeyPair();
+            (fx.PausePublicKey, fx.PausePrivateKey) = Generator.KeyPair();
             (fx.ConfiscatePublicKey, fx.ConfiscatePrivateKey) = Generator.KeyPair();
             (fx.SupplyPublicKey, fx.SupplyPrivateKey) = Generator.KeyPair();
             (fx.RoyaltiesPublicKey, fx.RoyaltiesPrivateKey) = Generator.KeyPair();
@@ -58,6 +61,7 @@ namespace Hashgraph.Test.Fixtures
                 Administrator = fx.AdminPublicKey,
                 GrantKycEndorsement = fx.GrantPublicKey,
                 SuspendEndorsement = fx.SuspendPublicKey,
+                PauseEndorsement = fx.PausePublicKey,
                 ConfiscateEndorsement = fx.ConfiscatePublicKey,
                 SupplyEndorsement = fx.SupplyPublicKey,
                 RoyaltyEndorsement = fx.RoyaltiesPublicKey,

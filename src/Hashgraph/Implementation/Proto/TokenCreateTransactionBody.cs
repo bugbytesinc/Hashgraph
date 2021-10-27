@@ -107,6 +107,10 @@ namespace Proto
             {
                 FreezeKey = new Key(createParameters.SuspendEndorsement);
             }
+            if (!createParameters.PauseEndorsement.IsNullOrNone())
+            {
+                PauseKey = new Key(createParameters.PauseEndorsement);
+            }
             if (!createParameters.ConfiscateEndorsement.IsNullOrNone())
             {
                 WipeKey = new Key(createParameters.ConfiscateEndorsement);
@@ -204,6 +208,14 @@ namespace Proto
             if (!createParameters.SuspendEndorsement.IsNullOrNone())
             {
                 FreezeKey = new Key(createParameters.SuspendEndorsement);
+            }
+            if (!createParameters.PauseEndorsement.IsNullOrNone())
+            {
+                PauseKey = new Key(createParameters.PauseEndorsement);
+            }
+            if (!createParameters.PauseEndorsement.IsNullOrNone())
+            {
+                PauseKey = new Key(createParameters.PauseEndorsement);
             }
             if (!createParameters.ConfiscateEndorsement.IsNullOrNone())
             {

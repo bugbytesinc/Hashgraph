@@ -37,7 +37,8 @@ namespace Hashgraph
         /// </summary>
         [Description("INVALID_TRANSACTION_START")] InvalidTransactionStart = 5,
         /// <summary>
-        /// valid transaction duration is a positive non zero number that does not exceed 120 seconds
+        /// The given transactionValidDuration was either non-positive, or greater than the maximum 
+        /// valid duration of 180 secs.
         /// </summary>
         [Description("INVALID_TRANSACTION_DURATION")] InvalidTransactionDuration = 6,
         /// <summary>
@@ -916,8 +917,71 @@ namespace Hashgraph
         /// </summary>
         [Description("EXISTING_AUTOMATIC_ASSOCIATIONS_EXCEED_GIVEN_LIMIT")] ExistingAutomaticAssociationsExceedGivenLimit = 263,
         /// <summary>
-        /// Cannot set the number of automatic associations for an account more than the maximum allowed token associations &lt;tt>tokens.maxPerAccount&lt;/tt>
+        /// Cannot set the number of automatic associations for an account more than the maximum allowed 
+        /// token associations &lt;tt>tokens.maxPerAccount&lt;/tt>.
         /// </summary>
         [Description("REQUESTED_NUM_AUTOMATIC_ASSOCIATIONS_EXCEEDS_ASSOCIATION_LIMIT")] RequestedNumAutomaticAssociationsExceedsAssociationLimit = 264,
+        /// <summary>
+        /// Token is paused. This Token cannot be a part of any kind of Transaction until unpaused.
+        /// </summary>
+        [Description("TOKEN_IS_PAUSED")] TokenIsPaused = 265,
+        /// <summary>
+        /// Pause key is not set on token
+        /// </summary>
+        [Description("TOKEN_HAS_NO_PAUSE_KEY")] TokenHasNoPauseKey = 266,
+        /// <summary>
+        /// The provided pause key was invalid
+        /// </summary>
+        [Description("INVALID_PAUSE_KEY")] InvalidPauseKey = 267,
+        /// <summary> 
+        /// The update file in a freeze transaction body must exist.
+        /// </summary>
+        [Description("FREEZE_UPDATE_FILE_DOES_NOT_EXIST")] FreezeUpdateFileDoesNotExist = 268,
+        /// <summary> 
+        /// The hash of the update file in a freeze transaction body must match the in-memory hash.
+        /// </summary>
+        [Description("FREEZE_UPDATE_FILE_HASH_DOES_NOT_MATCH")] FreezeUpdateFileHashDoesNotMatch = 269,
+        /// <summary> 
+        /// A FREEZE_UPGRADE transaction was handled with no previous update prepared.
+        /// </summary>
+        [Description("NO_UPGRADE_HAS_BEEN_PREPARED")] NoUpgradeHasBeenPrepared = 270,
+        /// <summary> 
+        /// A FREEZE_ABORT transaction was handled with no scheduled freeze.
+        /// </summary>
+        [Description("NO_FREEZE_IS_SCHEDULED")] NoFreezeIsScheduled = 271,
+        /// <summary> 
+        /// The update file hash when handling a FREEZE_UPGRADE transaction differs from the file
+        /// hash at the time of handling the PREPARE_UPGRADE transaction.
+        /// </summary>
+        [Description("UPDATE_FILE_HASH_CHANGED_SINCE_PREPARE_UPGRADE")] UpdateFileHashChangedSincePrepareUpgrade = 272,
+        /// <summary> 
+        /// The given freeze start time was in the (consensus) past.
+        /// </summary>
+        [Description("FREEZE_START_TIME_MUST_BE_FUTURE")] FreezeStartTimeMustBeFuture = 273,
+        /// <summary> 
+        /// The prepared update file cannot be updated or appended until either the upgrade has
+        /// been completed, or a FREEZE_ABORT has been handled.
+        /// </summary>
+        [Description("PREPARED_UPDATE_FILE_IS_IMMUTABLE")] PreparedUpdateFileIsImmutable = 274,
+        /// <summary> 
+        /// Once a freeze is scheduled, it must be aborted before any other type of freeze can
+        /// can be performed.
+        /// </summary>
+        [Description("FREEZE_ALREADY_SCHEDULED")] FreezeAlreadyScheduled = 275,
+        /// <summary> 
+        /// If an NMT upgrade has been prepared, the following operation must be a FREEZE_UPGRADE.
+        /// (To issue a FREEZE_ONLY, submit a FREEZE_ABORT first.)
+        /// </summary>
+        [Description("FREEZE_UPGRADE_IN_PROGRESS")] FreezeUpgradeInProgress = 276,
+        /// <summary> 
+        /// If an NMT upgrade has been prepared, the subsequent FREEZE_UPGRADE transaction must 
+        /// confirm the id of the file to be used in the upgrade.
+        /// </summary>
+        [Description("UPDATE_FILE_ID_DOES_NOT_MATCH_PREPARED")] UpdateFileIdDoesNotMatchPrepared = 277,
+        /// <summary> 
+        /// If an NMT upgrade has been prepared, the subsequent FREEZE_UPGRADE transaction must 
+        /// confirm the hash of the file to be used in the upgrade.
+        /// </summary>
+        [Description("UPDATE_FILE_HASH_DOES_NOT_MATCH_PREPARED")] UpdateFileHashDoesNotMatchPrepared = 278,
     }
 }

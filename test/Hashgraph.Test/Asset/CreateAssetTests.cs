@@ -37,10 +37,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -103,10 +105,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Single(info.Royalties);
             Assert.False(info.Deleted);
@@ -133,6 +137,7 @@ namespace Hashgraph.Test.AssetTokens
                 Administrator = fxTreasury.PublicKey,
                 GrantKycEndorsement = fxTreasury.PublicKey,
                 SuspendEndorsement = fxTreasury.PublicKey,
+                PauseEndorsement = fxTreasury.PublicKey,
                 ConfiscateEndorsement = fxTreasury.PublicKey,
                 SupplyEndorsement = fxTreasury.PublicKey,
                 InitializeSuspended = false,
@@ -155,10 +160,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(createParams.Administrator, info.Administrator);
             Assert.Equal(createParams.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(createParams.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(createParams.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(createParams.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(createParams.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(createParams.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(createParams.Memo, info.Memo);
@@ -405,10 +412,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
@@ -450,10 +459,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
@@ -531,10 +542,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
@@ -723,10 +736,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
@@ -769,10 +784,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
@@ -811,10 +828,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
@@ -848,12 +867,14 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Null(info.RenewPeriod);
             Assert.Null(info.RenewAccount);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
 
