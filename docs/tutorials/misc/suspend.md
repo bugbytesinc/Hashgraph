@@ -25,10 +25,7 @@ class Program
                 ctx.Signatory = new Signatory(payerPrivateKey);
             });
 
-            var receipt = await client.SuspendNetworkAsync(new SuspendNetworkParams
-            {
-                Starting = TimeSpan.FromSeconds(60)
-            });
+            var receipt = await client.SuspendNetworkAsync(DateTime.UtcNow.AddSeconds(60));
             Console.WriteLine($"Status: {receipt.Status}");
         }
         catch (Exception ex)

@@ -142,62 +142,6 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(0, result.Result.Size);
             Assert.Empty(result.CreatedContracts);
         }
-        [Fact(DisplayName = "NETWORK V0.19.0 DEFECT: Query Contract: MaxAllowedReturnSize Is Enforced Is Broken")]
-        public async Task MaxAllowedReturnSizeIsEnforcedDefect()
-        {
-            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(MaxAllowedReturnSizeIsEnforced));
-            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
-
-            //[Fact(DisplayName = "Query Contract: MaxAllowedReturnSize Is Enforced.")]
-            async Task MaxAllowedReturnSizeIsEnforced()
-            {
-                await using var fx = await GreetingContract.CreateAsync(_network);
-
-                var qex = await Assert.ThrowsAsync<ContractException>(async () =>
-                {
-                    await fx.Client.QueryContractAsync(new QueryContractParams
-                    {
-                        Contract = fx.ContractRecord.Contract,
-                        Gas = 4000,
-                        FunctionName = "greet",
-                        ReturnValueCharge = 1000,
-                        MaxAllowedReturnSize = 1
-                    });
-                });
-                Assert.Equal(ResponseCode.ResultSizeLimitExceeded, qex.Status);
-                Assert.StartsWith("Contract Query Failed with Code: ResultSizeLimitExceeded", qex.Message);
-            }
-        }
-        [Fact(DisplayName = "NETWORK V0.19.0 DEFECT: Query Contract: MaxAllowedReturnSize Is Enforced with partial results (is not enforced)")]
-        public async Task MaxAllowedReturnSizeIsEnforcedWithPartialResultsWhenThrowOnFailFalseDefect()
-        {
-            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(MaxAllowedReturnSizeIsEnforcedWithPartialResultsWhenThrowOnFailFalse));            
-            Assert.StartsWith("Result size (96 bytes) exceeded maximum a", testFailException.Expected);
-            Assert.Empty(testFailException.Actual);
-
-            //[Fact(DisplayName = "Query Contract: MaxAllowedReturnSize Is Enforced with partial results")]
-            async Task MaxAllowedReturnSizeIsEnforcedWithPartialResultsWhenThrowOnFailFalse()
-            {
-                await using var fx = await GreetingContract.CreateAsync(_network);
-
-                var result = await fx.Client.QueryContractAsync(new QueryContractParams
-                {
-                    Contract = fx.ContractRecord.Contract,
-                    Gas = 4000,
-                    FunctionName = "greet",
-                    ReturnValueCharge = 1000,
-                    MaxAllowedReturnSize = 1,
-                    ThrowOnFail = false
-                });
-                Assert.NotNull(result);
-                Assert.Equal("Result size (96 bytes) exceeded maximum allowed size (1 bytes)", result.Error);
-                Assert.True(result.Bloom.IsEmpty);
-                Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
-                Assert.Empty(result.Events);
-                Assert.Equal(0, result.Result.Size);
-                Assert.Empty(result.CreatedContracts);
-            }
-        }
         [Fact(DisplayName = "Query Contract: Invalid Network Call Still Raises PreCheckError when ThrowOnFail is False")]
         public async Task InvalidNetworkCallStillRaisesPreCheckErrorWhenThrowOnFailFalse()
         {

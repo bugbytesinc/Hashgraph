@@ -63,36 +63,27 @@ namespace Hashgraph.Test.Contract
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);
         }
 
-        [Fact(DisplayName = "NETWORK V0.19.0 DEFECT: Contract Info: Can Get Imutable Stateful Contract Info (Returns incorrect admin key)")]
-        public async Task UpdateWithInsufficientFundsReturnsRequiredFeeNetwork14Regression()
+        [Fact(DisplayName = "Contract Info: Can Get Imutable Stateful Contract Info")]
+        async Task CanGetImutableStatefulContractInfo()
         {
-            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanGetImutableStatefulContractInfo));
-            Assert.StartsWith("Byte[]", testFailException.Actual);
-            Assert.StartsWith("Byte[]", testFailException.Expected);
-            Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
-
-            //[Fact(DisplayName = "Contract Info: Can Get Imutable Stateful Contract Info")]
-            async Task CanGetImutableStatefulContractInfo()
+            await using var fx = await StatefulContract.CreateAsync(_network, f =>
             {
-                await using var fx = await StatefulContract.CreateAsync(_network, f =>
-                {
-                    f.ContractParams.Administrator = null;
-                });
+                f.ContractParams.Administrator = null;
+            });
 
-                var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
-                Assert.NotNull(info);
-                Assert.Equal(fx.ContractRecord.Contract, info.Contract);
-                Assert.Equal(fx.ContractRecord.Contract, info.Address);  // Assume for now they are equal
-                Assert.NotNull(info.SmartContractId);
-                // Immutable Contracts list their "contract" key as the administrator Key.
-                Assert.Equal(KeyType.Contract, info.Administrator.Type);
-                Assert.Equal(Abi.EncodeAddressPart(info.Contract).ToArray(), info.Administrator.PublicKey.ToArray());
-                Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
-                Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
-                Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
-                Assert.StartsWith(fx.ContractParams.Memo, info.Memo);
-                Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-            }
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);  // Assume for now they are equal
+            Assert.NotNull(info.SmartContractId);
+            // Immutable Contracts list their "contract" key as the administrator Key.
+            Assert.Equal(KeyType.Contract, info.Administrator.Type);
+            Assert.Equal(Abi.EncodeAddressPart(info.Contract).ToArray(), info.Administrator.PublicKey.ToArray());
+            Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
+            Assert.StartsWith(fx.ContractParams.Memo, info.Memo);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
         }
     }
 }
