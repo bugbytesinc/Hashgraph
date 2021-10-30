@@ -51,7 +51,7 @@ namespace Hashgraph.Test.Fixtures
                 File = fx.FileRecord.File,
                 Administrator = fx.PublicKey,
                 Signatory = fx.PrivateKey,
-                Gas = 2000,
+                Gas = 22301,
                 RenewPeriod = TimeSpan.FromSeconds(7890000),
                 Memo = "Greeting Contract " + Generator.Code(10)
             };

@@ -47,7 +47,7 @@ namespace Hashgraph.Test.Fixtures
                 File = fx.FileRecord.File,
                 Administrator = fx.PublicKey,
                 Signatory = fx.PrivateKey,
-                Gas = 2000,
+                Gas = 22350,
                 InitialBalance = 1_000_000,
                 RenewPeriod = TimeSpan.FromSeconds(7890000),
                 Memo = "Payable Contract " + Generator.Code(10)

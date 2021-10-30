@@ -39,6 +39,7 @@ namespace Proto
                 updateParameters.Administrator is null &&
                 updateParameters.GrantKycEndorsement is null &&
                 updateParameters.SuspendEndorsement is null &&
+                updateParameters.PauseEndorsement is null &&
                 updateParameters.ConfiscateEndorsement is null &&
                 updateParameters.SupplyEndorsement is null &&
                 updateParameters.RoyaltiesEndorsement is null &&
@@ -115,6 +116,10 @@ namespace Proto
             if (!(updateParameters.SuspendEndorsement is null))
             {
                 FreezeKey = new Key(updateParameters.SuspendEndorsement);
+            }
+            if (!(updateParameters.PauseEndorsement is null))
+            {
+                PauseKey = new Key(updateParameters.PauseEndorsement);
             }
             if (!(updateParameters.ConfiscateEndorsement is null))
             {

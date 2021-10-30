@@ -32,7 +32,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal("Call Contract", record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Empty(record.CallResult.Error);
-            Assert.True(record.CallResult.Bloom.IsEmpty);
+            Assert.False(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
             Assert.Empty(record.CallResult.CreatedContracts);
@@ -55,7 +55,7 @@ namespace Hashgraph.Test.Contract
             });
             Assert.NotNull(result);
             Assert.Empty(result.Error);
-            Assert.True(result.Bloom.IsEmpty);
+            Assert.False(result.Bloom.IsEmpty);
             Assert.InRange(result.Gas, 0UL, 30_000UL);
             Assert.Empty(result.Events);
             Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
@@ -90,7 +90,7 @@ namespace Hashgraph.Test.Contract
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Empty(record.CallResult.Error);
-            Assert.True(record.CallResult.Bloom.IsEmpty);
+            Assert.False(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
             Assert.Empty(record.CallResult.CreatedContracts);
@@ -129,7 +129,7 @@ namespace Hashgraph.Test.Contract
             Assert.Equal("Call Contract", record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Empty(record.CallResult.Error);
-            Assert.True(record.CallResult.Bloom.IsEmpty);
+            Assert.False(record.CallResult.Bloom.IsEmpty);
             Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
             Assert.Empty(record.CallResult.Events);
             Assert.Empty(record.CallResult.CreatedContracts);

@@ -61,6 +61,11 @@ namespace Hashgraph
         /// </summary>
         public Endorsement? SuspendEndorsement { get; private init; }
         /// <summary>
+        /// Administrator key for signing transactions that can pasue or continue
+        /// the exchange of all assets across all accounts on the network.
+        /// </summary>
+        public Endorsement? PauseEndorsement { get; set; }
+        /// <summary>
         /// Administrator key for signing transaction that completely remove tokens
         /// from an crypto address.
         /// </summary>
@@ -83,6 +88,10 @@ namespace Hashgraph
         /// The current default KYC status of the token.
         /// </summary>
         public TokenKycStatus KycStatus { get; private init; }
+        /// <summary>
+        /// The current paused/frozen status of the token for all accounts.
+        /// </summary>
+        public TokenTradableStatus PauseStatus { get; private init; }
         /// <summary>
         /// The list of fixed royalties assessed on transactions
         /// by the network when transferring this token.
@@ -136,11 +145,13 @@ namespace Hashgraph
             Administrator = info.AdminKey?.ToEndorsement();
             GrantKycEndorsement = info.KycKey?.ToEndorsement();
             SuspendEndorsement = info.FreezeKey?.ToEndorsement();
+            PauseEndorsement = info.PauseKey?.ToEndorsement();
             ConfiscateEndorsement = info.WipeKey?.ToEndorsement();
             SupplyEndorsement = info.SupplyKey?.ToEndorsement();
             RoyaltiesEndorsement = info.FeeScheduleKey?.ToEndorsement();
             Royalties = info.CustomFees.Select(fee => fee.ToRoyalty()).ToList().AsReadOnly();
             TradableStatus = (TokenTradableStatus)info.DefaultFreezeStatus;
+            PauseStatus = (TokenTradableStatus)info.PauseStatus;
             KycStatus = (TokenKycStatus)info.DefaultKycStatus;
             Expiration = info.Expiry.ToDateTime();
             RenewPeriod = info.AutoRenewPeriod?.ToTimeSpan();

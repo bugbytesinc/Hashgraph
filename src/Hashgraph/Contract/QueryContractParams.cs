@@ -33,12 +33,6 @@ namespace Hashgraph
         /// </summary>
         public object[] FunctionArgs { get; set; }
         /// <summary>
-        /// The maximum number of bytes that are allowed to be returned, if the
-        /// contract attemps to return more information than the max allowed size
-        /// it will fail.
-        /// </summary>
-        public long MaxAllowedReturnSize { get; set; } = 256;
-        /// <summary>
         /// Throw a <see cref="ContractException"/> exception if the query
         /// call returns a code other than success.  Default is true to maintain
         /// backwards compatibility.  If set to false, the 

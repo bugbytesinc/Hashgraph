@@ -33,7 +33,6 @@ namespace Proto
             ContractID = new ContractID(queryParameters.Contract);
             Gas = queryParameters.Gas;
             FunctionParameters = ByteString.CopyFrom(Abi.EncodeFunctionWithArguments(queryParameters.FunctionName, queryParameters.FunctionArgs).Span);
-            MaxResultSize = queryParameters.MaxAllowedReturnSize;
         }
     }
 }

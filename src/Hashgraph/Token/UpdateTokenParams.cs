@@ -46,6 +46,12 @@ namespace Hashgraph
         /// </summary>
         public Endorsement? SuspendEndorsement { get; set; }
         /// <summary>
+        /// Changes the administrator key for signing transactions that can 
+        /// pasue or continue the exchange of all assets across all accounts 
+        /// on the network.
+        /// </summary>
+        public Endorsement? PauseEndorsement { get; set; }
+        /// <summary>
         /// Changes the administrator key for signing transaction that completely 
         /// remove tokens from an crypto address.
         /// </summary>

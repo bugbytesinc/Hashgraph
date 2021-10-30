@@ -28,7 +28,7 @@ namespace Hashgraph.Test.Contract
             });
             Assert.NotNull(result);
             Assert.Empty(result.Error);
-            Assert.True(result.Bloom.IsEmpty);
+            Assert.False(result.Bloom.IsEmpty);
             Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(result.Events);
             Assert.Equal("Hello, world!", result.Result.As<string>());
@@ -41,13 +41,13 @@ namespace Hashgraph.Test.Contract
             var result = await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 4000,
+                Gas = 8000,
                 ReturnValueCharge = 4000,
                 FunctionName = "get_message"
             });
             Assert.NotNull(result);
             Assert.Empty(result.Error);
-            Assert.True(result.Bloom.IsEmpty);
+            Assert.False(result.Bloom.IsEmpty);
             Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(result.Events);
             Assert.Equal(fx.ContractParams.Arguments[0] as string, result.Result.As<string>());
@@ -72,8 +72,8 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(qex.TxId);
             Assert.Equal(0ul, qex.RequiredFee);
             Assert.NotNull(qex.CallResult);
-            Assert.Equal("Not enough gas for 'PUSH1' cause spending: invokeGas[1], gas[3], usedGas[0];", qex.CallResult.Error);
-            Assert.True(qex.CallResult.Bloom.IsEmpty);
+            Assert.Equal("INSUFFICIENT_GAS", qex.CallResult.Error);
+            Assert.False(qex.CallResult.Bloom.IsEmpty);
             Assert.InRange(qex.CallResult.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(qex.CallResult.Events);
             Assert.Equal(0, qex.CallResult.Result.Size);
@@ -92,8 +92,8 @@ namespace Hashgraph.Test.Contract
                 ThrowOnFail = false
             });
             Assert.NotNull(result);
-            Assert.Equal("Not enough gas for 'PUSH1' cause spending: invokeGas[1], gas[3], usedGas[0];", result.Error);
-            Assert.True(result.Bloom.IsEmpty);
+            Assert.Equal("INSUFFICIENT_GAS", result.Error);
+            Assert.False(result.Bloom.IsEmpty);
             Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(result.Events);
             Assert.Equal(0, result.Result.Size);
@@ -135,49 +135,8 @@ namespace Hashgraph.Test.Contract
                 ThrowOnFail = false
             });
             Assert.NotNull(result);
-            Assert.Equal("Attempt to call a state modifying opcode inside STATICCALL", result.Error);
-            Assert.True(result.Bloom.IsEmpty);
-            Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
-            Assert.Empty(result.Events);
-            Assert.Equal(0, result.Result.Size);
-            Assert.Empty(result.CreatedContracts);
-        }
-        [Fact(DisplayName = "Query Contract: MaxAllowedReturnSize Is Enforced.")]
-        public async Task MaxAllowedReturnSizeIsEnforced()
-        {
-            await using var fx = await GreetingContract.CreateAsync(_network);
-
-            var qex = await Assert.ThrowsAsync<ContractException>(async () =>
-            {
-                await fx.Client.QueryContractAsync(new QueryContractParams
-                {
-                    Contract = fx.ContractRecord.Contract,
-                    Gas = 4000,
-                    FunctionName = "greet",
-                    ReturnValueCharge = 1000,
-                    MaxAllowedReturnSize = 1
-                });
-            });
-            Assert.Equal(ResponseCode.ResultSizeLimitExceeded, qex.Status);
-            Assert.StartsWith("Contract Query Failed with Code: ResultSizeLimitExceeded", qex.Message);
-        }
-        [Fact(DisplayName = "Query Contract: MaxAllowedReturnSize Is Enforced with partial results")]
-        public async Task MaxAllowedReturnSizeIsEnforcedWithPartialResultsWhenThrowOnFailFalse()
-        {
-            await using var fx = await GreetingContract.CreateAsync(_network);
-
-            var result = await fx.Client.QueryContractAsync(new QueryContractParams
-            {
-                Contract = fx.ContractRecord.Contract,
-                Gas = 4000,
-                FunctionName = "greet",
-                ReturnValueCharge = 1000,
-                MaxAllowedReturnSize = 1,
-                ThrowOnFail = false
-            });
-            Assert.NotNull(result);
-            Assert.Equal("Result size (96 bytes) exceeded maximum allowed size (1 bytes)", result.Error);
-            Assert.True(result.Bloom.IsEmpty);
+            Assert.Equal("ILLEGAL_STATE_CHANGE", result.Error);
+            Assert.False(result.Bloom.IsEmpty);
             Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
             Assert.Empty(result.Events);
             Assert.Equal(0, result.Result.Size);

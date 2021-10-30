@@ -1,6 +1,5 @@
 ﻿using Proto;
 using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Hashgraph
@@ -66,12 +65,6 @@ namespace Hashgraph
         }
         internal AssetInfo(Response response) : this(response.TokenGetNftInfo.Nft)
         {
-        }
-        public static ReadOnlyCollection<AssetInfo> AssetInfoCollection(Response response)
-        {
-            return response.ResponseCase == Response.ResponseOneofCase.TokenGetNftInfos ?
-                response.TokenGetNftInfos.Nfts.Select(info => new AssetInfo(info)).ToList().AsReadOnly() :
-                response.TokenGetAccountNftInfos.Nfts.Select(info => new AssetInfo(info)).ToList().AsReadOnly();
         }
     }
 }

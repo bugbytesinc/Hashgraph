@@ -38,7 +38,6 @@ namespace Proto
             if (updateParameters.Expiration is null &&
                 updateParameters.Administrator is null &&
                 updateParameters.RenewPeriod is null &&
-                updateParameters.File is null &&
                 updateParameters.Memo is null)
             {
                 throw new ArgumentException("The Contract Updates contains no update properties, it is blank.", nameof(updateParameters));
@@ -55,10 +54,6 @@ namespace Proto
             if (updateParameters.RenewPeriod.HasValue)
             {
                 AutoRenewPeriod = new Duration(updateParameters.RenewPeriod.Value);
-            }
-            if (!(updateParameters.File is null))
-            {
-                FileID = new FileID(updateParameters.File);
             }
             if (!string.IsNullOrWhiteSpace(updateParameters.Memo))
             {

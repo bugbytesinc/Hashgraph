@@ -52,17 +52,6 @@ namespace Hashgraph
         /// </summary>
         public TimeSpan? RenewPeriod { get; set; }
         /// <summary>
-        /// The address of the file containing new bytecode for the contract. 
-        /// The bytecode is encoded as a hexadecimal string in the file 
-        /// (not directly as the bytes of the bytescode).
-        /// </summary>
-        /// <remarks>
-        /// NOTE: This functionality is currently not implemented by the
-        /// network.  Therefore it is marked internal until such time it
-        /// is implemented correctly.
-        /// </remarks>
-        internal Address? File { get; set; }
-        /// <summary>
         /// The memo to be associated with the contract.  Maximum
         /// of 100 bytes.
         /// </summary>

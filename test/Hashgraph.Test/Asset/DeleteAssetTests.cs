@@ -76,9 +76,11 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.True(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
@@ -142,15 +144,15 @@ namespace Hashgraph.Test.AssetTokens
             await using var fxAccount2 = await TestAccount.CreateAsync(_network);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
 
-            await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset.Record.Token,1), fxAsset.TreasuryAccount.Record.Address, fxAccount1.Record.Address, fxAsset.TreasuryAccount.PrivateKey);
-            await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset.Record.Token,2), fxAsset.TreasuryAccount.Record.Address, fxAccount2.Record.Address, fxAsset.TreasuryAccount.PrivateKey);
+            await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset.Record.Token, 1), fxAsset.TreasuryAccount.Record.Address, fxAccount1.Record.Address, fxAsset.TreasuryAccount.PrivateKey);
+            await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset.Record.Token, 2), fxAsset.TreasuryAccount.Record.Address, fxAccount2.Record.Address, fxAsset.TreasuryAccount.PrivateKey);
 
             var record = await fxAccount1.Client.DeleteTokenAsync(fxAsset.Record.Token, fxAsset.AdminPrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset.Record.Token,1), fxAccount1.Record.Address, fxAccount2.Record.Address, fxAccount1.PrivateKey);
+                await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset.Record.Token, 1), fxAccount1.Record.Address, fxAccount2.Record.Address, fxAccount1.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenWasDeleted, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenWasDeleted", tex.Message);
@@ -262,7 +264,7 @@ namespace Hashgraph.Test.AssetTokens
             await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
             await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
-            var circulation = (ulong) fxAsset.Metadata.Length;
+            var circulation = (ulong)fxAsset.Metadata.Length;
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -311,9 +313,11 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
@@ -341,9 +345,11 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
             Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);

@@ -15,7 +15,10 @@ namespace Hashgraph.Extensions
         /// </summary>
         public long Id { get; internal init; }
         /// <summary>
-        /// The RSA public key of the node.
+        /// The RSA public key of the node. Used to sign stream files 
+        /// (e.g., record stream files). Precisely, this field is a string 
+        /// of hexadecimal characters which, translated to binary, are the 
+        /// public key's DER encoding.  
         /// </summary>
         public string RsaPublicKey { get; internal init; }
         /// <summary>
@@ -23,7 +26,10 @@ namespace Hashgraph.Extensions
         /// </summary>
         public Address Address { get; internal init; }
         /// <summary>
-        /// Hash of the X509 certificate for gRPC traffict to this node.
+        /// Hash of the nodes TLS certificate. This field is a string of 
+        /// hexadecimal characters which, translated to binary, are the SHA-384 hash of 
+        /// the UTF-8 NFKD encoding of the node's TLS cert in PEM format. Its value can be 
+        /// used to verify the node's certificate it presents during TLS negotiations.
         /// </summary>
         public ReadOnlyMemory<byte> CertificateHash { get; internal init; }
         /// <summary>

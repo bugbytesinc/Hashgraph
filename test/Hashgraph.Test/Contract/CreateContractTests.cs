@@ -125,12 +125,12 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(fxContract.ContractRecord.Fee, 0UL, ulong.MaxValue);
 
             Assert.Empty(fxContract.ContractRecord.CallResult.Error);
-            Assert.True(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
+            Assert.False(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
             Assert.InRange(fxContract.ContractRecord.CallResult.Gas, 0UL, (ulong)fxContract.ContractParams.Gas);
             Assert.Empty(fxContract.ContractRecord.CallResult.Events);
-            Assert.Empty(fxContract.ContractRecord.CallResult.CreatedContracts);
-            Assert.Equal(0, fxContract.ContractRecord.CallResult.Result.Size);
-            Assert.True(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
+            Assert.NotEmpty(fxContract.ContractRecord.CallResult.CreatedContracts);
+            Assert.NotEqual(0, fxContract.ContractRecord.CallResult.Result.Size);
+            Assert.False(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
         }
         [Fact(DisplayName = "Create Contract: Random Constructor Data when not needed is ignored.")]
         public async Task CanCreateContractWithUnneededConstructorData()
@@ -148,12 +148,13 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(fxContract.ContractRecord.Fee, 0UL, ulong.MaxValue);
 
             Assert.Empty(fxContract.ContractRecord.CallResult.Error);
-            Assert.True(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
+            Assert.False(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
             Assert.InRange(fxContract.ContractRecord.CallResult.Gas, 0UL, (ulong)fxContract.ContractParams.Gas);
             Assert.Empty(fxContract.ContractRecord.CallResult.Events);
-            Assert.Empty(fxContract.ContractRecord.CallResult.CreatedContracts);
-            Assert.Equal(0, fxContract.ContractRecord.CallResult.Result.Size);
-            Assert.True(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
+            Assert.Single(fxContract.ContractRecord.CallResult.CreatedContracts);
+            Assert.Equal(fxContract.ContractRecord.Contract,fxContract.ContractRecord.CallResult.CreatedContracts[0]);
+            Assert.NotEqual(0, fxContract.ContractRecord.CallResult.Result.Size);
+            Assert.False(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
         }
         [Fact(DisplayName = "Create Contract: Can create without returning record.")]
         public async Task CanCreateContractWithoutReturningRecordData()
@@ -177,12 +178,13 @@ namespace Hashgraph.Test.Contract
             Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
 
             Assert.Empty(fx.ContractRecord.CallResult.Error);
-            Assert.True(fx.ContractRecord.CallResult.Bloom.IsEmpty);
+            Assert.False(fx.ContractRecord.CallResult.Bloom.IsEmpty);
             Assert.InRange(fx.ContractRecord.CallResult.Gas, 0UL, (ulong)fx.ContractParams.Gas);
             Assert.Empty(fx.ContractRecord.CallResult.Events);
-            Assert.Empty(fx.ContractRecord.CallResult.CreatedContracts);
-            Assert.Equal(0, fx.ContractRecord.CallResult.Result.Size);
-            Assert.True(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
+            Assert.Single(fx.ContractRecord.CallResult.CreatedContracts);
+            Assert.Equal(fx.ContractRecord.Contract,fx.ContractRecord.CallResult.CreatedContracts[0]);
+            Assert.NotEqual(0, fx.ContractRecord.CallResult.Result.Size);
+            Assert.False(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
         }
 
         [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]

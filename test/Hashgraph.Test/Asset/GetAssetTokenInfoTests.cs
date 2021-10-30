@@ -32,10 +32,12 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(fx.Params.Administrator, info.Administrator);
             Assert.Equal(fx.Params.GrantKycEndorsement, info.GrantKycEndorsement);
             Assert.Equal(fx.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fx.Params.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(fx.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(fx.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fx.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.Equal(TokenType.Asset, info.Type);

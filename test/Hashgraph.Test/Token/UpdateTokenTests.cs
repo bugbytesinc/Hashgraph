@@ -63,6 +63,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxTemplate.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.Equal(fxTemplate.Params.Memo, info.Memo);
@@ -127,6 +128,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxTemplate.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxTemplate.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -454,6 +456,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -489,6 +492,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -525,6 +529,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -565,6 +570,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -605,6 +611,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -645,6 +652,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -685,6 +693,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -725,6 +734,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -765,6 +775,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -826,6 +837,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -871,6 +883,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -928,6 +941,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(fxToken.Params.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
@@ -1015,6 +1029,43 @@ namespace Hashgraph.Test.Token
             Assert.Equal(Address.None, royalty.Token);
             Assert.Equal(1, royalty.Amount);
         }
+        [Fact(DisplayName = "Update Token: Can Update Token Fixed Royalty And Get Record")]
+        public async Task CanUpdateTokenFixedRoyaltyAndGetRecord()
+        {
+            await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+            {
+                fx.Params.Royalties = new FixedRoyalty[]
+                {
+                    new FixedRoyalty(fx.TreasuryAccount, Address.None, 10)
+                };
+            });
+
+            var royalties = new FixedRoyalty[]
+            {
+               new FixedRoyalty(fxToken.TreasuryAccount, Address.None, 1)
+            };
+
+            var record = await fxToken.Client.UpdateRoyaltiesWithRecordAsync(fxToken, royalties, fxToken.RoyaltiesPrivateKey);
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.NotNull(record.CurrentExchangeRate);
+            Assert.NotNull(record.NextExchangeRate);
+            Assert.NotEmpty(record.Hash.ToArray());
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(_network.Payer, record.Id.Address);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Single(info.Royalties);
+
+            var royalty = info.Royalties[0] as FixedRoyalty;
+            Assert.NotNull(royalty);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, royalty.Account);
+            Assert.Equal(Address.None, royalty.Token);
+            Assert.Equal(1, royalty.Amount);
+        }
+
         [Fact(DisplayName = "Update Token: Can Update Token Fractional Royalty")]
         public async Task CanUpdateTokenFractionalRoyalty()
         {

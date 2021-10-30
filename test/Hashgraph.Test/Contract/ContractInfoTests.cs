@@ -62,8 +62,9 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(ResponseCode.InvalidContractId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidContractId", pex.Message);
         }
+
         [Fact(DisplayName = "Contract Info: Can Get Imutable Stateful Contract Info")]
-        public async Task CanGetImutableStatefulContractInfo()
+        async Task CanGetImutableStatefulContractInfo()
         {
             await using var fx = await StatefulContract.CreateAsync(_network, f =>
             {
