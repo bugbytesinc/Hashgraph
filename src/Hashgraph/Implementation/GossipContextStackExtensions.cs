@@ -307,7 +307,7 @@ namespace Hashgraph
                     throw new ConsensusException("Network failed to reach concensus within the configured retry time window, It is possible the network may still reach concensus for this transaction.", transactionId.AsTxId(), (ResponseCode)status);
                 case ResponseCodeEnum.TransactionExpired:
                     throw new ConsensusException("Network failed to reach concensus before transaction request expired.", transactionId.AsTxId(), (ResponseCode)status);
-                case ResponseCodeEnum.RecordNotFound:
+                case ResponseCodeEnum.ReceiptNotFound:
                     throw new ConsensusException("Network failed to find a receipt for given transaction.", transactionId.AsTxId(), (ResponseCode)status);
                 default:
                     return response.TransactionGetReceipt.Receipt;
