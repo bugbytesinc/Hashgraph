@@ -438,6 +438,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.UpdateTokenAsync(updateParams);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Token, status: InvalidSignature", tex.Message);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
@@ -552,6 +553,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.UpdateTokenAsync(updateParams);
             });
             Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Token, status: InvalidTreasuryAccountForToken", tex.Message);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
@@ -799,6 +801,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.UpdateTokenAsync(updateParams);
             });
             Assert.Equal(ResponseCode.TokenIsImmutable, tex.Status);
+            Assert.Equal(ResponseCode.TokenIsImmutable, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Token, status: TokenIsImmutable", tex.Message);
         }
         [Fact(DisplayName = "Update Token: Updating the Treasury Without Signing Raises Error")]
@@ -819,6 +822,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.UpdateTokenAsync(updateParams);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Token, status: InvalidSignature", tex.Message);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
@@ -865,6 +869,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.UpdateTokenAsync(updateParams);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Token, status: InvalidSignature", tex.Message);
 
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
@@ -973,6 +978,7 @@ namespace Hashgraph.Test.Token
                 });
             });
             Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Receipt.Status);
 
             // Confirm it did not change the Treasury Account
             var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
@@ -999,6 +1005,7 @@ namespace Hashgraph.Test.Token
                 });
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
         [Fact(DisplayName = "Update Token: Can Update Token Fixed Royalty")]

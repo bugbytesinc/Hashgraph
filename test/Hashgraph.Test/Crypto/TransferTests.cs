@@ -635,7 +635,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.ReceiptNotFound, tex.Status);
             Assert.StartsWith("Network failed to return a transaction receipt, Status Code Returned: ReceiptNotFound", tex.Message);
 
-            var executedReceipts =  await fxPayer.Client.GetAllReceiptsAsync(record.Pending.TxId);
+            var executedReceipts = await fxPayer.Client.GetAllReceiptsAsync(record.Pending.TxId);
             Assert.Empty(executedReceipts);
 
             var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(record.Pending.Id, fxPayer);
@@ -694,6 +694,32 @@ namespace Hashgraph.Test.Crypto
             await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
             await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
             Assert.True(await fxPayer.Client.GetAccountBalanceAsync(fxPayer) < fxPayer.CreateParams.InitialBalance);
+        }
+        [Fact(DisplayName = "Transfer: Duplicate Scheduled Transfer Returns Pending Information in Exception")]
+        public async Task DuplicateScheduledTransferReturnsPendingInformationInException()
+        {
+            var initialBalance = (ulong)Generator.Integer(100, 1000);
+            var transferAmount = initialBalance / 2;
+            await using var fxAccount1 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxAccount2 = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            var paramsSignatory = new Signatory(new PendingParams());
+
+            var schedulingReceipt = await fxAccount1.Client.TransferAsync(fxAccount1, fxAccount2, (long)transferAmount, paramsSignatory);
+            Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+            Assert.NotNull(schedulingReceipt.Pending);
+            Assert.NotEqual(Address.None, schedulingReceipt.Pending.Id);
+            Assert.NotEqual(TxId.None, schedulingReceipt.Pending.TxId);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fxAccount1.Client.TransferAsync(fxAccount1, fxAccount2, (long)transferAmount, paramsSignatory);
+            });
+            Assert.Equal(ResponseCode.IdenticalScheduleAlreadyCreated, tex.Status);
+            Assert.StartsWith("Unable to schedule transaction, status: IdenticalScheduleAlreadyCreated", tex.Message);
+            Assert.Equal(ResponseCode.IdenticalScheduleAlreadyCreated, tex.Receipt.Status);
+            Assert.NotNull(tex.Receipt.Pending);
+            Assert.Equal(schedulingReceipt.Pending.Id, tex.Receipt.Pending.Id);
+            Assert.Equal(schedulingReceipt.Pending.TxId, tex.Receipt.Pending.TxId);
         }
     }
 }

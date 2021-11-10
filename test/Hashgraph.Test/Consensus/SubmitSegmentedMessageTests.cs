@@ -350,6 +350,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.SubmitMessageAsync(submitParams);
             });
             Assert.Equal(ResponseCode.InvalidTopicId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTopicId, tex.Receipt.Status);
             Assert.StartsWith("Submit Message failed, status: InvalidTopicId", tex.Message);
         }
         [Fact(DisplayName = "Submit Segmented Message: Submitting Messages Can Retrieve Record")]
@@ -582,7 +583,7 @@ namespace Hashgraph.Test.Topic
                 Segment = Encoding.ASCII.GetBytes(Generator.String(120, 199)),
                 Index = 1,
                 TotalSegmentCount = 1,
-                Signatory = new Signatory( 
+                Signatory = new Signatory(
                     fxTopic.ParticipantPrivateKey,
                     new PendingParams
                     {
@@ -595,7 +596,7 @@ namespace Hashgraph.Test.Topic
             Assert.True(schedulingReceipt.RunningHash.IsEmpty);
             Assert.Equal(0ul, schedulingReceipt.RunningHashVersion);
 
-            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(schedulingReceipt.Pending.Id,fxPayer);
+            var counterReceipt = await fxPayer.Client.SignPendingTransactionAsync(schedulingReceipt.Pending.Id, fxPayer);
 
             var pendingReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Pending.TxId);
             Assert.Equal(ResponseCode.Success, pendingReceipt.Status);

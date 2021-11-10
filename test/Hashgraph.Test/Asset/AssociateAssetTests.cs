@@ -323,6 +323,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount.Record.Address);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to associate Token with Account, status: InvalidSignature", tex.Message);
 
             await AssertHg.AssetNotAssociatedAsync(fxAsset, fxAccount);
@@ -378,6 +379,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, Address.None);
             });
             Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidAccountId, tex.Receipt.Status);
             Assert.StartsWith("Unable to associate Token with Account, status: InvalidAccountId", tex.Message);
         }
         [Fact(DisplayName = "Associate Assets: Associating with Deleted Account Raises Error")]
@@ -393,6 +395,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.AccountDeleted, tex.Status);
+            Assert.Equal(ResponseCode.AccountDeleted, tex.Receipt.Status);
             Assert.StartsWith("Unable to associate Token with Account, status: AccountDeleted", tex.Message);
         }
         [Fact(DisplayName = "Associate Assets: Associating with Duplicate Asset Raises Error")]
@@ -422,6 +425,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.AssociateTokensAsync(assets, fxAccount.Record.Address, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenAlreadyAssociatedToAccount, tex.Status);
+            Assert.Equal(ResponseCode.TokenAlreadyAssociatedToAccount, tex.Receipt.Status);
             Assert.StartsWith("Unable to associate Token with Account, status: TokenAlreadyAssociatedToAccount", tex.Message);
         }
         [Fact(DisplayName = "Associate Assets: Can Associate asset with Contract")]
@@ -470,6 +474,7 @@ namespace Hashgraph.Test.AssetTokens
                         }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

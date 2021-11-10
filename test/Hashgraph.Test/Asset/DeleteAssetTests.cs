@@ -135,6 +135,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAsync(transferParams);
             });
             Assert.Equal(ResponseCode.TokenWasDeleted, tex.Status);
+            Assert.Equal(ResponseCode.TokenWasDeleted, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenWasDeleted", tex.Message);
         }
         [Fact(DisplayName = "Asset Delete: Deleting Asset Prevents Asset Transfers Amongst Third Parties")]
@@ -155,6 +156,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset.Record.Token, 1), fxAccount1.Record.Address, fxAccount2.Record.Address, fxAccount1.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenWasDeleted, tex.Status);
+            Assert.Equal(ResponseCode.TokenWasDeleted, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenWasDeleted", tex.Message);
         }
         [Fact(DisplayName = "Asset Delete: Calling Delete Without Admin Key Raises Error")]
@@ -167,6 +169,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fx.Client.DeleteTokenAsync(fx.Record.Token);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Delete Token, status: InvalidSignature", tex.Message);
 
             var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
@@ -185,6 +188,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fx.Client.DeleteTokenAsync(fx.Record.Token, fx.AdminPrivateKey);
             });
             Assert.Equal(ResponseCode.TokenIsImmutable, tex.Status);
+            Assert.Equal(ResponseCode.TokenIsImmutable, tex.Receipt.Status);
             Assert.StartsWith("Unable to Delete Token, status: TokenIsImmutable", tex.Message);
 
             var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
@@ -222,6 +226,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fx.Client.DeleteTokenAsync(fx.Record.Token, fx.AdminPrivateKey);
             });
             Assert.Equal(ResponseCode.TokenWasDeleted, tex.Status);
+            Assert.Equal(ResponseCode.TokenWasDeleted, tex.Receipt.Status);
             Assert.StartsWith("Unable to Delete Token, status: TokenWasDeleted", tex.Message);
         }
         [Fact(DisplayName = "Asset Delete: Calling Delete with invalid ID raises Error")]
@@ -235,6 +240,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.DeleteTokenAsync(fxAccount.Record.Address, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.InvalidTokenId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTokenId, tex.Receipt.Status);
             Assert.StartsWith("Unable to Delete Token, status: InvalidTokenId", tex.Message);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
@@ -275,6 +281,7 @@ namespace Hashgraph.Test.AssetTokens
                 });
             });
             Assert.Equal(ResponseCode.AccountIsTreasury, tex.Status);
+            Assert.Equal(ResponseCode.AccountIsTreasury, tex.Receipt.Status);
             Assert.StartsWith("Unable to delete account, status: AccountIsTreasury", tex.Message);
 
             var serialNumbersTransfered = Enumerable.Range(1, (int)circulation).Select(i => (long)i);
@@ -296,6 +303,7 @@ namespace Hashgraph.Test.AssetTokens
                 });
             });
             Assert.Equal(ResponseCode.AccountIsTreasury, tex.Status);
+            Assert.Equal(ResponseCode.AccountIsTreasury, tex.Receipt.Status);
             Assert.StartsWith("Unable to delete account, status: AccountIsTreasury", tex.Message);
 
             // Confirm Assets still exist in account 2
@@ -381,6 +389,7 @@ namespace Hashgraph.Test.AssetTokens
                 }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

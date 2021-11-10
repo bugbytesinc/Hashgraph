@@ -198,6 +198,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Resume Token, status: InvalidSignature", tex.Message);
 
             var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
@@ -211,6 +212,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
         }
         [Fact(DisplayName = "Resume Assets: Can Not Resume Asset when Freeze Not Enabled")]
@@ -233,6 +235,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
             });
             Assert.Equal(ResponseCode.TokenHasNoFreezeKey, tex.Status);
+            Assert.Equal(ResponseCode.TokenHasNoFreezeKey, tex.Receipt.Status);
             Assert.StartsWith("Unable to Resume Token, status: TokenHasNoFreezeKey", tex.Message);
 
             var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
@@ -269,6 +272,7 @@ namespace Hashgraph.Test.AssetToken
                         }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

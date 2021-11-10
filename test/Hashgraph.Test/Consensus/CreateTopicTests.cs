@@ -147,6 +147,7 @@ namespace Hashgraph.Test.Topic
                 });
             });
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Status);
+            Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Receipt.Status);
             Assert.StartsWith("Unable to create Consensus Topic, status: AutorenewDurationNotInRange", tex.Message);
         }
         [Fact(DisplayName = "Create Topic: Can Create Topic with no Renew Account")]
@@ -177,6 +178,7 @@ namespace Hashgraph.Test.Topic
                 });
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to create Consensus Topic, status: InvalidSignature", tex.Message);
         }
 
@@ -186,7 +188,8 @@ namespace Hashgraph.Test.Topic
             await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await TestTopic.CreateAsync(_network, fx => {
+                await TestTopic.CreateAsync(_network, fx =>
+                {
                     fx.Params.Signatory = new Signatory(fx.Signatory, new PendingParams
                     {
                         PendingPayer = fxPayer,
@@ -194,6 +197,7 @@ namespace Hashgraph.Test.Topic
                 });
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

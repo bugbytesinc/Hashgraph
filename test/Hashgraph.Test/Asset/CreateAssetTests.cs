@@ -205,6 +205,7 @@ namespace Hashgraph.Test.AssetTokens
                 });
             });
             Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", tex.Message);
         }
         [Fact(DisplayName = "Create Asset: Can Set Treasury to Contract Account")]
@@ -608,6 +609,7 @@ namespace Hashgraph.Test.AssetTokens
                 });
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to create Token, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Create Asset: Missing Grant Admin Signature Is Allowed")]
@@ -687,6 +689,7 @@ namespace Hashgraph.Test.AssetTokens
                 });
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to create Token, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Create Asset: Expiration time in Past Raises Error")]
@@ -908,6 +911,7 @@ namespace Hashgraph.Test.AssetTokens
                 });
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

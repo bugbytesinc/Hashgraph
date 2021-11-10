@@ -135,6 +135,7 @@ namespace Hashgraph.Test.Topic
                 });
             });
             Assert.Equal(ResponseCode.AutorenewAccountNotAllowed, tex.Status);
+            Assert.Equal(ResponseCode.AutorenewAccountNotAllowed, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Topic, status: AutorenewAccountNotAllowed", tex.Message);
         }
         [Fact(DisplayName = "Update Topic: Can Update Administrator to None (Make Imutable)")]
@@ -183,6 +184,7 @@ namespace Hashgraph.Test.Topic
                 });
             });
             Assert.Equal(ResponseCode.Unauthorized, tex.Status);
+            Assert.Equal(ResponseCode.Unauthorized, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Topic, status: Unauthorized", tex.Message);
         }
         [Fact(DisplayName = "Update Topic: Can Update Participant")]
@@ -245,6 +247,7 @@ namespace Hashgraph.Test.Topic
                 });
             });
             Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Status);
+            Assert.Equal(ResponseCode.AutorenewDurationNotInRange, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Topic, status: AutorenewDurationNotInRange", tex.Message);
         }
         [Fact(DisplayName = "Update Topic: Can Update Auto Renew Account")]
@@ -307,6 +310,7 @@ namespace Hashgraph.Test.Topic
                 });
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Topic, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Update Topic: Can Not Schedule Update Memo")]
@@ -330,6 +334,7 @@ namespace Hashgraph.Test.Topic
                 });
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

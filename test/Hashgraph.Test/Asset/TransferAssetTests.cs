@@ -380,6 +380,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(asset, fxAccount1, fxAccount2, fxAccount1);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: InvalidSignature", tex.Message);
 
             Assert.Equal(1UL, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxAsset));
@@ -409,6 +410,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(asset, fxAccount1, fxAccount2, fxAccount1);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             Assert.Equal(1UL, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxAsset));
@@ -434,6 +436,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(asset, fxAccount1, fxAccount2, fxAccount1);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
 
             Assert.Equal(1UL, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxAsset));
@@ -458,6 +461,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(asset, fxAsset.TreasuryAccount, fxAccount1, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Resume Participating Accounts
@@ -480,6 +484,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(asset, fxAccount2, fxAccount1, fxAccount2);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Can we suspend the treasury?
@@ -489,6 +494,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(asset, fxAccount2, fxAsset.TreasuryAccount, fxAccount2);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Double Check can't send from frozen treasury.
@@ -497,6 +503,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 2), fxAsset.TreasuryAccount, fxAccount2, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Balances should not have changed
@@ -533,6 +540,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(asset, fxAccount2, fxAccount1, fxAccount2);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Can we suspend the treasury?
@@ -542,6 +550,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(asset, fxAccount2, fxAsset.TreasuryAccount, fxAccount2);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Double Check can't send from frozen treasury.
@@ -550,6 +559,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 2), fxAsset.TreasuryAccount, fxAccount2, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Balances should not have changed
@@ -666,6 +676,7 @@ namespace Hashgraph.Test.AssetTokens
                 });
             });
             Assert.Equal(ResponseCode.TransactionRequiresZeroTokenBalances, tex.Status);
+            Assert.Equal(ResponseCode.TransactionRequiresZeroTokenBalances, tex.Receipt.Status);
             Assert.StartsWith("Unable to update Token, status: TransactionRequiresZeroTokenBalances", tex.Message);
 
             // Coins have not moved.

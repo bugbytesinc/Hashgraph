@@ -580,6 +580,7 @@ namespace Hashgraph.Test.Token
                 await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount2, (long)xferAmount, fxToken.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
             // Balances should not have changed

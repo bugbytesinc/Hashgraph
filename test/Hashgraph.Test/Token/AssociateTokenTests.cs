@@ -413,6 +413,7 @@ namespace Hashgraph.Test.Token
                 await fxAccount.Client.AssociateTokensAsync(tokens, fxAccount.Record.Address, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenAlreadyAssociatedToAccount, tex.Status);
+            Assert.Equal(ResponseCode.TokenAlreadyAssociatedToAccount, tex.Receipt.Status);
             Assert.StartsWith("Unable to associate Token with Account, status: TokenAlreadyAssociatedToAccount", tex.Message);
         }
         [Fact(DisplayName = "Associate Tokens: Can Associate token with Contract")]

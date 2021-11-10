@@ -261,6 +261,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.DissociateTokenAsync(fxAsset.Record.Token, fxAccount.Record.Address);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Dissociate Token from Account, status: InvalidSignature", tex.Message);
 
             association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
@@ -323,6 +324,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.DissociateTokenAsync(fxAsset.Record.Token, Address.None);
             });
             Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidAccountId, tex.Receipt.Status);
             Assert.StartsWith("Unable to Dissociate Token from Account, status: InvalidAccountId", tex.Message);
         }
         [Fact(DisplayName = "Dissociate Assets: Dissociating with Deleted Account Raises Error")]
@@ -338,6 +340,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.DissociateTokenAsync(fxAsset.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.AccountDeleted, tex.Status);
+            Assert.Equal(ResponseCode.AccountDeleted, tex.Receipt.Status);
             Assert.StartsWith("Unable to Dissociate Token from Account, status: AccountDelete", tex.Message);
 
         }
@@ -368,6 +371,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.DissociateTokensAsync(assets, fxAccount.Record.Address, fxAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
+            Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Receipt.Status);
             Assert.StartsWith("Unable to Dissociate Token from Account, status: TokenNotAssociatedToAccount", tex.Message);
         }
         [Fact(DisplayName = "Dissociate Assets: Can Dissociate asset from Contract Consent")]
@@ -405,6 +409,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, fxAsset.TreasuryAccount.PrivateKey);
             });
             Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
+            Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
 
             Assert.Equal(0UL, await fxAsset.Client.GetContractTokenBalanceAsync(fxContract, fxAsset));
@@ -435,6 +440,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount1.Client.DeleteAccountAsync(fxAccount1, fxAccount2, fxAccount1.PrivateKey);
             });
             Assert.Equal(ResponseCode.TransactionRequiresZeroTokenBalances, tex.Status);
+            Assert.Equal(ResponseCode.TransactionRequiresZeroTokenBalances, tex.Receipt.Status);
             Assert.StartsWith("Unable to delete account, status: TransactionRequiresZeroTokenBalances", tex.Message);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxAccount1, 1);
@@ -467,6 +473,7 @@ namespace Hashgraph.Test.AssetTokens
                         }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

@@ -216,6 +216,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.ConfiscateAssetsAsync(fxAsset, new long[] { 1, 2, 3 }, fxAccount, fxAsset.ConfiscatePrivateKey);
             });
             Assert.Equal(ResponseCode.AccountDoesNotOwnWipedNft, tex.Status);
+            Assert.Equal(ResponseCode.AccountDoesNotOwnWipedNft, tex.Receipt.Status);
             Assert.StartsWith("Unable to Confiscate Token, status: AccountDoesNotOwnWipedNft", tex.Message);
 
             Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
@@ -284,6 +285,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.ConfiscateAssetsAsync(fxAsset, new long[] { 1 }, fxAccount);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Confiscate Token, status: InvalidSignature", tex.Message);
 
             Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
@@ -322,6 +324,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.ConfiscateAssetAsync(new Asset(fxAsset, 1), fxAccount, fxAsset.ConfiscatePrivateKey);
             });
             Assert.Equal(ResponseCode.TokenHasNoWipeKey, tex.Status);
+            Assert.Equal(ResponseCode.TokenHasNoWipeKey, tex.Receipt.Status);
             Assert.StartsWith("Unable to Confiscate Token, status: TokenHasNoWipeKey", tex.Message);
 
             Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
@@ -368,6 +371,7 @@ namespace Hashgraph.Test.AssetToken
                 );
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
         [Fact(DisplayName = "Confiscate Assets: Can Confiscate Asset From Treasury")]
@@ -381,6 +385,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.ConfiscateAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAsset.ConfiscatePrivateKey);
             });
             Assert.Equal(ResponseCode.CannotWipeTokenTreasuryAccount, tex.Status);
+            Assert.Equal(ResponseCode.CannotWipeTokenTreasuryAccount, tex.Receipt.Status);
             Assert.StartsWith("Unable to Confiscate Token, status: CannotWipeTokenTreasuryAccount", tex.Message);
 
             Assert.Equal(circulation, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);

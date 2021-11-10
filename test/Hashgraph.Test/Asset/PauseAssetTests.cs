@@ -34,6 +34,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.TokenIsPaused, tex.Status);
+            Assert.Equal(ResponseCode.TokenIsPaused, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenIsPaused", tex.Message);
 
             await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Suspended);
@@ -67,6 +68,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.TokenIsPaused, tex.Status);
+            Assert.Equal(ResponseCode.TokenIsPaused, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenIsPaused", tex.Message);
 
             await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Suspended);
@@ -100,6 +102,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.TokenIsPaused, tex.Status);
+            Assert.Equal(ResponseCode.TokenIsPaused, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenIsPaused", tex.Message);
 
             await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Suspended);
@@ -129,6 +132,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.TokenIsPaused, tex.Status);
+            Assert.Equal(ResponseCode.TokenIsPaused, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenIsPaused", tex.Message);
 
             await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Suspended);
@@ -157,6 +161,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.TokenIsPaused, tex.Status);
+            Assert.Equal(ResponseCode.TokenIsPaused, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenIsPaused", tex.Message);
         }
         [Fact(DisplayName = "Pause Assets: Pause Asset Requires Pause Key to Sign Transaciton")]
@@ -172,6 +177,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.PauseTokenAsync(fxAsset.Record.Token);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Pause Token, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Pause Assets: Cannot Pause Asset when Freeze Not Enabled")]
@@ -191,6 +197,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.PauseTokenAsync(fxAsset.Record.Token, fxAsset.PausePrivateKey);
             });
             Assert.Equal(ResponseCode.TokenHasNoPauseKey, tex.Status);
+            Assert.Equal(ResponseCode.TokenHasNoPauseKey, tex.Receipt.Status);
             Assert.StartsWith("Unable to Pause Token, status: TokenHasNoPauseKey", tex.Message);
 
             await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.NotApplicable);
@@ -221,6 +228,7 @@ namespace Hashgraph.Test.AssetToken
                         }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

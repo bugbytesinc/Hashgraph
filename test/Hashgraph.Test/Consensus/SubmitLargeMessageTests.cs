@@ -95,6 +95,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.SubmitLargeMessageAsync(fx.Record.Topic, message, segmentSize);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Submit Message failed, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Submit Large Message: Submit Without Topic Raises Error")]
@@ -123,6 +124,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.SubmitLargeMessageAsync(Address.None, message, segmentSize, fx.ParticipantPrivateKey);
             });
             Assert.Equal(ResponseCode.InvalidTopicId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTopicId, tex.Receipt.Status);
             Assert.StartsWith("Submit Message failed, status: InvalidTopicId", tex.Message);
         }
         [Fact(DisplayName = "Submit Large Message: Submit Without Message Raises Error")]
@@ -154,6 +156,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.SubmitLargeMessageAsync(fx.Record.Topic, message, segmentSize, fx.ParticipantPrivateKey);
             });
             Assert.Equal(ResponseCode.InvalidTopicId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTopicId, tex.Receipt.Status);
             Assert.StartsWith("Submit Message failed, status: InvalidTopicId", tex.Message);
         }
         [Fact(DisplayName = "Submit Large Message: Submitting Messages Can Retrieve Record")]

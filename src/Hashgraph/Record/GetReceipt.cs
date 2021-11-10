@@ -38,15 +38,16 @@ namespace Hashgraph
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
             var receipt = await context.GetReceiptAsync(transactionId).ConfigureAwait(false);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException($"Unable to retreive receipt, status: {receipt.Status}", transaction, (ResponseCode)receipt.Status);
-            }
-            return new NetworkResult
+            var result = new NetworkResult
             {
                 TransactionID = transactionId,
                 Receipt = receipt
-            }.ToReceipt();
+            };
+            if (receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException($"Unable to retreive receipt, status: {receipt.Status}", result);
+            }
+            return result.ToReceipt();
         }
         /// <summary>
         /// Retreives all known receipts from the network having the given

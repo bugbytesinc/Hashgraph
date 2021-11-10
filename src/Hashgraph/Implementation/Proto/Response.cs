@@ -217,7 +217,7 @@ namespace Proto
             var precheckCode = header?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (precheckCode != ResponseCodeEnum.Ok)
             {
-                throw new TransactionException("Unable to retrieve transaction records.", transactionId.AsTxId(), (ResponseCode)precheckCode);
+                throw new TransactionException("Unable to retrieve transaction records.", transactionId, precheckCode);
             }
         }
     }
