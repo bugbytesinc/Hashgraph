@@ -61,11 +61,11 @@ namespace Hashgraph
                 CurrentExchangeRate = receipt.ExchangeRate.CurrentRate?.ToExchangeRate();
                 NextExchangeRate = receipt.ExchangeRate.NextRate?.ToExchangeRate();
             }
-            if (receipt.ScheduleID is not null)
+            if (receipt.ScheduledTransactionID is not null || receipt.ScheduleID is not null)
             {
                 Pending = new PendingTransaction
                 {
-                    Id = receipt.ScheduleID.ToAddress(),
+                    Id = receipt.ScheduleID?.ToAddress() ?? Address.None,
                     TxId = receipt.ScheduledTransactionID.AsTxId()
                 };
             }

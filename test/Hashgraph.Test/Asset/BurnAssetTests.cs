@@ -301,6 +301,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.BurnAssetsAsync(fxAsset, serialNumbers, fxAsset.SupplyPrivateKey);
             });
             Assert.Equal(ResponseCode.InvalidNftId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidNftId, tex.Receipt.Status);
             Assert.StartsWith("Unable to Burn Token Coins, status: InvalidNftId", tex.Message);
 
             Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
@@ -322,6 +323,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.BurnAssetsAsync(fxAsset, serialNumbers);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Burn Token Coins, status: InvalidSignature", tex.Message);
 
             Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
@@ -356,6 +358,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.BurnAssetsAsync(fxAsset, serialNumbersDestroyed, fxAsset.SupplyPrivateKey);
             });
             Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
+            Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Receipt.Status);
             Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
 
             Assert.Equal((ulong)amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
@@ -389,6 +392,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.BurnAssetsAsync(fxAsset, new long[] { 1 }, fxAsset.SupplyPrivateKey);
             });
             Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
+            Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Receipt.Status);
             Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
 
             Assert.Equal((ulong)amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
@@ -422,6 +426,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.BurnAssetAsync(new Asset(fxAsset.Record.Token, 1), fxAsset.SupplyPrivateKey);
             });
             Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
+            Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Receipt.Status);
             Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
 
             Assert.Equal((ulong)amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));

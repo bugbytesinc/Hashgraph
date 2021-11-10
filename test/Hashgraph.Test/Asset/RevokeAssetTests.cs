@@ -37,6 +37,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 2), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
         [Fact(DisplayName = "Revoke Assets: Can Revoke Assets and get Record")]
@@ -72,6 +73,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 2), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
         [Fact(DisplayName = "Revoke Assets: Can Revoke Assets and get Record (Without Extra Signatory)")]
@@ -107,6 +109,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 2), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
         [Fact(DisplayName = "Revoke Assets: Can Revoke Assets from any Account with Grant Key")]
@@ -138,6 +141,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 2), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
+            Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
         [Fact(DisplayName = "Revoke Assets: Revoke Assets Requires Grant Key Signature")]
@@ -160,6 +164,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.RevokeTokenKycAsync(fxAsset.Record.Token, fxAccount);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Revoke Token, status: InvalidSignature", tex.Message);
 
             await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
@@ -178,6 +183,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.RevokeTokenKycAsync(fxAsset.Record.Token, fxAccount, fxAsset.GrantPrivateKey);
             });
             Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Status);
+            Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Receipt.Status);
             Assert.StartsWith("Unable to Revoke Token, status: TokenHasNoKycKey", tex.Message);
         }
         [Fact(DisplayName = "Revoke Assets: Can Not Schedule Revoke Assets")]
@@ -209,6 +215,7 @@ namespace Hashgraph.Test.AssetToken
                         }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

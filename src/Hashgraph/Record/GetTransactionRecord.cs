@@ -91,7 +91,7 @@ namespace Hashgraph
             var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (precheckCode != ResponseCodeEnum.Ok && precheckCode != ResponseCodeEnum.RecordNotFound)
             {
-                throw new TransactionException("Unable to retrieve transaction record.", transactionId.AsTxId(), (ResponseCode)precheckCode);
+                throw new TransactionException("Unable to retrieve transaction record.", transactionId, precheckCode);
             }
             var record = response.TransactionGetRecord;
             return TransactionRecordExtensions.Create(record.DuplicateTransactionRecords, record.TransactionRecord);

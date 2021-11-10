@@ -74,6 +74,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.SubmitMessageAsync(fx.Record.Topic, message);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Submit Message failed, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Submit Message: Submit Without Topic Raises Error")]
@@ -100,6 +101,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.SubmitMessageAsync(Address.None, message);
             });
             Assert.Equal(ResponseCode.InvalidTopicId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTopicId, tex.Receipt.Status);
             Assert.StartsWith("Submit Message failed, status: InvalidTopicId", tex.Message);
         }
         [Fact(DisplayName = "Submit Message: Submit Without Message Raises Error")]
@@ -129,6 +131,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.SubmitMessageAsync(fx.Record.Topic, message);
             });
             Assert.Equal(ResponseCode.InvalidTopicId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTopicId, tex.Receipt.Status);
             Assert.StartsWith("Submit Message failed, status: InvalidTopicId", tex.Message);
         }
         [Fact(DisplayName = "Submit Message: Submitting Messages Increments Sequence Number")]

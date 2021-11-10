@@ -114,6 +114,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Grant Token, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Grant Assets: Cannot Grant Asset Coins When Grant KYC Turned Off")]
@@ -129,6 +130,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount, fxAsset.GrantPrivateKey);
             });
             Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Status);
+            Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Receipt.Status);
             Assert.StartsWith("Unable to Grant Token, status: TokenHasNoKycKey", tex.Message);
         }
         [Fact(DisplayName = "Grant Assets: Can Not Schedule Grant Asset Coins")]
@@ -153,6 +155,7 @@ namespace Hashgraph.Test.AssetToken
                         }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

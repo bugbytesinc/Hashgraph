@@ -173,6 +173,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.ContinueTokenAsync(fxAsset.Record.Token, fxAccount);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Continue Token, status: InvalidSignature", tex.Message);
 
             tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -180,6 +181,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
             });
             Assert.Equal(ResponseCode.TokenIsPaused, tex.Status);
+            Assert.Equal(ResponseCode.TokenIsPaused, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: TokenIsPaused", tex.Message);
         }
         [Fact(DisplayName = "Continue Assets: Can Not Continue Asset when Pause Not Enabled")]
@@ -201,6 +203,7 @@ namespace Hashgraph.Test.AssetToken
                 await fxAsset.Client.ContinueTokenAsync(fxAsset.Record.Token, fxAsset.PausePrivateKey);
             });
             Assert.Equal(ResponseCode.TokenHasNoPauseKey, tex.Status);
+            Assert.Equal(ResponseCode.TokenHasNoPauseKey, tex.Receipt.Status);
             Assert.StartsWith("Unable to Continue Token, status: TokenHasNoPauseKey", tex.Message);
 
             await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
@@ -230,6 +233,7 @@ namespace Hashgraph.Test.AssetToken
                         }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }

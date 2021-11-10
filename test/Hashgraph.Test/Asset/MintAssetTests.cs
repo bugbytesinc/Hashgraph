@@ -228,6 +228,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.MintAssetAsync(fxAsset.Record.Token, metadata);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Mint Token Coins, status: InvalidSignature", tex.Message);
 
             Assert.Equal(0UL, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
@@ -245,6 +246,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAsset.Client.MintAssetAsync(fxAsset.Record.Token, metadata, fxAsset.SupplyPrivateKey);
             });
             Assert.Equal(ResponseCode.TokenMaxSupplyReached, tex.Status);
+            Assert.Equal(ResponseCode.TokenMaxSupplyReached, tex.Receipt.Status);
             Assert.StartsWith("Unable to Mint Token Coins, status: TokenMaxSupplyReached", tex.Message);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);

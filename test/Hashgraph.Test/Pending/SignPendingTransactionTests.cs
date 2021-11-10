@@ -24,7 +24,9 @@ namespace Hashgraph.Test.Schedule
             var receipt = await pendingFx.Client.SignPendingTransactionAsync(pendingFx.Record.Pending.Id, pendingFx.SendingAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
             Assert.NotEqual(TxId.None, receipt.Id);
-            Assert.Null(receipt.Pending);
+            Assert.NotNull(receipt.Pending);
+            Assert.Equal(Address.None, receipt.Pending.Id);
+            Assert.Equal(pendingFx.Record.Pending.TxId, receipt.Pending.TxId);
             Assert.NotNull(receipt.CurrentExchangeRate);
             Assert.InRange(receipt.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
             Assert.NotNull(receipt.NextExchangeRate);
@@ -39,7 +41,9 @@ namespace Hashgraph.Test.Schedule
             var record = await pendingFx.Client.SignPendingTransactionWithRecordAsync(pendingFx.Record.Pending.Id, pendingFx.SendingAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, record.Status);
             Assert.NotEqual(TxId.None, record.Id);
-            Assert.Null(record.Pending);
+            Assert.NotNull(record.Pending);
+            Assert.Equal(Address.None, record.Pending.Id);
+            Assert.Equal(pendingFx.Record.Pending.TxId, record.Pending.TxId);
             Assert.NotNull(record.CurrentExchangeRate);
             Assert.InRange(record.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
             Assert.NotNull(record.NextExchangeRate);

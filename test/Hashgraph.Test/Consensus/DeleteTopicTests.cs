@@ -38,6 +38,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.DeleteTopicAsync(fx.Record.Topic);
             });
             Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+            Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
             Assert.StartsWith("Unable to Delete Topic, status: InvalidSignature", tex.Message);
         }
         [Fact(DisplayName = "Topic Delete: Calling Delete on an Imutable Topic Raises an Error")]
@@ -53,6 +54,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.DeleteTopicAsync(fx.Record.Topic);
             });
             Assert.Equal(ResponseCode.Unauthorized, tex.Status);
+            Assert.Equal(ResponseCode.Unauthorized, tex.Receipt.Status);
             Assert.StartsWith("Unable to Delete Topic, status: Unauthorized", tex.Message);
         }
         [Fact(DisplayName = "Topic Delete: Can Delete Topic with One of Two Mult-Sig")]
@@ -98,6 +100,7 @@ namespace Hashgraph.Test.Topic
                 await fx.Client.DeleteTopicAsync(fx.Record.Address);
             });
             Assert.Equal(ResponseCode.InvalidTopicId, tex.Status);
+            Assert.Equal(ResponseCode.InvalidTopicId, tex.Receipt.Status);
             Assert.StartsWith("Unable to Delete Topic, status: InvalidTopicId", tex.Message);
         }
         [Fact(DisplayName = "Topic Delete: Calling Delete with missing ID raises Error")]
@@ -118,11 +121,13 @@ namespace Hashgraph.Test.Topic
             await using var fxTopic = await TestTopic.CreateAsync(_network);
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                await fxTopic.Client.DeleteTopicAsync(fxTopic.Record.Topic, new Signatory(fxTopic.AdminPrivateKey, new PendingParams {
+                await fxTopic.Client.DeleteTopicAsync(fxTopic.Record.Topic, new Signatory(fxTopic.AdminPrivateKey, new PendingParams
+                {
                     PendingPayer = fxPayer,
                 }));
             });
             Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
+            Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
             Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
         }
     }
