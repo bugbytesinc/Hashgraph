@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Hashgraph;
 using Hashgraph.Implementation;
 using System;
 using System.Threading;
@@ -7,8 +8,6 @@ namespace Proto
 {
     public sealed partial class ContractDeleteTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to delete contract, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { ContractDeleteInstance = this };
@@ -22,6 +21,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new SmartContractService.SmartContractServiceClient(channel).deleteContractAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to delete contract, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal ContractDeleteTransactionBody(Hashgraph.Address contractToDelete, Hashgraph.Address transferToAddress) : this()

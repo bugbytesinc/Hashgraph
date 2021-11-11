@@ -215,7 +215,7 @@ namespace Hashgraph
                     // Note: we use the original context here, because we 
                     // don't want to re-use the transaction ID that was pinned
                     // to the subContext, would cause the paying TX to fail as a duplicate.
-                    result.Record = await configuredClient.GetTransactionRecordAsync(configuredClient._context, result.TransactionID).ConfigureAwait(false);
+                    result.Record = (await configuredClient.ExecuteQueryInContextAsync(new TransactionGetRecordQuery(result.TransactionID, false), configuredClient._context, 0).ConfigureAwait(false)).TransactionGetRecord.TransactionRecord;
                 }
                 return result;
             }

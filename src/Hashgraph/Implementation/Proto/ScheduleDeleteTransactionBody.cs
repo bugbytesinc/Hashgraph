@@ -8,8 +8,6 @@ namespace Proto
 {
     public sealed partial class ScheduleDeleteTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Delete Pending Transaction, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { ScheduleDelete = this };
@@ -23,6 +21,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new ScheduleService.ScheduleServiceClient(channel).deleteScheduleAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Delete Pending Transaction, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal ScheduleDeleteTransactionBody(Address pending) : this()

@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
+using Hashgraph;
 using Hashgraph.Implementation;
 using System;
 using System.Threading;
@@ -8,8 +9,6 @@ namespace Proto
 {
     public sealed partial class ConsensusSubmitMessageTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Submit Message failed, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { ConsensusSubmitMessage = this };
@@ -23,6 +22,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new ConsensusService.ConsensusServiceClient(channel).submitMessageAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Submit Message failed, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal ConsensusSubmitMessageTransactionBody(Hashgraph.Address topic, ReadOnlyMemory<byte> message, bool isSegment, Hashgraph.TxId? parentTx, int segmentIndex, int segmentTotalCount) : this()

@@ -23,6 +23,15 @@ namespace Proto
             Header = header;
         }
 
+        void INetworkQuery.CheckResponse(TransactionID transactionId, Response response)
+        {
+            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+            if (precheckCode != ResponseCodeEnum.Ok)
+            {
+                throw new TransactionException("Unable to retrieve transaction records.", transactionId, precheckCode);
+            }
+        }
+
         internal CryptoGetAccountRecordsQuery(Address address) : this()
         {
             AccountID = new AccountID(address);

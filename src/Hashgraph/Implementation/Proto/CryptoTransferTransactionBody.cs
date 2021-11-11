@@ -10,8 +10,6 @@ namespace Proto
 {
     public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to execute transfers, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { CryptoTransfer = this };
@@ -25,6 +23,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new CryptoService.CryptoServiceClient(channel).cryptoTransferAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to execute transfers, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal CryptoTransferTransactionBody(Address fromAddress, Address toAddress, long amount) : this()

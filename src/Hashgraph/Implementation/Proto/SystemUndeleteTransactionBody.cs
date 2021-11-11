@@ -8,10 +8,6 @@ namespace Proto
 {
     public sealed partial class SystemUndeleteTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => FileID is not null ?
-            "Unable to restore file, status: {0}" :
-            "Unable to restore contract, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { SystemUndelete = this };
@@ -27,6 +23,18 @@ namespace Proto
             return FileID is not null ?
                 new FileService.FileServiceClient(channel).systemUndeleteAsync :
                 new SmartContractService.SmartContractServiceClient(channel).systemUndeleteAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format(
+                    FileID is not null ?
+                        "Unable to restore file, status: {0}" :
+                        "Unable to restore contract, status: {0}",
+                    result.Receipt.Status), result);
+            }
         }
 
         internal static SystemUndeleteTransactionBody FromContract(Address contract)

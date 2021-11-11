@@ -9,8 +9,6 @@ namespace Proto
 {
     public sealed partial class FreezeTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Failed to submit suspend/freeze command, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { Freeze = this };
@@ -24,6 +22,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new FreezeService.FreezeServiceClient(channel).freezeAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Failed to submit suspend/freeze command, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal FreezeTransactionBody(FreezeType freezeType) : this()

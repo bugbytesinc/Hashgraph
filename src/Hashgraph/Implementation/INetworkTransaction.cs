@@ -1,5 +1,4 @@
 ﻿using Grpc.Core;
-using Proto;
 using System;
 using System.Threading;
 
@@ -7,9 +6,9 @@ namespace Hashgraph.Implementation
 {
     internal interface INetworkTransaction
     {
-        TransactionBody CreateTransactionBody();
-        SchedulableTransactionBody CreateSchedulableTransactionBody();
-        Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> InstantiateNetworkRequestMethod(Channel channel);
-        string TransactionExceptionMessage { get; }
+        Proto.TransactionBody CreateTransactionBody();
+        Proto.SchedulableTransactionBody CreateSchedulableTransactionBody();
+        Func<Proto.Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Proto.TransactionResponse>> InstantiateNetworkRequestMethod(Channel channel);
+        void CheckReceipt(NetworkResult result);
     }
 }

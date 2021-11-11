@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Hashgraph;
 using Hashgraph.Implementation;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,6 @@ namespace Proto
 {
     public sealed partial class TokenWipeAccountTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Confiscate Token, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { TokenWipe = this };
@@ -23,6 +22,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new TokenService.TokenServiceClient(channel).wipeTokenAccountAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Confiscate Token, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal TokenWipeAccountTransactionBody(Hashgraph.Address token, Hashgraph.Address address, ulong amount) : this()

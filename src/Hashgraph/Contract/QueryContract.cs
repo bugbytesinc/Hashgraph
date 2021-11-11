@@ -35,27 +35,7 @@ namespace Hashgraph
         /// the method returns a <see cref="ContractCallResult"/> with the same information.</exception>
         public async Task<ContractCallResult> QueryContractAsync(QueryContractParams queryParameters, Action<IContext>? configure = null)
         {
-            var query = new ContractCallLocalQuery(queryParameters);
-            var response = await ExecuteQueryAsync(query, configure, queryParameters.ReturnValueCharge).ConfigureAwait(false);
-            var header = response.ResponseHeader;
-            if (header == null)
-            {
-                throw new PrecheckException($"Transaction Failed to Produce a Response.", query.Header!.getTransactionId().AsTxId(), ResponseCode.Unknown, 0);
-            }
-            if (response.ContractCallLocal?.FunctionResult == null)
-            {
-                throw new PrecheckException($"Transaction Failed Pre-Check: {header.NodeTransactionPrecheckCode}", query.Header!.getTransactionId().AsTxId(), (ResponseCode)header.NodeTransactionPrecheckCode, header.Cost);
-            }
-            if (queryParameters.ThrowOnFail && header.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
-            {
-                throw new ContractException(
-                    $"Contract Query Failed with Code: {header.NodeTransactionPrecheckCode}",
-                    query.Header!.getTransactionId().AsTxId(),
-                    (ResponseCode)header.NodeTransactionPrecheckCode,
-                    header.Cost,
-                    new ContractCallResult(response));
-            }
-            return new ContractCallResult(response);
+            return new ContractCallResult(await ExecuteQueryAsync(new ContractCallLocalQuery(queryParameters), configure, queryParameters.ReturnValueCharge).ConfigureAwait(false));
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Hashgraph
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
             await WaitForConsensusReceipt(context, transactionId).ConfigureAwait(false);
-            var record = await GetTransactionRecordAsync(context, transactionId).ConfigureAwait(false);
+            var record = (await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, false), context, 0).ConfigureAwait(false)).TransactionGetRecord.TransactionRecord;
             return new NetworkResult
             {
                 TransactionID = transactionId,
@@ -87,12 +87,6 @@ namespace Hashgraph
             // We may be retrieving a failed record (the status would not equal OK).
             await WaitForConsensusReceipt(context, transactionId).ConfigureAwait(false);
             var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, true), context, 0).ConfigureAwait(false);
-            // Note if we are retrieving the list, Not found is OK too.
-            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (precheckCode != ResponseCodeEnum.Ok && precheckCode != ResponseCodeEnum.RecordNotFound)
-            {
-                throw new TransactionException("Unable to retrieve transaction record.", transactionId, precheckCode);
-            }
             var record = response.TransactionGetRecord;
             return TransactionRecordExtensions.Create(record.DuplicateTransactionRecords, record.TransactionRecord);
         }
