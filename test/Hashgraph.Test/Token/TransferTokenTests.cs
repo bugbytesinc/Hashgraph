@@ -47,6 +47,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -114,6 +118,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -181,6 +189,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -714,6 +726,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             // Move the treasury back
             await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
@@ -799,6 +815,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.CreateRecord.Address);
             Assert.Equal(fxAccount.CreateRecord.Address, balances.Address);
@@ -849,6 +869,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxFirstAccount.Client.GetAccountBalancesAsync(fxFirstAccount.CreateRecord.Address);
             Assert.Equal(fxFirstAccount.CreateRecord.Address, balances.Address);            

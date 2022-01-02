@@ -48,6 +48,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -92,6 +96,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.CreateRecord.Address);
             Assert.Equal(fxAccount.CreateRecord.Address, balances.Address);
@@ -152,6 +160,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -214,6 +226,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
             Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -761,6 +777,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Transfer Assets: Can Schedule Multi-Transfer Asset Coins")]
         public async Task CanScheduleMultiTransferAssetCoins()

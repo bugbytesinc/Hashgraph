@@ -76,6 +76,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.True(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var accountInfo = await fxToken.Client.GetAccountInfoAsync(fxAccount.Record.Address);
             var token = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
@@ -298,6 +302,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             // Move the Treasury, hmm...don't need treasury key?
             await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
@@ -331,6 +339,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Token Delete: Can Delete Treasury after Deleting Token")]
         public async Task CanDeleteTreasuryAfterDeletingToken()

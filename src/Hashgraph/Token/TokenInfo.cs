@@ -130,7 +130,11 @@ namespace Hashgraph
         /// The memo associated with the token instance.
         /// </summary>
         public string Memo { get; private init; }
-
+        /// <summary>
+        /// Identification of the Ledger (Network) 
+        /// this token information was retrieved from.
+        /// </summary>
+        public ReadOnlyMemory<byte> Ledger { get; private init; }
         internal TokenInfo(Response response)
         {
             var info = response.TokenGetInfo.TokenInfo;
