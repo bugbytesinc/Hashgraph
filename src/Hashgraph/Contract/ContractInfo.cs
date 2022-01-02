@@ -66,6 +66,11 @@ namespace Hashgraph
         /// </summary>
         public bool Deleted { get; private init; }
         /// <summary>
+        /// Identification of the Ledger (Network) this 
+        /// contract information was retrieved from.
+        /// </summary>
+        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <summary>
         /// Internal Constructor from Raw Results
         /// </summary>
         internal ContractInfo(Response response)
@@ -82,6 +87,7 @@ namespace Hashgraph
             Balance = info.Balance;
             Tokens = info.TokenRelationships.ToBalances();
             Deleted = info.Deleted;
+            Ledger = info.LedgerId.Memory;
         }
     }
 }
