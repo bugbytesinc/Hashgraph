@@ -89,6 +89,11 @@ namespace Hashgraph
         /// </summary>
         public Alias Alias { get; private init; }
         /// <summary>
+        /// Identification of the Ledger (Network) this 
+        /// account information was retrieved from.
+        /// </summary>
+        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <summary>
         /// Internal Constructor from Raw Response
         /// </summary>
         internal AccountInfo(Response response)
@@ -109,6 +114,7 @@ namespace Hashgraph
             AssetCount = info.OwnedNfts;
             AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
             Alias = info.Alias.ToAlias(info.AccountID.ShardNum, info.AccountID.RealmNum);
+            Ledger = info.LedgerId.Memory;
         }
     }
 }

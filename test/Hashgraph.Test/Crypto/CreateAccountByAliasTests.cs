@@ -69,6 +69,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAccount.AssetCount);
             Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAccount.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(infoFromAccount.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var infoFromAlias = await client.GetAccountInfoAsync(alias);
             // NETWORK V0.21.0 DEFECT: vvvvvvv
@@ -90,6 +94,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAlias.AssetCount);
             Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAlias.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(infoFromAlias.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
 
         [Fact(DisplayName = "Create Account By Alias: Can Schedule Create Account")]
@@ -151,6 +159,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAccount.AssetCount);
             Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAccount.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(infoFromAccount.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var infoFromAlias = await client.GetAccountInfoAsync(alias);
             // NETWORK V0.21.0 DEFECT: vvvvvvv
@@ -172,6 +184,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAlias.AssetCount);
             Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAlias.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(infoFromAlias.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
     }
 }

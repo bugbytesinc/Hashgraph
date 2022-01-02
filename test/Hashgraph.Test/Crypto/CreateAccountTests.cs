@@ -42,6 +42,10 @@ namespace Hashgraph.Test.Crypto
             Assert.False(info.Deleted);
             Assert.Equal(0, info.AutoAssociationLimit);
             Assert.Equal(Alias.None, info.Alias);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             // Move remaining funds back to primary account.
             var from = createResult.Address;

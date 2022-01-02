@@ -534,6 +534,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, info.AssetCount);
             Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
             Assert.Equal(Alias.None, info.Alias);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Update Account: Can Update Key of Alias Account")]
         public async Task CanUpdateKeyOfAliasAccountDefect()
