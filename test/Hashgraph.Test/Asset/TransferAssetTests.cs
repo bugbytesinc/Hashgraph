@@ -293,6 +293,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
             Assert.Equal(2, record.AssetTransfers.Count);
+            Assert.Null(record.ParentTransactionConcensus);
 
             var xferTo1 = record.AssetTransfers.First(x => x.To == fxAccount1.Record.Address);
             Assert.NotNull(xferTo1);

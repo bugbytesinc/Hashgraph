@@ -60,6 +60,12 @@ namespace Hashgraph
         public ReadOnlyCollection<Association> Associations { get; internal init; }
 
         /// <summary>
+        /// If this record represents a child transaction, the consensus timestamp
+        /// of the parent transaction to this transaction, otherwise null.
+        /// transaction 
+        /// </summary>
+        public DateTime? ParentTransactionConcensus { get; internal init; }
+        /// <summary>
         /// Internal Constructor of the record.
         /// </summary>
         internal TransactionRecord(NetworkResult result) : base(result)
@@ -75,6 +81,7 @@ namespace Hashgraph
             AssetTransfers = assetTransfers;
             Royalties = record.AssessedCustomFees.AsRoyaltyTransferList();
             Associations = record.AutomaticTokenAssociations.AsAssociationList();
+            ParentTransactionConcensus = record.ParentConsensusTimestamp?.ToDateTime();
         }
     }
 

@@ -178,6 +178,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
             Assert.Equal(expectedCirculation, record.Circulation);
+            Assert.Null(record.ParentTransactionConcensus);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
             Assert.Equal(fxAsset.Record.Token, info.Token);

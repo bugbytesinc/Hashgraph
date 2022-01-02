@@ -42,6 +42,7 @@ namespace Hashgraph.Test.Contract
             Assert.NotNull(fxContract.ContractRecord.Concensus);
             Assert.NotNull(fxContract.ContractRecord.Memo);
             Assert.InRange(fxContract.ContractRecord.Fee, 0UL, ulong.MaxValue);
+            Assert.Null(fxContract.ContractRecord.ParentTransactionConcensus);
         }
         [Fact(DisplayName = "Create Contract: Missing Signatory Raises Error")]
         public async Task CreateAContractWithoutSignatoryRaisesErrorAsync()

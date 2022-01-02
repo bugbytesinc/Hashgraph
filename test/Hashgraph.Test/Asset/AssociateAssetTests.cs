@@ -83,6 +83,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Null(record.ParentTransactionConcensus);
 
             var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
             Assert.Equal(fxAsset.Record.Token, association.Token);

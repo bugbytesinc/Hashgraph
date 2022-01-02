@@ -150,6 +150,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(1ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal(initialCirculation - 1, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
+            Assert.Null(record.ParentTransactionConcensus);
         }
         [Fact(DisplayName = "Confiscate Assets: Can Confiscate A Small Amount Assets and get Record without Extra Signatory")]
         public async Task CanConfiscateASmallAmountAssetCoinsAndGetRecordWithoutExtraSignatory()

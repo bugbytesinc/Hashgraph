@@ -189,5 +189,99 @@ namespace Hashgraph.Test.Crypto
             Assert.Empty(infoFromAlias.Ledger.ToArray());
             // NETWORK V0.21.0 DEFECT: ^^^^
         }
+        [Fact(DisplayName = "Create Account By Alias: Can Create Account and get Records")]
+        public async Task CanCreateAccountAndGetRecords()
+        {
+            var initialPayment = 1_00_000_000;
+            var (publicKey, privateKey) = Generator.KeyPair();
+            var alias = new Alias(publicKey);
+            var client = _network.NewClient();
+            var receipt = await client.TransferAsync(_network.Payer, alias, initialPayment);
+            Assert.NotNull(receipt);
+
+            // If an account was created by the alias, the receipt
+            // with the address is a "child receipt" of the transfer
+            // receipt and must be explictly asked for.
+            var allRecords = await client.GetAllTransactionRecordsAsync(receipt.Id);
+            Assert.Equal(2, allRecords.Count);
+            Assert.Null(allRecords[0].ParentTransactionConcensus);
+
+            var createRecord = allRecords[1] as CreateAccountRecord;
+            Assert.NotNull(createRecord);
+            Assert.NotNull(createRecord.Address);
+            Assert.Equal(_network.ServerRealm, createRecord.Address.RealmNum);
+            Assert.Equal(_network.ServerShard, createRecord.Address.ShardNum);
+            Assert.True(createRecord.Address.AccountNum > 0);
+            Assert.Equal(1, createRecord.Id.Nonce);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            //Assert.Equal(allRecords[0].Concensus, createRecord.ParentTransactionConcensus);
+            Assert.Null(createRecord.ParentTransactionConcensus);
+            // NETWORK V0.21.0 DEFECT: ^^^^
+
+            var createRecordByTx = await client.GetTransactionRecordAsync(createRecord.Id) as CreateAccountRecord;
+            Assert.NotNull(createRecordByTx);
+            Assert.NotNull(createRecordByTx.Address);
+            Assert.Equal(_network.ServerRealm, createRecordByTx.Address.RealmNum);
+            Assert.Equal(_network.ServerShard, createRecordByTx.Address.ShardNum);
+            Assert.Equal(createRecord.Address, createRecordByTx.Address);
+            Assert.Equal(createRecord.Id, createRecordByTx.Id);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            //Assert.Equal(allRecords[0].Concensus, createRecordByTx.ParentTransactionConcensus);
+            Assert.Null(createRecordByTx.ParentTransactionConcensus);
+            // NETWORK V0.21.0 DEFECT: ^^^^            
+
+            var balances = await client.GetAccountBalancesAsync(alias);
+            Assert.NotNull(balances);
+            Assert.Equal(createRecord.Address, balances.Address);
+            Assert.True(balances.Crypto > 0);
+            Assert.Empty(balances.Tokens);
+
+            var infoFromAccount = await client.GetAccountInfoAsync(createRecord.Address);
+            Assert.Equal(createRecord.Address, infoFromAccount.Address);
+            Assert.Equal(alias, infoFromAccount.Alias);
+            Assert.NotNull(infoFromAccount.SmartContractId);
+            Assert.False(infoFromAccount.Deleted);
+            Assert.NotNull(infoFromAccount.Proxy);
+            Assert.Equal(0, infoFromAccount.ProxiedToAccount);
+            Assert.Equal(new Endorsement(publicKey), infoFromAccount.Endorsement);
+            Assert.True(infoFromAccount.Balance > 0);
+            Assert.False(infoFromAccount.ReceiveSignatureRequired);
+            Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
+            Assert.True(infoFromAccount.Expiration > DateTime.MinValue);
+            Assert.Equal(0, infoFromAccount.AssetCount);
+            Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
+            Assert.Equal("auto-created account", infoFromAccount.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(infoFromAccount.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
+
+            var infoFromAlias = await client.GetAccountInfoAsync(alias);
+            // NETWORK V0.21.0 DEFECT: vvvvvvv
+            // The following does would be correct behavior
+            // Assert.Equal(createReceipt.Address, infoFromAlias.Address);
+            // NETWORK V0.21.0 DEFECT: However this is present behavior.
+            Assert.Equal(Address.None, infoFromAlias.Address);
+            // NETWORK V0.21.0 DEFECT: ^^^^^^^
+            Assert.Equal(alias, infoFromAlias.Alias);
+            Assert.NotNull(infoFromAlias.SmartContractId);
+            Assert.False(infoFromAlias.Deleted);
+            Assert.NotNull(infoFromAlias.Proxy);
+            Assert.Equal(0, infoFromAlias.ProxiedToAccount);
+            Assert.Equal(new Endorsement(publicKey), infoFromAlias.Endorsement);
+            Assert.True(infoFromAlias.Balance > 0);
+            Assert.False(infoFromAlias.ReceiveSignatureRequired);
+            Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
+            Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+            Assert.Equal(0, infoFromAlias.AssetCount);
+            Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
+            Assert.Equal("auto-created account", infoFromAlias.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(infoFromAlias.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
+        }
     }
 }
