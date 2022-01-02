@@ -66,7 +66,7 @@ namespace Hashgraph
         {
             var record = result.Record!;
             var (tokenTransfers, assetTransfers) = record.TokenTransferLists.AsTokenAndAssetTransferLists();
-            Hash = record.TransactionHash?.ToByteArray();
+            Hash = record.TransactionHash.Memory;
             Concensus = record.ConsensusTimestamp?.ToDateTime();
             Memo = record.Memo;
             Fee = record.TransactionFee;

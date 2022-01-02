@@ -42,10 +42,10 @@ namespace Proto
         {
             return KeyCase switch
             {
-                KeyOneofCase.Ed25519 => new Endorsement(KeyType.Ed25519, Ed25519.ToByteArray()),
-                KeyOneofCase.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, ECDSASecp256K1.ToByteArray()),
-                KeyOneofCase.RSA3072 => new Endorsement(KeyType.RSA3072, RSA3072.ToByteArray()),
-                KeyOneofCase.ECDSA384 => new Endorsement(KeyType.ECDSA384, ECDSA384.ToByteArray()),
+                KeyOneofCase.Ed25519 => new Endorsement(KeyType.Ed25519, Ed25519.Memory),
+                KeyOneofCase.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, ECDSASecp256K1.Memory),
+                KeyOneofCase.RSA3072 => new Endorsement(KeyType.RSA3072, RSA3072.Memory),
+                KeyOneofCase.ECDSA384 => new Endorsement(KeyType.ECDSA384, ECDSA384.Memory),
                 KeyOneofCase.ContractID => new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(ContractID.AsAddress())),
                 KeyOneofCase.ThresholdKey => ThresholdKey.Keys.Keys.Count == 0 ? Endorsement.None : new Endorsement(ThresholdKey.Threshold, ThresholdKey.Keys.ToEndorsements()),
                 KeyOneofCase.KeyList => KeyList.Keys.Count == 0 ? Endorsement.None : new Endorsement(KeyList.ToEndorsements()),

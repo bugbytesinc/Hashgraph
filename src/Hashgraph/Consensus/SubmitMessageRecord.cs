@@ -30,7 +30,7 @@ namespace Hashgraph
         internal SubmitMessageRecord(NetworkResult result) : base(result)
         {
             var receipt = result.Receipt;
-            RunningHash = receipt.TopicRunningHash?.ToByteArray();
+            RunningHash = receipt.TopicRunningHash.Memory;
             RunningHashVersion = receipt.TopicRunningHashVersion;
             SequenceNumber = receipt.TopicSequenceNumber;
         }

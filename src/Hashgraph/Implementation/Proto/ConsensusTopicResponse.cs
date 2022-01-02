@@ -10,8 +10,8 @@ namespace Com.Hedera.Mirror.Api.Proto
             {
                 Topic = topic,
                 Concensus = ConsensusTimestamp.ToDateTime(),
-                Messsage = Message.ToByteArray(),
-                RunningHash = RunningHash.ToByteArray(),
+                Messsage = Message.Memory,
+                RunningHash = RunningHash.Memory,
                 SequenceNumber = SequenceNumber,
                 SegmentInfo = ChunkInfo?.ToMessageSegmentInfo()
             };
