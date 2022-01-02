@@ -22,10 +22,11 @@ namespace Proto
             Header = header;
         }
 
-        internal TransactionGetReceiptQuery(TransactionID transactionId, bool includeDuplicates = false) : this()
+        internal TransactionGetReceiptQuery(TransactionID transactionId, bool includeDuplicates, bool includeChildren) : this()
         {
             TransactionID = transactionId;
             IncludeDuplicates = includeDuplicates;
+            IncludeChildReceipts = includeChildren;
         }
     }
 }

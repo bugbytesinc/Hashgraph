@@ -30,7 +30,7 @@ namespace Proto
                 ContractID = new ContractID(contract)
             };
         }
-        internal static CryptoGetAccountBalanceQuery ForAccount(Address account)
+        internal static CryptoGetAccountBalanceQuery ForAccount(AddressOrAlias account)
         {
             return new CryptoGetAccountBalanceQuery
             {

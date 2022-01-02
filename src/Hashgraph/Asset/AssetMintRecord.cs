@@ -12,6 +12,10 @@ namespace Hashgraph
     public sealed record AssetMintRecord : TransactionRecord
     {
         /// <summary>
+        /// The current (new) total number of assets.
+        /// </summary>
+        public ulong Circulation { get; internal init; }
+        /// <summary>
         /// The serial numbers of the newly created
         /// assets, related in order to the list of
         /// metadata sent to the mint method.
@@ -22,6 +26,7 @@ namespace Hashgraph
         /// </summary>
         internal AssetMintRecord(NetworkResult result) : base(result)
         {
+            Circulation = result.Receipt.NewTotalSupply;
             SerialNumbers = result.Receipt.SerialNumbers is null ?
                 new ReadOnlyCollection<long>(Array.Empty<long>()) :
                 new ReadOnlyCollection<long>(result.Receipt.SerialNumbers);

@@ -41,6 +41,44 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Suspend Tokens: Can Suspend Token Coin Trading with Alias Address")]
+        public async Task CanSuspendTokenCoinTradingWithAliasAddressDefect()
+        {
+            // Associating an asset with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanSuspendTokenCoinTradingWithAliasAddress));
+            Assert.StartsWith("Unable to Suspend Token, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Suspend Tokens: Can Suspend Token Coin Trading with Alias Address")]
+            async Task CanSuspendTokenCoinTradingWithAliasAddress()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+                {
+                    fx.Params.GrantKycEndorsement = null;
+                    fx.Params.InitializeSuspended = false;
+                });
+                await fxToken.Client.AssociateTokenAsync(fxToken.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+                var circulation = fxToken.Params.Circulation;
+                var xferAmount = circulation / 3;
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+
+                await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.SuspendPrivateKey);
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+
+                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+                {
+                    await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+                });
+                Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
+                Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+            }
+        }
         [Fact(DisplayName = "Suspend Tokens: Can Suspend Token Coin Trading and get Record")]
         public async Task CanSuspendTokenCoinTradingAndGetRecord()
         {

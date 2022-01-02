@@ -34,9 +34,9 @@ While we are in the process of building the preliminary infrastructure for this 
 
 
 ## Build Requirements
-This project relies protobuf support found in .net core 5, 
+This project relies protobuf support found in .net core 6, 
 previous versions of the .net core framework will not work.
-(At the time of this writing we are in [5.0.103](https://dotnet.microsoft.com/download/dotnet-core/5.0))
+(At the time of this writing we are in [6.0.101](https://dotnet.microsoft.com/download/dotnet-core/6.0))
 
 Visual Studio is not required to build the library, however the project
 references the [NSec.Cryptography](https://nsec.rocks/) library, which 

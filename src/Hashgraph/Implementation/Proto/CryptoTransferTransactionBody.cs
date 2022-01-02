@@ -33,7 +33,7 @@ namespace Proto
             }
         }
 
-        internal CryptoTransferTransactionBody(Address fromAddress, Address toAddress, long amount) : this()
+        internal CryptoTransferTransactionBody(AddressOrAlias fromAddress, AddressOrAlias toAddress, long amount) : this()
         {
             if (fromAddress is null)
             {
@@ -52,11 +52,11 @@ namespace Proto
             xferList.AccountAmounts.Add(new AccountAmount(toAddress, amount));
             Transfers = xferList;
         }
-        internal CryptoTransferTransactionBody(Address token, Address fromAddress, Address toAddress, long amount) : this()
+        internal CryptoTransferTransactionBody(Address token, AddressOrAlias fromAddress, AddressOrAlias toAddress, long amount) : this()
         {
             TokenTransfers.Add(new TokenTransferList(token, fromAddress, toAddress, amount));
         }
-        internal CryptoTransferTransactionBody(Asset asset, Address fromAddress, Address toAddress) : this()
+        internal CryptoTransferTransactionBody(Asset asset, AddressOrAlias fromAddress, AddressOrAlias toAddress) : this()
         {
             TokenTransfers.Add(new TokenTransferList(asset, fromAddress, toAddress));
         }
@@ -70,12 +70,12 @@ namespace Proto
             if (transfers.CryptoTransfers is not null)
             {
                 long sum = 0;
-                var netRequests = new Dictionary<Hashgraph.Address, long>();
+                var netRequests = new Dictionary<AddressOrAlias, long>();
                 foreach (var transfer in transfers.CryptoTransfers)
                 {
                     if (transfer.Value == 0)
                     {
-                        throw new ArgumentOutOfRangeException(nameof(transfers.CryptoTransfers), $"The amount to transfer crypto to/from {transfer.Key.ShardNum}.{transfer.Key.RealmNum}.{transfer.Key.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                        throw new ArgumentOutOfRangeException(nameof(transfers.CryptoTransfers), $"The amount to transfer crypto to/from {transfer.Key} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
                     }
                     if (netRequests.TryGetValue(transfer.Key, out long value))
                     {
@@ -115,7 +115,7 @@ namespace Proto
                         throw new ArgumentException("Token", "The list of token transfers cannot contain a null or empty Token value.");
                     }
                     long sum = 0;
-                    var netRequests = new Dictionary<Address, long>();
+                    var netRequests = new Dictionary<AddressOrAlias, long>();
                     foreach (var xfer in tokenGroup)
                     {
                         if (xfer.Address.IsNullOrNone())
@@ -124,7 +124,7 @@ namespace Proto
                         }
                         if (xfer.Amount == 0)
                         {
-                            throw new ArgumentOutOfRangeException(nameof(xfer.Amount), $"The amount to transfer tokens to/from {xfer.Address.ShardNum}.{xfer.Address.RealmNum}.{xfer.Address.AccountNum} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                            throw new ArgumentOutOfRangeException(nameof(xfer.Amount), $"The amount to transfer tokens to/from {xfer.Address} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
                         }
                         if (netRequests.TryGetValue(xfer.Address, out long value))
                         {

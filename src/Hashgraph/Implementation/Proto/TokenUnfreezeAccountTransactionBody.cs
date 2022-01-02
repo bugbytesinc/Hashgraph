@@ -31,7 +31,7 @@ namespace Proto
             }
         }
 
-        internal TokenUnfreezeAccountTransactionBody(Address token, Address address) : this()
+        internal TokenUnfreezeAccountTransactionBody(Address token, AddressOrAlias address) : this()
         {
             Token = new TokenID(token);
             Account = new AccountID(address);

@@ -58,7 +58,7 @@ namespace Hashgraph.Test.Crypto
             {
                 var balance = await client.GetAccountBalanceAsync(null);
             });
-            Assert.StartsWith("Account Address is missing.", ex.Message);
+            Assert.StartsWith("Account Address/Alias is missing.", ex.Message);
         }
         [Fact(DisplayName = "Get Account Balance: Invalid Account Address Throws Exception")]
         public async Task InvalidAccountAddressThrowsException()
@@ -135,6 +135,17 @@ namespace Hashgraph.Test.Crypto
             });
             Assert.Equal(ResponseCode.InvalidAccountId, pex.Status);
             Assert.StartsWith("Transaction Failed Pre-Check: InvalidAccountId", pex.Message);
+        }
+        [Fact(DisplayName = "Get Account Balance: Can Get Balance for Alias Account")]
+        public async Task CanGetTinybarBalanceForAliasAccountAsync()
+        {
+            await using var fx = await TestAliasAccount.CreateAsync(_network);
+
+            var balanceByAlias = await fx.Client.GetAccountBalanceAsync(fx.Alias);
+            Assert.True(balanceByAlias > 0, "Account Balance should be greater than zero.");
+
+            var balanceByAccount = await fx.Client.GetAccountBalanceAsync(fx.CreateRecord.Address);
+            Assert.Equal(balanceByAccount, balanceByAlias);
         }
     }
 }

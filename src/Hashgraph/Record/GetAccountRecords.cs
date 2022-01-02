@@ -26,10 +26,10 @@ namespace Hashgraph
         /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
         /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-        public async Task<TransactionRecord[]> GetAccountRecordsAsync(Address address, Action<IContext>? configure = null)
+        public async Task<TransactionRecord[]> GetAccountRecordsAsync(AddressOrAlias address, Action<IContext>? configure = null)
         {
-            var response = await ExecuteQueryAsync(new CryptoGetAccountRecordsQuery(address), configure).ConfigureAwait(false);
-            return TransactionRecordExtensions.Create(response.CryptoGetAccountRecords.Records, null).ToArray();
+            var records = (await ExecuteQueryAsync(new CryptoGetAccountRecordsQuery(address), configure).ConfigureAwait(false)).CryptoGetAccountRecords;
+            return TransactionRecordExtensions.Create(null, null, records.Records).ToArray();
         }
     }
 }

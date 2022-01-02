@@ -273,6 +273,33 @@ namespace Hashgraph.Test.Topic
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fxAccount.Record.Address, info.RenewAccount);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Update Topic: Can Update Auto Renew Account to Alias Account")]
+        public async Task CanUpdateAutoRenewAccountToAliasAccountDefect()
+        {
+            // Data corruption bug when using the Alias form to update a renew account.
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanUpdateAutoRenewAccountToAliasAccount));
+            Assert.Null(testFailException.Actual);
+
+            //[Fact(DisplayName = "Update Topic: Can Update Auto Renew Account to Alias Account")]
+            async Task CanUpdateAutoRenewAccountToAliasAccount()
+            {
+                await using var fxTopic = await TestTopic.CreateAsync(_network);
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+
+                var infoBefore = await fxTopic.Client.GetTopicInfoAsync(fxTopic.Record.Topic);
+                Assert.Equal(fxTopic.TestAccount.Record.Address, infoBefore.RenewAccount);
+
+                await fxTopic.Client.UpdateTopicAsync(new UpdateTopicParams
+                {
+                    Topic = fxTopic.Record.Topic,
+                    Signatory = new Signatory(fxTopic.AdminPrivateKey, fxAccount.PrivateKey),
+                    RenewAccount = fxAccount.Alias
+                });
+
+                var infoAfter = await fxTopic.Client.GetTopicInfoAsync(fxTopic.Record.Topic);
+                Assert.Equal(fxAccount.CreateRecord.Address, infoAfter.RenewAccount);
+            }
+        }
         [Fact(DisplayName = "Update Topic: Can Update Auto Renew Account to None")]
         public async Task CanUpdateAutoRenewAccountToNone()
         {

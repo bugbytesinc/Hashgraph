@@ -41,6 +41,44 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Revoke Tokens: Can Revoke Token Coins from Alias Account")]
+        public async Task CanRevokeTokensFromAliasAccountDefect()
+        {
+            // Associating an asset with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanRevokeTokensFromAliasAccount));
+            Assert.StartsWith("Unable to Revoke Token, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Revoke Tokens: Can Revoke Token Coins from Alias Account")]
+            async Task CanRevokeTokensFromAliasAccount()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                await using var fxToken = await TestToken.CreateAsync(_network);
+                await fxToken.Client.AssociateTokenAsync(fxToken.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+                var circulation = fxToken.Params.Circulation;
+                var xferAmount = circulation / 3;
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+
+                await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+
+                await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+
+                await fxToken.Client.RevokeTokenKycAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.GrantPrivateKey);
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+
+                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+                {
+                    await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+                });
+                Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
+                Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
+            }
+        }
         [Fact(DisplayName = "Revoke Tokens: Can Revoke Token Coins and get Record")]
         public async Task CanRevokeTokensAndGetRecord()
         {

@@ -1,19 +1,27 @@
-﻿using Hashgraph;
+﻿using Google.Protobuf;
+using Hashgraph;
 using System;
 
 namespace Proto
 {
     public sealed partial class AccountID
     {
-        internal AccountID(Address account) : this()
+        internal AccountID(AddressOrAlias account) : this()
         {
             if (account is null)
             {
-                throw new ArgumentNullException(nameof(account), "Account Address is missing. Please check that it is not null.");
+                throw new ArgumentNullException(nameof(account), "Account Address/Alias is missing. Please check that it is not null.");
             }
             ShardNum = account.ShardNum;
             RealmNum = account.RealmNum;
-            AccountNum = account.AccountNum;
+            if (account.Endorsement is null)
+            {
+                AccountNum = account.AccountNum;
+            }
+            else
+            {
+                Alias = new Key(account.Endorsement).ToByteString();
+            }
         }
     }
 

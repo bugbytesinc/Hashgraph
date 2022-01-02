@@ -66,7 +66,7 @@ namespace Hashgraph
             transaction.CheckReceipt(result);
             if (includeRecord)
             {
-                result.Record = (await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(result.TransactionID, false), context, 0).ConfigureAwait(false)).TransactionGetRecord.TransactionRecord;
+                result.Record = (await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(result.TransactionID, false, false), context, 0).ConfigureAwait(false)).TransactionGetRecord.TransactionRecord;
             }
             return result;
 

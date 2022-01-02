@@ -1,6 +1,5 @@
 ﻿using Hashgraph.Implementation;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Crypto.Signers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,9 +30,13 @@ namespace Hashgraph
         private enum Type
         {
             /// <summary>
-            /// Ed25519 Public Key (Stored as a <see cref="NSec.Cryptography.PublicKey"/>).
+            /// Ed25519 Public Key (Stored as a <see cref="Org.BouncyCastle.Crypto.Parameters.Ed25519PublicKeyParameters"/>).
             /// </summary>
             Ed25519 = 1,
+            /// <summary>
+            /// ECDSASecp256K1 Public Key (Stored as a <see cref="Org.BouncyCastle.Crypto.Parameters.ECPublicKeyParameters"/>).
+            /// </summary>
+            ECDSASecp256K1 = 7,
             /// <summary>
             /// RSA-3072 Public Key (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
             /// </summary>
@@ -77,7 +80,7 @@ namespace Hashgraph
         /// Internal union of the types of data this Signatory may hold.
         /// The contents are a function of the <code>Type</code>.  It can be a 
         /// list of other signatories, a reference to a callback method, 
-        /// pending transaction schedule information or an  Ed25519 private key.
+        /// pending transaction schedule information or a private key.
         /// </summary>
         private readonly object _data;
         /// <summary>
@@ -90,7 +93,24 @@ namespace Hashgraph
         /// It is expected to be 48 bytes in length, prefixed with 
         /// <code>0x302e020100300506032b6570</code>.
         /// </param>
-        public Signatory(ReadOnlyMemory<byte> privateKey) : this(KeyType.Ed25519, privateKey) { }
+        public Signatory(ReadOnlyMemory<byte> privateKey)
+        {
+            var (type, data) = DerEncodingUtil.ParsePrivateKeyFromDerBytes(privateKey);
+            _data = data;
+            switch (type)
+            {
+                case KeyType.Ed25519:
+                    _type = Type.Ed25519;
+                    break;
+                case KeyType.ECDSASecp256K1:
+                    _type = Type.ECDSASecp256K1;
+                    break;
+                case KeyType.List:
+                    throw new ArgumentOutOfRangeException(nameof(type), "Only signatories representing a single key are supported with this constructor, please use the list constructor instead.");
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), "Not a presently supported Signatory key type, please consider the callback signatory as an alternative.");
+            }
+        }
         /// <summary>
         /// Create a signatory that is a combination of a number of other
         /// signatories.  When this signatory is called to sign a transaction
@@ -146,7 +166,11 @@ namespace Hashgraph
             {
                 case KeyType.Ed25519:
                     _type = Type.Ed25519;
-                    _data = Ed25519Util.PrivateKeyParamsFromBytes(privateKey);
+                    _data = Ed25519Util.PrivateParamsFromDerOrRaw(privateKey);
+                    break;
+                case KeyType.ECDSASecp256K1:
+                    _type = Type.ECDSASecp256K1;
+                    _data = EcdsaSecp256k1Util.PrivateParamsFromDerOrRaw(privateKey);
                     break;
                 case KeyType.List:
                     throw new ArgumentOutOfRangeException(nameof(type), "Only signatories representing a single key are supported with this constructor, please use the list constructor instead.");
@@ -264,6 +288,8 @@ namespace Hashgraph
             {
                 case Type.Ed25519:
                     return ((Ed25519PrivateKeyParameters)_data).GetEncoded().SequenceEqual(((Ed25519PrivateKeyParameters)other._data).GetEncoded());
+                case Type.ECDSASecp256K1:
+                    return ((ECPrivateKeyParameters)_data).Equals((ECPrivateKeyParameters)other._data);
                 case Type.RSA3072:  // Will need more work
                 case Type.ECDSA384: // Will need more work
                     return Equals(_data, other._data);
@@ -334,6 +360,8 @@ namespace Hashgraph
             {
                 case Type.Ed25519:
                     return $"Signatory:{_type}:{((Ed25519PrivateKeyParameters)_data).GetHashCode()}".GetHashCode();
+                case Type.ECDSASecp256K1:
+                    return $"Signatory:{_type}:{((ECPrivateKeyParameters)_data).GetHashCode()}".GetHashCode();
                 case Type.RSA3072:  // Will need more work
                 case Type.ECDSA384: // Will need more work
                     return $"Signatory:{_type}:{_data}".GetHashCode();
@@ -401,15 +429,10 @@ namespace Hashgraph
             switch (_type)
             {
                 case Type.Ed25519:
-                    var privateKey = (Ed25519PrivateKeyParameters)_data;
-                    var ed25519Signer = new Ed25519Signer();
-                    ed25519Signer.Init(true, privateKey);
-                    ed25519Signer.BlockUpdate(invoice.TxBytes.ToArray(), 0, invoice.TxBytes.Length);
-                    invoice.AddSignature(
-                        KeyType.Ed25519,
-                        privateKey.GeneratePublicKey().GetEncoded()[..6],
-                        ed25519Signer.GenerateSignature());
-                    ed25519Signer.Reset();
+                    Ed25519Util.Sign(invoice, (Ed25519PrivateKeyParameters)_data);
+                    break;
+                case Type.ECDSASecp256K1:
+                    EcdsaSecp256k1Util.Sign(invoice, (ECPrivateKeyParameters)_data);
                     break;
                 case Type.List:
                     foreach (ISignatory signer in (Signatory[])_data)

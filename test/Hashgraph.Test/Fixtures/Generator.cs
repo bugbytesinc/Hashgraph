@@ -1,5 +1,12 @@
 ﻿using Hashgraph.Implementation;
 using NSec.Cryptography;
+using Org.BouncyCastle.Asn1.Sec;
+using Org.BouncyCastle.Asn1.X9;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
 using System;
 using System.Security.Cryptography;
 
@@ -65,7 +72,12 @@ namespace Hashgraph.Test.Fixtures
         {
             return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, DateTimeKind.Utc);
         }
+
         public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) KeyPair()
+        {
+            return _random.Next(0, 1) == 1 ? Ed25519KeyPair() : Secp256k1KeyPair();
+        }
+        public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) Ed25519KeyPair()
         {
             // public prefix:  302a300506032b6570032100 
             // private prefix: 302e020100300506032b6570
@@ -84,9 +96,25 @@ namespace Hashgraph.Test.Fixtures
             var privateKey = key.Export(KeyBlobFormat.PkixPrivateKey);
             return (publicKey, privateKey);
         }
+
+        private static X9ECParameters curve = SecNamedCurves.GetByName("secp256k1");
+        private static ECDomainParameters domain = new ECDomainParameters(curve.Curve, curve.G, curve.N, curve.H);
+        public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) Secp256k1KeyPair()
+        {
+            // Todo: consider native .net implementation to ensure interoperability
+            ECKeyPairGenerator generator = new ECKeyPairGenerator();
+            var ecGenerationParameters = new ECKeyGenerationParameters(domain, new SecureRandom());
+            generator.Init(ecGenerationParameters);
+            var keypair = generator.GenerateKeyPair();
+            var privateKeyParameters = (ECPrivateKeyParameters)keypair.Private;
+            var publicKeyParameters = (ECPublicKeyParameters)keypair.Public;
+            var privateKeyInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(privateKeyParameters);
+            var publicKeyInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(publicKeyParameters);
+            return (publicKeyInfo.GetDerEncoded(), privateKeyInfo.GetDerEncoded());
+        }
         public static ReadOnlyMemory<byte> SHA384Hash()
         {
-            return new SHA384Managed().ComputeHash(KeyPair().publicKey.ToArray());
+            return SHA384.Create().ComputeHash(KeyPair().publicKey.ToArray());
         }
         public static Proto.TransactionID TransactionID()
         {

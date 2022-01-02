@@ -110,9 +110,9 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Test Prerequisites: Test Account Public and Private Keys Match")]
         public void PublicAndPrivateKeysMatch()
         {
-            var privateKey = Ed25519Util.PrivateKeyParamsFromBytes(_networkCredentials.PrivateKey);
+            var privateKey = Ed25519Util.PrivateParamsFromDerOrRaw(_networkCredentials.PrivateKey);
             var generatedPublicKey = privateKey.GeneratePublicKey();
-            var publicKey = Ed25519Util.PublicKeyParamsFromBytes(_networkCredentials.PublicKey);
+            var publicKey = Ed25519Util.PublicParamsFromDerOrRaw(_networkCredentials.PublicKey);
             Assert.Equal(generatedPublicKey.GetEncoded(), publicKey.GetEncoded());
         }
         [Fact(DisplayName = "Test Prerequisites: Can Generate Key Pair from Bouncy Castle")]
@@ -131,8 +131,8 @@ namespace Hashgraph.Tests
             var pubKey = Hex.FromBytes(publicKeyPrefix.Concat(publicKey.GetEncoded()).ToArray());
             var priKey = Hex.FromBytes(privateKeyPrefix.Concat(privateKey.GetEncoded()).ToArray());
 
-            var checkPrivateKey = Ed25519Util.PrivateKeyParamsFromBytes(Hex.ToBytes(priKey));
-            var checkPublicKey = Ed25519Util.ToBytes(checkPrivateKey.GeneratePublicKey());
+            var checkPrivateKey = Ed25519Util.PrivateParamsFromDerOrRaw(Hex.ToBytes(priKey));
+            var checkPublicKey = Ed25519Util.ToDerBytes(checkPrivateKey.GeneratePublicKey());
             var checkPublicHex = Hex.FromBytes(checkPublicKey);
 
             Assert.Equal(pubKey, checkPublicHex);

@@ -15,7 +15,7 @@ namespace Hashgraph
         /// <summary>
         /// Account receiving the royalty assessment.
         /// </summary>
-        public Address Account { get; private init; }
+        public AddressOrAlias Account { get; private init; }
         /// <summary>
         /// The numerator portion of the assement fraction
         /// of the value exchanged in return for the NFT.
@@ -95,7 +95,7 @@ namespace Hashgraph
         /// or asset, if set to <code>None</code> then
         /// native hBar crypto is assumed.
         /// </param>
-        public AssetRoyalty(Address account, long numerator, long denominator, long fallbackAmount, Address fallbackToken)
+        public AssetRoyalty(AddressOrAlias account, long numerator, long denominator, long fallbackAmount, Address fallbackToken)
         {
             Account = account;
             Numerator = numerator;

@@ -19,9 +19,31 @@ namespace Hashgraph.Test.Fixtures
             Assert.Equal(status, tokenRecord.KycStatus);
         }
 
+        public static async Task TokenStatusAsync(TestToken fxToken, TestAliasAccount fxAccount, TokenKycStatus status)
+        {
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
+            Assert.NotNull(info);
+
+            var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+            Assert.NotNull(tokenRecord);
+
+            Assert.Equal(status, tokenRecord.KycStatus);
+        }
+
         public static async Task AssetStatusAsync(TestAsset fxAsset, TestAccount fxAccount, TokenKycStatus status)
         {
             var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.NotNull(info);
+
+            var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+            Assert.NotNull(tokenRecord);
+
+            Assert.Equal(status, tokenRecord.KycStatus);
+        }
+
+        public static async Task AssetStatusAsync(TestAsset fxAsset, TestAliasAccount fxAccount, TokenKycStatus status)
+        {
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
             Assert.NotNull(info);
 
             var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
@@ -41,9 +63,31 @@ namespace Hashgraph.Test.Fixtures
             Assert.Equal(status, tokenRecord.TradableStatus);
         }
 
+        public static async Task TokenStatusAsync(TestToken fxToken, TestAliasAccount fxAccount, TokenTradableStatus status)
+        {
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
+            Assert.NotNull(info);
+
+            var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+            Assert.NotNull(tokenRecord);
+
+            Assert.Equal(status, tokenRecord.TradableStatus);
+        }
+
         public static async Task AssetStatusAsync(TestAsset fxAsset, TestAccount fxAccount, TokenTradableStatus status)
         {
             var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.NotNull(info);
+
+            var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+            Assert.NotNull(tokenRecord);
+
+            Assert.Equal(status, tokenRecord.TradableStatus);
+        }
+
+        public static async Task AssetStatusAsync(TestAsset fxAsset, TestAliasAccount fxAccount, TokenTradableStatus status)
+        {
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
             Assert.NotNull(info);
 
             var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
@@ -93,9 +137,29 @@ namespace Hashgraph.Test.Fixtures
             Assert.Null(association);
         }
 
+        internal static async Task TokenNotAssociatedAsync(TestToken fxToken, TestAliasAccount fxAccount)
+        {
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
+            Assert.NotNull(info);
+
+            var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+            Assert.Null(association);
+        }
+
         internal static async Task<TokenBalance> TokenIsAssociatedAsync(TestToken fxToken, TestAccount fxAccount)
         {
             var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.NotNull(info);
+
+            var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+            Assert.NotNull(association);
+
+            return association;
+        }
+
+        internal static async Task<TokenBalance> TokenIsAssociatedAsync(TestToken fxToken, TestAliasAccount fxAccount)
+        {
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
             Assert.NotNull(info);
 
             var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
@@ -113,7 +177,26 @@ namespace Hashgraph.Test.Fixtures
             Assert.Null(association);
         }
 
+        internal static async Task AssetNotAssociatedAsync(TestAsset fxAsset, TestAliasAccount fxAccount)
+        {
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.NotNull(info);
+
+            var association = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+            Assert.Null(association);
+        }
+
         internal static async Task<TokenBalance> AssetIsAssociatedAsync(TestAsset fxAsset, TestAccount fxAccount)
+        {
+            var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+            Assert.NotNull(info);
+
+            var association = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+            Assert.NotNull(association);
+
+            return association;
+        }
+        internal static async Task<TokenBalance> AssetIsAssociatedAsync(TestAsset fxAsset, TestAliasAccount fxAccount)
         {
             var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
             Assert.NotNull(info);
@@ -139,9 +222,9 @@ namespace Hashgraph.Test.Fixtures
             var token = fxToken.Record.Token;
             var payer = fxPayer.Record.Address;
             var receiver = fxReceiver.Record.Address;
-            foreach(var entry in royalties)
+            foreach (var entry in royalties)
             {
-                if(amount == entry.Amount && token == entry.Token && receiver == entry.Receiver && entry.Payers.Contains(payer))
+                if (amount == entry.Amount && token == entry.Token && receiver == entry.Receiver && entry.Payers.Contains(payer))
                 {
                     return;
                 }
@@ -165,7 +248,7 @@ namespace Hashgraph.Test.Fixtures
         {
             Assert.NotNull(associations);
             Assert.Single(associations);
-            if(fxToken.Record.Token != associations[0].Token || fxAccount.Record.Address != associations[0].Account)
+            if (fxToken.Record.Token != associations[0].Token || fxAccount.Record.Address != associations[0].Account)
             {
                 throw new Xunit.Sdk.XunitException($"Unable to find association record using token {fxToken.Record.Token} with account {fxAccount.Record.Address} .");
             }
@@ -182,9 +265,9 @@ namespace Hashgraph.Test.Fixtures
 
         internal static void SemanticVersionGreaterOrEqualThan(SemanticVersion expected, SemanticVersion actual)
         {
-            if (expected.Major > actual.Major || 
+            if (expected.Major > actual.Major ||
                 (expected.Major == actual.Major && expected.Minor > actual.Minor) ||
-                (expected.Major == actual.Major && expected.Minor == actual.Minor &&  expected.Patch > actual.Patch))
+                (expected.Major == actual.Major && expected.Minor == actual.Minor && expected.Patch > actual.Patch))
             {
                 throw new Xunit.Sdk.XunitException($"Semantic Version {actual.Major}.{actual.Minor}.{actual.Patch} is not greater than {expected.Major}.{expected.Minor}.{expected.Patch}");
             }

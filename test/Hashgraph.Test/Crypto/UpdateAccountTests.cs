@@ -101,6 +101,39 @@ namespace Hashgraph.Test.Crypto
             var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
             Assert.Equal(newMemo, info.Memo);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Update Account: Can Update Memo using Alias")]
+        public async Task CanUpdateMemoUsingAliasDefect()
+        {
+            // Updating an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanUpdateMemoUsingAlias));
+            Assert.StartsWith("Unable to update account, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Update Account: Can Update Memo using Alias")]
+            async Task CanUpdateMemoUsingAlias()
+            {
+                var newMemo = Generator.String(20, 40);
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+                {
+                    Address = fxAccount.Alias,
+                    Memo = newMemo,
+                    Signatory = fxAccount
+                });
+                Assert.Equal(ResponseCode.Success, record.Status);
+                Assert.False(record.Hash.IsEmpty);
+                Assert.NotNull(record.Concensus);
+                Assert.NotNull(record.CurrentExchangeRate);
+                Assert.NotNull(record.NextExchangeRate);
+                Assert.NotEmpty(record.Hash.ToArray());
+                Assert.Empty(record.Memo);
+                Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+                Assert.Equal(_network.Payer, record.Id.Address);
+
+                var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+                Assert.Equal(newMemo, info.Memo);
+            }
+        }
         [Fact(DisplayName = "Update Account: Can Update Memo to Empty")]
         public async Task CanUpdateMemoToEmpty()
         {
@@ -500,6 +533,36 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(fxTempate.CreateParams.Memo, info.Memo);
             Assert.Equal(0, info.AssetCount);
             Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
+            Assert.Equal(Alias.None, info.Alias);
+        }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Update Account: Can Update Key of Alias Account")]
+        public async Task CanUpdateKeyOfAliasAccountDefect()
+        {
+            // Updating an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanUpdateKeyOfAliasAccount));
+            Assert.StartsWith("Unable to update account, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Update Account: Can Update Key of Alias Account")]
+            async Task CanUpdateKeyOfAliasAccount()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                var updatedKeyPair = Generator.KeyPair();
+
+                var originalInfo = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
+                Assert.Equal(new Endorsement(fxAccount.PublicKey), originalInfo.Endorsement);
+
+                var updateResult = await fxAccount.Client.UpdateAccountAsync(new UpdateAccountParams
+                {
+                    Address = fxAccount.Alias,
+                    Endorsement = new Endorsement(updatedKeyPair.publicKey),
+                    Signatory = new Signatory(fxAccount.PrivateKey, updatedKeyPair.privateKey)
+                });
+                Assert.Equal(ResponseCode.Success, updateResult.Status);
+
+                var updatedInfo = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
+                Assert.Equal(new Endorsement(updatedKeyPair.publicKey), updatedInfo.Endorsement);
+            }
         }
     }
 }

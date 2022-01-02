@@ -284,7 +284,7 @@ namespace Hashgraph.Test.Token
             var cryptoAmount = (long)Generator.Integer(100, 200);
             var transfers = new TransferParams
             {
-                CryptoTransfers = new Dictionary<Address, long>
+                CryptoTransfers = new Dictionary<AddressOrAlias, long>
                 {
                     { _network.Payer, -2 * cryptoAmount },
                     { fxAccount1, cryptoAmount },
@@ -321,7 +321,7 @@ namespace Hashgraph.Test.Token
             var cryptoAmount = (long)Generator.Integer(100, 200);
             var transfers = new TransferParams
             {
-                CryptoTransfers = new Dictionary<Address, long>
+                CryptoTransfers = new Dictionary<AddressOrAlias, long>
                 {
                     { _network.Payer, -2 * cryptoAmount },
                     { fxAccount1, cryptoAmount },
@@ -767,6 +767,106 @@ namespace Hashgraph.Test.Token
             Assert.Equal(xferAmount, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
             Assert.Equal(xferAmount, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
             Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        }
+        [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins to Alias Account")]
+        public async Task CanTransferTokensToAliasAccount()
+        {
+            await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+            await fxToken.Client.AssociateTokenAsync(fxToken.Record.Token, fxAccount, fxAccount.PrivateKey);
+            var xferAmount = 2 * fxToken.Params.Circulation / 3;
+
+            var receipt = await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxAccount.Alias, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(TokenType.Fungible, info.Type);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+            Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
+            Assert.Empty(info.Royalties);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
+
+            var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.CreateRecord.Address);
+            Assert.Equal(fxAccount.CreateRecord.Address, balances.Address);
+            Assert.True(balances.Crypto > 0);
+            Assert.Single(balances.Tokens);
+            Assert.Equal(xferAmount, balances.Tokens[fxToken.Record.Token]);
+
+            balances = await fxAccount.Client.GetAccountBalancesAsync(fxToken.TreasuryAccount.Record.Address);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, balances.Address);
+            Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
+            Assert.Single(balances.Tokens);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
+            Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
+        }
+        [Fact(DisplayName = "Transfer Tokens: Can Transfer Token Coins from Alias Account")]
+        public async Task CanTransferTokensFromAliasAccount()
+        {
+            await using var fxFirstAccount = await TestAliasAccount.CreateAsync(_network);
+            await using var fxSecondAccount = await TestAccount.CreateAsync(_network);
+            await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxSecondAccount);
+            await fxToken.Client.AssociateTokenAsync(fxToken.Record.Token, fxFirstAccount, fxFirstAccount.PrivateKey);
+            var xferAmount = 2 * fxToken.Params.Circulation / 3;
+
+            var firstReceipt = await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxFirstAccount.Alias, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
+            Assert.Equal(ResponseCode.Success, firstReceipt.Status);
+
+            var secondReceipt = await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxFirstAccount.Alias, fxSecondAccount, (long)xferAmount, fxFirstAccount.PrivateKey);
+            Assert.Equal(ResponseCode.Success, secondReceipt.Status);
+
+            var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+            Assert.Equal(fxToken.Record.Token, info.Token);
+            Assert.Equal(TokenType.Fungible, info.Type);
+            Assert.Equal(fxToken.Params.Symbol, info.Symbol);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal(fxToken.Params.Circulation, info.Circulation);
+            Assert.Equal(fxToken.Params.Decimals, info.Decimals);
+            Assert.Equal(fxToken.Params.Ceiling, info.Ceiling);
+            Assert.Equal(fxToken.Params.Administrator, info.Administrator);
+            Assert.Equal(fxToken.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+            Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
+            Assert.Empty(info.Royalties);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxToken.Params.Memo, info.Memo);
+
+            var balances = await fxFirstAccount.Client.GetAccountBalancesAsync(fxFirstAccount.CreateRecord.Address);
+            Assert.Equal(fxFirstAccount.CreateRecord.Address, balances.Address);            
+            Assert.Single(balances.Tokens);
+            Assert.Equal(0UL, balances.Tokens[fxToken.Record.Token]);
+
+            balances = await fxFirstAccount.Client.GetAccountBalancesAsync(fxSecondAccount.Record.Address);
+            Assert.Equal(fxSecondAccount.Record.Address, balances.Address);
+            Assert.Single(balances.Tokens);
+            Assert.Equal(xferAmount, balances.Tokens[fxToken.Record.Token]);
+
+            balances = await fxFirstAccount.Client.GetAccountBalancesAsync(fxToken.TreasuryAccount.Record.Address);
+            Assert.Equal(fxToken.TreasuryAccount.Record.Address, balances.Address);
+            Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
+            Assert.Single(balances.Tokens);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
+            Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
+            Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
         }
     }
 }

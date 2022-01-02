@@ -61,6 +61,50 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Single(balances.Tokens);
             Assert.Equal((ulong)(fxAsset.Metadata.Length - 1), balances.Tokens[fxAsset.Record.Token].Balance);
         }
+        [Fact(DisplayName = "Transfer Assets: Can Transfer Asset Coins to Alias Account")]
+        public async Task CanTransferAssetsToAliasAccount()
+        {
+            await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+            await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+            await fxAsset.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+            var asset = new Asset(fxAsset.Record.Token, 1);
+            var receipt = await fxAsset.Client.TransferAssetAsync(asset, fxAsset.TreasuryAccount.Record.Address, fxAccount.Alias, fxAsset.TreasuryAccount.PrivateKey);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
+            Assert.Equal(fxAsset.Record.Token, info.Token);
+            Assert.Equal(TokenType.Asset, info.Type);
+            Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+            Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+            Assert.Equal((ulong)fxAsset.Metadata.Length, info.Circulation);
+            Assert.Equal(0UL, info.Decimals);
+            Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+            Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+            Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+            Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+            Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+            Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+            Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+            Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
+            Assert.Empty(info.Royalties);
+            Assert.False(info.Deleted);
+            Assert.Equal(fxAsset.Params.Memo, info.Memo);
+
+            var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.CreateRecord.Address);
+            Assert.Equal(fxAccount.CreateRecord.Address, balances.Address);
+            Assert.True(balances.Crypto > 0);
+            Assert.Single(balances.Tokens);
+            Assert.Equal(1ul, balances.Tokens[fxAsset.Record.Token].Balance);
+
+            balances = await fxAccount.Client.GetAccountBalancesAsync(fxAsset.TreasuryAccount.Record.Address);
+            Assert.Equal(fxAsset.TreasuryAccount.Record.Address, balances.Address);
+            Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
+            Assert.Single(balances.Tokens);
+            Assert.Equal((ulong)(fxAsset.Metadata.Length - 1), balances.Tokens[fxAsset.Record.Token].Balance);
+        }
         [Fact(DisplayName = "Transfer Assets: Can Transfer Asset and Get Record")]
         public async Task CanTransferAssetAndGetRecord()
         {
@@ -260,7 +304,7 @@ namespace Hashgraph.Test.AssetTokens
             var cryptoAmount = (long)Generator.Integer(100, 200);
             var transfers = new TransferParams
             {
-                CryptoTransfers = new Dictionary<Address, long>
+                CryptoTransfers = new Dictionary<AddressOrAlias, long>
                 {
                     { _network.Payer, -2 * cryptoAmount },
                     { fxAccount1, cryptoAmount },
@@ -294,7 +338,7 @@ namespace Hashgraph.Test.AssetTokens
             var cryptoAmount = (long)Generator.Integer(100, 200);
             var transfers = new TransferParams
             {
-                CryptoTransfers = new Dictionary<Address, long>
+                CryptoTransfers = new Dictionary<AddressOrAlias, long>
                 {
                     { _network.Payer, -2 * cryptoAmount },
                     { fxAccount1, cryptoAmount },

@@ -31,7 +31,7 @@ namespace Proto
             }
         }
 
-        internal TokenRevokeKycTransactionBody(Address token, Address address) : this()
+        internal TokenRevokeKycTransactionBody(Address token, AddressOrAlias address) : this()
         {
             Token = new TokenID(token);
             Account = new AccountID(address);

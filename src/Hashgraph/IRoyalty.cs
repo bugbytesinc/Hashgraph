@@ -9,7 +9,7 @@
         /// <summary>
         /// The account receiving the commision fee.
         /// </summary>
-        public Address Account { get; }
+        public AddressOrAlias Account { get; }
         /// <summary>
         /// The type of royalty this object represents,
         /// will match the concrete implementation type.

@@ -1,10 +1,12 @@
-﻿namespace Proto
+﻿using Hashgraph;
+
+namespace Proto
 {
     public sealed partial class AccountAmount
     {
-        internal AccountAmount(Hashgraph.Address account, long amount) : this()
+        internal AccountAmount(AddressOrAlias psudoAddress, long amount) : this()
         {
-            AccountID = new AccountID(account);
+            AccountID = new AccountID(psudoAddress);
             Amount = amount;
         }
     }

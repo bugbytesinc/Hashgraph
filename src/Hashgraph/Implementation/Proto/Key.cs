@@ -3,7 +3,6 @@ using Hashgraph;
 using Hashgraph.Implementation;
 using Org.BouncyCastle.Crypto.Parameters;
 using System;
-using System.Linq;
 
 namespace Proto
 {
@@ -15,6 +14,9 @@ namespace Proto
             {
                 case KeyType.Ed25519:
                     Ed25519 = ByteString.CopyFrom(((Ed25519PublicKeyParameters)endorsement._data).GetEncoded());
+                    break;
+                case KeyType.ECDSASecp256K1:
+                    ECDSASecp256K1 = ByteString.CopyFrom(((ECPublicKeyParameters)endorsement._data).Q.GetEncoded(true));
                     break;
                 case KeyType.RSA3072:
                     RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray());
@@ -40,7 +42,8 @@ namespace Proto
         {
             return KeyCase switch
             {
-                KeyOneofCase.Ed25519 => new Endorsement(KeyType.Ed25519, new ReadOnlyMemory<byte>(Ed25519Util.publicKeyPrefix.Concat(Ed25519.ToByteArray()).ToArray())),
+                KeyOneofCase.Ed25519 => new Endorsement(KeyType.Ed25519, Ed25519.ToByteArray()),
+                KeyOneofCase.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, ECDSASecp256K1.ToByteArray()),
                 KeyOneofCase.RSA3072 => new Endorsement(KeyType.RSA3072, RSA3072.ToByteArray()),
                 KeyOneofCase.ECDSA384 => new Endorsement(KeyType.ECDSA384, ECDSA384.ToByteArray()),
                 KeyOneofCase.ContractID => new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(ContractID.AsAddress())),

@@ -31,7 +31,7 @@ namespace Proto
             }
         }
 
-        internal ContractDeleteTransactionBody(Hashgraph.Address contractToDelete, Hashgraph.Address transferToAddress) : this()
+        internal ContractDeleteTransactionBody(Address contractToDelete, AddressOrAlias transferToAddress) : this()
         {
             if (contractToDelete is null)
             {

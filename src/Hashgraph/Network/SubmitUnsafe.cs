@@ -119,7 +119,7 @@ namespace Hashgraph
             }
             if (includeRecord)
             {
-                result.Record = (await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(innerTransactionId, false), context, 0).ConfigureAwait(false)).TransactionGetRecord.TransactionRecord;
+                result.Record = (await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(innerTransactionId, false, false), context, 0).ConfigureAwait(false)).TransactionGetRecord.TransactionRecord;
             }
             return result!;
 

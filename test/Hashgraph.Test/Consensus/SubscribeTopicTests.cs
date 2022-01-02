@@ -284,12 +284,20 @@ namespace Hashgraph.Test.Topic
 
             // Wait for enough messages to be available 
             // in the mirror node's database.
-            for(int waitTries = 0; waitTries < 20; waitTries++)
+            for (int waitTries = 0; waitTries < 20; waitTries++)
             {
-                var captured = await TopicMessageCapture.CaptureOrTimeoutAsync(_network.NewMirror(), fx.TestTopic.Record.Topic, 4, 5000);
-                if(captured.Length > 2 )
+                try
                 {
-                    break;
+                    var captured = await TopicMessageCapture.CaptureOrTimeoutAsync(_network.NewMirror(), fx.TestTopic.Record.Topic, 4, 5000);
+                    if (captured.Length > 2)
+                    {
+                        break;
+                    }
+                }
+                catch (MirrorException ex) when (ex.Code == MirrorExceptionCode.TopicNotFound)
+                {
+                    _network.Output?.WriteLine("Mirror Node is slow, can not find topic just yet.");
+                    await Task.Delay(1000);
                 }
             }
 

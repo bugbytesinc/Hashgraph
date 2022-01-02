@@ -32,7 +32,7 @@ namespace Proto
             }
         }
 
-        internal TokenWipeAccountTransactionBody(Hashgraph.Address token, Hashgraph.Address address, ulong amount) : this()
+        internal TokenWipeAccountTransactionBody(Hashgraph.Address token, AddressOrAlias address, ulong amount) : this()
         {
             if (amount == 0)
             {
@@ -43,7 +43,7 @@ namespace Proto
             Amount = amount;
         }
 
-        internal TokenWipeAccountTransactionBody(Hashgraph.Asset asset, Hashgraph.Address address) : this()
+        internal TokenWipeAccountTransactionBody(Asset asset, AddressOrAlias address) : this()
         {
             if (Hashgraph.Asset.None.Equals(asset))
             {
@@ -57,7 +57,7 @@ namespace Proto
             Account = new AccountID(address);
             SerialNumbers.Add(asset.SerialNum);
         }
-        internal TokenWipeAccountTransactionBody(Hashgraph.Address token, IEnumerable<long> serialNumbers, Hashgraph.Address address) : this()
+        internal TokenWipeAccountTransactionBody(Address token, IEnumerable<long> serialNumbers, AddressOrAlias address) : this()
         {
             if (Hashgraph.Asset.None.Equals(token))
             {

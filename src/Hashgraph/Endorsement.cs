@@ -57,7 +57,9 @@ namespace Hashgraph
                 switch (Type)
                 {
                     case KeyType.Ed25519:
-                        return Ed25519Util.ToBytes((Ed25519PublicKeyParameters)_data);
+                        return Ed25519Util.ToDerBytes((Ed25519PublicKeyParameters)_data);
+                    case KeyType.ECDSASecp256K1:
+                        return EcdsaSecp256k1Util.ToDerBytes((ECPublicKeyParameters)_data);
                     case KeyType.RSA3072:
                     case KeyType.ECDSA384:
                     case KeyType.Contract:
@@ -91,13 +93,23 @@ namespace Hashgraph
             RequiredCount = 0;
         }
         /// <summary>
-        /// Convenience constructor creating an Ed25519 public key
-        /// endorsement.  This is the most common key format for the network.
+        /// Convenience constructor converting an public key represented 
+        /// in bytes into an <code>Endorsement</code>.  Ed25519 and 
+        /// ECDSA Secp256K1 keys are supported.  If the bytes entered
+        /// are not recognizable as either of these two types of keys
+        /// an exception is thrown.
         /// </summary>
         /// <param name="publicKey">
-        /// Bytes representing a public Ed25519 key.
+        /// Bytes representing a public Ed25519 or ECDSA Secp256K1 key.
         /// </param>
-        public Endorsement(ReadOnlyMemory<byte> publicKey) : this(KeyType.Ed25519, publicKey) { }
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// If <code>publicKey</code> is not recognizable as an Ed25519 
+        /// or ECDSA Secp256K1 public key.
+        /// </exception>
+        public Endorsement(ReadOnlyMemory<byte> publicKey)
+        {
+            (Type, _data) = DerEncodingUtil.ParsePublicKeyFromDerBytes(publicKey);
+        }
         /// <summary>
         /// Create a M of M requied list of endorsements.  All listed endorsements
         /// must be fulfilled to fulfill this endorsement.
@@ -172,7 +184,10 @@ namespace Hashgraph
             switch (type)
             {
                 case KeyType.Ed25519:
-                    _data = Ed25519Util.PublicKeyParamsFromBytes(publicKey);
+                    _data = Ed25519Util.PublicParamsFromDerOrRaw(publicKey);
+                    break;
+                case KeyType.ECDSASecp256K1:
+                    _data = EcdsaSecp256k1Util.PublicParamsFromDerOrRaw(publicKey);
                     break;
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
@@ -184,21 +199,22 @@ namespace Hashgraph
             }
         }
         /// <summary>
-        /// Implicit constructor converting an Ed25519 public key
-        /// represented in bytes into an <code>Endorsement</code>
-        /// representing an Ed25519 key.  This convenience operator
-        /// exists becuase Ed25519 keys are the most prominent in 
-        /// the system at the moment.
+        /// Implicit constructor converting an public key represented 
+        /// in bytes into an <code>Endorsement</code>.  Ed25519 and 
+        /// ECDSA Secp256K1 keys are supported.  If the bytes entered
+        /// are not recognizable as either of these two types of keys
+        /// an exception is thrown.
         /// </summary>
         /// <param name="publicKey">
-        /// Bytes representing a public Ed25519 key.
+        /// Bytes representing a public Ed25519 or ECDSA Secp256K1 key.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
-        /// If <code>publicKey</code> is not recognizable as an Ed25519 public key.
+        /// If <code>publicKey</code> is not recognizable as an Ed25519 
+        /// or ECDSA Secp256K1 public key.
         /// </exception>
         public static implicit operator Endorsement(ReadOnlyMemory<byte> publicKey)
         {
-            return new Endorsement(KeyType.Ed25519, publicKey);
+            return new Endorsement(publicKey);
         }
         /// <summary>
         /// Equality implementation.
@@ -224,6 +240,8 @@ namespace Hashgraph
             {
                 case KeyType.Ed25519:
                     return ((Ed25519PublicKeyParameters)_data).GetEncoded().SequenceEqual(((Ed25519PublicKeyParameters)(other._data)).GetEncoded());
+                case KeyType.ECDSASecp256K1:
+                    return ((ECPublicKeyParameters)_data).Q.GetEncoded(true).SequenceEqual(((ECPublicKeyParameters)(other._data)).Q.GetEncoded(true));
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
                 case KeyType.Contract:
@@ -292,6 +310,8 @@ namespace Hashgraph
             {
                 case KeyType.Ed25519:
                     return $"Endorsement:{Type}:{((Ed25519PublicKeyParameters)_data).GetHashCode()}".GetHashCode();
+                case KeyType.ECDSASecp256K1:
+                    return $"Endorsement:{Type}:{((ECPublicKeyParameters)_data).GetHashCode()}".GetHashCode();
                 case KeyType.RSA3072:
                 case KeyType.ECDSA384:
                 case KeyType.Contract:

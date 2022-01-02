@@ -37,6 +37,36 @@ namespace Hashgraph.Test.AssetTokens
 
             await AssertHg.AssetNotAssociatedAsync(fxAsset, fxAccount);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Dissociate Assets: Can Dissociate asset from Alias Account")]
+        public async Task CanDissociateAssetFromAliasAccountDefect()
+        {
+            // DisAssociating an asset with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanDissociateAssetFromAliasAccount));
+            Assert.StartsWith("Unable to Dissociate Token from Account, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Dissociate Assets: Can Dissociate asset from Alias Account")]
+            async Task CanDissociateAssetFromAliasAccount()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Metadata = null);
+                await fxAsset.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+                var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
+                Assert.Equal(fxAsset.Record.Token, association.Token);
+                Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
+                Assert.Equal(0UL, association.Balance);
+                Assert.Equal(0L, association.Decimals);
+                Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
+                Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+                Assert.False(association.AutoAssociated);
+
+                var receipt = await fxAccount.Client.DissociateTokenAsync(fxAsset.Record.Token, fxAccount.Alias, fxAccount.PrivateKey);
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+
+                await AssertHg.AssetNotAssociatedAsync(fxAsset, fxAccount);
+            }
+        }
         [Fact(DisplayName = "Dissociate Assets: Can Dissociate asset from Account and get Record")]
         public async Task CanDissociateAssetFromAccountAndGetRecord()
         {
@@ -317,7 +347,7 @@ namespace Hashgraph.Test.AssetTokens
                 await fxAccount.Client.DissociateTokenAsync(fxAsset.Record.Token, null);
             });
             Assert.Equal("account", ane.ParamName);
-            Assert.StartsWith("Account Address is missing. Please check that it is not null.", ane.Message);
+            Assert.StartsWith("Account Address/Alias is missing. Please check that it is not null.", ane.Message);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {

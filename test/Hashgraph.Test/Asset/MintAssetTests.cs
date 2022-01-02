@@ -34,6 +34,7 @@ namespace Hashgraph.Test.AssetTokens
             {
                 Assert.True(serialNumber > 0);
             }
+            Assert.Equal((ulong)metadata.Length, receipt.Circulation);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
             Assert.Equal(fxAsset.Record.Token, info.Token);
@@ -75,6 +76,7 @@ namespace Hashgraph.Test.AssetTokens
             {
                 Assert.True(serialNumber > 0);
             }
+            Assert.Equal((ulong)metadata.Length, receipt.Circulation);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
             Assert.Equal(fxAsset.Record.Token, info.Token);
@@ -114,6 +116,7 @@ namespace Hashgraph.Test.AssetTokens
             {
                 Assert.True(serialNumber > 0);
             }
+            Assert.Equal((ulong)metadata.Length, record.Circulation);
             Assert.False(record.Hash.IsEmpty);
             Assert.NotNull(record.Concensus);
             Assert.NotNull(record.CurrentExchangeRate);
@@ -123,6 +126,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
             Assert.Equal(metadata.Length, record.SerialNumbers.Count);
+            Assert.Equal((ulong)metadata.Length, record.Circulation);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
             Assert.Equal(fxAsset.Record.Token, info.Token);
@@ -170,6 +174,7 @@ namespace Hashgraph.Test.AssetTokens
             }
             Assert.Equal(ResponseCode.Success, receipt.Status);
             Assert.Equal(metadata.Length, receipt.SerialNumbers.Count);
+            Assert.Equal((ulong)metadata.Length, receipt.Circulation);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
             Assert.Equal(fxAsset.Record.Token, info.Token);
@@ -282,6 +287,7 @@ namespace Hashgraph.Test.AssetTokens
             {
                 Assert.True(serialNumber > 0);
             }
+            Assert.Equal((ulong)(fxAsset.Metadata.Length + metadata.Length), executedReceipt.Circulation);
 
             // Can get record for original scheduled tx.
             var record = await fxAsset.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as AssetMintRecord;
@@ -290,6 +296,7 @@ namespace Hashgraph.Test.AssetTokens
             {
                 Assert.True(serialNumber > 0);
             }
+            Assert.Equal((ulong)(fxAsset.Metadata.Length + metadata.Length), record.Circulation);
 
             await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)(metadata.Length + fxAsset.Metadata.Length));
 

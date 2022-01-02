@@ -23,7 +23,7 @@ namespace Hashgraph
         /// If specified, changes the treasury account holding the reserve 
         /// balance of tokens.
         /// </summary>
-        public Address? Treasury { get; set; }
+        public AddressOrAlias? Treasury { get; set; }
         /// <summary>
         /// Replace this Tokens's current administrative key signing rquirements 
         /// with new signing requirements.  
@@ -97,7 +97,7 @@ namespace Hashgraph
         /// specified.  Setting the value to <code>Address.None</code> clears the
         /// renewal account.
         /// </summary>
-        public Address? RenewAccount { get; set; }
+        public AddressOrAlias? RenewAccount { get; set; }
         /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to update this token.  Typically matches the

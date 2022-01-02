@@ -167,6 +167,34 @@ namespace Hashgraph.Test.Topic
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Null(info.RenewAccount);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Create Topic: Can Create Topic with Alias Renew Account")]
+        public async Task CanCreateATopicWithAliasRenewAccountDefect()
+        {
+            // Creating a topic with a renewal account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCreateATopicWithAliasRenewAccount));
+            Assert.StartsWith("Unable to create Consensus Topic, status: InvalidAutorenewAccount", testFailException.Message);
+
+            //[Fact(DisplayName = "Create Topic: Can Create Topic with Alias Renew Account")]
+            async Task CanCreateATopicWithAliasRenewAccount()
+            {
+                await using var fxRenew = await TestAliasAccount.CreateAsync(_network);
+                await using var fx = await TestTopic.CreateAsync(_network, fx =>
+                {
+                    fx.Params.RenewAccount = fxRenew.Alias;
+                    fx.Signatory = new Signatory(fx.AdminPrivateKey, fx.ParticipantPrivateKey, fxRenew.PrivateKey);
+                });
+                var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
+                Assert.Equal(fx.Memo, info.Memo);
+                Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+                Assert.Equal(0UL, info.SequenceNumber);
+                Assert.True(info.Expiration > DateTime.MinValue);
+                Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
+                Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
+                Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+                Assert.Equal(fxRenew.CreateRecord.Address, info.RenewAccount);
+            }
+        }
         [Fact(DisplayName = "Create Topic: Create Topic with missing signatures raises error.")]
         public async Task CanCreateATopicWithMissingSignaturesRaisesError()
         {

@@ -45,7 +45,7 @@ namespace Hashgraph
         /// <summary>
         /// The treasury account receiving the Initial Circulation balance of assets.
         /// </summary>
-        public Address Treasury { get; set; }
+        public AddressOrAlias Treasury { get; set; }
         /// <summary>
         /// Administrator key for signing transactions modifying this asset's properties.
         /// </summary>
@@ -117,7 +117,7 @@ namespace Hashgraph
         /// <remarks>
         /// If specified, an Administrator Endorsement must also be specified.
         /// </remarks>
-        public Address? RenewAccount { get; set; }
+        public AddressOrAlias? RenewAccount { get; set; }
         /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to create to this asset.  Typically matches the

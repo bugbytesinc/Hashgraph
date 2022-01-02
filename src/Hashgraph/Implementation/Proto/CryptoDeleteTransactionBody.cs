@@ -31,7 +31,7 @@ namespace Proto
             }
         }
 
-        internal CryptoDeleteTransactionBody(Hashgraph.Address addressToDelete, Hashgraph.Address transferToAddress) : this()
+        internal CryptoDeleteTransactionBody(AddressOrAlias addressToDelete, AddressOrAlias transferToAddress) : this()
         {
             if (addressToDelete is null)
             {

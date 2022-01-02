@@ -31,7 +31,7 @@ namespace Proto
             }
         }
 
-        internal TokenGrantKycTransactionBody(Address token, Address address) : this()
+        internal TokenGrantKycTransactionBody(Address token, AddressOrAlias address) : this()
         {
             Token = new TokenID(token);
             Account = new AccountID(address);

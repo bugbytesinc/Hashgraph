@@ -19,11 +19,36 @@ namespace Hashgraph.Tests
             Assert.False(txId1 != txId2);
             Assert.Equal(txId1.GetHashCode(), txId2.GetHashCode());
         }
-        [Fact(DisplayName = "TxId: Disimilar TxIdes are not considered Equal")]
-        public void DisimilarTxIdesAreNotConsideredEqual()
+        [Fact(DisplayName = "TxId: Equivalent TxIds with Nonces are considered Equal")]
+        public void EquivalentTxIdWithNoncesAreConsideredEqual()
+        {
+            var transactionId = Generator.TransactionID();
+            transactionId.Nonce = Generator.Integer(10, 20);
+            var txId1 = transactionId.AsTxId();
+            var txId2 = transactionId.AsTxId();
+            Assert.Equal(txId1, txId2);
+            Assert.True(txId1 == txId2);
+            Assert.False(txId1 != txId2);
+            Assert.Equal(txId1.GetHashCode(), txId2.GetHashCode());
+        }
+        [Fact(DisplayName = "TxId: Disimilar TxIds are not considered Equal")]
+        public void DisimilarTxIdsAreNotConsideredEqual()
         {
             var txId1 = Generator.TransactionID().AsTxId();
             var txId2 = Generator.TransactionID().AsTxId();
+            Assert.NotEqual(txId1, txId2);
+            Assert.False(txId1 == txId2);
+            Assert.True(txId1 != txId2);
+            Assert.NotEqual(txId1.GetHashCode(), txId2.GetHashCode());
+        }
+        [Fact(DisplayName = "TxId: TxIds with Disimilar Nonces are not considered Equal")]
+        public void TxIdsWithDisimilarNoncesAreNotConsideredEqual()
+        {
+            var transactionId = Generator.TransactionID();
+            transactionId.Nonce = Generator.Integer(10, 20);
+            var txId1 = transactionId.AsTxId();
+            transactionId.Nonce = Generator.Integer(30, 40);
+            var txId2 = transactionId.AsTxId();
             Assert.NotEqual(txId1, txId2);
             Assert.False(txId1 == txId2);
             Assert.True(txId1 != txId2);
@@ -58,6 +83,8 @@ namespace Hashgraph.Tests
             Assert.Equal(new Address(0, 0, 0), empty.Address);
             Assert.Equal(0, empty.ValidStartSeconds);
             Assert.Equal(0, empty.ValidStartNanos);
+            Assert.False(empty.Pending);
+            Assert.Equal(0, empty.Nonce);
         }
         [Fact(DisplayName = "TxId: Can Create a Transaction Id Mannually with Seconds and Nanos")]
         public void CreateManuallyWithSecondsAndNanos()
@@ -72,6 +99,8 @@ namespace Hashgraph.Tests
             Assert.Equal(address, txId.Address);
             Assert.Equal(seconds, txId.ValidStartSeconds);
             Assert.Equal(nanos, txId.ValidStartNanos);
+            Assert.False(txId.Pending);
+            Assert.Equal(0, txId.Nonce);
         }
         [Fact(DisplayName = "TxId: Can Create a Transaction Id Mannually with DateTime")]
         public void CreateManuallyWithDateTime()
@@ -85,6 +114,40 @@ namespace Hashgraph.Tests
             Assert.Equal(address, txId.Address);
             Assert.Equal(seconds, txId.ValidStartSeconds);
             Assert.Equal(nanos, txId.ValidStartNanos);
+            Assert.False(txId.Pending);
+            Assert.Equal(0, txId.Nonce);
+        }
+        [Fact(DisplayName = "TxId: Can Create a Transaction Id Mannually with Nonce")]
+        public void CreateManuallyWithNonce()
+        {
+            var address = new Address(Generator.Integer(0, 10), Generator.Integer(0, 10), Generator.Integer(10, 20));
+            var dateTime = DateTime.UtcNow;
+            var (seconds, nanos) = Epoch.FromDate(dateTime);
+            var nonce = Generator.Integer(5, 20);
+
+            var txId = new TxId(address, dateTime, false, nonce);
+
+            Assert.Equal(address, txId.Address);
+            Assert.Equal(seconds, txId.ValidStartSeconds);
+            Assert.Equal(nanos, txId.ValidStartNanos);
+            Assert.False(txId.Pending);
+            Assert.Equal(nonce, txId.Nonce);
+        }
+        [Fact(DisplayName = "TxId: Can Create a Pending Transaction Id Mannually")]
+        public void CanCreateAPendingTransactionIdMannually()
+        {
+            var address = new Address(Generator.Integer(0, 10), Generator.Integer(0, 10), Generator.Integer(10, 20));
+            var dateTime = DateTime.UtcNow;
+            var (seconds, nanos) = Epoch.FromDate(dateTime);
+            var nonce = Generator.Integer(5, 20);
+
+            var txId = new TxId(address, dateTime, true, nonce);
+
+            Assert.Equal(address, txId.Address);
+            Assert.Equal(seconds, txId.ValidStartSeconds);
+            Assert.Equal(nanos, txId.ValidStartNanos);
+            Assert.True(txId.Pending);
+            Assert.Equal(nonce, txId.Nonce);
         }
     }
 }

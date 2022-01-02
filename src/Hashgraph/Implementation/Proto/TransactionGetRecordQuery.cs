@@ -65,10 +65,11 @@ namespace Proto
             }
         }
 
-        internal TransactionGetRecordQuery(TransactionID transactionRecordId, bool includeDuplicates)
+        internal TransactionGetRecordQuery(TransactionID transactionRecordId, bool includeDuplicates, bool includeChildren)
         {
             TransactionID = transactionRecordId;
             IncludeDuplicates = includeDuplicates;
+            IncludeChildRecords = includeChildren;
         }
     }
 }

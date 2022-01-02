@@ -33,12 +33,12 @@ namespace Proto
             }
         }
 
-        internal TokenDissociateTransactionBody(Address token, Address account) : this()
+        internal TokenDissociateTransactionBody(Address token, AddressOrAlias account) : this()
         {
             Tokens.Add(new TokenID(token));
             Account = new AccountID(account);
         }
-        internal TokenDissociateTransactionBody(IEnumerable<Hashgraph.Address> tokens, Hashgraph.Address account) : this()
+        internal TokenDissociateTransactionBody(IEnumerable<Address> tokens, AddressOrAlias account) : this()
         {
             if (tokens is null)
             {

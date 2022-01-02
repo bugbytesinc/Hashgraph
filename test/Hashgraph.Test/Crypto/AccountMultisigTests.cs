@@ -40,6 +40,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(createResult.Address.AccountNum, info.Address.AccountNum);
             Assert.Equal(endorsement, info.Endorsement);
             Assert.Equal(0, info.AutoAssociationLimit);
+            Assert.Equal(Alias.None, info.Alias);
 
             Assert.Equal(new Address(0, 0, 0), info.Proxy);
             Assert.False(info.Deleted);

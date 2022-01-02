@@ -12,7 +12,7 @@
         /// <summary>
         /// The Address receiving or sending the token's coins.
         /// </summary>
-        public Address Address { get; private init; }
+        public AddressOrAlias Address { get; private init; }
         /// <summary>
         /// The (divisible) amount of coins transferred.  Negative values
         /// indicate an outflow of coins to the <code>Account</code> positive
@@ -25,8 +25,8 @@
         /// </summary>
         private TokenTransfer()
         {
-            Token = Address.None;
-            Address = Address.None;
+            Token = Hashgraph.Address.None;
+            Address = Hashgraph.Address.None;
             Amount = 0;
         }
         /// <summary>
@@ -43,7 +43,7 @@
         /// indicate an outflow of coins to the <code>Account</code> positive
         /// values indicate an inflow of coins from the associated <code>Account</code>.
         /// </param>
-        public TokenTransfer(Address token, Address address, long amount)
+        public TokenTransfer(Address token, AddressOrAlias address, long amount)
         {
             Token = token;
             Address = address;

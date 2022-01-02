@@ -32,7 +32,7 @@ namespace Proto
             }
         }
 
-        internal CryptoGetAccountRecordsQuery(Address address) : this()
+        internal CryptoGetAccountRecordsQuery(AddressOrAlias address) : this()
         {
             AccountID = new AccountID(address);
         }

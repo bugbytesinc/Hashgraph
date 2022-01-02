@@ -30,7 +30,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the contract is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, Address transferToAddress, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> DeleteContractAsync(Address contractToDelete, AddressOrAlias transferToAddress, Action<IContext>? configure = null)
         {
             return new TransactionReceipt(await ExecuteTransactionAsync(new ContractDeleteTransactionBody(contractToDelete, transferToAddress), configure, false).ConfigureAwait(false));
         }

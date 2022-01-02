@@ -23,7 +23,7 @@ namespace Hashgraph
         /// <summary>
         /// The Address receiving the transferred token or crypto.
         /// </summary>
-        public Address Receiver { get; private init; }
+        public AddressOrAlias Receiver { get; private init; }
         /// <summary>
         /// The (divisible) amount of tokens or crypto transferred.
         /// </summary>

@@ -41,6 +41,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Empty(info.Tokens);
             Assert.False(info.Deleted);
             Assert.Equal(0, info.AutoAssociationLimit);
+            Assert.Equal(Alias.None, info.Alias);
 
             // Move remaining funds back to primary account.
             var from = createResult.Address;

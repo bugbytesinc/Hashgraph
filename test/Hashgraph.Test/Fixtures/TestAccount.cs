@@ -70,6 +70,11 @@ namespace Hashgraph.Test.Fixtures
             Network.Output?.WriteLine("TEARDOWN COMPLETED: Test Account Instance");
         }
 
+        public static implicit operator AddressOrAlias(TestAccount fxAccount)
+        {
+            return fxAccount.Record.Address;
+        }
+
         public static implicit operator Address(TestAccount fxAccount)
         {
             return fxAccount.Record.Address;

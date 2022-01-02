@@ -37,6 +37,39 @@ namespace Hashgraph.Test.Token
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
             Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Confiscate Tokens: Can Confiscate Token Coins From Alias Account")]
+        public async Task CanConfiscateTokenCoinsFromAliasAccountDefect()
+        {
+            // Associating an asset with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanConfiscateTokenCoinsFromAliasAccount));
+            Assert.StartsWith("Unable to Confiscate Token, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Confiscate Tokens: Can Confiscate Token Coins From Alias Account")]
+            async Task CanConfiscateTokenCoinsFromAliasAccount()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+                await fxToken.Client.AssociateTokenAsync(fxToken.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+                var xferAmount = 2 * fxToken.Params.Circulation / (ulong)Generator.Integer(3, 5);
+                var expectedTreasury = fxToken.Params.Circulation - xferAmount;
+
+                await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+
+                Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+                Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+                Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
+
+                var receipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount.Alias, xferAmount, fxToken.ConfiscatePrivateKey);
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+                Assert.Equal(expectedTreasury, receipt.Circulation);
+
+                Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+                Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+                Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
+            }
+        }
         [Fact(DisplayName = "Confiscate Tokens: Can Confiscate A Small Amount Token Coins")]
         public async Task CanConfiscateASmallAmountTokenCoins()
         {

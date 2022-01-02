@@ -16,12 +16,12 @@ namespace Hashgraph
         /// The Account that paid for the scheduling of the 
         /// pending transaction.
         /// </summary>
-        public Address Creator { get; private init; }
+        public AddressOrAlias Creator { get; private init; }
         /// <summary>
         /// The account paying for the execution of the
         /// pending transaction.
         /// </summary>
-        public Address Payer { get; private init; }
+        public AddressOrAlias Payer { get; private init; }
         /// <summary>
         /// A list of keys having signed the pending transaction, when
         /// all necessary keyholders have signed, the network will attempt
