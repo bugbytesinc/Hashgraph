@@ -26,13 +26,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(0UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Create Topic: Can Create (Receipt Version)")]
         public async Task CanCreateATopicWithReceiptAsync()
@@ -49,13 +53,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await client.GetTopicInfoAsync(receipt.Topic);
             Assert.Equal("Receipt Version", info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(0UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Null(info.Administrator);
             Assert.Null(info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Null(info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Create Topic: Can Create Topic with Null Memo raises error.")]
         public async Task CreateWithNullMemoRaisesError()
@@ -80,13 +88,17 @@ namespace Hashgraph.Test.Topic
             });
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Empty(info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(0UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Create Topic: Can Create Topic with no Administrator and Auto Renew Raises Error")]
         public async Task CanCreateATopicWithNoAdministratorAndAutoRenewAccountRaisesError()
@@ -111,13 +123,17 @@ namespace Hashgraph.Test.Topic
             });
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(0UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Null(info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Null(info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Create Topic: Can Create Topic with no Participant Requirement")]
         public async Task CanCreateATopicWithNoParticipant()
@@ -128,13 +144,17 @@ namespace Hashgraph.Test.Topic
             });
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(0UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Null(info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Create Topic: Create Topic with no invalid renew period raises error.")]
         public async Task CanCreateATopicWithInvalidRenewPeriodRaisesError()
@@ -159,13 +179,17 @@ namespace Hashgraph.Test.Topic
             });
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(0UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Null(info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Create Topic: Can Create Topic with Alias Renew Account")]
         public async Task CanCreateATopicWithAliasRenewAccountDefect()
@@ -186,13 +210,17 @@ namespace Hashgraph.Test.Topic
                 });
                 var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
                 Assert.Equal(fx.Memo, info.Memo);
-                Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+                Assert.NotEmpty(info.RunningHash.ToArray());
                 Assert.Equal(0UL, info.SequenceNumber);
                 Assert.True(info.Expiration > DateTime.MinValue);
                 Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
                 Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
                 Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
                 Assert.Equal(fxRenew.CreateRecord.Address, info.RenewAccount);
+                // NETWORK V0.21.0 DEFECT vvvv
+                // NOT IMPLEMENTED YET
+                Assert.Empty(info.Ledger.ToArray());
+                // NETWORK V0.21.0 DEFECT: ^^^^
             }
         }
         [Fact(DisplayName = "Create Topic: Create Topic with missing signatures raises error.")]

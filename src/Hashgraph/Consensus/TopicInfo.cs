@@ -60,6 +60,11 @@ namespace Hashgraph
         /// </summary>
         public Address? RenewAccount { get; private init; }
         /// <summary>
+        /// Identification of the Ledger (Network) this topic information
+        /// was retrieved from.
+        /// </summary>
+        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <summary>
         /// Internal constructor from raw response.
         /// </summary>
         internal TopicInfo(Response response)
@@ -73,6 +78,7 @@ namespace Hashgraph
             Participant = info.SubmitKey?.ToEndorsement();
             AutoRenewPeriod = info.AutoRenewPeriod.ToTimeSpan();
             RenewAccount = info.AutoRenewAccount?.AsAddress();
+            Ledger = info.LedgerId.Memory;
         }
     }
 }

@@ -30,13 +30,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(1UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Submit Message: Can Submit Message to Open Topic")]
         public async Task CanSubmitMessageToOpenTopic()
@@ -55,13 +59,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(1UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Null(info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Submit Message: Submit Without Participant Key Raises Error")]
         public async Task SubmitMessageWithoutKeyRaisesError()
@@ -178,6 +186,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal((ulong)expectedSequenceNumber, info.SequenceNumber);
             Assert.Equal((ulong)expectedSequenceNumber, record.SequenceNumber);
             Assert.Equal(info.RunningHash.ToArray(), record.RunningHash.ToArray());
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Submit Message: Submitting Messages Can Retrieve Records (without extra Signatory)")]
         public async Task CanCallWithRecordPayerSignatory()
@@ -204,6 +216,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal((ulong)expectedSequenceNumber, info.SequenceNumber);
             Assert.Equal((ulong)expectedSequenceNumber, record.SequenceNumber);
             Assert.Equal(info.RunningHash.ToArray(), record.RunningHash.ToArray());
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Submit Message: Can Schedule Submit Message")]
         public async Task CanScheduleSubmitMessage()
@@ -238,13 +254,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fxTopic.Client.GetTopicInfoAsync(fxTopic.Record.Topic);
             Assert.Equal(fxTopic.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(1UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fxTopic.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fxTopic.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
     }
 }
