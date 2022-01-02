@@ -62,6 +62,11 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyMemory<byte> PendingTransactionBody { get; private init; }
         /// <summary>
+        /// Identification of the Ledger (Network) this 
+        /// pending transaction information was retrieved from.
+        /// </summary>
+        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <summary>
         /// Internal Constructor from Raw Results
         /// </summary>
         internal PendingTransactionInfo(Response response)
@@ -78,6 +83,7 @@ namespace Hashgraph
             Executed = info.ExecutionTime?.ToDateTime();
             Deleted = info.DeletionTime?.ToDateTime();
             PendingTransactionBody = info.ScheduledTransactionBody.ToByteArray();
+            Ledger = info.LedgerId.Memory;
         }
     }
 }

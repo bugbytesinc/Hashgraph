@@ -52,6 +52,10 @@ namespace Hashgraph.Test.Token
                 Assert.Null(info.Executed);
                 Assert.Equal(record.Concensus, info.Deleted);
                 Assert.False(info.PendingTransactionBody.IsEmpty);
+                // NETWORK V0.21.0 DEFECT vvvv
+                // NOT IMPLEMENTED YET
+                Assert.Empty(info.Ledger.ToArray());
+                // NETWORK V0.21.0 DEFECT: ^^^^
             }
         }
         [Fact(DisplayName = "Pending Transaction Delete: Can Delete Pending Transaction With Signatory Version")]

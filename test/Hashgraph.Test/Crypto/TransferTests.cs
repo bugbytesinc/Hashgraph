@@ -578,6 +578,10 @@ namespace Hashgraph.Test.Crypto
                 Assert.True(record.Concensus <= info.Executed);
                 Assert.Null(info.Deleted);
                 Assert.False(info.PendingTransactionBody.IsEmpty);
+                // NETWORK V0.21.0 DEFECT vvvv
+                // NOT IMPLEMENTED YET
+                Assert.Empty(info.Ledger.ToArray());
+                // NETWORK V0.21.0 DEFECT: ^^^^
 
                 await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
                 await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
@@ -639,6 +643,10 @@ namespace Hashgraph.Test.Crypto
                 Assert.Null(info.Executed);
                 Assert.Null(info.Deleted);
                 Assert.False(info.PendingTransactionBody.IsEmpty);
+                // NETWORK V0.21.0 DEFECT vvvv
+                // NOT IMPLEMENTED YET
+                Assert.Empty(info.Ledger.ToArray());
+                // NETWORK V0.21.0 DEFECT: ^^^^
 
                 await AssertHg.CryptoBalanceAsync(fxSender, initialBalance);
                 await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance);
