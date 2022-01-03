@@ -58,27 +58,35 @@ namespace Hashgraph.Test.Token
                 // NETWORK V0.21.0 DEFECT: ^^^^
             }
         }
-        [Fact(DisplayName = "Pending Transaction Delete: Can Delete Pending Transaction With Signatory Version")]
-        public async Task CanGetTokenInfoWithSignatoryVersion()
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Pending Transaction Delete: Can Delete Pending Transaction With Signatory Version")]
+        public async Task CanGetTokenInfoWithSignatoryVersionDefect()
         {
-            await using var fx = await TestPendingTransfer.CreateAsync(_network);
-            Assert.Equal(ResponseCode.Success, fx.Record.Status);
+            // The network has a defect that does not serialize keys properly with get scheduled transaction info.
+            var testFailException = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(CanGetTokenInfoWithSignatoryVersion);
+            Assert.StartsWith("The public key does not appear to be encoded in a recognizable", testFailException.Message);
 
-            var receipt = await fx.Client.DeletePendingTransactionAsync(fx.Record.Pending.Id, new Signatory(fx.PrivateKey));
-            Assert.Equal(ResponseCode.Success, receipt.Status);
+            //[Fact(DisplayName = "Pending Transaction Delete: Can Delete Pending Transaction With Signatory Version")]
+            async Task CanGetTokenInfoWithSignatoryVersion()
+            {
+                await using var fx = await TestPendingTransfer.CreateAsync(_network);
+                Assert.Equal(ResponseCode.Success, fx.Record.Status);
 
-            var info = await fx.PayingAccount.Client.GetPendingTransactionInfoAsync(fx.Record.Pending.Id);
-            Assert.Equal(fx.Record.Pending.Id, info.Id);
-            Assert.Equal(fx.Record.Pending.TxId, info.TxId);
-            Assert.Equal(_network.Payer, info.Creator);
-            Assert.Equal(fx.PayingAccount, info.Payer);
-            Assert.Single(info.Endorsements);
-            Assert.Equal(new Endorsement(fx.PayingAccount.PublicKey), info.Endorsements[0]);
-            Assert.Equal(new Endorsement(fx.PublicKey), info.Administrator);
-            Assert.Equal(fx.Memo, info.Memo);
-            Assert.True(info.Expiration > DateTime.MinValue);
-            Assert.Null(info.Executed);
-            Assert.False(info.PendingTransactionBody.IsEmpty);
+                var receipt = await fx.Client.DeletePendingTransactionAsync(fx.Record.Pending.Id, new Signatory(fx.PrivateKey));
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+
+                var info = await fx.PayingAccount.Client.GetPendingTransactionInfoAsync(fx.Record.Pending.Id);
+                Assert.Equal(fx.Record.Pending.Id, info.Id);
+                Assert.Equal(fx.Record.Pending.TxId, info.TxId);
+                Assert.Equal(_network.Payer, info.Creator);
+                Assert.Equal(fx.PayingAccount, info.Payer);
+                Assert.Single(info.Endorsements);
+                Assert.Equal(new Endorsement(fx.PayingAccount.PublicKey), info.Endorsements[0]);
+                Assert.Equal(new Endorsement(fx.PublicKey), info.Administrator);
+                Assert.Equal(fx.Memo, info.Memo);
+                Assert.True(info.Expiration > DateTime.MinValue);
+                Assert.Null(info.Executed);
+                Assert.False(info.PendingTransactionBody.IsEmpty);
+            }
         }
     }
 }
