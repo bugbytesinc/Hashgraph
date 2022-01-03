@@ -60,13 +60,19 @@ namespace Hashgraph
         public ReadOnlyCollection<Association> Associations { get; internal init; }
 
         /// <summary>
+        /// If this record represents a child transaction, the consensus timestamp
+        /// of the parent transaction to this transaction, otherwise null.
+        /// transaction 
+        /// </summary>
+        public DateTime? ParentTransactionConcensus { get; internal init; }
+        /// <summary>
         /// Internal Constructor of the record.
         /// </summary>
         internal TransactionRecord(NetworkResult result) : base(result)
         {
             var record = result.Record!;
             var (tokenTransfers, assetTransfers) = record.TokenTransferLists.AsTokenAndAssetTransferLists();
-            Hash = record.TransactionHash?.ToByteArray();
+            Hash = record.TransactionHash.Memory;
             Concensus = record.ConsensusTimestamp?.ToDateTime();
             Memo = record.Memo;
             Fee = record.TransactionFee;
@@ -75,30 +81,50 @@ namespace Hashgraph
             AssetTransfers = assetTransfers;
             Royalties = record.AssessedCustomFees.AsRoyaltyTransferList();
             Associations = record.AutomaticTokenAssociations.AsAssociationList();
+            ParentTransactionConcensus = record.ParentConsensusTimestamp?.ToDateTime();
         }
     }
 
     internal static class TransactionRecordExtensions
     {
         private static ReadOnlyCollection<TransactionRecord> EMPTY_RESULT = new List<TransactionRecord>().AsReadOnly();
-        internal static ReadOnlyCollection<TransactionRecord> Create(RepeatedField<Proto.TransactionRecord> list, Proto.TransactionRecord? first)
+        internal static ReadOnlyCollection<TransactionRecord> Create(Proto.TransactionRecord? rootRecord, RepeatedField<Proto.TransactionRecord>? childrenRecords, RepeatedField<Proto.TransactionRecord>? failedRecords)
         {
-            var count = (first != null ? 1 : 0) + (list != null ? list.Count : 0);
+            var count = (rootRecord != null ? 1 : 0) + (childrenRecords != null ? childrenRecords.Count : 0) + (failedRecords != null ? failedRecords.Count : 0);
             if (count > 0)
             {
                 var result = new List<TransactionRecord>(count);
-                if (first != null)
+                if (rootRecord is not null)
                 {
                     result.Add(new NetworkResult
                     {
-                        TransactionID = first.TransactionID,
-                        Receipt = first.Receipt,
-                        Record = first
+                        TransactionID = rootRecord.TransactionID,
+                        Receipt = rootRecord.Receipt,
+                        Record = rootRecord
                     }.ToRecord());
                 }
-                if (list != null && list.Count > 0)
+                if (childrenRecords is not null && childrenRecords.Count > 0)
                 {
-                    foreach (var entry in list)
+                    // The network DOES NOT return the
+                    // child transaction ID, so we have
+                    // to synthesize it.
+                    var nonce = 1;
+                    foreach (var entry in childrenRecords)
+                    {
+                        var childTransactionId = entry.TransactionID.Clone();
+                        childTransactionId.Nonce = nonce;
+                        result.Add(new NetworkResult
+                        {
+                            TransactionID = childTransactionId,
+                            Receipt = entry.Receipt,
+                            Record = entry
+                        }.ToRecord());
+                        nonce++;
+                    }
+                }
+                if (failedRecords is not null && failedRecords.Count > 0)
+                {
+                    foreach (var entry in failedRecords)
                     {
                         result.Add(new NetworkResult
                         {

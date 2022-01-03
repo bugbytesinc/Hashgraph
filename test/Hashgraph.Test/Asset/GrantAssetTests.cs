@@ -30,6 +30,32 @@ namespace Hashgraph.Test.AssetToken
 
             await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Grant Assets: Can Grant Asset Coins to Alias Account")]
+        public async Task CanGrantAssetsToAliasAccountDefect()
+        {
+            // Granting Access to an asset with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanGrantAssetsToAliasAccount));
+            Assert.StartsWith("Unable to Grant Token, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Grant Assets: Can Grant Asset Coins to Alias Account")]
+            async Task CanGrantAssetsToAliasAccount()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                await using var fxAsset = await TestAsset.CreateAsync(_network);
+                await fxAsset.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+                await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+
+                await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount.Alias, fxAsset.GrantPrivateKey);
+
+                await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+
+                await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+                await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+            }
+        }
         [Fact(DisplayName = "Grant Assets: Can Grant Asset Coins and get Record")]
         public async Task CanGrantAssetsAndGetRecord()
         {
@@ -48,6 +74,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
+            Assert.Null(record.ParentTransactionConcensus);
 
             await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 

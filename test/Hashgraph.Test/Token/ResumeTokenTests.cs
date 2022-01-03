@@ -15,8 +15,8 @@ namespace Hashgraph.Test.Token
             _network = network;
             _network.Output = output;
         }
-        [Fact(DisplayName = "Resume Tokens: Can Reume Token Coin Trading")]
-        public async Task CanReumeTokenCoinTrading()
+        [Fact(DisplayName = "Resume Tokens: Can Resume Token Coin Trading")]
+        public async Task CanResumeTokenCoinTrading()
         {
             await using var fxAccount = await TestAccount.CreateAsync(_network);
             await using var fxToken = await TestToken.CreateAsync(_network, fx =>
@@ -36,6 +36,39 @@ namespace Hashgraph.Test.Token
             await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+        }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Resume Tokens: Can Reume Token Coin Trading with Alias Account")]
+        public async Task CanReusmeTokenCoinTradingWithAiasAccountDefect()
+        {
+            // Resuming a token with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanReusmeTokenCoinTradingWithAiasAccount));
+            Assert.StartsWith("Unable to Resume Token, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Resume Tokens: Can Reume Token Coin Trading with Alias Account")]
+            async Task CanReusmeTokenCoinTradingWithAiasAccount()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+                {
+                    fx.Params.GrantKycEndorsement = null;
+                    fx.Params.InitializeSuspended = true;
+                });
+                await fxToken.Client.AssociateTokenAsync(fxToken.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+                var circulation = fxToken.Params.Circulation;
+                var xferAmount = circulation / 3;
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+
+                await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.SuspendPrivateKey);
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+
+                await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+            }
         }
         [Fact(DisplayName = "Resume Tokens: Can Resume Token Coin Trading and get Record")]
         public async Task CanReumeTokenCoinTradingAndGetRecord()
@@ -153,7 +186,7 @@ namespace Hashgraph.Test.Token
             info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
             Assert.Equal(xferAmount, info.Balance);
             Assert.Equal(fxToken.Params.Decimals, info.Decimals);
-            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus); 
+            Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.False(info.AutoAssociated);
         }
         [Fact(DisplayName = "Resume Tokens: Can Resume a Suspended Account")]

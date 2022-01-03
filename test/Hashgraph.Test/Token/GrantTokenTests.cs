@@ -32,6 +32,35 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Grant Tokens: Can Grant Token Coins to Alias Account")]
+        public async Task CanGrantTokensToAliasAccountDefect()
+        {
+            // Associating an asset with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanGrantTokensToAliasAccount));
+            Assert.StartsWith("Unable to Grant Token, status: InvalidAccountId", testFailException.Message);
+
+            //[Fact(DisplayName = "Grant Tokens: Can Grant Token Coins to Alias Account")]
+            async Task CanGrantTokensToAliasAccount()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                await using var fxToken = await TestToken.CreateAsync(_network);
+                await fxToken.Client.AssociateTokenAsync(fxToken.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+                var circulation = fxToken.Params.Circulation;
+                var xferAmount = circulation / 3;
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+
+                await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.GrantPrivateKey);
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+
+                await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+
+                await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+            }
+        }
         [Fact(DisplayName = "Grant Tokens: Can Grant Token Coins and get Record")]
         public async Task CanGrantTokensAndGetRecord()
         {

@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
+using Hashgraph;
 using Hashgraph.Implementation;
 using System;
 using System.Threading;
@@ -8,8 +9,6 @@ namespace Proto
 {
     public sealed partial class ContractCallTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Contract call failed, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { ContractCall = this };
@@ -23,6 +22,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new SmartContractService.SmartContractServiceClient(channel).contractCallMethodAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Contract call failed, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal ContractCallTransactionBody(Hashgraph.CallContractParams callParameters) : this()

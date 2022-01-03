@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Hashgraph;
 using Hashgraph.Implementation;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,6 @@ namespace Proto
 {
     public sealed partial class TokenWipeAccountTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Confiscate Token, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { TokenWipe = this };
@@ -25,7 +24,15 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).wipeTokenAccountAsync;
         }
 
-        internal TokenWipeAccountTransactionBody(Hashgraph.Address token, Hashgraph.Address address, ulong amount) : this()
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Confiscate Token, status: {0}", result.Receipt.Status), result);
+            }
+        }
+
+        internal TokenWipeAccountTransactionBody(Hashgraph.Address token, AddressOrAlias address, ulong amount) : this()
         {
             if (amount == 0)
             {
@@ -36,7 +43,7 @@ namespace Proto
             Amount = amount;
         }
 
-        internal TokenWipeAccountTransactionBody(Hashgraph.Asset asset, Hashgraph.Address address) : this()
+        internal TokenWipeAccountTransactionBody(Asset asset, AddressOrAlias address) : this()
         {
             if (Hashgraph.Asset.None.Equals(asset))
             {
@@ -50,7 +57,7 @@ namespace Proto
             Account = new AccountID(address);
             SerialNumbers.Add(asset.SerialNum);
         }
-        internal TokenWipeAccountTransactionBody(Hashgraph.Address token, IEnumerable<long> serialNumbers, Hashgraph.Address address) : this()
+        internal TokenWipeAccountTransactionBody(Address token, IEnumerable<long> serialNumbers, AddressOrAlias address) : this()
         {
             if (Hashgraph.Asset.None.Equals(token))
             {

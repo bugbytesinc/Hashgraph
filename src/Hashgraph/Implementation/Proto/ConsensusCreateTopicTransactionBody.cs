@@ -7,9 +7,7 @@ using System.Threading;
 namespace Proto
 {
     public sealed partial class ConsensusCreateTopicTransactionBody : INetworkTransaction
-    {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to create Consensus Topic, status: {0}";
-
+    {        
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { ConsensusCreateTopic = this };
@@ -23,6 +21,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new ConsensusService.ConsensusServiceClient(channel).createTopicAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {            
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to create Consensus Topic, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal ConsensusCreateTopicTransactionBody(CreateTopicParams createParameters) : this()

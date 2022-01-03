@@ -47,6 +47,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -77,6 +81,86 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(record.AssetTransfers);
             Assert.Empty(record.Royalties);
             AssertHg.SingleAssociation(fxAsset, fxAsset.TreasuryAccount, record.Associations);
+        }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Create Asset: Can Create Asset Definition with Alias Treasury")]
+        public async Task CanCreateAssetDefinitionWithAliasTreasuryDefect()
+        {
+            // Associating an asset with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCreateAssetDefinitionWithAliasTreasury));
+            Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", testFailException.Message);
+
+            //[Fact(DisplayName = "Create Asset: Can Create Asset Definition with Alias Treasury")]
+            async Task CanCreateAssetDefinitionWithAliasTreasury()
+            {
+                await using var fxTreasury = await TestAliasAccount.CreateAsync(_network);
+                await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
+                {
+                    fx.Metadata = null;
+                    fx.Params.Treasury = fxTreasury.Alias;
+                    fx.Params.Signatory = new Signatory(fx.AdminPrivateKey, fx.RenewAccount.PrivateKey, fxTreasury.PrivateKey);
+                });
+                Assert.NotNull(fxAsset.Record);
+                Assert.NotNull(fxAsset.Record.Token);
+                Assert.True(fxAsset.Record.Token.AccountNum > 0);
+                Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
+
+                var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
+                Assert.Equal(fxAsset.Record.Token, info.Token);
+                Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+                Assert.Equal(TokenType.Asset, info.Type);
+                Assert.Equal(fxAsset.Params.Name, info.Name);
+                Assert.Equal(fxTreasury.CreateRecord.Address, info.Treasury);
+                Assert.Equal(0UL, info.Circulation);
+                Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+                Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+                Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+                Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+                Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
+                Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+                Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+                Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
+                Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+                Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+                Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+                Assert.Empty(info.Royalties);
+                Assert.False(info.Deleted);
+                Assert.Equal(fxAsset.Params.Memo, info.Memo);
+                // NETWORK V0.21.0 DEFECT vvvv
+                // NOT IMPLEMENTED YET
+                Assert.Empty(info.Ledger.ToArray());
+                // NETWORK V0.21.0 DEFECT: ^^^^
+
+                var treasury = await fxAsset.Client.GetAccountInfoAsync(fxTreasury.CreateRecord.Address);
+                Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
+                Assert.Single(treasury.Tokens);
+                Assert.Equal(0, treasury.AssetCount);
+
+                var tokInfo = treasury.Tokens[0];
+                Assert.Equal(fxAsset.Record.Token, tokInfo.Token);
+                Assert.Equal(fxAsset.Params.Symbol, tokInfo.Symbol);
+                Assert.Equal(0UL, tokInfo.Balance);
+                Assert.Equal(0UL, tokInfo.Decimals);
+                Assert.Equal(TokenKycStatus.Granted, tokInfo.KycStatus);
+                Assert.Equal(TokenTradableStatus.Tradable, tokInfo.TradableStatus);
+                Assert.False(tokInfo.AutoAssociated);
+                Assert.Empty(info.Royalties);
+
+                var record = fxAsset.Record;
+                Assert.Equal(ResponseCode.Success, record.Status);
+                Assert.False(record.Hash.IsEmpty);
+                Assert.NotNull(record.Concensus);
+                Assert.NotNull(record.CurrentExchangeRate);
+                Assert.NotNull(record.NextExchangeRate);
+                Assert.NotEmpty(record.Hash.ToArray());
+                Assert.NotEmpty(record.Memo);
+                Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+                Assert.Equal(_network.Payer, record.Id.Address);
+                Assert.Empty(record.TokenTransfers);
+                Assert.Empty(record.AssetTransfers);
+                Assert.Empty(record.Royalties);
+                AssertHg.SingleAssociation(fxAsset, fxAsset.TreasuryAccount, record.Associations);
+            }
         }
         [Fact(DisplayName = "Create Asset: Can Create Asset Definition with Fixed Royalty")]
         public async Task CanCreateAssetDefinitionWithFixedRoyalty()
@@ -115,6 +199,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Single(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var royalty = info.Royalties[0] as FixedRoyalty;
             Assert.NotNull(royalty);
@@ -169,6 +257,70 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(createParams.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
+        }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Can Create Asset with Alias Treasury")]
+        public async Task CanAssociateAssetWithAliasAccountDefect()
+        {
+            // Creating an asset with a treasury identified by its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCreateAnAssetWithAliasTreasuryWithReceipt));
+            Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", testFailException.Message);
+            //[Fact(DisplayName = "Create Asset: Can Create Asset with Alias Treasury")]
+            async Task CanCreateAnAssetWithAliasTreasuryWithReceipt()
+            {
+                await using var fxTreasury = await TestAliasAccount.CreateAsync(_network);
+                await using var fxRenew = await TestAccount.CreateAsync(_network);
+                await using var client = _network.NewClient();
+                var createParams = new CreateAssetParams
+                {
+                    Name = Generator.Code(50),
+                    Symbol = Generator.UppercaseAlphaCode(20),
+                    Ceiling = (long)(Generator.Integer(10, 20) * 100000),
+                    Treasury = fxTreasury.Alias,
+                    Administrator = fxTreasury.PublicKey,
+                    GrantKycEndorsement = fxTreasury.PublicKey,
+                    SuspendEndorsement = fxTreasury.PublicKey,
+                    PauseEndorsement = fxTreasury.PublicKey,
+                    ConfiscateEndorsement = fxTreasury.PublicKey,
+                    SupplyEndorsement = fxTreasury.PublicKey,
+                    InitializeSuspended = false,
+                    Expiration = Generator.TruncatedFutureDate(2000, 3000),
+                    RenewAccount = fxRenew.Record.Address,
+                    RenewPeriod = TimeSpan.FromDays(90),
+                    Signatory = new Signatory(fxTreasury.PrivateKey, fxRenew.PrivateKey),
+                    Memo = Generator.Code(20)
+                };
+                var receipt = await client.CreateTokenAsync(createParams);
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+
+                var info = await client.GetTokenInfoAsync(receipt.Token);
+                Assert.Equal(receipt.Token, info.Token);
+                Assert.Equal(createParams.Symbol, info.Symbol);
+                Assert.Equal(createParams.Name, info.Name);
+                Assert.Equal(fxTreasury.CreateRecord.Address, info.Treasury);
+                Assert.Equal(0UL, info.Circulation);
+                Assert.Equal(0U, info.Decimals);
+                Assert.Equal(createParams.Administrator, info.Administrator);
+                Assert.Equal(createParams.GrantKycEndorsement, info.GrantKycEndorsement);
+                Assert.Equal(createParams.SuspendEndorsement, info.SuspendEndorsement);
+                Assert.Equal(createParams.PauseEndorsement, info.PauseEndorsement);
+                Assert.Equal(createParams.ConfiscateEndorsement, info.ConfiscateEndorsement);
+                Assert.Equal(createParams.SupplyEndorsement, info.SupplyEndorsement);
+                Assert.Equal(createParams.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
+                Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+                Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+                Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+                Assert.False(info.Deleted);
+                Assert.Equal(createParams.Memo, info.Memo);
+                // NETWORK V0.21.0 DEFECT vvvv
+                // NOT IMPLEMENTED YET
+                Assert.Empty(info.Ledger.ToArray());
+                // NETWORK V0.21.0 DEFECT: ^^^^
+            }
         }
         [Fact(DisplayName = "Create Asset: Missing Treasury Address Raises Error")]
         public async Task MissingTreasuryAddressRaisesError()
@@ -422,6 +574,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -469,6 +625,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -552,6 +712,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -748,6 +912,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -796,6 +964,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -840,6 +1012,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var treasury = await fxAsset.Client.GetContractBalancesAsync(fxContract);
             Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, treasury.Crypto);

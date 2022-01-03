@@ -18,6 +18,7 @@ namespace Proto
                 Nanos = transaction.ValidStartNanos
             };
             Scheduled = transaction.Pending;
+            Nonce = transaction.Nonce;
         }
     }
 
@@ -25,12 +26,12 @@ namespace Proto
     {
         internal static TxId AsTxId(this TransactionID? id)
         {
-            if(id is not null)
+            if (id is not null)
             {
                 var timestamp = id.TransactionValidStart;
-                if(timestamp is not null)
+                if (timestamp is not null)
                 {
-                    return new TxId(id.AccountID.AsAddress(), timestamp.Seconds, timestamp.Nanos, id.Scheduled);
+                    return new TxId(id.AccountID.AsAddress(), timestamp.Seconds, timestamp.Nanos, id.Scheduled, id.Nonce);
                 }
             }
             return TxId.None;

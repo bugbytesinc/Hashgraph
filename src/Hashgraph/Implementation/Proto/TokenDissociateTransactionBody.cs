@@ -10,8 +10,6 @@ namespace Proto
 {
     public sealed partial class TokenDissociateTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Dissociate Token from Account, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { TokenDissociate = this };
@@ -27,12 +25,20 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).dissociateTokensAsync;
         }
 
-        internal TokenDissociateTransactionBody(Address token, Address account) : this()
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Dissociate Token from Account, status: {0}", result.Receipt.Status), result);
+            }
+        }
+
+        internal TokenDissociateTransactionBody(Address token, AddressOrAlias account) : this()
         {
             Tokens.Add(new TokenID(token));
             Account = new AccountID(account);
         }
-        internal TokenDissociateTransactionBody(IEnumerable<Hashgraph.Address> tokens, Hashgraph.Address account) : this()
+        internal TokenDissociateTransactionBody(IEnumerable<Address> tokens, AddressOrAlias account) : this()
         {
             if (tokens is null)
             {

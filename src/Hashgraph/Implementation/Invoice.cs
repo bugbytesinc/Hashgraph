@@ -3,7 +3,6 @@ using Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Hashgraph.Implementation
 {
@@ -33,6 +32,9 @@ namespace Hashgraph.Implementation
             {
                 case KeyType.Ed25519:
                     pair.Ed25519 = value;
+                    break;
+                case KeyType.ECDSASecp256K1:
+                    pair.ECDSASecp256K1 = value;
                     break;
                 case KeyType.ECDSA384:
                     pair.ECDSA384 = value;
@@ -120,4 +122,3 @@ namespace Hashgraph.Implementation
         }
     }
 }
-

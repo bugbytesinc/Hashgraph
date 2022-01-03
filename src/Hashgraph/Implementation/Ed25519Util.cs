@@ -1,8 +1,10 @@
 ﻿using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Signers;
+using Org.BouncyCastle.Math.EC.Rfc8032;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
 using System;
-using System.Linq;
 
 namespace Hashgraph.Implementation
 {
@@ -12,13 +14,16 @@ namespace Hashgraph.Implementation
     /// </summary>
     internal static class Ed25519Util
     {
-        internal static readonly byte[] privateKeyPrefix = Hex.ToBytes("302e020100300506032b6570").ToArray();
-        internal static readonly byte[] publicKeyPrefix = Hex.ToBytes("302a300506032b6570032100").ToArray();
-        internal static Ed25519PrivateKeyParameters PrivateKeyParamsFromBytes(ReadOnlyMemory<byte> privateKey)
+        internal static Ed25519PrivateKeyParameters PrivateParamsFromDerOrRaw(ReadOnlyMemory<byte> privateKey)
         {
             AsymmetricKeyParameter asymmetricKeyParameter;
             try
             {
+                // Check to see if we have a raw key.
+                if (privateKey.Length == Ed25519.SecretKeySize)
+                {
+                    return new Ed25519PrivateKeyParameters(privateKey.ToArray(), 0);
+                }
                 asymmetricKeyParameter = PrivateKeyFactory.CreateKey(privateKey.ToArray());
             }
             catch (Exception ex)
@@ -26,14 +31,6 @@ namespace Hashgraph.Implementation
                 if (privateKey.Length == 0)
                 {
                     throw new ArgumentOutOfRangeException("Private Key cannot be empty.", ex);
-                }
-                if (privateKey.Length == 36)
-                {
-                    throw new ArgumentOutOfRangeException("The private key was not provided in a recognizable Ed25519 format. Is it missing the encoding format prefix 0x302e020100300506032b6570?", ex);
-                }
-                else if (!privateKey.Span.StartsWith(privateKeyPrefix) || privateKey.Length != 48)
-                {
-                    throw new ArgumentOutOfRangeException("The private key was not provided in a recognizable Ed25519 format. Was expecting 48 bytes starting with the prefix 0x302e020100300506032b6570.", ex);
                 }
                 throw new ArgumentOutOfRangeException("The private key does not appear to be encoded as a recognizable Ed25519 format.", ex);
             }
@@ -47,24 +44,22 @@ namespace Hashgraph.Implementation
             }
             throw new ArgumentOutOfRangeException("The private key does not appear to be encoded in Ed25519 format.");
         }
-        internal static Ed25519PublicKeyParameters PublicKeyParamsFromBytes(ReadOnlyMemory<byte> publicKey)
+        internal static Ed25519PublicKeyParameters PublicParamsFromDerOrRaw(ReadOnlyMemory<byte> publicKey)
         {
             AsymmetricKeyParameter asymmetricKeyParameter;
             try
             {
+                // Check to see if we have a raw key.
+                if (publicKey.Length == Ed25519.PublicKeySize)
+                {
+                    return new Ed25519PublicKeyParameters(publicKey.ToArray(), 0);
+                }
+                // If not, assume it is DER encoded.
                 asymmetricKeyParameter = PublicKeyFactory.CreateKey(publicKey.ToArray());
             }
             catch (Exception ex)
             {
-                if (publicKey.Length == 32)
-                {
-                    throw new ArgumentOutOfRangeException("The public key was not provided in a recognizable Ed25519 format. Is it missing the encoding format prefix 0x302a300506032b6570032100?", ex);
-                }
-                else if (!publicKey.Span.StartsWith(publicKeyPrefix) || publicKey.Length != 44)
-                {
-                    throw new ArgumentOutOfRangeException("The public key was not provided in a recognizable Ed25519 format. Was expecting 44 bytes starting with the prefix 0x302a300506032b6570032100.", ex);
-                }
-                throw new ArgumentOutOfRangeException("The public key does not appear to be encoded as a recognizable Ed25519 format.", ex);
+                throw new ArgumentOutOfRangeException("The public key does not appear to be encoded in a recognizable Ed25519 format.", ex);
             }
             if (asymmetricKeyParameter is Ed25519PublicKeyParameters ed25519PublicKeyParameters)
             {
@@ -74,11 +69,21 @@ namespace Hashgraph.Implementation
                 }
                 throw new ArgumentOutOfRangeException("This is not an Ed25519 public key, it appears to be a private key.");
             }
-            throw new ArgumentOutOfRangeException("The public key does not appear to be encoded as a recognizable Ed25519 format.");
+            throw new ArgumentOutOfRangeException("The public key does not appear to be encoded in a recognizable Ed25519 format.");
         }
-        internal static ReadOnlyMemory<byte> ToBytes(Ed25519PublicKeyParameters publicKeyParameters)
+        internal static ReadOnlyMemory<byte> ToDerBytes(Ed25519PublicKeyParameters publicKeyParameters)
         {
-            return publicKeyPrefix.Concat(publicKeyParameters.GetEncoded()).ToArray();
+            return SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(publicKeyParameters).GetDerEncoded();
+        }
+        internal static void Sign(IInvoice invoice, Ed25519PrivateKeyParameters privateKey)
+        {
+            var ed25519Signer = new Ed25519Signer();
+            ed25519Signer.Init(true, privateKey);
+            ed25519Signer.BlockUpdate(invoice.TxBytes.ToArray(), 0, invoice.TxBytes.Length);
+            var signature = ed25519Signer.GenerateSignature();
+            ed25519Signer.Reset();
+            var prefix = privateKey.GeneratePublicKey().GetEncoded()[..6];
+            invoice.AddSignature(KeyType.Ed25519, prefix, signature);
         }
     }
 }

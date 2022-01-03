@@ -37,6 +37,11 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(0, info.AssetCount);
             Assert.Equal(0, info.AutoAssociationLimit);
+            Assert.Equal(Alias.None, info.Alias);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Account Facet")]
         public async Task CanGetInfoForAccountFacet()
@@ -57,7 +62,65 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(fxAccount.CreateParams.Memo, info.Memo);
             Assert.Equal(0, info.AssetCount);
             Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
+            Assert.Equal(Alias.None, info.Alias);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
+        }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Get Account Info: Can Get Info for Alias Facet")]
+        public async Task CanGetInfoForAliasFacetDefect()
+        {
+            // Getting the info using the alias presently has a defect in the address returned
+            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanGetInfoForAliasFacet));
+            Assert.Equal("Address { ShardNum = 0, RealmNum = 0, AccountNum = 0 }", testFailException.Actual);
 
+            //[Fact(DisplayName = "Get Account Info: Can Get Info for Alias Facet")]
+            async Task CanGetInfoForAliasFacet()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                var infoFromAddress = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
+                Assert.Equal(fxAccount.CreateRecord.Address, infoFromAddress.Address);
+                Assert.NotNull(infoFromAddress.SmartContractId);
+                Assert.False(infoFromAddress.Deleted);
+                Assert.NotNull(infoFromAddress.Proxy);
+                Assert.Equal(Address.None, infoFromAddress.Proxy);
+                Assert.Equal(0, infoFromAddress.ProxiedToAccount);
+                Assert.Equal(fxAccount.PublicKey, infoFromAddress.Endorsement);
+                Assert.True(infoFromAddress.Balance > 0);
+                Assert.False(infoFromAddress.ReceiveSignatureRequired);
+                Assert.True(infoFromAddress.AutoRenewPeriod.TotalSeconds > 0);
+                Assert.True(infoFromAddress.Expiration > DateTime.MinValue);
+                Assert.Equal("auto-created account", infoFromAddress.Memo);
+                Assert.Equal(0, infoFromAddress.AssetCount);
+                Assert.Equal(0, infoFromAddress.AutoAssociationLimit);
+                Assert.Equal(fxAccount.Alias, infoFromAddress.Alias);
+                // NETWORK V0.21.0 DEFECT vvvv
+                // NOT IMPLEMENTED YET
+                Assert.Empty(infoFromAddress.Ledger.ToArray());
+                // NETWORK V0.21.0 DEFECT: ^^^^
+
+                var infoFromAlias = await fxAccount.Client.GetAccountInfoAsync(fxAccount.Alias);
+                Assert.Equal(fxAccount.CreateRecord.Address, infoFromAlias.Address);
+                Assert.NotNull(infoFromAlias.SmartContractId);
+                Assert.False(infoFromAlias.Deleted);
+                Assert.NotNull(infoFromAlias.Proxy);
+                Assert.Equal(Address.None, infoFromAlias.Proxy);
+                Assert.Equal(0, infoFromAlias.ProxiedToAccount);
+                Assert.Equal(fxAccount.PublicKey, infoFromAlias.Endorsement);
+                Assert.True(infoFromAlias.Balance > 0);
+                Assert.False(infoFromAlias.ReceiveSignatureRequired);
+                Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
+                Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+                Assert.Equal("auto-created account", infoFromAlias.Memo);
+                Assert.Equal(0, infoFromAlias.AssetCount);
+                Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
+                Assert.Equal(fxAccount.Alias, infoFromAlias.Alias);
+                // NETWORK V0.21.0 DEFECT vvvv
+                // NOT IMPLEMENTED YET
+                Assert.Empty(infoFromAlias.Ledger.ToArray());
+                // NETWORK V0.21.0 DEFECT: ^^^^
+            }
         }
         [Fact(DisplayName = "Get Account Info: Can Get Info for Server Node")]
         public async Task CanGetInfoForGatewayAsync()
@@ -79,6 +142,11 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(0, info.AssetCount);
+            Assert.Equal(Alias.None, info.Alias);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Get Account Info: Getting Account Info without paying signature fails.")]
         public async Task GetInfoWithoutPayingSignatureThrowsException()
@@ -110,6 +178,11 @@ namespace Hashgraph.Test.Crypto
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(fxAsset.Metadata.Length, info.AssetCount);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
+            Assert.Equal(Alias.None, info.Alias);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
     }
 }

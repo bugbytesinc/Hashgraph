@@ -50,7 +50,7 @@ namespace Hashgraph
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
             await WaitForConsensusReceipt(context, transactionId).ConfigureAwait(false);
-            var record = await GetTransactionRecordAsync(context, transactionId).ConfigureAwait(false);
+            var record = (await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, false, false), context, 0).ConfigureAwait(false)).TransactionGetRecord.TransactionRecord;
             return new NetworkResult
             {
                 TransactionID = transactionId,
@@ -86,15 +86,9 @@ namespace Hashgraph
             // The Receipt status returned does notmatter in this case.  
             // We may be retrieving a failed record (the status would not equal OK).
             await WaitForConsensusReceipt(context, transactionId).ConfigureAwait(false);
-            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, true), context, 0).ConfigureAwait(false);
-            // Note if we are retrieving the list, Not found is OK too.
-            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (precheckCode != ResponseCodeEnum.Ok && precheckCode != ResponseCodeEnum.RecordNotFound)
-            {
-                throw new TransactionException("Unable to retrieve transaction record.", transactionId, precheckCode);
-            }
+            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionId, true, true), context, 0).ConfigureAwait(false);
             var record = response.TransactionGetRecord;
-            return TransactionRecordExtensions.Create(record.DuplicateTransactionRecords, record.TransactionRecord);
+            return TransactionRecordExtensions.Create(record.TransactionRecord, record.ChildTransactionRecords, record.DuplicateTransactionRecords);
         }
         /// <summary>
         /// Internal Helper function used to wait for conesnsus regardless of the reported
@@ -104,7 +98,7 @@ namespace Hashgraph
         /// We may be retrieving a failed record (the status would not equal OK).
         private async Task WaitForConsensusReceipt(GossipContextStack context, TransactionID transactionId)
         {
-            var query = new TransactionGetReceiptQuery(transactionId) as INetworkQuery;
+            var query = new TransactionGetReceiptQuery(transactionId, false, false) as INetworkQuery;
             await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry).ConfigureAwait(false);
 
             static bool shouldRetry(Response response)

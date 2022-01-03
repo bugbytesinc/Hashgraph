@@ -870,7 +870,7 @@ namespace Hashgraph.Test.Token
                 AssetTransfers = new[] {
                     new AssetTransfer(movedAsset, fxSeller, fxBuyer)
                 },
-                CryptoTransfers = new Dictionary<Address, long> {
+                CryptoTransfers = new Dictionary<AddressOrAlias, long> {
                     { fxBuyer.Record.Address, -5_00_000_000 },
                     { fxSeller.Record.Address, 5_00_000_000 }
                 },
@@ -1358,7 +1358,7 @@ namespace Hashgraph.Test.Token
                 AssetTransfers = new[] {
                     new AssetTransfer(movedAsset, fxSeller, fxBuyer)
                 },
-                CryptoTransfers = new Dictionary<Address, long> {
+                CryptoTransfers = new Dictionary<AddressOrAlias, long> {
                     { fxSeller.Record.Address, -5_00_000_000 },
                     { fxBuyer.Record.Address, 5_00_000_000 }
                 },
@@ -1482,7 +1482,7 @@ namespace Hashgraph.Test.Token
                 AssetTransfers = new[] {
                     new AssetTransfer(movedAsset, fxSeller, fxBuyer)
                 },
-                CryptoTransfers = new Dictionary<Address, long> {
+                CryptoTransfers = new Dictionary<AddressOrAlias, long> {
                     { fxBuyer.Record.Address, -5_00_000_000 },
                     { fxBystander.Record.Address, 5_00_000_000 }
                 },

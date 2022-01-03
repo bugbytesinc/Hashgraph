@@ -8,8 +8,6 @@ namespace Proto
 {
     public sealed partial class TokenRevokeKycTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Revoke Token, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { TokenRevokeKyc = this };
@@ -25,7 +23,15 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).revokeKycFromTokenAccountAsync;
         }
 
-        internal TokenRevokeKycTransactionBody(Address token, Address address) : this()
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Revoke Token, status: {0}", result.Receipt.Status), result);
+            }
+        }
+
+        internal TokenRevokeKycTransactionBody(Address token, AddressOrAlias address) : this()
         {
             Token = new TokenID(token);
             Account = new AccountID(address);

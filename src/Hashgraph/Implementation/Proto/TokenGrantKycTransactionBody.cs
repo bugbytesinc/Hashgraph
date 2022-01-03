@@ -8,8 +8,6 @@ namespace Proto
 {
     public sealed partial class TokenGrantKycTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Grant Token, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { TokenGrantKyc = this };
@@ -25,7 +23,15 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).grantKycToTokenAccountAsync;
         }
 
-        internal TokenGrantKycTransactionBody(Address token, Address address) : this()
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Grant Token, status: {0}", result.Receipt.Status), result);
+            }
+        }
+
+        internal TokenGrantKycTransactionBody(Address token, AddressOrAlias address) : this()
         {
             Token = new TokenID(token);
             Account = new AccountID(address);

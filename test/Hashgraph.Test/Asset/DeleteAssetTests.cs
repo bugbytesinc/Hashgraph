@@ -84,6 +84,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.True(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             var accountInfo = await fxAsset.Client.GetAccountInfoAsync(fxAccount.Record.Address);
             var asset = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
@@ -329,6 +333,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             // Move the Treasury, hmm...don't need treasury key?
             await fxAsset.Client.UpdateTokenAsync(new UpdateTokenParams
@@ -361,6 +369,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Asset Delete: Can Delete Treasury after Deleting Asset")]
         public async Task CanDeleteTreasuryAfterDeletingAsset()

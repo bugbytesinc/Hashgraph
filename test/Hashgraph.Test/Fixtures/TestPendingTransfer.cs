@@ -33,9 +33,9 @@ namespace Hashgraph.Test.Fixtures
             var xferAmount = (long)fx.SendingAccount.CreateParams.InitialBalance / 2;
             fx.TransferParams = new TransferParams
             {
-                CryptoTransfers = new[] {
-                    KeyValuePair.Create(fx.SendingAccount.Record.Address, -xferAmount),
-                    KeyValuePair.Create(fx.ReceivingAccount.Record.Address, xferAmount)
+                CryptoTransfers = new Dictionary<AddressOrAlias, long> {
+                    { fx.SendingAccount, -xferAmount },
+                    { fx.ReceivingAccount, xferAmount }
                 },
                 Signatory = new Signatory(
                     fx.PayingAccount.PrivateKey,

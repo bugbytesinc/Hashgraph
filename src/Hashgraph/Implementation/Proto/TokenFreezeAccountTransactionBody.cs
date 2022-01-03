@@ -8,8 +8,6 @@ namespace Proto
 {
     public sealed partial class TokenFreezeAccountTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Suspend Token, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { TokenFreeze = this };
@@ -25,7 +23,15 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).freezeTokenAccountAsync;
         }
 
-        internal TokenFreezeAccountTransactionBody(Address token, Address address) : this()
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Suspend Token, status: {0}", result.Receipt.Status), result);
+            }
+        }
+
+        internal TokenFreezeAccountTransactionBody(Address token, AddressOrAlias address) : this()
         {
             Token = new TokenID(token);
             Account = new AccountID(address);

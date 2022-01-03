@@ -41,6 +41,17 @@ namespace Hashgraph
         /// </summary>
         public bool Pending { get; private init; }
         /// <summary>
+        /// When non-zero, indicates that this transaction 
+        /// is a child transaction spawned as a part of a 
+        /// larger user-initiated transaction, such as an 
+        /// implicit account creation (pay to alias) or side 
+        /// affects of a contract method invocation.  It 
+        /// will have the address and timestamp matching 
+        /// the transaction that initiated the original 
+        /// ledger state change.
+        /// </summary>
+        public int Nonce { get; private init; }
+        /// <summary>
         /// Public constructor.
         /// </summary>
         /// <param name="address">
@@ -67,12 +78,23 @@ namespace Hashgraph
         /// be set to true for creating new transactions
         /// (via setting it in the context).
         /// </param>
-        public TxId(Address address, long seconds, int nanos, bool pending = false)
+        /// <param name="nonce">
+        /// When non-zero, indicates that this transaction 
+        /// is a child transaction spawned as a part of a 
+        /// larger user-initiated transaction, such as an 
+        /// implicit account creation (pay to alias) or side 
+        /// affects of a contract method invocation.  It 
+        /// will have the address and timestamp matching 
+        /// the transaction that initiated the original 
+        /// ledger state change.
+        /// </param>
+        public TxId(Address address, long seconds, int nanos, bool pending = false, int nonce = 0)
         {
             Address = address;
             ValidStartSeconds = seconds;
             ValidStartNanos = nanos;
             Pending = pending;
+            Nonce = nonce;
         }
         /// <summary>
         /// Convenience constructor converting the
@@ -98,11 +120,22 @@ namespace Hashgraph
         /// be set to true for creating new transactions
         /// (via setting it in the context).
         /// </param>
-        public TxId(Address address, DateTime dateTime, bool pending = false)
+        /// <param name="nonce">
+        /// When non-zero, indicates that this transaction 
+        /// is a child transaction spawned as a part of a 
+        /// larger user-initiated transaction, such as an 
+        /// implicit account creation (pay to alias) or side 
+        /// affects of a contract method invocation.  It 
+        /// will have the address and timestamp matching 
+        /// the transaction that initiated the original 
+        /// ledger state change.
+        /// </param>
+        public TxId(Address address, DateTime dateTime, bool pending = false, int nonce = 0)
         {
             Address = address;
             (ValidStartSeconds, ValidStartNanos) = Epoch.FromDate(dateTime);
             Pending = pending;
+            Nonce = nonce;
         }
         /// <summary>
         /// A special designation of an transaction id that can't be created.

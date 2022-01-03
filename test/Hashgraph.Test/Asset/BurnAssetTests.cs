@@ -54,6 +54,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
         }
@@ -100,6 +104,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
         }
@@ -139,6 +147,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
         }
@@ -166,6 +178,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
             Assert.Equal(_network.Payer, record.Id.Address);
             Assert.Equal(expectedCirculation, record.Circulation);
+            Assert.Null(record.ParentTransactionConcensus);
 
             var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
             Assert.Equal(fxAsset.Record.Token, info.Token);
@@ -185,6 +198,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
         }
@@ -231,6 +248,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
         }
@@ -492,6 +513,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
     }
 }

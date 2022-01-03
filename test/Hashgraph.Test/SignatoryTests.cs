@@ -39,18 +39,18 @@ namespace Hashgraph.Tests
             {
                 new Signatory(KeyType.Ed25519, invalidKey);
             });
-            Assert.StartsWith("The private key was not provided in a recognizable Ed25519 format.", exception.Message);
+            Assert.StartsWith("The private key does not appear to be encoded as a recognizable Ed25519 format.", exception.Message);
         }
         [Fact(DisplayName = "Signatories: Invalid Byte Length in Private key throws Exception")]
         public void InvalidByteLengthForValueForKeyThrowsError()
         {
             var (_, originalKey) = Generator.KeyPair();
-            var invalidKey = originalKey.ToArray().Take(32).ToArray();
+            var invalidKey = originalKey.ToArray().Take(31).ToArray();
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 new Signatory(KeyType.Ed25519, invalidKey);
             });
-            Assert.StartsWith("The private key was not provided in a recognizable Ed25519 format.", exception.Message);
+            Assert.StartsWith("The private key does not appear to be encoded as a recognizable Ed25519 format.", exception.Message);
         }
         [Fact(DisplayName = "Signatories: Equivalent Signatories are considered Equal")]
         public void EquivalentSignatoriesAreConsideredEqual()

@@ -23,7 +23,7 @@ namespace Proto
             Header = header;
         }
 
-        internal CryptoGetInfoQuery(Address address) : this()
+        internal CryptoGetInfoQuery(AddressOrAlias address) : this()
         {
             AccountID = new AccountID(address);
         }

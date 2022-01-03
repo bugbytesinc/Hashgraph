@@ -83,6 +83,17 @@ namespace Hashgraph
         /// </summary>
         public int AutoAssociationLimit { get; private init; }
         /// <summary>
+        /// The alternate identifier associated with this account that is
+        /// in the form of a public key.  If an alternate identifer for this
+        /// account does not exist, this value will be <code>None</code>.
+        /// </summary>
+        public Alias Alias { get; private init; }
+        /// <summary>
+        /// Identification of the Ledger (Network) this 
+        /// account information was retrieved from.
+        /// </summary>
+        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <summary>
         /// Internal Constructor from Raw Response
         /// </summary>
         internal AccountInfo(Response response)
@@ -102,6 +113,8 @@ namespace Hashgraph
             Memo = info.Memo;
             AssetCount = info.OwnedNfts;
             AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
+            Alias = info.Alias.ToAlias(info.AccountID.ShardNum, info.AccountID.RealmNum);
+            Ledger = info.LedgerId.Memory;
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Hashgraph
         /// node does not accept proxy staking; then this account is automatically 
         /// proxy staked to a node chosen by the network without earning payments.
         /// </summary>
-        public Address? Proxy { get; set; }
+        public AddressOrAlias? Proxy { get; set; }
         /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to create this account.  Typically matches the

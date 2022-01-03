@@ -36,7 +36,7 @@ namespace Hashgraph.Test.Signature
         [Fact(DisplayName = "Signature: Unrelated Public Keys can Sign Unrelated Message")]
         public async Task UnrelatedPublicKeysCanSignUnrelatedMessage()
         {
-            var (_, privateKey) = Generator.KeyPair();
+            var (_, privateKey) = Generator.Ed25519KeyPair();
             await using var fx = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 0);
             await AssertHg.CryptoBalanceAsync(fx, 0);
 
@@ -61,7 +61,7 @@ namespace Hashgraph.Test.Signature
         [Fact(DisplayName = "Signature: Can Embed Messages in the Signature Map")]
         public async Task CanEmbedMessagesInTheSignatureMap()
         {
-            var (_, privateKey) = Generator.KeyPair();
+            var (_, privateKey) = Generator.Ed25519KeyPair();
             var randomBytes = Generator.SHA384Hash();
             await using var fx = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 0);
             await AssertHg.CryptoBalanceAsync(fx, 0);
@@ -87,7 +87,7 @@ namespace Hashgraph.Test.Signature
         [Fact(DisplayName = "Signature: Can Embed Messages in the Signature Itself")]
         public async Task CanEmbedMessagesInTheSignatureItself()
         {
-            var (_, privateKey) = Generator.KeyPair();
+            var (_, privateKey) = Generator.Ed25519KeyPair();
             var randomBytes = Generator.SHA384Hash();
             await using var fx = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 0);
             await AssertHg.CryptoBalanceAsync(fx, 0);
@@ -112,7 +112,7 @@ namespace Hashgraph.Test.Signature
         public async Task SignatureMapNoPrefixWithTrimOfZeroAndOneSignature()
         {
             await using var client = _network.NewClient();
-            var (_, privateKey) = Generator.KeyPair();
+            var (_, privateKey) = Generator.Ed25519KeyPair();
             var invoice = new Invoice(new Proto.TransactionBody
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
@@ -138,7 +138,7 @@ namespace Hashgraph.Test.Signature
         public async Task SignatureMapNoWithOneSignatureAndTrimLimitInlucdesPrefix()
         {
             await using var client = _network.NewClient();
-            var (_, privateKey) = Generator.KeyPair();
+            var (_, privateKey) = Generator.Ed25519KeyPair();
             var invoice = new Invoice(new Proto.TransactionBody
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
@@ -183,7 +183,7 @@ namespace Hashgraph.Test.Signature
 
             Task CustomSigner(IInvoice invoice)
             {
-                var signingKey = TestKeys.ImportPrivateEd25519KeyFromBytes(Generator.KeyPair().privateKey);
+                var signingKey = TestKeys.ImportPrivateEd25519KeyFromBytes(Generator.Ed25519KeyPair().privateKey);
                 var signature = SignatureAlgorithm.Ed25519.Sign(signingKey, invoice.TxBytes.Span);
                 for (int i = 0; i < sigCount; i++)
                 {
@@ -216,7 +216,7 @@ namespace Hashgraph.Test.Signature
 
             Task CustomSigner(IInvoice invoice)
             {
-                var signingKey = TestKeys.ImportPrivateEd25519KeyFromBytes(Generator.KeyPair().privateKey);
+                var signingKey = TestKeys.ImportPrivateEd25519KeyFromBytes(Generator.Ed25519KeyPair().privateKey);
                 var signature = SignatureAlgorithm.Ed25519.Sign(signingKey, invoice.TxBytes.Span);
                 for (int i = 0; i < sigCount; i++)
                 {
@@ -249,7 +249,7 @@ namespace Hashgraph.Test.Signature
             }
             Task CustomSigner(IInvoice invoice)
             {
-                var signingKey = TestKeys.ImportPrivateEd25519KeyFromBytes(Generator.KeyPair().privateKey);
+                var signingKey = TestKeys.ImportPrivateEd25519KeyFromBytes(Generator.Ed25519KeyPair().privateKey);
                 var signature = SignatureAlgorithm.Ed25519.Sign(signingKey, invoice.TxBytes.Span);
                 for (int i = 0; i < sigCount; i++)
                 {
@@ -263,7 +263,7 @@ namespace Hashgraph.Test.Signature
         public async Task DuplicateSignaturesAreReduced()
         {
             await using var client = _network.NewClient();
-            var (_, privateKey) = Generator.KeyPair();
+            var (_, privateKey) = Generator.Ed25519KeyPair();
             var invoice = new Invoice(new Proto.TransactionBody
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
@@ -292,8 +292,8 @@ namespace Hashgraph.Test.Signature
         public async Task SomeDuplicateSignaturesAreReduced()
         {
             await using var client = _network.NewClient();
-            var (_, privateKey1) = Generator.KeyPair();
-            var (_, privateKey2) = Generator.KeyPair();
+            var (_, privateKey1) = Generator.Ed25519KeyPair();
+            var (_, privateKey2) = Generator.Ed25519KeyPair();
             var invoice = new Invoice(new Proto.TransactionBody
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),

@@ -43,7 +43,7 @@ namespace Hashgraph
         /// <remarks>
         /// If specified, an Administrator Endorsement must also be specified.
         /// </remarks>
-        public Address? RenewAccount { get; set; }
+        public AddressOrAlias? RenewAccount { get; set; }
         /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to create to this topic.  Typically matches the

@@ -17,7 +17,7 @@ namespace Hashgraph
         /// <summary>
         /// Account receiving the royalty assessment.
         /// </summary>
-        public Address Account { get; private init; }
+        public AddressOrAlias Account { get; private init; }
         /// <summary>
         /// The minimum assessed value, in terms of the 
         /// smallest denomination of the associated token.
@@ -101,7 +101,7 @@ namespace Hashgraph
         /// assement computed from the total amount of the associated
         /// fungible token sent by the sender.
         /// </param>
-        public TokenRoyalty(Address account, long numerator, long denominator, long minimum, long maximum, bool assesAsSurcharge = false)
+        public TokenRoyalty(AddressOrAlias account, long numerator, long denominator, long minimum, long maximum, bool assesAsSurcharge = false)
         {
             Account = account;
             Numerator = numerator;

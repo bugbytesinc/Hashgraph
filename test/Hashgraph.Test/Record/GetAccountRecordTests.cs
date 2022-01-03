@@ -56,7 +56,7 @@ namespace Hashgraph.Test.Record
                 await client.GetAccountRecordsAsync(null);
             });
             Assert.Equal("account", ane.ParamName);
-            Assert.StartsWith("Account Address is missing. Please check that it is not null.", ane.Message);
+            Assert.StartsWith("Account Address/Alias is missing. Please check that it is not null.", ane.Message);
         }
         [Fact(DisplayName = "Account Records: Get with Deleted Account raises Error.")]
         public async Task DeletedAccountRaisesError()

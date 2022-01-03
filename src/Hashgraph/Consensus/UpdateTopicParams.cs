@@ -59,7 +59,7 @@ namespace Hashgraph
         /// this account must sign the transaction if RenewAccount is
         /// specified.
         /// </summary>
-        public Address? RenewAccount { get; set; }
+        public AddressOrAlias? RenewAccount { get; set; }
         /// <summary>
         /// Additional private key, keys or signing callback method 
         /// required to update this topic.  Typically matches the

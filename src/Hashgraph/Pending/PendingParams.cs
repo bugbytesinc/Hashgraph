@@ -32,6 +32,6 @@
         /// for the pending transaction.  (Which is the current account 
         /// identified as the payer in the Context).
         /// </summary>
-        public Address? PendingPayer { get; init; }
+        public AddressOrAlias? PendingPayer { get; init; }
     }
 }

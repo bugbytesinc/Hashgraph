@@ -21,6 +21,10 @@
         /// </summary>
         Ed25519 = 1,
         /// <summary>
+        /// ECDSASecp256K1 Public Key (Stored as a <see cref="Org.BouncyCastle.Crypto.Parameters.ECPublicKeyParameters"/>).
+        /// </summary>
+        ECDSASecp256K1 = 6,
+        /// <summary>
         /// RSA-3072 Public Key (Stored as a <see cref="System.ReadOnlyMemory{Byte}"/>).
         /// </summary>
         RSA3072 = 2,

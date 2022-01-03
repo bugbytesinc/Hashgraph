@@ -8,11 +8,22 @@ namespace Hashgraph.Tests
 {
     public class EndorsementsTests
     {
-        [Fact(DisplayName = "Endorsements: Can Create Valid Endorsements Object")]
-        public void CreateValidEndorsementsObject()
+        [Fact(DisplayName = "Endorsements: Can Create Valid Ed25519 Endorsements Object")]
+        public void CreateValidEd25519EndorsementsObject()
         {
-            var (publicKey1, _) = Generator.KeyPair();
-            var (publicKey2, _) = Generator.KeyPair();
+            var (publicKey1, _) = Generator.Ed25519KeyPair();
+            var (publicKey2, _) = Generator.Ed25519KeyPair();
+
+            new Endorsement(publicKey1);
+            new Endorsement(1, publicKey1);
+            new Endorsement(publicKey1, publicKey2);
+            new Endorsement(1, new Endorsement(1, publicKey1, publicKey2), new Endorsement(2, publicKey1, publicKey2));
+        }
+        [Fact(DisplayName = "Endorsements: Can Create Valid ECDSA Secp256K1 Endorsements Object")]
+        public void CreateValidEcdsaSecp256K1EndorsementsObject()
+        {
+            var (publicKey1, _) = Generator.Secp256k1KeyPair();
+            var (publicKey2, _) = Generator.Secp256k1KeyPair();
 
             new Endorsement(publicKey1);
             new Endorsement(1, publicKey1);
@@ -23,7 +34,7 @@ namespace Hashgraph.Tests
         public void TooLargeRequiredCountThrowsError()
         {
 
-            var (publicKey, _) = Generator.KeyPair();
+            var (publicKey, _) = Generator.Ed25519KeyPair();
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 new Endorsement((uint)Generator.Integer(2, 4), publicKey);
@@ -41,34 +52,57 @@ namespace Hashgraph.Tests
             Assert.Equal("endorsements", exception.ParamName);
             Assert.StartsWith("At least one endorsement in a list is required.", exception.Message);
         }
-        [Fact(DisplayName = "Endorsements: Invalid Bytes in Private key throws Exception")]
-        public void InvalidBytesForValueForKeyThrowsError()
+        [Fact(DisplayName = "Endorsements: Invalid Ed25519 Bytes in Private key throws Exception")]
+        public void InvalidEd25519BytesForValueForKeyThrowsError()
         {
-            var (originalKey, _) = Generator.KeyPair();
+            var (originalKey, _) = Generator.Ed25519KeyPair();
             var invalidKey = originalKey.ToArray();
             invalidKey[0] = 0;
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 new Endorsement(KeyType.Ed25519, invalidKey);
             });
-            Assert.StartsWith("The public key was not provided in a recognizable Ed25519 format.", exception.Message);
+            Assert.StartsWith("The public key does not appear to be encoded in a recognizable Ed25519 format.", exception.Message);
         }
-        [Fact(DisplayName = "Endorsements: Invalid Byte Length in Private key throws Exception")]
-        public void InvalidByteLengthForValueForKeyThrowsError()
+        [Fact(DisplayName = "Endorsements: Invalid ECDSA Secp256K1 Bytes in Private key throws Exception")]
+        public void InvalidEcdsaSecp256K1BytesForValueForKeyThrowsError()
         {
-            var (originalKey, _) = Generator.KeyPair();
-            var invalidKey = originalKey.ToArray().Take(32).ToArray();
+            var (originalKey, _) = Generator.Secp256k1KeyPair();
+            var invalidKey = originalKey.ToArray();
+            invalidKey[0] = 0;
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new Endorsement(KeyType.ECDSASecp256K1, invalidKey);
+            });
+            Assert.StartsWith("The public key was not provided in a recognizable ECDSA Secp256K1 format.", exception.Message);
+        }
+        [Fact(DisplayName = "Endorsements: Invalid Byte Length in Ed25519 Public key throws Exception")]
+        public void InvalidEd25519ByteLengthForValueForKeyThrowsError()
+        {
+            var (originalKey, _) = Generator.Ed25519KeyPair();
+            var invalidKey = originalKey.ToArray().Take(30).ToArray();
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 new Endorsement(KeyType.Ed25519, invalidKey);
             });
-            Assert.StartsWith("The public key was not provided in a recognizable Ed25519 format.", exception.Message);
+            Assert.StartsWith("The public key does not appear to be encoded in a recognizable Ed25519 format.", exception.Message);
         }
-        [Fact(DisplayName = "Endorsements: Equivalent Endorsements are considered Equal")]
-        public void EquivalentEndorsementsAreConsideredEqual()
+        [Fact(DisplayName = "Endorsements: Invalid Byte Length in ECDSA Secp256K1 Public key throws Exception")]
+        public void InvalidEcdsaSecp256K1ByteLengthForValueForKeyThrowsError()
         {
-            var (publicKey1, _) = Generator.KeyPair();
-            var (publicKey2, _) = Generator.KeyPair();
+            var (originalKey, _) = Generator.Secp256k1KeyPair();
+            var invalidKey = originalKey.ToArray().Take(32).ToArray();
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new Endorsement(KeyType.ECDSASecp256K1, invalidKey);
+            });
+            Assert.StartsWith("The public key was not provided in a recognizable ECDSA Secp256K1 format.", exception.Message);
+        }
+        [Fact(DisplayName = "Endorsements: Equivalent Ed25519 Endorsements are considered Equal")]
+        public void EquivalentEd25519EndorsementsAreConsideredEqual()
+        {
+            var (publicKey1, _) = Generator.Ed25519KeyPair();
+            var (publicKey2, _) = Generator.Ed25519KeyPair();
             var endorsement1 = new Endorsement(publicKey1);
             var endorsement2 = new Endorsement(publicKey1);
             Assert.Equal(endorsement1, endorsement2);
@@ -87,11 +121,58 @@ namespace Hashgraph.Tests
             Assert.True(endorsement1.Equals(asObject1));
             Assert.True(asObject1.Equals(endorsement1));
         }
-        [Fact(DisplayName = "Endorsements: Disimilar Endorsements are not considered Equal")]
-        public void DisimilarEndorsementsAreNotConsideredEqual()
+        [Fact(DisplayName = "Endorsements: Equivalent ECDSA Secp256K1 Endorsements are considered Equal")]
+        public void EquivalentECDSASecp256K1EndorsementsAreConsideredEqual()
         {
-            var (publicKey1, _) = Generator.KeyPair();
-            var (publicKey2, _) = Generator.KeyPair();
+            var (publicKey1, _) = Generator.Secp256k1KeyPair();
+            var (publicKey2, _) = Generator.Secp256k1KeyPair();
+            var endorsement1 = new Endorsement(publicKey1);
+            var endorsement2 = new Endorsement(publicKey1);
+            Assert.Equal(endorsement1, endorsement2);
+            Assert.True(endorsement1 == endorsement2);
+            Assert.False(endorsement1 != endorsement2);
+
+            endorsement1 = new Endorsement(publicKey1, publicKey2);
+            endorsement2 = new Endorsement(publicKey1, publicKey2);
+            Assert.Equal(endorsement1, endorsement2);
+            Assert.True(endorsement1 == endorsement2);
+            Assert.False(endorsement1 != endorsement2);
+
+            object asObject1 = endorsement1;
+            object asObject2 = endorsement2;
+            Assert.Equal(asObject1, asObject2);
+            Assert.True(endorsement1.Equals(asObject1));
+            Assert.True(asObject1.Equals(endorsement1));
+        }
+        [Fact(DisplayName = "Endorsements: Disimilar Ed25519 Endorsements are not considered Equal")]
+        public void DisimilarEd25519EndorsementsAreNotConsideredEqual()
+        {
+            var (publicKey1, _) = Generator.Ed25519KeyPair();
+            var (publicKey2, _) = Generator.Ed25519KeyPair();
+            var endorsements1 = new Endorsement(publicKey1);
+            var endorsements2 = new Endorsement(publicKey2);
+            Assert.NotEqual(endorsements1, endorsements2);
+            Assert.False(endorsements1 == endorsements2);
+            Assert.True(endorsements1 != endorsements2);
+
+            endorsements1 = new Endorsement(publicKey1);
+            endorsements2 = new Endorsement(publicKey1, publicKey2);
+            Assert.NotEqual(endorsements1, endorsements2);
+            Assert.False(endorsements1 == endorsements2);
+            Assert.True(endorsements1 != endorsements2);
+
+            endorsements1 = new Endorsement(publicKey1, publicKey2);
+            endorsements2 = new Endorsement(1, publicKey1, publicKey2);
+            Assert.NotEqual(endorsements1, endorsements2);
+            Assert.False(endorsements1 == endorsements2);
+            Assert.True(endorsements1 != endorsements2);
+        }
+
+        [Fact(DisplayName = "Endorsements: Disimilar ECDSA Secp256K1 Endorsements are not considered Equal")]
+        public void DisimilarECDSASecp256K1EndorsementsAreNotConsideredEqual()
+        {
+            var (publicKey1, _) = Generator.Secp256k1KeyPair();
+            var (publicKey2, _) = Generator.Secp256k1KeyPair();
             var endorsements1 = new Endorsement(publicKey1);
             var endorsements2 = new Endorsement(publicKey2);
             Assert.NotEqual(endorsements1, endorsements2);
@@ -114,9 +195,9 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Endorsements: Disimilar Multi-Key Endorsements are not considered Equal")]
         public void DisimilarMultiKeyEndorsementsAreNotConsideredEqual()
         {
-            var (publicKey1, _) = Generator.KeyPair();
-            var (publicKey2, _) = Generator.KeyPair();
-            var (publicKey3, _) = Generator.KeyPair();
+            var (publicKey1, _) = Generator.Ed25519KeyPair();
+            var (publicKey2, _) = Generator.Ed25519KeyPair();
+            var (publicKey3, _) = Generator.Secp256k1KeyPair();
             var endorsements1 = new Endorsement(publicKey1, publicKey2);
             var endorsements2 = new Endorsement(publicKey2, publicKey3);
             Assert.NotEqual(endorsements1, endorsements2);
@@ -141,10 +222,10 @@ namespace Hashgraph.Tests
             Assert.False(endorsements1 == endorsements2);
             Assert.True(endorsements1 != endorsements2);
         }
-        [Fact(DisplayName = "Endorsements: Default Creates Ed25519 Type")]
-        public void CreateWithDefaultConsturctorProducesEd25519KeyType()
+        [Fact(DisplayName = "Endorsements: Default Can Create Ed25519 Type")]
+        public void DefaultCanCreateEd25519Type()
         {
-            var (publicKey1, _) = Generator.KeyPair();
+            var (publicKey1, _) = Generator.Ed25519KeyPair();
 
             var endorsement = new Endorsement(publicKey1);
             Assert.Equal(KeyType.Ed25519, endorsement.Type);
@@ -152,13 +233,35 @@ namespace Hashgraph.Tests
             Assert.Equal(0U, endorsement.RequiredCount);
             Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
         }
+        [Fact(DisplayName = "Endorsements: Default Can Create ECDSA Secp256K1 Type")]
+        public void DefaultCanCreateECDSASecp256K1Type()
+        {
+            var (publicKey1, _) = Generator.Secp256k1KeyPair();
+
+            var endorsement = new Endorsement(publicKey1);
+            Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        }
         [Fact(DisplayName = "Endorsements: Creating Ed25519 Type produces Ed25519 type")]
         public void CanCreateEd25519Type()
         {
-            var (publicKey1, _) = Generator.KeyPair();
+            var (publicKey1, _) = Generator.Ed25519KeyPair();
 
             var endorsement = new Endorsement(KeyType.Ed25519, publicKey1);
             Assert.Equal(KeyType.Ed25519, endorsement.Type);
+            Assert.Empty(endorsement.List);
+            Assert.Equal(0U, endorsement.RequiredCount);
+            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        }
+        [Fact(DisplayName = "Endorsements: Creating ECDSA Secp256K1 Type produces ECDSA Secp256K1 type")]
+        public void CanCreateECDSASecp256K1Type()
+        {
+            var (publicKey1, _) = Generator.Secp256k1KeyPair();
+
+            var endorsement = new Endorsement(KeyType.ECDSASecp256K1, publicKey1);
+            Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
             Assert.Empty(endorsement.List);
             Assert.Equal(0U, endorsement.RequiredCount);
             Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
@@ -178,7 +281,7 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Endorsements: Creating RSA3072 Type produces RSA3072 type")]
         public void CanCreateRSA3072Type()
         {
-            var (publicKey1, _) = Generator.KeyPair();
+            var (publicKey1, _) = Generator.Ed25519KeyPair();
 
             var endorsement = new Endorsement(KeyType.RSA3072, publicKey1);
             Assert.Equal(KeyType.RSA3072, endorsement.Type);
@@ -189,7 +292,7 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Endorsements: Creating ECDSA384 Type produces RSA3072 type")]
         public void CanCreateECDSA384Type()
         {
-            var (publicKey1, _) = Generator.KeyPair();
+            var (publicKey1, _) = Generator.Ed25519KeyPair();
 
             var endorsement = new Endorsement(KeyType.ECDSA384, publicKey1);
             Assert.Equal(KeyType.ECDSA384, endorsement.Type);
@@ -202,7 +305,7 @@ namespace Hashgraph.Tests
         {
             var n = (uint)Generator.Integer(1, 4);
             var m = Generator.Integer(5, 10);
-            var keys = Enumerable.Range(0, m).Select(i => new Endorsement(Generator.KeyPair().publicKey)).ToArray();
+            var keys = Enumerable.Range(0, m).Select(i => new Endorsement(Generator.Ed25519KeyPair().publicKey)).ToArray();
             var list = new Endorsement(n, keys);
             Assert.Equal(KeyType.List, list.Type);
             Assert.Equal(n, list.RequiredCount);
@@ -215,12 +318,12 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Endorsements: Can Enumerte a Tree")]
         public void CanEnumrateAnEndorsementTree()
         {
-            var (publicKey1a, _) = Generator.KeyPair();
-            var (publicKey2a, _) = Generator.KeyPair();
-            var (publicKey3a, _) = Generator.KeyPair();
-            var (publicKey1b, _) = Generator.KeyPair();
-            var (publicKey2b, _) = Generator.KeyPair();
-            var (publicKey3b, _) = Generator.KeyPair();
+            var (publicKey1a, _) = Generator.Ed25519KeyPair();
+            var (publicKey2a, _) = Generator.Ed25519KeyPair();
+            var (publicKey3a, _) = Generator.Ed25519KeyPair();
+            var (publicKey1b, _) = Generator.Ed25519KeyPair();
+            var (publicKey2b, _) = Generator.Ed25519KeyPair();
+            var (publicKey3b, _) = Generator.Ed25519KeyPair();
             var endorsements1 = new Endorsement(1, publicKey1a, publicKey1b);
             var endorsements2 = new Endorsement(1, publicKey2a, publicKey2b);
             var endorsements3 = new Endorsement(publicKey3a, publicKey3b);
@@ -279,7 +382,7 @@ namespace Hashgraph.Tests
         [Fact(DisplayName = "Endorsements: Make List Type from Key type constructor throws error.")]
         public void CreateListTypeFromKeyTypeConstructorThrowsError()
         {
-            var (publicKey, _) = Generator.KeyPair();
+            var (publicKey, _) = Generator.Ed25519KeyPair();
             var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
                 new Endorsement(KeyType.List, publicKey);

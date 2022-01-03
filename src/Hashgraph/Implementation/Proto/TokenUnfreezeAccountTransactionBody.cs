@@ -8,8 +8,6 @@ namespace Proto
 {
     public sealed partial class TokenUnfreezeAccountTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Resume Token, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { TokenUnfreeze = this };
@@ -25,7 +23,15 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).unfreezeTokenAccountAsync;
         }
 
-        internal TokenUnfreezeAccountTransactionBody(Address token, Address address) : this()
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Resume Token, status: {0}", result.Receipt.Status), result);
+            }
+        }
+
+        internal TokenUnfreezeAccountTransactionBody(Address token, AddressOrAlias address) : this()
         {
             Token = new TokenID(token);
             Account = new AccountID(address);

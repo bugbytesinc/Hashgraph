@@ -45,6 +45,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "System Restore File: Can Restore File using Signatory")]
         public async Task CanRestoreAFileUsingSignatory()
@@ -77,6 +81,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "System Restore File: Can Restore File and get Record")]
         public async Task CanRestoreAFileWithRecord()
@@ -116,6 +124,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "System Restore File: Can Restore File and get Record using Signatory")]
         public async Task CanRestoreAFileWithRecordUsingSignatory()
@@ -155,6 +167,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "System Restore File: Can Not Schedule Restore.")]
         public async Task CanNotScheduleRestore()

@@ -74,23 +74,41 @@ namespace Hashgraph
     internal static class TransactionReceiptExtensions
     {
         private static ReadOnlyCollection<TransactionReceipt> EMPTY_RESULT = new List<TransactionReceipt>().AsReadOnly();
-        internal static ReadOnlyCollection<TransactionReceipt> Create(this RepeatedField<Proto.TransactionReceipt> list, Proto.TransactionReceipt first, TransactionID transactionId)
+        internal static ReadOnlyCollection<TransactionReceipt> Create(TransactionID transactionId, Proto.TransactionReceipt rootReceipt, RepeatedField<Proto.TransactionReceipt> childrenReceipts, RepeatedField<Proto.TransactionReceipt> failedReceipts)
         {
-            var count = (first != null ? 1 : 0) + (list != null ? list.Count : 0);
+            var count = (rootReceipt != null ? 1 : 0) + (childrenReceipts != null ? childrenReceipts.Count : 0) + (failedReceipts != null ? failedReceipts.Count : 0);
             if (count > 0)
             {
                 var result = new List<TransactionReceipt>(count);
-                if (first != null)
+                if (rootReceipt is not null)
                 {
                     result.Add(new NetworkResult
                     {
                         TransactionID = transactionId,
-                        Receipt = first
-                    }.ToReceipt());
+                        Receipt = rootReceipt
+                    }.ToReceipt());                    
                 }
-                if (list != null && list.Count > 0)
+                if (childrenReceipts is not null && childrenReceipts.Count > 0)
                 {
-                    foreach (var entry in list)
+                    // The network DOES NOT return the
+                    // child transaction ID, so we have
+                    // to synthesize it.
+                    var nonce = 1;
+                    foreach (var entry in childrenReceipts)
+                    {
+                        var childTransactionId = transactionId.Clone();
+                        childTransactionId.Nonce = nonce;
+                        result.Add(new NetworkResult
+                        {
+                            TransactionID = childTransactionId,
+                            Receipt = entry
+                        }.ToReceipt());
+                        nonce++;
+                    }
+                }
+                if (failedReceipts is not null && failedReceipts.Count > 0)
+                {
+                    foreach (var entry in failedReceipts)
                     {
                         result.Add(new NetworkResult
                         {

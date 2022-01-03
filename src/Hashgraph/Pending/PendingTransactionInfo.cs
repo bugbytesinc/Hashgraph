@@ -16,12 +16,12 @@ namespace Hashgraph
         /// The Account that paid for the scheduling of the 
         /// pending transaction.
         /// </summary>
-        public Address Creator { get; private init; }
+        public AddressOrAlias Creator { get; private init; }
         /// <summary>
         /// The account paying for the execution of the
         /// pending transaction.
         /// </summary>
-        public Address Payer { get; private init; }
+        public AddressOrAlias Payer { get; private init; }
         /// <summary>
         /// A list of keys having signed the pending transaction, when
         /// all necessary keyholders have signed, the network will attempt
@@ -62,6 +62,11 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyMemory<byte> PendingTransactionBody { get; private init; }
         /// <summary>
+        /// Identification of the Ledger (Network) this 
+        /// pending transaction information was retrieved from.
+        /// </summary>
+        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <summary>
         /// Internal Constructor from Raw Results
         /// </summary>
         internal PendingTransactionInfo(Response response)
@@ -78,6 +83,7 @@ namespace Hashgraph
             Executed = info.ExecutionTime?.ToDateTime();
             Deleted = info.DeletionTime?.ToDateTime();
             PendingTransactionBody = info.ScheduledTransactionBody.ToByteArray();
+            Ledger = info.LedgerId.Memory;
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> ResumeTokenAsync(Address token, Address address, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> ResumeTokenAsync(Address token, AddressOrAlias address, Action<IContext>? configure = null)
         {
             return new TransactionReceipt(await ExecuteTransactionAsync(new TokenUnfreezeAccountTransactionBody(token, address), configure, false).ConfigureAwait(false));
         }
@@ -60,7 +60,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionReceipt> ResumeTokenAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionReceipt> ResumeTokenAsync(Address token, AddressOrAlias address, Signatory signatory, Action<IContext>? configure = null)
         {
             return new TransactionReceipt(await ExecuteTransactionAsync(new TokenUnfreezeAccountTransactionBody(token, address), configure, false, signatory).ConfigureAwait(false));
         }
@@ -87,7 +87,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionRecord> ResumeTokenWithRecordAsync(Address token, Address address, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> ResumeTokenWithRecordAsync(Address token, AddressOrAlias address, Action<IContext>? configure = null)
         {
             return new TransactionRecord(await ExecuteTransactionAsync(new TokenUnfreezeAccountTransactionBody(token, address), configure, true).ConfigureAwait(false));
         }
@@ -118,7 +118,7 @@ namespace Hashgraph
         /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the token is already deleted.</exception>
         /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
         /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-        public async Task<TransactionRecord> ResumeTokenWithRecordAsync(Address token, Address address, Signatory signatory, Action<IContext>? configure = null)
+        public async Task<TransactionRecord> ResumeTokenWithRecordAsync(Address token, AddressOrAlias address, Signatory signatory, Action<IContext>? configure = null)
         {
             return new TransactionRecord(await ExecuteTransactionAsync(new TokenUnfreezeAccountTransactionBody(token, address), configure, true, signatory).ConfigureAwait(false));
         }

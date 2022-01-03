@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
+using Hashgraph;
 using Hashgraph.Implementation;
 using System;
 using System.Threading;
@@ -8,8 +9,6 @@ namespace Proto
 {
     public sealed partial class FileAppendTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to append to file, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { FileAppend = this };
@@ -21,6 +20,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new FileService.FileServiceClient(channel).appendContentAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to append to file, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal FileAppendTransactionBody(Hashgraph.AppendFileParams appendParameters) : this()

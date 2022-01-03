@@ -42,8 +42,7 @@ namespace Hashgraph.Test.Crypto
         [Fact(DisplayName = "Network Administration: Can Upload Update File")]
         public async Task CanSuspendNetworkWithUpdateFile()
         {
-            await using var client = _network.NewClient();
-            using var sha384 = new SHA384Managed();
+            await using var client = _network.NewClient();            
             var systemAddress = await _network.GetSystemFreezeAdminAddress();
             if (systemAddress is null)
             {
@@ -53,7 +52,7 @@ namespace Hashgraph.Test.Crypto
 
             var specialFileAddress = new Address(0, 0, 150);
             var contents = await client.GetFileContentAsync(specialFileAddress);
-            var contentHash = sha384.ComputeHash(contents.ToArray());
+            var contentHash = SHA384.Create().ComputeHash(contents.ToArray());
 
             var receipt = await client.PrepareNetworkUpgrade(specialFileAddress, contentHash, ctx => ctx.Payer = systemAddress);
             Assert.Equal(ResponseCode.Success, receipt.Status);

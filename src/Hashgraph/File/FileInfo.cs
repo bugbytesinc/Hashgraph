@@ -35,6 +35,11 @@ namespace Hashgraph
         /// </summary>
         public bool Deleted { get; private init; }
         /// <summary>
+        /// Identification of the Ledger (Network) this 
+        /// account information was retrieved from.
+        /// </summary>
+        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <summary>
         /// Intenral Constructor from Raw Response
         /// </summary>
         internal FileInfo(Response response)
@@ -46,6 +51,7 @@ namespace Hashgraph
             Expiration = info.ExpirationTime.ToDateTime();
             Endorsements = info.Keys?.ToEndorsements() ?? Array.Empty<Endorsement>();
             Deleted = info.Deleted;
+            Ledger = info.LedgerId.Memory;
         }
     }
 }

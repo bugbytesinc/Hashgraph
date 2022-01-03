@@ -62,14 +62,11 @@ namespace Hashgraph
                 var responseCode = (ResponseCode)precheck.NodeTransactionPrecheckCode;
                 throw new PrecheckException($"Transaction Failed Pre-Check: {responseCode}", result.TransactionID.AsTxId(), responseCode, precheck.Cost);
             }
-            var receipt = result.Receipt = await context.GetReceiptAsync(result.TransactionID).ConfigureAwait(false);
-            if (receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException(string.Format(transaction.TransactionExceptionMessage, receipt.Status), result);
-            }
+            result.Receipt = await context.GetReceiptAsync(result.TransactionID).ConfigureAwait(false);
+            transaction.CheckReceipt(result);
             if (includeRecord)
             {
-                result.Record = await GetTransactionRecordAsync(context, result.TransactionID).ConfigureAwait(false);
+                result.Record = (await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(result.TransactionID, false, false), context, 0).ConfigureAwait(false)).TransactionGetRecord.TransactionRecord;
             }
             return result;
 
@@ -99,7 +96,7 @@ namespace Hashgraph
                 var transactionId = context.GetOrCreateTransactionID();
                 query.SetHeader(await createSignedQueryHeader((long)cost + supplementalCost, transactionId).ConfigureAwait(false));
                 response = await executeSignedQuery().ConfigureAwait(false);
-                response.ValidateQueryResponse(transactionId);
+                query.CheckResponse(transactionId, response);
             }
             return response;
 
@@ -173,27 +170,6 @@ namespace Hashgraph
                 {
                     return response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
                 }
-            }
-        }
-        /// <summary>
-        /// Internal Helper function to retrieve the transaction record provided 
-        /// by the network following network consensus regarding a query or transaction.
-        /// </summary>
-        private async Task<Proto.TransactionRecord> GetTransactionRecordAsync(GossipContextStack context, TransactionID transactionRecordId)
-        {
-            var response = await ExecuteQueryInContextAsync(new TransactionGetRecordQuery(transactionRecordId, false), context, 0).ConfigureAwait(false);
-            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (precheckCode == ResponseCodeEnum.Ok)
-            {
-                return response.TransactionGetRecord.TransactionRecord;
-            }
-            else if (precheckCode == ResponseCodeEnum.InsufficientTxFee)
-            {
-                throw new TransactionException("The Network Changed the price of Retrieving a Record while attempting to retrieve this record, the transaction likely succeeded, please try to retrieve the record again.", transactionRecordId, precheckCode);
-            }
-            else
-            {
-                throw new TransactionException("Unable to retrieve transaction record.", transactionRecordId, precheckCode);
             }
         }
     }

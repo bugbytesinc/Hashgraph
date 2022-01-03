@@ -10,8 +10,6 @@ namespace Proto
 {
     public sealed partial class TokenAssociateTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to associate Token with Account, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { TokenAssociate = this };
@@ -27,12 +25,20 @@ namespace Proto
             return new TokenService.TokenServiceClient(channel).associateTokensAsync;
         }
 
-        internal TokenAssociateTransactionBody(Address token, Address account) : this()
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to associate Token with Account, status: {0}", result.Receipt.Status), result);
+            }
+        }
+
+        internal TokenAssociateTransactionBody(Address token, AddressOrAlias account) : this()
         {
             Tokens.Add(new TokenID(token));
             Account = new AccountID(account);
         }
-        internal TokenAssociateTransactionBody(IEnumerable<Address> tokens, Address account) : this()
+        internal TokenAssociateTransactionBody(IEnumerable<Address> tokens, AddressOrAlias account) : this()
         {
             if (tokens is null)
             {

@@ -126,7 +126,7 @@ namespace Hashgraph.Test.Token
                 AssetTransfers = new[] {
                     new AssetTransfer(movedAsset,fxSeller,fxBuyer)
                 },
-                CryptoTransfers = new Dictionary<Address, long> {
+                CryptoTransfers = new Dictionary<AddressOrAlias, long> {
                     { fxBuyer.Record.Address, -5_00_000_000 },
                     { fxSeller.Record.Address, 5_00_000_000 }
                 },
@@ -204,7 +204,7 @@ namespace Hashgraph.Test.Token
                     new TokenTransfer(fxPaymentToken, fxBuyer, -100),
                     new TokenTransfer(fxPaymentToken, fxSeller, 100),
                 },
-                CryptoTransfers = new Dictionary<Address, long> {
+                CryptoTransfers = new Dictionary<AddressOrAlias, long> {
                     { fxBuyer.Record.Address, -10_00_000_000 },
                     { fxSeller.Record.Address, 10_00_000_000 }
                 },
@@ -319,7 +319,7 @@ namespace Hashgraph.Test.Token
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor1, 20), record.TokenTransfers);
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor2, 20), record.TokenTransfers);
             Assert.Contains(new TokenTransfer(fxPaymentToken, fxBenefactor3, 40), record.TokenTransfers);
-            Assert.Single(record.AssetTransfers);            
+            Assert.Single(record.AssetTransfers);
             Assert.Contains(new AssetTransfer(movedAsset, fxSeller, fxBuyer), record.AssetTransfers);
             Assert.Empty(record.Associations);
             Assert.Equal(3, record.Royalties.Count);

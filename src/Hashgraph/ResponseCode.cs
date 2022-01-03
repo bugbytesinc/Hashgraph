@@ -3,6 +3,7 @@ namespace Hashgraph
 {
     /// <summary>
     /// Pre-Check and Receipt Response Codes - 1to1 mapping with protobuf ResponseCodeEnum
+    /// except RpcError indicating a fundamental inability to communicate with an Hedera Node
     /// </summary>
     public enum ResponseCode
     {
@@ -39,6 +40,7 @@ namespace Hashgraph
         /// <summary>
         /// The given transactionValidDuration was either non-positive, or greater than the maximum 
         /// valid duration of 180 secs.
+        /// 
         /// </summary>
         [Description("INVALID_TRANSACTION_DURATION")] InvalidTransactionDuration = 6,
         /// <summary>
@@ -933,55 +935,79 @@ namespace Hashgraph
         /// The provided pause key was invalid
         /// </summary>
         [Description("INVALID_PAUSE_KEY")] InvalidPauseKey = 267,
-        /// <summary> 
+        /// <summary>
         /// The update file in a freeze transaction body must exist.
         /// </summary>
         [Description("FREEZE_UPDATE_FILE_DOES_NOT_EXIST")] FreezeUpdateFileDoesNotExist = 268,
-        /// <summary> 
+        /// <summary>
         /// The hash of the update file in a freeze transaction body must match the in-memory hash.
         /// </summary>
         [Description("FREEZE_UPDATE_FILE_HASH_DOES_NOT_MATCH")] FreezeUpdateFileHashDoesNotMatch = 269,
-        /// <summary> 
+        /// <summary>
         /// A FREEZE_UPGRADE transaction was handled with no previous update prepared.
         /// </summary>
         [Description("NO_UPGRADE_HAS_BEEN_PREPARED")] NoUpgradeHasBeenPrepared = 270,
-        /// <summary> 
+        /// <summary>
         /// A FREEZE_ABORT transaction was handled with no scheduled freeze.
         /// </summary>
         [Description("NO_FREEZE_IS_SCHEDULED")] NoFreezeIsScheduled = 271,
-        /// <summary> 
+        /// <summary>
         /// The update file hash when handling a FREEZE_UPGRADE transaction differs from the file
         /// hash at the time of handling the PREPARE_UPGRADE transaction.
         /// </summary>
         [Description("UPDATE_FILE_HASH_CHANGED_SINCE_PREPARE_UPGRADE")] UpdateFileHashChangedSincePrepareUpgrade = 272,
-        /// <summary> 
+        /// <summary>
         /// The given freeze start time was in the (consensus) past.
         /// </summary>
         [Description("FREEZE_START_TIME_MUST_BE_FUTURE")] FreezeStartTimeMustBeFuture = 273,
-        /// <summary> 
+        /// <summary>
         /// The prepared update file cannot be updated or appended until either the upgrade has
         /// been completed, or a FREEZE_ABORT has been handled.
         /// </summary>
         [Description("PREPARED_UPDATE_FILE_IS_IMMUTABLE")] PreparedUpdateFileIsImmutable = 274,
-        /// <summary> 
+        /// <summary>
         /// Once a freeze is scheduled, it must be aborted before any other type of freeze can
         /// can be performed.
         /// </summary>
         [Description("FREEZE_ALREADY_SCHEDULED")] FreezeAlreadyScheduled = 275,
-        /// <summary> 
+        /// <summary>
         /// If an NMT upgrade has been prepared, the following operation must be a FREEZE_UPGRADE.
         /// (To issue a FREEZE_ONLY, submit a FREEZE_ABORT first.)
         /// </summary>
         [Description("FREEZE_UPGRADE_IN_PROGRESS")] FreezeUpgradeInProgress = 276,
-        /// <summary> 
+        /// <summary>
         /// If an NMT upgrade has been prepared, the subsequent FREEZE_UPGRADE transaction must 
         /// confirm the id of the file to be used in the upgrade.
         /// </summary>
         [Description("UPDATE_FILE_ID_DOES_NOT_MATCH_PREPARED")] UpdateFileIdDoesNotMatchPrepared = 277,
-        /// <summary> 
+        /// <summary>
         /// If an NMT upgrade has been prepared, the subsequent FREEZE_UPGRADE transaction must 
         /// confirm the hash of the file to be used in the upgrade.
         /// </summary>
         [Description("UPDATE_FILE_HASH_DOES_NOT_MATCH_PREPARED")] UpdateFileHashDoesNotMatchPrepared = 278,
+        /// <summary>
+        /// Consensus throttle did not allow execution of this transaction. System is throttled at
+        /// consensus level.
+        /// </summary>
+        [Description("CONSENSUS_GAS_EXHAUSTED")] ConsensusGasExhausted = 279,
+        /// <summary>
+        /// A precompiled contract succeeded, but was later reverted.
+        /// </summary>
+        [Description("REVERTED_SUCCESS")] RevertedSuccess = 280,
+        /// <summary>
+        /// All contract storage allocated to the current price regime has been consumed.
+        /// </summary>
+        [Description("MAX_STORAGE_IN_PRICE_REGIME_HAS_BEEN_USED")] MaxStorageInPriceRegimeHasBeenUsed = 281,
+        /// <summary>
+        /// An alias used in a CryptoTransfer transaction is not the serialization of a primitive Key
+        /// message--that is, a Key with a single Ed25519 or ECDSA(secp256k1) public key and no 
+        /// unknown protobuf fields.
+        /// </summary>
+        [Description("INVALID_ALIAS_KEY")] InvalidAliasKey = 282,
+        /// <summary>
+        /// A fungible token transfer expected a different number of decimals than the involved 
+        /// type actually has.
+        /// </summary>
+        [Description("UNEXPECTED_TOKEN_DECIMALS")] UnexpectedTokenDecimals = 283,
     }
 }

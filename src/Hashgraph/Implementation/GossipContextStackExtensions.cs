@@ -287,7 +287,7 @@ namespace Hashgraph
         /// </summary>
         internal static async Task<Proto.TransactionReceipt> GetReceiptAsync(this GossipContextStack context, TransactionID transactionId)
         {
-            var query = new TransactionGetReceiptQuery(transactionId) as INetworkQuery;
+            var query = new TransactionGetReceiptQuery(transactionId, false, false) as INetworkQuery;
             var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry).ConfigureAwait(false);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             switch (responseCode)

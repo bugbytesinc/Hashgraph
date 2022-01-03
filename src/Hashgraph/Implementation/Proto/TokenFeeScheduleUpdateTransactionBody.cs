@@ -10,8 +10,6 @@ namespace Proto
 {
     public sealed partial class TokenFeeScheduleUpdateTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to Update Royalties, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             throw new InvalidOperationException("Updating Token Royalties is not a schedulable transaction.");
@@ -25,6 +23,14 @@ namespace Proto
         Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
         {
             return new TokenService.TokenServiceClient(channel).updateTokenFeeScheduleAsync;
+        }
+
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to Update Royalties, status: {0}", result.Receipt.Status), result);
+            }
         }
 
         internal TokenFeeScheduleUpdateTransactionBody(Address token, IEnumerable<IRoyalty>? royalties) : this()

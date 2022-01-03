@@ -24,7 +24,7 @@ namespace Hashgraph.Extensions
         {
             if (serviceEndpoint is not null)
             {
-                IpAddress = serviceEndpoint.IpAddressV4.ToByteArray();
+                IpAddress = serviceEndpoint.IpAddressV4.Memory;
                 Port = serviceEndpoint.Port;
             }
             // Defaults to Empty otherwise.

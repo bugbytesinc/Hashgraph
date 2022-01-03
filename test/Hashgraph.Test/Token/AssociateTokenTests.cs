@@ -36,6 +36,35 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
             Assert.False(association.AutoAssociated);
         }
+        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Associate Tokens: Can Associate token with Alias Account")]
+        public async Task CanAssociateTokenWithAliasAccountDefect()
+        {
+            // Associating a token with an account using its alias address has not yet been
+            // implemented by the network, although it will accept the transaction.
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanAssociateTokenWithAliasAccount));
+
+            Assert.StartsWith("Unable to associate Token with Account, status: InvalidAccountId", testFailException.Message);
+            //[Fact(DisplayName = "Associate Tokens: Can Associate token with Alias Account")]
+            async Task CanAssociateTokenWithAliasAccount()
+            {
+                await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+                await using var fxToken = await TestToken.CreateAsync(_network);
+
+                await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
+
+                var receipt = await fxAccount.Client.AssociateTokenAsync(fxToken.Record.Token, fxAccount.Alias, fxAccount.PrivateKey);
+                Assert.Equal(ResponseCode.Success, receipt.Status);
+
+                var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
+                Assert.Equal(fxToken.Record.Token, association.Token);
+                Assert.Equal(fxToken.Params.Symbol, association.Symbol);
+                Assert.Equal(0UL, association.Balance);
+                Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+                Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
+                Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+                Assert.False(association.AutoAssociated);
+            }
+        }
         [Fact(DisplayName = "Associate Tokens: Can Associate token with Account and get Record")]
         public async Task CanAssociateTokenWithAccountAndGetRecord()
         {
@@ -361,7 +390,7 @@ namespace Hashgraph.Test.Token
                 await fxAccount.Client.AssociateTokenAsync(fxToken.Record.Token, null);
             });
             Assert.Equal("account", ane.ParamName);
-            Assert.StartsWith("Account Address is missing. Please check that it is not null.", ane.Message);
+            Assert.StartsWith("Account Address/Alias is missing. Please check that it is not null.", ane.Message);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {

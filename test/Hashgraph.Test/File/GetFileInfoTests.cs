@@ -28,6 +28,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "File Info: Can Get Imutable File Info")]
         public async Task CanGetImutableFileInfo()
@@ -44,6 +48,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Empty(info.Endorsements);
             Assert.False(info.Deleted);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "File Info: Can Get Empty File Info")]
         public async Task CanGetEmptyFileInfo()
@@ -60,6 +68,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "File Info: Can Get Imutable Empty File Info")]
         public async Task CanGetImutableEmptyFileInfo()
@@ -77,6 +89,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Empty(info.Endorsements);
             Assert.False(info.Deleted);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
     }
 }

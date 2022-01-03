@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Hashgraph;
 using Hashgraph.Implementation;
 using System;
 using System.Threading;
@@ -7,8 +8,6 @@ namespace Proto
 {
     public sealed partial class CryptoDeleteTransactionBody : INetworkTransaction
     {
-        string INetworkTransaction.TransactionExceptionMessage => "Unable to delete account, status: {0}";
-
         SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
         {
             return new SchedulableTransactionBody { CryptoDelete = this };
@@ -24,7 +23,15 @@ namespace Proto
             return new CryptoService.CryptoServiceClient(channel).cryptoDeleteAsync;
         }
 
-        internal CryptoDeleteTransactionBody(Hashgraph.Address addressToDelete, Hashgraph.Address transferToAddress) : this()
+        void INetworkTransaction.CheckReceipt(NetworkResult result)
+        {
+            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            {
+                throw new TransactionException(string.Format("Unable to delete account, status: {0}", result.Receipt.Status), result);
+            }
+        }
+
+        internal CryptoDeleteTransactionBody(AddressOrAlias addressToDelete, AddressOrAlias transferToAddress) : this()
         {
             if (addressToDelete is null)
             {

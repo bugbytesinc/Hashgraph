@@ -38,13 +38,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(1UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             await Task.Delay(7000); // give the beta net time to sync
 
@@ -129,13 +133,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(2UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             await Task.Delay(7000); // give the beta net time to sync
 
@@ -192,13 +200,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(1UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
             await Task.Delay(7000); // give the beta net time to sync
 
@@ -253,13 +265,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(1UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Null(info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Submit Segmented Message: Submit Without Topic Raises Error")]
         public async Task SubmitMessageWithoutTopicRaisesError()
@@ -533,13 +549,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
             Assert.Equal(fx.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal((ulong)copies, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
         [Fact(DisplayName = "Submit Segmented Message: Submitting Messages Can Return Record")]
         public async Task SubmittingMessagesCanReturnRecord()
@@ -608,13 +628,17 @@ namespace Hashgraph.Test.Topic
 
             var info = await fxTopic.Client.GetTopicInfoAsync(fxTopic.Record.Topic);
             Assert.Equal(fxTopic.Memo, info.Memo);
-            Assert.NotEqual(ReadOnlyMemory<byte>.Empty, info.RunningHash);
+            Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(1UL, info.SequenceNumber);
             Assert.True(info.Expiration > DateTime.MinValue);
             Assert.Equal(new Endorsement(fxTopic.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fxTopic.TestAccount.Record.Address, info.RenewAccount);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Hashgraph
         /// Transfer tinybars from an arbitray set of accounts to
         /// another arbitrary set of accounts.
         /// </summary>
-        public IEnumerable<KeyValuePair<Address, long>>? CryptoTransfers { get; set; }
+        public IEnumerable<KeyValuePair<AddressOrAlias, long>>? CryptoTransfers { get; set; }
         /// <summary>
         /// A list of tokens transfered from an arbitray set of accounts to
         /// another arbitrary set of accounts.

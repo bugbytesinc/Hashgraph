@@ -8,7 +8,7 @@ namespace Proto
 {
     public sealed partial class TokenTransferList
     {
-        internal TokenTransferList(Address token, Address fromAddress, Address toAddress, long amount) : this()
+        internal TokenTransferList(Address token, AddressOrAlias fromAddress, AddressOrAlias toAddress, long amount) : this()
         {
             if (fromAddress is null)
             {
@@ -26,7 +26,7 @@ namespace Proto
             Transfers.Add(new AccountAmount(fromAddress, -amount));
             Transfers.Add(new AccountAmount(toAddress, amount));
         }
-        internal TokenTransferList(Asset asset, Address fromAddress, Address toAddress) : this()
+        internal TokenTransferList(Asset asset, AddressOrAlias fromAddress, AddressOrAlias toAddress) : this()
         {
             if (asset is null)
             {

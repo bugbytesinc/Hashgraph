@@ -15,7 +15,7 @@ namespace Hashgraph
         /// <summary>
         /// The network address of account to update.
         /// </summary>
-        public Address Address { get; set; }
+        public AddressOrAlias Address { get; set; }
         /// <summary>
         /// Any additional signing keys required to validate the transaction
         /// that are not already specified in the client object's context.
@@ -68,7 +68,7 @@ namespace Hashgraph
         /// node does not accept proxy staking; then this account is automatically 
         /// proxy staked to a node chosen by the network without earning payments.
         /// </summary>
-        public Address? Proxy { get; set; }
+        public AddressOrAlias? Proxy { get; set; }
         /// <summary>
         /// If not null, a new description of the account.
         /// </summary>

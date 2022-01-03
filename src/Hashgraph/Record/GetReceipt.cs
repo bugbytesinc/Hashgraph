@@ -74,14 +74,14 @@ namespace Hashgraph
         {
             await using var context = CreateChildContext(configure);
             var transactionId = new TransactionID(transaction);
-            var query = new TransactionGetReceiptQuery(transactionId, true) as INetworkQuery;
+            var query = new TransactionGetReceiptQuery(transactionId, true, true) as INetworkQuery;
             var response = await context.ExecuteNetworkRequestWithRetryAsync(query.CreateEnvelope(), query.InstantiateNetworkRequestMethod, shouldRetry).ConfigureAwait(false);
             var responseCode = response.TransactionGetReceipt.Header.NodeTransactionPrecheckCode;
             if (responseCode == ResponseCodeEnum.Busy)
             {
                 throw new ConsensusException("Network failed to respond to request for a transaction receipt, it is too busy. It is possible the network may still reach concensus for this transaction.", transactionId.AsTxId(), (ResponseCode)responseCode);
             }
-            return TransactionReceiptExtensions.Create(response.TransactionGetReceipt.DuplicateTransactionReceipts, response.TransactionGetReceipt.Receipt, transactionId);
+            return TransactionReceiptExtensions.Create(transactionId, response.TransactionGetReceipt.Receipt, response.TransactionGetReceipt.ChildTransactionReceipts, response.TransactionGetReceipt.DuplicateTransactionReceipts);
 
             static bool shouldRetry(Response response)
             {
