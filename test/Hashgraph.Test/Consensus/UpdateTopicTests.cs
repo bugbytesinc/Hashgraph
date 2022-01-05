@@ -305,8 +305,8 @@ namespace Hashgraph.Test.Topic
         public async Task CanUpdateAutoRenewAccountToAliasAccountDefect()
         {
             // Data corruption bug when using the Alias form to update a renew account.
-            var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanUpdateAutoRenewAccountToAliasAccount));
-            Assert.Null(testFailException.Actual);
+            var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanUpdateAutoRenewAccountToAliasAccount));
+            Assert.StartsWith("Unable to update Topic, status: InvalidAutorenewAccount", testFailException.Message);
 
             //[Fact(DisplayName = "Update Topic: Can Update Auto Renew Account to Alias Account")]
             async Task CanUpdateAutoRenewAccountToAliasAccount()

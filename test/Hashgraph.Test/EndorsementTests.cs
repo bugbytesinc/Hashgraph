@@ -278,28 +278,6 @@ namespace Hashgraph.Tests
             Assert.Equal(0U, endorsement.RequiredCount);
             Assert.Equal(bytes.ToArray(), endorsement.PublicKey.ToArray());
         }
-        [Fact(DisplayName = "Endorsements: Creating RSA3072 Type produces RSA3072 type")]
-        public void CanCreateRSA3072Type()
-        {
-            var (publicKey1, _) = Generator.Ed25519KeyPair();
-
-            var endorsement = new Endorsement(KeyType.RSA3072, publicKey1);
-            Assert.Equal(KeyType.RSA3072, endorsement.Type);
-            Assert.Empty(endorsement.List);
-            Assert.Equal(0U, endorsement.RequiredCount);
-            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
-        }
-        [Fact(DisplayName = "Endorsements: Creating ECDSA384 Type produces RSA3072 type")]
-        public void CanCreateECDSA384Type()
-        {
-            var (publicKey1, _) = Generator.Ed25519KeyPair();
-
-            var endorsement = new Endorsement(KeyType.ECDSA384, publicKey1);
-            Assert.Equal(KeyType.ECDSA384, endorsement.Type);
-            Assert.Empty(endorsement.List);
-            Assert.Equal(0U, endorsement.RequiredCount);
-            Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
-        }
         [Fact(DisplayName = "Endorsements: Creating n of m List produces n of m List type")]
         public void CanCreateNofMList()
         {

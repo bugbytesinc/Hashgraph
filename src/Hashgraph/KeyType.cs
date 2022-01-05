@@ -23,15 +23,7 @@
         /// <summary>
         /// ECDSASecp256K1 Public Key (Stored as a <see cref="Org.BouncyCastle.Crypto.Parameters.ECPublicKeyParameters"/>).
         /// </summary>
-        ECDSASecp256K1 = 6,
-        /// <summary>
-        /// RSA-3072 Public Key (Stored as a <see cref="System.ReadOnlyMemory{Byte}"/>).
-        /// </summary>
-        RSA3072 = 2,
-        /// <summary>
-        /// ECDSA with the p-384 curve (Stored as a <see cref="System.ReadOnlyMemory{Byte}"/>).
-        /// </summary>
-        ECDSA384 = 3,
+        ECDSASecp256K1 = 2,
         /// <summary>
         /// Correlates to a Smart Contract Instance, sometimes produced by the 
         /// network identifying smart contracts that are immutable.

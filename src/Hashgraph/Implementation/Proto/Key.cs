@@ -18,12 +18,6 @@ namespace Proto
                 case KeyType.ECDSASecp256K1:
                     ECDSASecp256K1 = ByteString.CopyFrom(((ECPublicKeyParameters)endorsement._data).Q.GetEncoded(true));
                     break;
-                case KeyType.RSA3072:
-                    RSA3072 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray());
-                    break;
-                case KeyType.ECDSA384:
-                    ECDSA384 = ByteString.CopyFrom(((ReadOnlyMemory<byte>)endorsement._data).ToArray());
-                    break;
                 case KeyType.Contract:
                     ContractID = new ContractID((Address)Abi.DecodeAddressPart((ReadOnlyMemory<byte>)endorsement._data));
                     break;
@@ -44,12 +38,10 @@ namespace Proto
             {
                 KeyOneofCase.Ed25519 => new Endorsement(KeyType.Ed25519, Ed25519.Memory),
                 KeyOneofCase.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, ECDSASecp256K1.Memory),
-                KeyOneofCase.RSA3072 => new Endorsement(KeyType.RSA3072, RSA3072.Memory),
-                KeyOneofCase.ECDSA384 => new Endorsement(KeyType.ECDSA384, ECDSA384.Memory),
                 KeyOneofCase.ContractID => new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(ContractID.AsAddress())),
                 KeyOneofCase.ThresholdKey => ThresholdKey.Keys.Keys.Count == 0 ? Endorsement.None : new Endorsement(ThresholdKey.Threshold, ThresholdKey.Keys.ToEndorsements()),
                 KeyOneofCase.KeyList => KeyList.Keys.Count == 0 ? Endorsement.None : new Endorsement(KeyList.ToEndorsements()),
-                _ => throw new InvalidOperationException($"Unknown Key Type {KeyCase}.  Do we have a network/library version mismatch?"),
+                _ => throw new InvalidOperationException($"Unsupported Key Type {KeyCase}.  Do we have a network/library version mismatch?"),
             };
         }
     }

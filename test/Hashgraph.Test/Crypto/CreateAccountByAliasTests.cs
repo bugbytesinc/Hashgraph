@@ -75,12 +75,7 @@ namespace Hashgraph.Test.Crypto
             // NETWORK V0.21.0 DEFECT: ^^^^
 
             var infoFromAlias = await client.GetAccountInfoAsync(alias);
-            // NETWORK V0.21.0 DEFECT: vvvvvvv
-            // The following does would be correct behavior
-            // Assert.Equal(createReceipt.Address, infoFromAlias.Address);
-            // NETWORK V0.21.0 DEFECT: However this is present behavior.
-            Assert.Equal(Address.None, infoFromAlias.Address);
-            // NETWORK V0.21.0 DEFECT: ^^^^^^^
+            Assert.Equal(createReceipt.Address, infoFromAlias.Address);
             Assert.Equal(alias, infoFromAlias.Alias);
             Assert.NotNull(infoFromAlias.SmartContractId);
             Assert.False(infoFromAlias.Deleted);
@@ -165,12 +160,7 @@ namespace Hashgraph.Test.Crypto
             // NETWORK V0.21.0 DEFECT: ^^^^
 
             var infoFromAlias = await client.GetAccountInfoAsync(alias);
-            // NETWORK V0.21.0 DEFECT: vvvvvvv
-            // The would be correct behavior, not implemented by the network
-            // Assert.Equal(createReceipt.Address, infoFromAlias.Address);
-            // The following is how it is returning at the moment.
-            Assert.Equal(Address.None, infoFromAlias.Address);
-            // NETWORK V0.21.0 DEFECT: ^^^^^^^
+            Assert.Equal(createReceipt.Address, infoFromAlias.Address);
             Assert.Equal(alias, infoFromAlias.Alias);
             Assert.NotNull(infoFromAlias.SmartContractId);
             Assert.False(infoFromAlias.Deleted);
@@ -259,12 +249,7 @@ namespace Hashgraph.Test.Crypto
             // NETWORK V0.21.0 DEFECT: ^^^^
 
             var infoFromAlias = await client.GetAccountInfoAsync(alias);
-            // NETWORK V0.21.0 DEFECT: vvvvvvv
-            // The following does would be correct behavior
-            // Assert.Equal(createReceipt.Address, infoFromAlias.Address);
-            // NETWORK V0.21.0 DEFECT: However this is present behavior.
-            Assert.Equal(Address.None, infoFromAlias.Address);
-            // NETWORK V0.21.0 DEFECT: ^^^^^^^
+            Assert.Equal(createRecord.Address, infoFromAlias.Address);
             Assert.Equal(alias, infoFromAlias.Alias);
             Assert.NotNull(infoFromAlias.SmartContractId);
             Assert.False(infoFromAlias.Deleted);

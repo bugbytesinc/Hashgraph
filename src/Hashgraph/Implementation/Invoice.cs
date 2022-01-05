@@ -36,12 +36,6 @@ namespace Hashgraph.Implementation
                 case KeyType.ECDSASecp256K1:
                     pair.ECDSASecp256K1 = value;
                     break;
-                case KeyType.ECDSA384:
-                    pair.ECDSA384 = value;
-                    break;
-                case KeyType.RSA3072:
-                    pair.RSA3072 = value;
-                    break;
                 case KeyType.Contract:
                     pair.Contract = value;
                     break;

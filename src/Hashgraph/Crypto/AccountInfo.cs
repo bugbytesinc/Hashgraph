@@ -92,7 +92,14 @@ namespace Hashgraph
         /// Identification of the Ledger (Network) this 
         /// account information was retrieved from.
         /// </summary>
-        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <remarks>
+        /// Marked Internal for Now since this is not yet
+        /// implemented on previewnet or testnet.
+        /// </remarks>
+        /// Marked Internal for Now since this is not yet
+        /// implemented on previewnet or testnet.
+        /// </remarks>
+        internal ReadOnlyMemory<byte> Ledger { get; private init; }
         /// <summary>
         /// Internal Constructor from Raw Response
         /// </summary>

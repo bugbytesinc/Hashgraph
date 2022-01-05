@@ -63,7 +63,11 @@ namespace Hashgraph
         /// Identification of the Ledger (Network) this topic information
         /// was retrieved from.
         /// </summary>
-        public ReadOnlyMemory<byte> Ledger { get; private init; }
+        /// <remarks>
+        /// Marked Internal for Now since this is not yet
+        /// implemented on previewnet or testnet.
+        /// </remarks>
+        internal ReadOnlyMemory<byte> Ledger { get; private init; }
         /// <summary>
         /// Internal constructor from raw response.
         /// </summary>

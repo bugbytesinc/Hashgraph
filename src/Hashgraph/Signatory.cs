@@ -36,23 +36,7 @@ namespace Hashgraph
             /// <summary>
             /// ECDSASecp256K1 Public Key (Stored as a <see cref="Org.BouncyCastle.Crypto.Parameters.ECPublicKeyParameters"/>).
             /// </summary>
-            ECDSASecp256K1 = 7,
-            /// <summary>
-            /// RSA-3072 Public Key (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
-            /// </summary>
-            /// <remarks>
-            /// Presently directly not supported, trying to create this type should 
-            /// result in thrown exception.
-            /// </remarks>
-            RSA3072 = 2,
-            /// <summary>
-            /// ECDSA with the p-384 curve (Stored as a <see cref="ReadOnlyMemory{Byte}"/>).
-            /// </summary>
-            /// <remarks>
-            /// Presently directly not supported, trying to create this type should 
-            /// result in a thrown exception.
-            /// </remarks>
-            ECDSA384 = 3,
+            ECDSASecp256K1 = 2,
             /// <summary>
             /// A <code>Func<IInvoice, Task> signingCallback</code> callback function 
             /// having the knowledge to properly sign the binary representation of the 
@@ -290,9 +274,6 @@ namespace Hashgraph
                     return ((Ed25519PrivateKeyParameters)_data).GetEncoded().SequenceEqual(((Ed25519PrivateKeyParameters)other._data).GetEncoded());
                 case Type.ECDSASecp256K1:
                     return ((ECPrivateKeyParameters)_data).Equals((ECPrivateKeyParameters)other._data);
-                case Type.RSA3072:  // Will need more work
-                case Type.ECDSA384: // Will need more work
-                    return Equals(_data, other._data);
                 case Type.List:
                     var thisList = (Signatory[])_data;
                     var otherList = (Signatory[])other._data;
@@ -362,9 +343,6 @@ namespace Hashgraph
                     return $"Signatory:{_type}:{((Ed25519PrivateKeyParameters)_data).GetHashCode()}".GetHashCode();
                 case Type.ECDSASecp256K1:
                     return $"Signatory:{_type}:{((ECPrivateKeyParameters)_data).GetHashCode()}".GetHashCode();
-                case Type.RSA3072:  // Will need more work
-                case Type.ECDSA384: // Will need more work
-                    return $"Signatory:{_type}:{_data}".GetHashCode();
                 case Type.Callback:
                     return $"Signatory:{_type}:{_data.GetHashCode()}".GetHashCode();
                 case Type.List:

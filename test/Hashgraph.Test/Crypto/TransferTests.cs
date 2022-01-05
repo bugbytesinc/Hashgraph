@@ -545,155 +545,139 @@ namespace Hashgraph.Test.Crypto
 
             await fxSender.Client.TransferAsync(fxSender, fxReceiver, (long)transferAmount, ctx => { ctx.Payer = contextPayer; ctx.Signatory = contextSignatory; });
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Transfer: Can Schedule A Transfer That Should Immediately Execute")]
-        public async Task CanScheduleATransferThatShouldImmediatelyExecuteDefect()
+        [Fact(DisplayName = "Transfer: Can Schedule A Transfer That Should Immediately Execute")]
+        public async Task CanScheduleATransferThatShouldImmediatelyExecute()
         {
-            // The network has a defect that does not serialize keys properly with get scheduled transaction info.
-            var testFailException = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(CanScheduleATransferThatShouldImmediatelyExecute);
-            Assert.StartsWith("The public key does not appear to be encoded in a recognizable", testFailException.Message);
+            var initialBalance = (ulong)Generator.Integer(100, 1000);
+            var transferAmount = initialBalance / 2;
+            await using var fxSender = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxReceiver = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
 
-            //[Fact(DisplayName = "Transfer: Can Schedule A Transfer That Should Immediately Execute")]
-            async Task CanScheduleATransferThatShouldImmediatelyExecute()
-            {
-                var initialBalance = (ulong)Generator.Integer(100, 1000);
-                var transferAmount = initialBalance / 2;
-                await using var fxSender = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
-                await using var fxReceiver = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
-                await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+            var pendingSignatory = new Signatory(fxPayer.PrivateKey, fxSender.PrivateKey, new PendingParams { PendingPayer = fxPayer });
 
-                var pendingSignatory = new Signatory(fxPayer.PrivateKey, fxSender.PrivateKey, new PendingParams { PendingPayer = fxPayer });
+            var record = await fxSender.Client.TransferWithRecordAsync(fxSender, fxReceiver, (long)transferAmount, pendingSignatory);
 
-                var record = await fxSender.Client.TransferWithRecordAsync(fxSender, fxReceiver, (long)transferAmount, pendingSignatory);
+            var info = await fxPayer.Client.GetPendingTransactionInfoAsync(record.Pending.Id);
+            Assert.Equal(record.Pending.Id, info.Id);
+            Assert.Equal(record.Pending.TxId, info.TxId);
+            Assert.Equal(_network.Payer, info.Creator);
+            Assert.Equal(fxPayer.Record.Address, info.Payer);
+            Assert.Equal(2, info.Endorsements.Length);
+            Assert.Equal(new Endorsement(fxPayer.PublicKey), info.Endorsements[0]);
+            Assert.Null(info.Administrator);
+            Assert.Empty(info.Memo);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.True(record.Concensus <= info.Executed);
+            Assert.Null(info.Deleted);
+            Assert.False(info.PendingTransactionBody.IsEmpty);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
 
-                var info = await fxPayer.Client.GetPendingTransactionInfoAsync(record.Pending.Id);
-                Assert.Equal(record.Pending.Id, info.Id);
-                Assert.Equal(record.Pending.TxId, info.TxId);
-                Assert.Equal(_network.Payer, info.Creator);
-                Assert.Equal(fxPayer.Record.Address, info.Payer);
-                Assert.Equal(2, info.Endorsements.Length);
-                Assert.Equal(new Endorsement(fxPayer.PublicKey), info.Endorsements[0]);
-                Assert.Null(info.Administrator);
-                Assert.Empty(info.Memo);
-                Assert.True(info.Expiration > DateTime.MinValue);
-                Assert.True(record.Concensus <= info.Executed);
-                Assert.Null(info.Deleted);
-                Assert.False(info.PendingTransactionBody.IsEmpty);
-                // NETWORK V0.21.0 DEFECT vvvv
-                // NOT IMPLEMENTED YET
-                Assert.Empty(info.Ledger.ToArray());
-                // NETWORK V0.21.0 DEFECT: ^^^^
+            await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
+            await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
+            Assert.True(await fxPayer.Client.GetAccountBalanceAsync(fxPayer) < fxPayer.CreateParams.InitialBalance);
 
-                await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
-                await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
-                Assert.True(await fxPayer.Client.GetAccountBalanceAsync(fxPayer) < fxPayer.CreateParams.InitialBalance);
+            var executedReceipt = await fxPayer.Client.GetReceiptAsync(record.Pending.TxId);
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(record.Pending.TxId, executedReceipt.Id);
+            Assert.NotNull(executedReceipt.CurrentExchangeRate);
+            Assert.NotNull(executedReceipt.NextExchangeRate);
+            Assert.Null(executedReceipt.Pending);
 
-                var executedReceipt = await fxPayer.Client.GetReceiptAsync(record.Pending.TxId);
-                Assert.Equal(ResponseCode.Success, executedReceipt.Status);
-                Assert.Equal(record.Pending.TxId, executedReceipt.Id);
-                Assert.NotNull(executedReceipt.CurrentExchangeRate);
-                Assert.NotNull(executedReceipt.NextExchangeRate);
-                Assert.Null(executedReceipt.Pending);
-
-                var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(record.Pending.TxId);
-                Assert.Equal(ResponseCode.Success, executedRecord.Status);
-                Assert.Equal(record.Pending.TxId, executedRecord.Id);
-                Assert.InRange(executedRecord.Fee, 0UL, ulong.MaxValue);
-                Assert.Equal(executedRecord.Transfers[fxSender], -(long)transferAmount);
-                Assert.Equal(executedRecord.Transfers[fxReceiver], (long)transferAmount);
-                Assert.True(executedRecord.Transfers[fxPayer] < 0);
-                Assert.Empty(executedRecord.TokenTransfers);
-                Assert.False(executedRecord.Hash.IsEmpty);
-                Assert.NotNull(executedRecord.Concensus);
-                Assert.NotNull(executedRecord.CurrentExchangeRate);
-                Assert.NotNull(executedRecord.NextExchangeRate);
-                Assert.Empty(executedRecord.Memo);
-                Assert.Null(executedRecord.Pending);
-            }
+            var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(record.Pending.TxId);
+            Assert.Equal(ResponseCode.Success, executedRecord.Status);
+            Assert.Equal(record.Pending.TxId, executedRecord.Id);
+            Assert.InRange(executedRecord.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(executedRecord.Transfers[fxSender], -(long)transferAmount);
+            Assert.Equal(executedRecord.Transfers[fxReceiver], (long)transferAmount);
+            Assert.True(executedRecord.Transfers[fxPayer] < 0);
+            Assert.Empty(executedRecord.TokenTransfers);
+            Assert.False(executedRecord.Hash.IsEmpty);
+            Assert.NotNull(executedRecord.Concensus);
+            Assert.NotNull(executedRecord.CurrentExchangeRate);
+            Assert.NotNull(executedRecord.NextExchangeRate);
+            Assert.Empty(executedRecord.Memo);
+            Assert.Null(executedRecord.Pending);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Transfer: Scheduled Receipt Does not exist until Completely Signed")]
-        public async Task ScheduledReceiptDoesNotExistUntilCompletelySignedDefect()
+        [Fact(DisplayName = "Transfer: Scheduled Receipt Does not exist until Completely Signed")]
+        public async Task ScheduledReceiptDoesNotExistUntilCompletelySigned()
         {
-            // The network has a defect that does not serialize keys properly with get scheduled transaction info.
-            var testFailException = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(ScheduledReceiptDoesNotExistUntilCompletelySigned);
-            Assert.StartsWith("The public key does not appear to be encoded in a recognizable", testFailException.Message);
+            var initialBalance = (ulong)Generator.Integer(100, 1000);
+            var transferAmount = initialBalance / 2;
+            await using var fxSender = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxReceiver = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
+            await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
 
-            //[Fact(DisplayName = "Transfer: Scheduled Receipt Does not exist until Completely Signed")]
-            async Task ScheduledReceiptDoesNotExistUntilCompletelySigned()
+            var pendingSignatory = new Signatory(fxSender.PrivateKey, new PendingParams { PendingPayer = fxPayer });
+
+            var record = await fxSender.Client.TransferWithRecordAsync(fxSender, fxReceiver, (long)transferAmount, pendingSignatory);
+
+            var info = await fxPayer.Client.GetPendingTransactionInfoAsync(record.Pending.Id);
+            Assert.Equal(record.Pending.Id, info.Id);
+            Assert.Equal(record.Pending.TxId, info.TxId);
+            Assert.Equal(_network.Payer, info.Creator);
+            Assert.Equal(fxPayer.Record.Address, info.Payer);
+            Assert.Single(info.Endorsements);
+            Assert.Equal(new Endorsement(fxSender.PublicKey), info.Endorsements[0]);
+            Assert.Null(info.Administrator);
+            Assert.Empty(info.Memo);
+            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.Null(info.Executed);
+            Assert.Null(info.Deleted);
+            Assert.False(info.PendingTransactionBody.IsEmpty);
+            // NETWORK V0.21.0 DEFECT vvvv
+            // NOT IMPLEMENTED YET
+            Assert.Empty(info.Ledger.ToArray());
+            // NETWORK V0.21.0 DEFECT: ^^^^
+
+            await AssertHg.CryptoBalanceAsync(fxSender, initialBalance);
+            await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
-                var initialBalance = (ulong)Generator.Integer(100, 1000);
-                var transferAmount = initialBalance / 2;
-                await using var fxSender = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
-                await using var fxReceiver = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = initialBalance);
-                await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+                await fxPayer.Client.GetReceiptAsync(record.Pending.TxId);
+            });
+            Assert.Equal(ResponseCode.ReceiptNotFound, tex.Status);
+            Assert.StartsWith("Network failed to return a transaction receipt, Status Code Returned: ReceiptNotFound", tex.Message);
 
-                var pendingSignatory = new Signatory(fxSender.PrivateKey, new PendingParams { PendingPayer = fxPayer });
+            var executedReceipts = await fxPayer.Client.GetAllReceiptsAsync(record.Pending.TxId);
+            Assert.Empty(executedReceipts);
 
-                var record = await fxSender.Client.TransferWithRecordAsync(fxSender, fxReceiver, (long)transferAmount, pendingSignatory);
+            var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(record.Pending.Id, fxPayer);
+            Assert.Equal(ResponseCode.Success, signingReceipt.Status);
+            // Since it was not created by this TX, it won't be included
+            Assert.Equal(Address.None, signingReceipt.Pending.Id);
+            // But, the executed TX ID will still be returned.
+            Assert.Equal(record.Pending.TxId, signingReceipt.Pending.TxId);
 
-                var info = await fxPayer.Client.GetPendingTransactionInfoAsync(record.Pending.Id);
-                Assert.Equal(record.Pending.Id, info.Id);
-                Assert.Equal(record.Pending.TxId, info.TxId);
-                Assert.Equal(_network.Payer, info.Creator);
-                Assert.Equal(fxPayer.Record.Address, info.Payer);
-                Assert.Single(info.Endorsements);
-                Assert.Equal(new Endorsement(fxSender.PublicKey), info.Endorsements[0]);
-                Assert.Null(info.Administrator);
-                Assert.Empty(info.Memo);
-                Assert.True(info.Expiration > DateTime.MinValue);
-                Assert.Null(info.Executed);
-                Assert.Null(info.Deleted);
-                Assert.False(info.PendingTransactionBody.IsEmpty);
-                // NETWORK V0.21.0 DEFECT vvvv
-                // NOT IMPLEMENTED YET
-                Assert.Empty(info.Ledger.ToArray());
-                // NETWORK V0.21.0 DEFECT: ^^^^
+            var executedReceipt = await fxPayer.Client.GetReceiptAsync(record.Pending.TxId);
+            Assert.Equal(ResponseCode.Success, executedReceipt.Status);
+            Assert.Equal(record.Pending.TxId, executedReceipt.Id);
+            Assert.NotNull(executedReceipt.CurrentExchangeRate);
+            Assert.NotNull(executedReceipt.NextExchangeRate);
+            Assert.Null(executedReceipt.Pending);
 
-                await AssertHg.CryptoBalanceAsync(fxSender, initialBalance);
-                await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance);
+            await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
+            await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
+            Assert.True(await fxPayer.Client.GetAccountBalanceAsync(fxPayer) < fxPayer.CreateParams.InitialBalance);
 
-                var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
-                {
-                    await fxPayer.Client.GetReceiptAsync(record.Pending.TxId);
-                });
-                Assert.Equal(ResponseCode.ReceiptNotFound, tex.Status);
-                Assert.StartsWith("Network failed to return a transaction receipt, Status Code Returned: ReceiptNotFound", tex.Message);
-
-                var executedReceipts = await fxPayer.Client.GetAllReceiptsAsync(record.Pending.TxId);
-                Assert.Empty(executedReceipts);
-
-                var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(record.Pending.Id, fxPayer);
-                Assert.Equal(ResponseCode.Success, signingReceipt.Status);
-                // Since it was not created by this TX, it won't be included
-                Assert.Equal(Address.None, signingReceipt.Pending.Id);
-                // But, the executed TX ID will still be returned.
-                Assert.Equal(record.Pending.TxId, signingReceipt.Pending.TxId);
-
-                var executedReceipt = await fxPayer.Client.GetReceiptAsync(record.Pending.TxId);
-                Assert.Equal(ResponseCode.Success, executedReceipt.Status);
-                Assert.Equal(record.Pending.TxId, executedReceipt.Id);
-                Assert.NotNull(executedReceipt.CurrentExchangeRate);
-                Assert.NotNull(executedReceipt.NextExchangeRate);
-                Assert.Null(executedReceipt.Pending);
-
-                await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
-                await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
-                Assert.True(await fxPayer.Client.GetAccountBalanceAsync(fxPayer) < fxPayer.CreateParams.InitialBalance);
-
-                var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(record.Pending.TxId);
-                Assert.Equal(ResponseCode.Success, executedRecord.Status);
-                Assert.Equal(record.Pending.TxId, executedRecord.Id);
-                Assert.InRange(executedRecord.Fee, 0UL, ulong.MaxValue);
-                Assert.Equal(executedRecord.Transfers[fxSender], -(long)transferAmount);
-                Assert.Equal(executedRecord.Transfers[fxReceiver], (long)transferAmount);
-                Assert.True(executedRecord.Transfers[fxPayer] < 0);
-                Assert.Empty(executedRecord.TokenTransfers);
-                Assert.False(executedRecord.Hash.IsEmpty);
-                Assert.NotNull(executedRecord.Concensus);
-                Assert.NotNull(executedRecord.CurrentExchangeRate);
-                Assert.NotNull(executedRecord.NextExchangeRate);
-                Assert.Empty(executedRecord.Memo);
-                Assert.Null(executedRecord.Pending);
-            }
+            var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(record.Pending.TxId);
+            Assert.Equal(ResponseCode.Success, executedRecord.Status);
+            Assert.Equal(record.Pending.TxId, executedRecord.Id);
+            Assert.InRange(executedRecord.Fee, 0UL, ulong.MaxValue);
+            Assert.Equal(executedRecord.Transfers[fxSender], -(long)transferAmount);
+            Assert.Equal(executedRecord.Transfers[fxReceiver], (long)transferAmount);
+            Assert.True(executedRecord.Transfers[fxPayer] < 0);
+            Assert.Empty(executedRecord.TokenTransfers);
+            Assert.False(executedRecord.Hash.IsEmpty);
+            Assert.NotNull(executedRecord.Concensus);
+            Assert.NotNull(executedRecord.CurrentExchangeRate);
+            Assert.NotNull(executedRecord.NextExchangeRate);
+            Assert.Empty(executedRecord.Memo);
+            Assert.Null(executedRecord.Pending);
         }
         [Fact(DisplayName = "Transfer: Receipt for Scheduled Execution Can Be Obtained Immediately")]
         public async Task ReceiptForScheduledExecutionCanBeObtainedImmediately()

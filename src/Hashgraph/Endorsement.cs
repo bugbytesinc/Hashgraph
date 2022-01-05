@@ -60,8 +60,6 @@ namespace Hashgraph
                         return Ed25519Util.ToDerBytes((Ed25519PublicKeyParameters)_data);
                     case KeyType.ECDSASecp256K1:
                         return EcdsaSecp256k1Util.ToDerBytes((ECPublicKeyParameters)_data);
-                    case KeyType.RSA3072:
-                    case KeyType.ECDSA384:
                     case KeyType.Contract:
                         return (ReadOnlyMemory<byte>)_data;
                     default:
@@ -189,8 +187,6 @@ namespace Hashgraph
                 case KeyType.ECDSASecp256K1:
                     _data = EcdsaSecp256k1Util.PublicParamsFromDerOrRaw(publicKey);
                     break;
-                case KeyType.RSA3072:
-                case KeyType.ECDSA384:
                 case KeyType.Contract:
                     _data = publicKey;
                     break;
@@ -242,8 +238,6 @@ namespace Hashgraph
                     return ((Ed25519PublicKeyParameters)_data).GetEncoded().SequenceEqual(((Ed25519PublicKeyParameters)(other._data)).GetEncoded());
                 case KeyType.ECDSASecp256K1:
                     return ((ECPublicKeyParameters)_data).Q.GetEncoded(true).SequenceEqual(((ECPublicKeyParameters)(other._data)).Q.GetEncoded(true));
-                case KeyType.RSA3072:
-                case KeyType.ECDSA384:
                 case KeyType.Contract:
                     return Equals(_data, other._data);
                 case KeyType.List:
@@ -312,8 +306,6 @@ namespace Hashgraph
                     return $"Endorsement:{Type}:{((Ed25519PublicKeyParameters)_data).GetHashCode()}".GetHashCode();
                 case KeyType.ECDSASecp256K1:
                     return $"Endorsement:{Type}:{((ECPublicKeyParameters)_data).GetHashCode()}".GetHashCode();
-                case KeyType.RSA3072:
-                case KeyType.ECDSA384:
                 case KeyType.Contract:
                     return $"Endorsement:{Type}:{BitConverter.ToString(((ReadOnlyMemory<byte>)_data).ToArray())}".GetHashCode();
                 case KeyType.List:

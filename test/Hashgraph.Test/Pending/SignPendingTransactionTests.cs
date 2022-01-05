@@ -53,40 +53,32 @@ namespace Hashgraph.Test.Schedule
             Assert.Empty(record.Memo);
             Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Pending Transaction Sign: Signing a Transaction alters the Endorsements List")]
-        public async Task SigningATransactionAltersTheEndorsementsListDefect()
+        [Fact(DisplayName = "Pending Transaction Sign: Signing a Transaction alters the Endorsements List")]
+        public async Task SigningATransactionAltersTheEndorsementsList()
         {
-            // The network has a defect that does not serialize keys properly with get scheduled transaction info.
-            var testFailException = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(SigningATransactionAltersTheEndorsementsList);
-            Assert.StartsWith("The public key does not appear to be encoded in a recognizable", testFailException.Message);
-            
-            //[Fact(DisplayName = "Pending Transaction Sign: Signing a Transaction alters the Endorsements List")]
-            async Task SigningATransactionAltersTheEndorsementsList()
+            await using var pendingFx = await TestPendingTransfer.CreateAsync(_network, fx =>
             {
-                await using var pendingFx = await TestPendingTransfer.CreateAsync(_network, fx =>
-                {
-                    fx.TransferParams.Signatory = new Signatory(
-                        fx.PrivateKey,
-                        new PendingParams
-                        {
-                            PendingPayer = fx.PayingAccount,
-                            Administrator = fx.PublicKey,
-                            Memo = fx.Memo,
-                        });
-                });
-                var info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
-                Assert.Empty(info.Endorsements);
+                fx.TransferParams.Signatory = new Signatory(
+                    fx.PrivateKey,
+                    new PendingParams
+                    {
+                        PendingPayer = fx.PayingAccount,
+                        Administrator = fx.PublicKey,
+                        Memo = fx.Memo,
+                    });
+            });
+            var info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
+            Assert.Empty(info.Endorsements);
 
-                await pendingFx.Client.SignPendingTransactionWithRecordAsync(pendingFx.Record.Pending.Id, pendingFx.SendingAccount.PrivateKey);
-                info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
-                Assert.Single(info.Endorsements);
-                Assert.Null(info.Executed);
+            await pendingFx.Client.SignPendingTransactionWithRecordAsync(pendingFx.Record.Pending.Id, pendingFx.SendingAccount.PrivateKey);
+            info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
+            Assert.Single(info.Endorsements);
+            Assert.Null(info.Executed);
 
-                await pendingFx.Client.SignPendingTransactionWithRecordAsync(pendingFx.Record.Pending.Id, pendingFx.PayingAccount.PrivateKey);
-                info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
-                Assert.Equal(2, info.Endorsements.Length);
-                Assert.NotNull(info.Executed);
-            }
+            await pendingFx.Client.SignPendingTransactionWithRecordAsync(pendingFx.Record.Pending.Id, pendingFx.PayingAccount.PrivateKey);
+            info = await pendingFx.PayingAccount.Client.GetPendingTransactionInfoAsync(pendingFx.Record.Pending.Id);
+            Assert.Equal(2, info.Endorsements.Length);
+            Assert.NotNull(info.Executed);
         }
     }
 }
