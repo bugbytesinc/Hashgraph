@@ -47,10 +47,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -82,7 +82,7 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Empty(record.Royalties);
             AssertHg.SingleAssociation(fxAsset, fxAsset.TreasuryAccount, record.Associations);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Create Asset: Can Create Asset Definition with Alias Treasury")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Create Asset: Can Create Asset Definition with Alias Treasury")]
         public async Task CanCreateAssetDefinitionWithAliasTreasuryDefect()
         {
             // Associating an asset with an account using its alias address has not yet been
@@ -126,10 +126,10 @@ namespace Hashgraph.Test.AssetTokens
                 Assert.Empty(info.Royalties);
                 Assert.False(info.Deleted);
                 Assert.Equal(fxAsset.Params.Memo, info.Memo);
-                // NETWORK V0.21.0 DEFECT vvvv
+                // NETWORK V0.21.0 UNSUPPORTED vvvv
                 // NOT IMPLEMENTED YET
                 Assert.Empty(info.Ledger.ToArray());
-                // NETWORK V0.21.0 DEFECT: ^^^^
+                // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
                 var treasury = await fxAsset.Client.GetAccountInfoAsync(fxTreasury.CreateRecord.Address);
                 Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -199,10 +199,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Single(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var royalty = info.Royalties[0] as FixedRoyalty;
             Assert.NotNull(royalty);
@@ -257,12 +257,12 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(createParams.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Can Create Asset with Alias Treasury")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Can Create Asset with Alias Treasury")]
         public async Task CanAssociateAssetWithAliasAccountDefect()
         {
             // Creating an asset with a treasury identified by its alias address has not yet been
@@ -316,10 +316,10 @@ namespace Hashgraph.Test.AssetTokens
                 Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
                 Assert.False(info.Deleted);
                 Assert.Equal(createParams.Memo, info.Memo);
-                // NETWORK V0.21.0 DEFECT vvvv
+                // NETWORK V0.21.0 UNSUPPORTED vvvv
                 // NOT IMPLEMENTED YET
                 Assert.Empty(info.Ledger.ToArray());
-                // NETWORK V0.21.0 DEFECT: ^^^^
+                // NETWORK V0.21.0 UNSUPPORTED ^^^^
             }
         }
         [Fact(DisplayName = "Create Asset: Missing Treasury Address Raises Error")]
@@ -574,10 +574,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -625,10 +625,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -712,10 +712,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -912,10 +912,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -964,10 +964,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -1012,10 +1012,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxAsset.Client.GetContractBalancesAsync(fxContract);
             Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, treasury.Crypto);

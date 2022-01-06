@@ -76,10 +76,10 @@ namespace Hashgraph.Test.Topic
                 Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
                 Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
                 Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-                // NETWORK V0.21.0 DEFECT vvvv
+                // NETWORK V0.21.0 UNSUPPORTED vvvv
                 // NOT IMPLEMENTED YET
                 Assert.Empty(info.Ledger.ToArray());
-                // NETWORK V0.21.0 DEFECT: ^^^^
+                // NETWORK V0.21.0 UNSUPPORTED ^^^^
             }
             catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)
             {

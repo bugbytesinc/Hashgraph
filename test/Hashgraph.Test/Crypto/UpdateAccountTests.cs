@@ -101,7 +101,7 @@ namespace Hashgraph.Test.Crypto
             var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
             Assert.Equal(newMemo, info.Memo);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Update Account: Can Update Memo using Alias")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Update Account: Can Update Memo using Alias")]
         public async Task CanUpdateMemoUsingAliasDefect()
         {
             // Updating an account using its alias address has not yet been
@@ -266,7 +266,7 @@ namespace Hashgraph.Test.Crypto
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(emptyAddress, updatedInfo.Proxy);
         }
-        [Fact(DisplayName = "NETWORK V0.14.0 DEFECT: Update Account: Update with Insufficient Funds Returns Required Fee Fails")]
+        [Fact(DisplayName = "NETWORK V0.14.0 UNSUPPORTED: Update Account: Update with Insufficient Funds Returns Required Fee Fails")]
         public async Task UpdateWithInsufficientFundsReturnsRequiredFeeNetwork14Regression()
         {
             var testFailException = (await Assert.ThrowsAsync<TransactionException>(UpdateWithInsufficientFundsReturnsRequiredFee));
@@ -534,12 +534,12 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, info.AssetCount);
             Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
             Assert.Equal(Alias.None, info.Alias);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Update Account: Can Update Key of Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Update Account: Can Update Key of Alias Account")]
         public async Task CanUpdateKeyOfAliasAccountDefect()
         {
             // Updating an account using its alias address has not yet been

@@ -40,6 +40,30 @@ namespace Hashgraph
         /// </summary>
         public ReadOnlyMemory<byte> TxBytes { get; }
         /// <summary>
+        /// The smallest desired signature map prefix value length.  
+        /// Some network API calls (typically smart contract calls
+        /// that interact with other Hedera Services) require the
+        /// full public key value to be entered for the prefix. In
+        /// this case, this value may request the full length of the 
+        /// public keys associated with the signature.  It may also
+        /// be (in most cases) zero indicating no particular size
+        /// is required.
+        /// </summary>
+        /// <remarks>
+        /// Providing a prefix that is longer or shorter than the 
+        /// desired length will not immediately raise an error
+        /// unless it results in a prefix maping conflict (two or
+        /// more identical public prefixes producing different signature
+        /// values).  However, if too small of a prefix is sent to
+        /// the network, the network may reject the transaction under
+        /// certain circumstances.  It is recommended to return at 
+        /// least the first 6 bytes of the raw public key value when
+        /// the prefix size is zero, so that the sdk can orchestrate 
+        /// mutiple signatures with reasonable probability of not
+        /// producing a conflict as described above.
+        /// </remarks>
+        public int MinimumDesiredPrefixSize { get; }
+        /// <summary>
         /// Adds a signature to the internal list of signatures
         /// authorizing this request.
         /// </summary>

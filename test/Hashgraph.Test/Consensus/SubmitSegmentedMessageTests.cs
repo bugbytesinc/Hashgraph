@@ -45,10 +45,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             await Task.Delay(7000); // give the beta net time to sync
 
@@ -140,10 +140,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             await Task.Delay(7000); // give the beta net time to sync
 
@@ -207,10 +207,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             await Task.Delay(7000); // give the beta net time to sync
 
@@ -272,10 +272,10 @@ namespace Hashgraph.Test.Topic
             Assert.Null(info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Submit Segmented Message: Submit Without Topic Raises Error")]
         public async Task SubmitMessageWithoutTopicRaisesError()
@@ -556,10 +556,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Submit Segmented Message: Submitting Messages Can Return Record")]
         public async Task SubmittingMessagesCanReturnRecord()
@@ -635,10 +635,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fxTopic.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
     }
 }

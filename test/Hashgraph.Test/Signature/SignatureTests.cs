@@ -117,10 +117,10 @@ namespace Hashgraph.Test.Signature
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
                 Memo = Generator.String(20, 30)
-            });
+            }, 0);
             var signatory = new Signatory(CustomSigner);
             await (signatory as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(0);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
             var signatureMap = signedTransaction.SigMap;
             Assert.Single(signatureMap.SigPair);
             Assert.Empty(signatureMap.SigPair[0].PubKeyPrefix);
@@ -139,15 +139,15 @@ namespace Hashgraph.Test.Signature
         {
             await using var client = _network.NewClient();
             var (_, privateKey) = Generator.Ed25519KeyPair();
+            var trimLimit = Generator.Integer(5, 10);
             var invoice = new Invoice(new Proto.TransactionBody
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
                 Memo = Generator.String(20, 30)
-            });
+            }, trimLimit);
             var signatory = new Signatory(CustomSigner);
             await (signatory as ISignatory).SignAsync(invoice);
-            var trimLimit = Generator.Integer(5, 10);
-            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(trimLimit);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
             var signatureMap = signedTransaction.SigMap;
             Assert.Single(signatureMap.SigPair);
             Assert.Equal(trimLimit, signatureMap.SigPair[0].PubKeyPrefix.Length);
@@ -171,9 +171,9 @@ namespace Hashgraph.Test.Signature
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
                 Memo = Generator.String(20, 30)
-            });
+            }, 0);
             await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(0);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
             var signatureMap = signedTransaction.SigMap;
             Assert.Equal(sigCount, signatureMap.SigPair.Count);
             foreach (var sig in signatureMap.SigPair)
@@ -204,9 +204,9 @@ namespace Hashgraph.Test.Signature
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
                 Memo = Generator.String(20, 30)
-            });
+            }, prefix.Length + 10);
             await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(prefix.Length + 10);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
             var signatureMap = signedTransaction.SigMap;
             Assert.Equal(sigCount, signatureMap.SigPair.Count);
             foreach (var sig in signatureMap.SigPair)
@@ -238,9 +238,9 @@ namespace Hashgraph.Test.Signature
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
                 Memo = Generator.String(20, 30)
-            });
+            }, sigCount - 3);
             await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(sigCount - 3);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
             var signatureMap = signedTransaction.SigMap;
             Assert.Equal(sigCount, signatureMap.SigPair.Count);
             for (int i = 0; i < signatureMap.SigPair.Count; i++)
@@ -268,10 +268,10 @@ namespace Hashgraph.Test.Signature
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
                 Memo = Generator.String(20, 30)
-            });
+            }, 0);
             var signatory = new Signatory(CustomSigner);
             await (signatory as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(0);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
             var signatureMap = signedTransaction.SigMap;
             Assert.Single(signatureMap.SigPair);
             Assert.Empty(signatureMap.SigPair[0].PubKeyPrefix);
@@ -298,10 +298,10 @@ namespace Hashgraph.Test.Signature
             {
                 TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
                 Memo = Generator.String(20, 30)
-            });
+            }, 0);
             var signatory = new Signatory(CustomSigner);
             await (signatory as ISignatory).SignAsync(invoice);
-            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures(0);
+            var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
             var signatureMap = signedTransaction.SigMap;
             Assert.Equal(2, signatureMap.SigPair.Count);
 

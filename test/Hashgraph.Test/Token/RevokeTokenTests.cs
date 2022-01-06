@@ -41,7 +41,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Revoke Tokens: Can Revoke Token Coins from Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Revoke Tokens: Can Revoke Token Coins from Alias Account")]
         public async Task CanRevokeTokensFromAliasAccountDefect()
         {
             // Associating an asset with an account using its alias address has not yet been

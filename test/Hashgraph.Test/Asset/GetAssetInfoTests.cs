@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,10 +29,10 @@ namespace Hashgraph.Test.AssetTokens
             Assert.Equal(fxAccount.Record.Address, info.Owner);
             Assert.Equal(fxAsset.MintRecord.Concensus, info.Created);
             Assert.Equal(fxAsset.Metadata[0].ToArray(), info.Metadata.ToArray());
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
     }
 }

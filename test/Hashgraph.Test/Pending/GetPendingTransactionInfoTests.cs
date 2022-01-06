@@ -34,10 +34,10 @@ namespace Hashgraph.Test.Token
             Assert.Null(info.Executed);
             Assert.Null(info.Deleted);
             Assert.False(info.PendingTransactionBody.IsEmpty);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
     }
 }

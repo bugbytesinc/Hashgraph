@@ -349,7 +349,7 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: InvalidAccountId", tex.Message);
         }
-        [Fact(DisplayName = "NETWORK V0.14.0 DEFECT: Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception Test Fails")]
+        [Fact(DisplayName = "NETWORK V0.14.0 UNSUPPORTED: Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception Test Fails")]
         public async Task InsufficientFeeExceptionIncludesRequiredFeeNetwork14Regression()
         {
             var testFailException = (await Assert.ThrowsAsync<TransactionException>(InsufficientFeeExceptionIncludesRequiredFee));
@@ -381,7 +381,7 @@ namespace Hashgraph.Test.Crypto
                 Assert.Equal(fx.CreateParams.InitialBalance - (ulong)transferAmount, balance);
             }
         }
-        [Fact(DisplayName = "NETWORK V0.14.0 DEFECT: Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception Test Fails")]
+        [Fact(DisplayName = "NETWORK V0.14.0 UNSUPPORTED: Transfer: Insufficient Fee Error Provides Sufficient Fee in Exception Test Fails")]
         public async Task InsufficientFeeExceptionIncludesRequiredFeeForRecordNetwork14Regresssion()
         {
             var testFailException = (await Assert.ThrowsAsync<TransactionException>(InsufficientFeeExceptionIncludesRequiredFeeForRecord));
@@ -571,10 +571,10 @@ namespace Hashgraph.Test.Crypto
             Assert.True(record.Concensus <= info.Executed);
             Assert.Null(info.Deleted);
             Assert.False(info.PendingTransactionBody.IsEmpty);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
             await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
@@ -628,10 +628,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Null(info.Executed);
             Assert.Null(info.Deleted);
             Assert.False(info.PendingTransactionBody.IsEmpty);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             await AssertHg.CryptoBalanceAsync(fxSender, initialBalance);
             await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance);

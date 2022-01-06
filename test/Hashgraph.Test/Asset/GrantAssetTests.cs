@@ -30,7 +30,7 @@ namespace Hashgraph.Test.AssetToken
 
             await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Grant Assets: Can Grant Asset Coins to Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Grant Assets: Can Grant Asset Coins to Alias Account")]
         public async Task CanGrantAssetsToAliasAccountDefect()
         {
             // Granting Access to an asset with an account using its alias address has not yet been

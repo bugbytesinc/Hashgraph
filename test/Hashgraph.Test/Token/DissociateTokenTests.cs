@@ -37,7 +37,7 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Dissociate Tokens: Can Dissociate token from Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Dissociate Tokens: Can Dissociate token from Alias Account")]
         public async Task CanDissociateTokenFromAliasAccountDefect()
         {
             // Disassociating a token from an account using its alias address has not yet been

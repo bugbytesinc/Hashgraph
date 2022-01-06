@@ -36,7 +36,7 @@ namespace Hashgraph.Test.Token
             Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
             Assert.False(association.AutoAssociated);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Associate Tokens: Can Associate token with Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Associate Tokens: Can Associate token with Alias Account")]
         public async Task CanAssociateTokenWithAliasAccountDefect()
         {
             // Associating a token with an account using its alias address has not yet been

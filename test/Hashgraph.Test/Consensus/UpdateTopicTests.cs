@@ -69,10 +69,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Topic: Can Update Memo (With Record)")]
         public async Task CanUpdateMemoWithRecord()
@@ -102,10 +102,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Topic: Can Update Memo to Empty")]
         public async Task CanUpdateMemoToEmpty()
@@ -128,10 +128,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Topic: Removing Administrator without removing Auto Renew Account Raises Error")]
         public async Task RemovingAdministratorWithoutRemovingAutoRenewAccountRaisesError()
@@ -172,10 +172,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Null(info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Topic: Can't Update After Made Imutable")]
         public async Task CannotUpdateAfterMadeImmutable()
@@ -225,10 +225,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(newPublic), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Topic: Can Update Participant to None")]
         public async Task CanUpdateParticipantToNone()
@@ -251,10 +251,10 @@ namespace Hashgraph.Test.Topic
             Assert.Null(info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Topic: Update Renew Period to Invlid Raises Error")]
         public async Task CanUpdateRenewPeriod()
@@ -296,12 +296,12 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fxAccount.Record.Address, info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Update Topic: Can Update Auto Renew Account to Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Update Topic: Can Update Auto Renew Account to Alias Account")]
         public async Task CanUpdateAutoRenewAccountToAliasAccountDefect()
         {
             // Data corruption bug when using the Alias form to update a renew account.
@@ -349,10 +349,10 @@ namespace Hashgraph.Test.Topic
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Null(info.RenewAccount);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Topic: Need Admin Signature")]
         public async Task NeedsAdminSignature()

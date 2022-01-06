@@ -47,10 +47,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -130,12 +130,12 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(createParams.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Create Token: Can Create with Alias Treasury")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Create Token: Can Create with Alias Treasury")]
         public async Task CanCreateWithAliasTreasuryDefect()
         {
             // Associating an asset with an account using its alias address has not yet been
@@ -194,10 +194,10 @@ namespace Hashgraph.Test.Token
                 Assert.Empty(info.Royalties);
                 Assert.False(info.Deleted);
                 Assert.Equal(createParams.Memo, info.Memo);
-                // NETWORK V0.21.0 DEFECT vvvv
+                // NETWORK V0.21.0 UNSUPPORTED vvvv
                 // NOT IMPLEMENTED YET
                 Assert.Empty(info.Ledger.ToArray());
-                // NETWORK V0.21.0 DEFECT: ^^^^
+                // NETWORK V0.21.0 UNSUPPORTED ^^^^
             }
         }
         [Fact(DisplayName = "Create Token: Zero Circulation Raises Error")]
@@ -478,10 +478,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -530,10 +530,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -618,10 +618,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -817,10 +817,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -870,10 +870,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
             Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -919,10 +919,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var treasury = await fxToken.Client.GetContractBalancesAsync(fxContract);
             Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, treasury.Crypto);
@@ -1032,10 +1032,10 @@ namespace Hashgraph.Test.Token
             Assert.Single(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var royalty = info.Royalties[0] as FixedRoyalty;
             Assert.NotNull(royalty);
@@ -1079,10 +1079,10 @@ namespace Hashgraph.Test.Token
             Assert.Single(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var royalty = info.Royalties[0] as TokenRoyalty;
             Assert.NotNull(royalty);
@@ -1128,10 +1128,10 @@ namespace Hashgraph.Test.Token
             Assert.Single(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var royalty = info.Royalties[0] as TokenRoyalty;
             Assert.NotNull(royalty);

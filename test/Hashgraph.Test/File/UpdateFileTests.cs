@@ -36,10 +36,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { newPublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "File Update: Can Replace Contents")]
         public async Task CanUpdateFileContents()
@@ -64,7 +64,7 @@ namespace Hashgraph.Test.File
         {
             await using var test = await TestFile.CreateAsync(_network);
 
-            var newMemo = Generator.Code(30);            
+            var newMemo = Generator.Code(30);
 
             var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
             {
@@ -82,10 +82,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "File Update: Can Update Memo to Empty")]
         public async Task CanUpdateMemoToEmpty()
@@ -108,10 +108,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "File Update: Cannot Replace Contents of deleted file")]
         public async Task CanUpdateFileContentsOfDeletedFile()
@@ -154,10 +154,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { newPublicKey1, newPublicKey2 }, info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
 
@@ -225,10 +225,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { newPublicKey1, newPublicKey2 }, info.Endorsements);
             Assert.True(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
 
         [Fact(DisplayName = "File Update: Can Update File after Rotating Keys using One of Many List")]
@@ -254,10 +254,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             // First Key can change contents.
             var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
@@ -308,10 +308,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
             Assert.True(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "File Update: Can Not Schedule Update.")]
         public async Task CanNotScheduleUpdate()

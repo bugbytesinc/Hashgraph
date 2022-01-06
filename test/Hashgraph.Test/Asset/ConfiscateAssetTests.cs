@@ -44,7 +44,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal(expectedTreasury, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Confiscate Assets: Can Confiscate Asset Coins from Alias")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Confiscate Assets: Can Confiscate Asset Coins from Alias")]
         public async Task CanConfiscateAssetCoinsFromAliasDefect()
         {
             // Confiscating an asset with an account using its alias address has not yet been

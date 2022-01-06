@@ -42,10 +42,10 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(newMemo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Contract Update: Can't update properties when Renewal Period is not 7890000 seconds.")]
         public async Task CanUpdateMultiplePropertiesInOneCallButNotRenewalPeriod()
@@ -82,10 +82,10 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(originalInfo.RenewPeriod, info.RenewPeriod);
             Assert.Equal(originalInfo.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
 
         [Fact(DisplayName = "Contract Update: Can Update Expiration Date")]
@@ -109,10 +109,10 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
 
         [Fact(DisplayName = "Contract Update: Can Update Admin Key.")]
@@ -136,10 +136,10 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
 
         [Fact(DisplayName = "Contract Update: Can't Update Renew Period other than 7890000 seconds.")]
@@ -166,10 +166,10 @@ namespace Hashgraph.Test.Contract
             Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
             Assert.Equal(fx.ContractParams.Memo, info.Memo);
             Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Contract Update: Can Update Memo.")]
         public async Task CanUpdateMemo()

@@ -41,7 +41,7 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Suspend Tokens: Can Suspend Token Coin Trading with Alias Address")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Suspend Tokens: Can Suspend Token Coin Trading with Alias Address")]
         public async Task CanSuspendTokenCoinTradingWithAliasAddressDefect()
         {
             // Associating an asset with an account using its alias address has not yet been

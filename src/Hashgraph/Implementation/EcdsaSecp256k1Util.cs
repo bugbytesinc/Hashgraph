@@ -93,7 +93,8 @@ namespace Hashgraph.Implementation
             var encoded = new byte[64];
             insert256Int(components[0], 0, encoded);
             insert256Int(components[1], 32, encoded);
-            var prefix = domain.G.Multiply(privateKey.D).GetEncoded(true)[..6];
+            var publicKey = domain.G.Multiply(privateKey.D).GetEncoded(true);
+            var prefix = new ReadOnlyMemory<byte>(publicKey, 0, Math.Min(Math.Max(6, invoice.MinimumDesiredPrefixSize), publicKey.Length));
             invoice.AddSignature(KeyType.ECDSASecp256K1, prefix, encoded);
         }
         private static void insert256Int(BigInteger component, int offset, byte[] array)

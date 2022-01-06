@@ -37,7 +37,7 @@ namespace Hashgraph.Test.Token
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Resume Tokens: Can Reume Token Coin Trading with Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Resume Tokens: Can Reume Token Coin Trading with Alias Account")]
         public async Task CanReusmeTokenCoinTradingWithAiasAccountDefect()
         {
             // Resuming a token with an account using its alias address has not yet been

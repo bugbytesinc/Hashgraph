@@ -40,7 +40,7 @@ namespace Hashgraph.Test.AssetToken
 
             await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Suspend Assets: Can Suspend Asset Trading of Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Suspend Assets: Can Suspend Asset Trading of Alias Account")]
         public async Task CanSuspendAssetTradingOfAliasAccountDefect()
         {
             // Suspending an asset with an account using its alias address has not yet been

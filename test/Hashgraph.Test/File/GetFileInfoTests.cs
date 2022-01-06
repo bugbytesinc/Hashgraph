@@ -28,15 +28,16 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "File Info: Can Get Imutable File Info")]
         public async Task CanGetImutableFileInfo()
         {
-            await using var test = await TestFile.CreateAsync(_network, fx => {
+            await using var test = await TestFile.CreateAsync(_network, fx =>
+            {
                 fx.CreateParams.Endorsements = Array.Empty<Endorsement>();
             });
 
@@ -48,15 +49,16 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Empty(info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "File Info: Can Get Empty File Info")]
         public async Task CanGetEmptyFileInfo()
         {
-            await using var test = await TestFile.CreateAsync(_network, fx => {
+            await using var test = await TestFile.CreateAsync(_network, fx =>
+            {
                 fx.CreateParams.Contents = ReadOnlyMemory<byte>.Empty;
             });
 
@@ -68,15 +70,16 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "File Info: Can Get Imutable Empty File Info")]
         public async Task CanGetImutableEmptyFileInfo()
         {
-            await using var test = await TestFile.CreateAsync(_network, fx => {
+            await using var test = await TestFile.CreateAsync(_network, fx =>
+            {
                 fx.CreateParams.Endorsements = Array.Empty<Endorsement>();
                 fx.CreateParams.Contents = ReadOnlyMemory<byte>.Empty;
             });
@@ -89,10 +92,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(test.CreateParams.Expiration, info.Expiration);
             Assert.Empty(info.Endorsements);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -38,10 +37,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.True(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "System Delete File: Can Delete File using Signatory")]
         public async Task CanDeleteAFileUsingSignatory()
@@ -66,10 +65,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.True(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "System Delete File: Can Delete File and get Record")]
         public async Task CanDeleteAFileWithRecord()
@@ -101,10 +100,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.True(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "System Delete File: Can Delete File and get Record using Signatory")]
         public async Task CanDeleteAFileWithRecordUsingSignatory()
@@ -136,10 +135,10 @@ namespace Hashgraph.Test.File
             Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
             Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
             Assert.True(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "System Delete File: Can Not Schedule Delete.")]
         public async Task CanNotScheduleDelete()

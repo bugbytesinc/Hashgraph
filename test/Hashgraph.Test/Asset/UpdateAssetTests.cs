@@ -72,10 +72,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Empty(info.Royalties);
             Assert.Equal(fxTemplate.Params.Memo, info.Memo);
             Assert.False(info.Deleted);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Can Update Asset and get Record")]
         public async Task CanUpdateAssetAndGetRecord()
@@ -140,10 +140,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxTemplate.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Empty Update Parameters Raises Error")]
         public async Task EmptyUpdateParametersRaisesError()
@@ -491,10 +491,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Updating To Used Symbol Is Allowed")]
         public async Task UpdatingToUsedSymbolIsAllowed()
@@ -530,10 +530,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Updating To Used Name Is Allowed")]
         public async Task UpdatingToUsedNameIsAllowed()
@@ -570,10 +570,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Updating To Empty Treasury Address Raises Error")]
         public async Task UpdatingToEmptyTreasuryRaisesError()
@@ -615,10 +615,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Cannot Make Asset Immutable")]
         public async Task CannotMakeAssetImmutable()
@@ -660,10 +660,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Cannot Remove Grant KYC Endorsement")]
         public async Task CannotRemoveGrantKYCEndorsement()
@@ -704,10 +704,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Cannot Remove Suspend Endorsement")]
         public async Task CannotRemoveSuspendEndorsement()
@@ -748,10 +748,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Cannot Remove Confiscate Endorsement")]
         public async Task CannotRemoveConfiscateEndorsement()
@@ -792,10 +792,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Cannot Remove Supply Endorsement")]
         public async Task CannotRemoveSupplyEndorsement()
@@ -836,10 +836,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Cannot Update Imutable Asset")]
         public async Task CannotUpdateImutableAsset()
@@ -903,10 +903,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal(0UL, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
@@ -953,10 +953,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
             Assert.Equal(0UL, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
@@ -1014,10 +1014,10 @@ namespace Hashgraph.Test.AssetToken
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Update Asset: Can Not Change Treasury to Unassociated Account")]
         public async Task CanChangeTreasuryToUnassociatedAccount()

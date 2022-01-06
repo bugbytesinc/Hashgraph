@@ -37,7 +37,7 @@ namespace Hashgraph.Test.AssetTokens
 
             await AssertHg.AssetNotAssociatedAsync(fxAsset, fxAccount);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Dissociate Assets: Can Dissociate asset from Alias Account")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Dissociate Assets: Can Dissociate asset from Alias Account")]
         public async Task CanDissociateAssetFromAliasAccountDefect()
         {
             // DisAssociating an asset with an account using its alias address has not yet been

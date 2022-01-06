@@ -82,7 +82,8 @@ namespace Hashgraph.Implementation
             ed25519Signer.BlockUpdate(invoice.TxBytes.ToArray(), 0, invoice.TxBytes.Length);
             var signature = ed25519Signer.GenerateSignature();
             ed25519Signer.Reset();
-            var prefix = privateKey.GeneratePublicKey().GetEncoded()[..6];
+            var publicKey = privateKey.GeneratePublicKey().GetEncoded();
+            var prefix = new ReadOnlyMemory<byte>(publicKey, 0, Math.Min(Math.Max(6, invoice.MinimumDesiredPrefixSize), publicKey.Length));
             invoice.AddSignature(KeyType.Ed25519, prefix, signature);
         }
     }

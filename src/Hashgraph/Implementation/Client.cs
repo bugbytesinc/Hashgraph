@@ -50,11 +50,11 @@ namespace Hashgraph
             transactionBody.TransactionID = result.TransactionID = context.GetOrCreateTransactionID();
             transactionBody.TransactionValidDuration = new Duration(context.TransactionDuration);
             transactionBody.Memo = context.Memo ?? "";
-            var invoice = new Invoice(transactionBody);
+            var invoice = new Invoice(transactionBody, context.SignaturePrefixTrimLimit);
             await signatory.SignAsync(invoice).ConfigureAwait(false);
             var signedTransaction = new Transaction
             {
-                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(context.SignaturePrefixTrimLimit).ToByteString()
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString()
             };
             var precheck = await context.ExecuteSignedRequestWithRetryImplementationAsync(signedTransaction, transaction.InstantiateNetworkRequestMethod, getResponseCode).ConfigureAwait(false);
             if (precheck.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
@@ -150,9 +150,9 @@ namespace Hashgraph
                 transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(payer), Amount = -queryFee });
                 transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(gateway), Amount = queryFee });
                 transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
-                var invoice = new Invoice(transactionBody);
+                var invoice = new Invoice(transactionBody, context.SignaturePrefixTrimLimit);
                 await signatory.SignAsync(invoice).ConfigureAwait(false);
-                var signedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(context.SignaturePrefixTrimLimit).ToByteString();
+                var signedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString();
                 return new QueryHeader
                 {
                     Payment = new Transaction

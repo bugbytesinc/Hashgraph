@@ -42,10 +42,10 @@ namespace Hashgraph.Test.Crypto
             Assert.False(info.Deleted);
             Assert.Equal(0, info.AutoAssociationLimit);
             Assert.Equal(Alias.None, info.Alias);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             // Move remaining funds back to primary account.
             var from = createResult.Address;

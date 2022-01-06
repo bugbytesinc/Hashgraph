@@ -51,10 +51,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
@@ -101,10 +101,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
@@ -151,10 +151,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         }
@@ -327,10 +327,10 @@ namespace Hashgraph.Test.Token
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxToken.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
     }
 }

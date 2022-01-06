@@ -73,11 +73,11 @@ namespace Hashgraph.Tests.Docs.Recipe
                 Memo = "Unsafe Test",
                 CryptoTransfer = new Proto.CryptoTransferTransactionBody { Transfers = transfers }
             };
-            var invoice = new Invoice(body);
+            var invoice = new Invoice(body, 6);
             await (_network.Signatory as ISignatory).SignAsync(invoice);
             var transaction = new Proto.Transaction
             {
-                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(6).ToByteString()
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString()
             };
 
             using (new ConsoleRedirector(_network.Output))

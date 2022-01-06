@@ -48,11 +48,11 @@ namespace Hashgraph.Test.System
                 Memo = "Unsafe Test",
                 CryptoTransfer = new Proto.CryptoTransferTransactionBody { Transfers = transfers }
             };
-            var invoice = new Invoice(body);
+            var invoice = new Invoice(body, 6);
             await (_network.Signatory as ISignatory).SignAsync(invoice);
             var transaction = new Proto.Transaction
             {
-                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(6).ToByteString()
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString()
             };
 
             var receipt = await client.SubmitUnsafeTransactionAsync(transaction.ToByteArray(), ctx => ctx.Payer = systemAddress);
@@ -91,11 +91,11 @@ namespace Hashgraph.Test.System
                 Memo = "Unsafe Test",
                 CryptoTransfer = new Proto.CryptoTransferTransactionBody { Transfers = transfers }
             };
-            var invoice = new Invoice(body);
+            var invoice = new Invoice(body, 6);
             await (_network.Signatory as ISignatory).SignAsync(invoice);
             var transaction = new Proto.Transaction
             {
-                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(6).ToByteString()
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString()
             };
 
             var record = await client.SubmitUnsafeTransactionWithRecordAsync(transaction.ToByteArray(), ctx => ctx.Payer = systemAddress);

@@ -94,11 +94,11 @@ namespace Hashgraph
                 TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
                 UncheckedSubmit = uncheckedSubmitBody
             };
-            var invoice = new Invoice(transactionBody);
+            var invoice = new Invoice(transactionBody, context.SignaturePrefixTrimLimit);
             await signatories.SignAsync(invoice).ConfigureAwait(false);
             var signedTransaction = new Transaction
             {
-                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures(context.SignaturePrefixTrimLimit).ToByteString()
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString()
             };
             var precheck = await context.ExecuteSignedRequestWithRetryImplementationAsync(signedTransaction, (uncheckedSubmitBody as INetworkTransaction).InstantiateNetworkRequestMethod, getResponseCode).ConfigureAwait(false);
             if (precheck.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)

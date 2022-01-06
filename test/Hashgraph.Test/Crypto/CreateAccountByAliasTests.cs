@@ -69,10 +69,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAccount.AssetCount);
             Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAccount.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(infoFromAccount.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var infoFromAlias = await client.GetAccountInfoAsync(alias);
             Assert.Equal(createReceipt.Address, infoFromAlias.Address);
@@ -89,10 +89,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAlias.AssetCount);
             Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAlias.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(infoFromAlias.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
 
         [Fact(DisplayName = "Create Account By Alias: Can Schedule Create Account")]
@@ -154,10 +154,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAccount.AssetCount);
             Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAccount.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(infoFromAccount.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var infoFromAlias = await client.GetAccountInfoAsync(alias);
             Assert.Equal(createReceipt.Address, infoFromAlias.Address);
@@ -174,10 +174,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAlias.AssetCount);
             Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAlias.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(infoFromAlias.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
         [Fact(DisplayName = "Create Account By Alias: Can Create Account and get Records")]
         public async Task CanCreateAccountAndGetRecords()
@@ -203,11 +203,11 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(_network.ServerShard, createRecord.Address.ShardNum);
             Assert.True(createRecord.Address.AccountNum > 0);
             Assert.Equal(1, createRecord.Id.Nonce);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             //Assert.Equal(allRecords[0].Concensus, createRecord.ParentTransactionConcensus);
             Assert.Null(createRecord.ParentTransactionConcensus);
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var createRecordByTx = await client.GetTransactionRecordAsync(createRecord.Id) as CreateAccountRecord;
             Assert.NotNull(createRecordByTx);
@@ -216,11 +216,11 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(_network.ServerShard, createRecordByTx.Address.ShardNum);
             Assert.Equal(createRecord.Address, createRecordByTx.Address);
             Assert.Equal(createRecord.Id, createRecordByTx.Id);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             //Assert.Equal(allRecords[0].Concensus, createRecordByTx.ParentTransactionConcensus);
             Assert.Null(createRecordByTx.ParentTransactionConcensus);
-            // NETWORK V0.21.0 DEFECT: ^^^^            
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^            
 
             var balances = await client.GetAccountBalancesAsync(alias);
             Assert.NotNull(balances);
@@ -243,10 +243,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAccount.AssetCount);
             Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAccount.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(infoFromAccount.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
 
             var infoFromAlias = await client.GetAccountInfoAsync(alias);
             Assert.Equal(createRecord.Address, infoFromAlias.Address);
@@ -263,10 +263,10 @@ namespace Hashgraph.Test.Crypto
             Assert.Equal(0, infoFromAlias.AssetCount);
             Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
             Assert.Equal("auto-created account", infoFromAlias.Memo);
-            // NETWORK V0.21.0 DEFECT vvvv
+            // NETWORK V0.21.0 UNSUPPORTED vvvv
             // NOT IMPLEMENTED YET
             Assert.Empty(infoFromAlias.Ledger.ToArray());
-            // NETWORK V0.21.0 DEFECT: ^^^^
+            // NETWORK V0.21.0 UNSUPPORTED ^^^^
         }
     }
 }

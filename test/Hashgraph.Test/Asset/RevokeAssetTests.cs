@@ -40,7 +40,7 @@ namespace Hashgraph.Test.AssetToken
             Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Receipt.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
         }
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Revoke Assets: Can Revoke Assets to Alias ACcount")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Revoke Assets: Can Revoke Assets to Alias ACcount")]
         public async Task CanRevokeTokensToAliasAccountDefect()
         {
             // Associating an asset with an account using its alias address has not yet been

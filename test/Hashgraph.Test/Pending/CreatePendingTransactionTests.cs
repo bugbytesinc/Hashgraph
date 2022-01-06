@@ -22,7 +22,7 @@ namespace Hashgraph.Test.Schedule
             Assert.NotNull(pendingFx.Record.Pending);
         }
 
-        [Fact(DisplayName = "NETWORK V0.21.0 DEFECT: Pending Transaction Create: Can Schedule a Transfer Transaction with Alias Payer")]
+        [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Pending Transaction Create: Can Schedule a Transfer Transaction with Alias Payer")]
         public async Task CanScheduleATransferTransactionWithAliasPayerDefect()
         {
             // Associating an asset with an account using its alias address has not yet been
