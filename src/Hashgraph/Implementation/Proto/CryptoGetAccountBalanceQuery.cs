@@ -4,38 +4,37 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class CryptoGetAccountBalanceQuery : INetworkQuery
 {
-    public sealed partial class CryptoGetAccountBalanceQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { CryptogetAccountBalance = this };
-        }
+        return new Query { CryptogetAccountBalance = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new CryptoService.CryptoServiceClient(channel).cryptoGetBalanceAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new CryptoService.CryptoServiceClient(channel).cryptoGetBalanceAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        internal static CryptoGetAccountBalanceQuery ForContract(Address contract)
+    internal static CryptoGetAccountBalanceQuery ForContract(Address contract)
+    {
+        return new CryptoGetAccountBalanceQuery
         {
-            return new CryptoGetAccountBalanceQuery
-            {
-                ContractID = new ContractID(contract)
-            };
-        }
-        internal static CryptoGetAccountBalanceQuery ForAccount(AddressOrAlias account)
+            ContractID = new ContractID(contract)
+        };
+    }
+    internal static CryptoGetAccountBalanceQuery ForAccount(AddressOrAlias account)
+    {
+        return new CryptoGetAccountBalanceQuery
         {
-            return new CryptoGetAccountBalanceQuery
-            {
-                AccountID = new AccountID(account)
-            };
-        }
+            AccountID = new AccountID(account)
+        };
     }
 }

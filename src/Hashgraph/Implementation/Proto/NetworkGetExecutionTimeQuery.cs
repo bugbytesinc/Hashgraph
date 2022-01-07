@@ -6,28 +6,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class NetworkGetExecutionTimeQuery : INetworkQuery
 {
-    public sealed partial class NetworkGetExecutionTimeQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { NetworkGetExecutionTime = this };
-        }
+        return new Query { NetworkGetExecutionTime = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new NetworkService.NetworkServiceClient(channel).getExecutionTimeAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new NetworkService.NetworkServiceClient(channel).getExecutionTimeAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        internal NetworkGetExecutionTimeQuery(IEnumerable<TxId> transactionIds) : this()
-        {
-            TransactionIds.AddRange(transactionIds.Select(t => new TransactionID(t)));
-        }
+    internal NetworkGetExecutionTimeQuery(IEnumerable<TxId> transactionIds) : this()
+    {
+        TransactionIds.AddRange(transactionIds.Select(t => new TransactionID(t)));
     }
 }

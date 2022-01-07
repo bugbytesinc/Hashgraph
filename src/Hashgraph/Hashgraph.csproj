@@ -9,7 +9,7 @@
     <Authors>BugBytes, Inc.</Authors>
     <Company>BugBytes, Inc.</Company>
     <Description>.NET Client Library for Hedera Hashgraph</Description>
-    <Copyright>Copyright 2019 BugBytes, Inc. All Rights Reserved.</Copyright>
+    <Copyright>Copyright 2022 BugBytes, Inc. All Rights Reserved.</Copyright>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://bugbytesinc.github.io/Hashgraph/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/bugbytesinc/Hashgraph.git</RepositoryUrl>

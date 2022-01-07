@@ -5,79 +5,78 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class ConsensusSubmitMessageTransactionBody : INetworkTransaction
 {
-    public sealed partial class ConsensusSubmitMessageTransactionBody : INetworkTransaction
+    SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
     {
-        SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
-        {
-            return new SchedulableTransactionBody { ConsensusSubmitMessage = this };
-        }
+        return new SchedulableTransactionBody { ConsensusSubmitMessage = this };
+    }
 
-        TransactionBody INetworkTransaction.CreateTransactionBody()
-        {
-            return new TransactionBody { ConsensusSubmitMessage = this };
-        }
+    TransactionBody INetworkTransaction.CreateTransactionBody()
+    {
+        return new TransactionBody { ConsensusSubmitMessage = this };
+    }
 
-        Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new ConsensusService.ConsensusServiceClient(channel).submitMessageAsync;
-        }
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new ConsensusService.ConsensusServiceClient(channel).submitMessageAsync;
+    }
 
-        void INetworkTransaction.CheckReceipt(NetworkResult result)
+    void INetworkTransaction.CheckReceipt(NetworkResult result)
+    {
+        if (result.Receipt.Status != ResponseCodeEnum.Success)
         {
-            if (result.Receipt.Status != ResponseCodeEnum.Success)
+            throw new TransactionException(string.Format("Submit Message failed, status: {0}", result.Receipt.Status), result);
+        }
+    }
+
+    internal ConsensusSubmitMessageTransactionBody(Hashgraph.Address topic, ReadOnlyMemory<byte> message, bool isSegment, Hashgraph.TxId? parentTx, int segmentIndex, int segmentTotalCount) : this()
+    {
+        if (message.IsEmpty)
+        {
+            throw new ArgumentOutOfRangeException(nameof(message), "Topic Message can not be empty.");
+        }
+        TopicID = new TopicID(topic);
+        Message = ByteString.CopyFrom(message.Span);
+        ChunkInfo = isSegment ? createChunkInfo(parentTx, segmentIndex, segmentTotalCount) : null;
+
+        static ConsensusMessageChunkInfo createChunkInfo(Hashgraph.TxId? parentTx, int segmentIndex, int segmentTotalCount)
+        {
+            if (segmentTotalCount < 1)
             {
-                throw new TransactionException(string.Format("Submit Message failed, status: {0}", result.Receipt.Status), result);
+                throw new ArgumentOutOfRangeException(nameof(Hashgraph.SubmitMessageParams.TotalSegmentCount), "Total Segment Count must be a positive number.");
             }
-        }
-
-        internal ConsensusSubmitMessageTransactionBody(Hashgraph.Address topic, ReadOnlyMemory<byte> message, bool isSegment, Hashgraph.TxId? parentTx, int segmentIndex, int segmentTotalCount) : this()
-        {
-            if (message.IsEmpty)
+            if (segmentIndex > segmentTotalCount || segmentIndex < 1)
             {
-                throw new ArgumentOutOfRangeException(nameof(message), "Topic Message can not be empty.");
+                throw new ArgumentOutOfRangeException(nameof(Hashgraph.SubmitMessageParams.Index), "Segment index must be between one and the total segment count inclusively.");
             }
-            TopicID = new TopicID(topic);
-            Message = ByteString.CopyFrom(message.Span);
-            ChunkInfo = isSegment ? createChunkInfo(parentTx, segmentIndex, segmentTotalCount) : null;
-
-            static ConsensusMessageChunkInfo createChunkInfo(Hashgraph.TxId? parentTx, int segmentIndex, int segmentTotalCount)
+            if (segmentIndex == 1)
             {
-                if (segmentTotalCount < 1)
+                if (!(parentTx is null))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(Hashgraph.SubmitMessageParams.TotalSegmentCount), "Total Segment Count must be a positive number.");
-                }
-                if (segmentIndex > segmentTotalCount || segmentIndex < 1)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(Hashgraph.SubmitMessageParams.Index), "Segment index must be between one and the total segment count inclusively.");
-                }
-                if (segmentIndex == 1)
-                {
-                    if (!(parentTx is null))
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(Hashgraph.SubmitMessageParams.ParentTxId), "The Parent Transaction cannot be specified (must be null) when the segment index is one.");
-                    }
-                    return new ConsensusMessageChunkInfo
-                    {
-                        Total = segmentTotalCount,
-                        Number = segmentIndex,
-                        // This is done elsewhere, 
-                        // requires smelly edge case workaround
-                        //InitialTransactionID = transactionId
-                    };
-                }
-                if (parentTx is null)
-                {
-                    throw new ArgumentNullException(nameof(Hashgraph.SubmitMessageParams.ParentTxId), "The parent transaction id is required when segment index is greater than one.");
+                    throw new ArgumentOutOfRangeException(nameof(Hashgraph.SubmitMessageParams.ParentTxId), "The Parent Transaction cannot be specified (must be null) when the segment index is one.");
                 }
                 return new ConsensusMessageChunkInfo
                 {
                     Total = segmentTotalCount,
                     Number = segmentIndex,
-                    InitialTransactionID = new TransactionID(parentTx)
+                    // This is done elsewhere, 
+                    // requires smelly edge case workaround
+                    //InitialTransactionID = transactionId
                 };
             }
+            if (parentTx is null)
+            {
+                throw new ArgumentNullException(nameof(Hashgraph.SubmitMessageParams.ParentTxId), "The parent transaction id is required when segment index is greater than one.");
+            }
+            return new ConsensusMessageChunkInfo
+            {
+                Total = segmentTotalCount,
+                Number = segmentIndex,
+                InitialTransactionID = new TransactionID(parentTx)
+            };
         }
     }
 }

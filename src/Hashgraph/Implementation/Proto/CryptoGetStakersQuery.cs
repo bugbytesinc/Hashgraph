@@ -4,28 +4,27 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class CryptoGetStakersQuery : INetworkQuery
 {
-    public sealed partial class CryptoGetStakersQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { CryptoGetProxyStakers = this };
-        }
+        return new Query { CryptoGetProxyStakers = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new CryptoService.CryptoServiceClient(channel).getStakersByAccountIDAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new CryptoService.CryptoServiceClient(channel).getStakersByAccountIDAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        internal CryptoGetStakersQuery(AddressOrAlias address) : this()
-        {
-            AccountID = new AccountID(address);
-        }
+    internal CryptoGetStakersQuery(AddressOrAlias address) : this()
+    {
+        AccountID = new AccountID(address);
     }
 }

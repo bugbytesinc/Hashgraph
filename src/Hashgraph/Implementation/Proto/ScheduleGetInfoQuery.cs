@@ -4,28 +4,27 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class ScheduleGetInfoQuery : INetworkQuery
 {
-    public sealed partial class ScheduleGetInfoQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { ScheduleGetInfo = this };
-        }
+        return new Query { ScheduleGetInfo = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new ScheduleService.ScheduleServiceClient(channel).getScheduleInfoAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new ScheduleService.ScheduleServiceClient(channel).getScheduleInfoAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        internal ScheduleGetInfoQuery(Address pending) : this()
-        {
-            ScheduleID = new ScheduleID(pending);
-        }
+    internal ScheduleGetInfoQuery(Address pending) : this()
+    {
+        ScheduleID = new ScheduleID(pending);
     }
 }

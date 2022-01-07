@@ -5,63 +5,62 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class TokenBurnTransactionBody : INetworkTransaction
 {
-    public sealed partial class TokenBurnTransactionBody : INetworkTransaction
+    SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
     {
-        SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
-        {
-            return new SchedulableTransactionBody { TokenBurn = this };
-        }
+        return new SchedulableTransactionBody { TokenBurn = this };
+    }
 
-        TransactionBody INetworkTransaction.CreateTransactionBody()
-        {
-            return new TransactionBody { TokenBurn = this };
-        }
+    TransactionBody INetworkTransaction.CreateTransactionBody()
+    {
+        return new TransactionBody { TokenBurn = this };
+    }
 
-        Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new TokenService.TokenServiceClient(channel).burnTokenAsync;
-        }
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new TokenService.TokenServiceClient(channel).burnTokenAsync;
+    }
 
-        void INetworkTransaction.CheckReceipt(NetworkResult result)
+    void INetworkTransaction.CheckReceipt(NetworkResult result)
+    {
+        if (result.Receipt.Status != ResponseCodeEnum.Success)
         {
-            if (result.Receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException(string.Format("Unable to Burn Token Coins, status: {0}", result.Receipt.Status), result);
-            }
+            throw new TransactionException(string.Format("Unable to Burn Token Coins, status: {0}", result.Receipt.Status), result);
         }
+    }
 
-        internal TokenBurnTransactionBody(Hashgraph.Address token, ulong amount) : this()
+    internal TokenBurnTransactionBody(Hashgraph.Address token, ulong amount) : this()
+    {
+        if (amount < 1)
         {
-            if (amount < 1)
-            {
-                throw new ArgumentOutOfRangeException(nameof(amount), "The token amount must be greater than zero.");
-            }
-            Token = new TokenID(token);
-            Amount = amount;
+            throw new ArgumentOutOfRangeException(nameof(amount), "The token amount must be greater than zero.");
         }
-        internal TokenBurnTransactionBody(Hashgraph.Address asset, IEnumerable<long> serialNumbers) : this()
+        Token = new TokenID(token);
+        Amount = amount;
+    }
+    internal TokenBurnTransactionBody(Hashgraph.Address asset, IEnumerable<long> serialNumbers) : this()
+    {
+        if (serialNumbers is null)
         {
-            if (serialNumbers is null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(serialNumbers), "The list of serial numbers must not be null.");
-            }
-            Token = new TokenID(asset);
-            SerialNumbers.AddRange(serialNumbers);
-            if (SerialNumbers.Count == 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(serialNumbers), "The list of serial numbers must not be empty.");
-            }
+            throw new ArgumentOutOfRangeException(nameof(serialNumbers), "The list of serial numbers must not be null.");
         }
-        internal TokenBurnTransactionBody(Hashgraph.Asset asset) : this()
+        Token = new TokenID(asset);
+        SerialNumbers.AddRange(serialNumbers);
+        if (SerialNumbers.Count == 0)
         {
-            if (asset is null || asset == Hashgraph.Asset.None)
-            {
-                throw new ArgumentOutOfRangeException(nameof(asset), "The asset cannot be null or empty.");
-            }
-            Token = new TokenID(asset);
-            SerialNumbers.Add(asset.SerialNum);
+            throw new ArgumentOutOfRangeException(nameof(serialNumbers), "The list of serial numbers must not be empty.");
         }
+    }
+    internal TokenBurnTransactionBody(Hashgraph.Asset asset) : this()
+    {
+        if (asset is null || asset == Hashgraph.Asset.None)
+        {
+            throw new ArgumentOutOfRangeException(nameof(asset), "The asset cannot be null or empty.");
+        }
+        Token = new TokenID(asset);
+        SerialNumbers.Add(asset.SerialNum);
     }
 }

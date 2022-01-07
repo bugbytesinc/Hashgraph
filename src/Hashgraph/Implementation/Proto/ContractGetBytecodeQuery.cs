@@ -4,28 +4,27 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class ContractGetBytecodeQuery : INetworkQuery
 {
-    public sealed partial class ContractGetBytecodeQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { ContractGetBytecode = this };
-        }
+        return new Query { ContractGetBytecode = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new SmartContractService.SmartContractServiceClient(channel).ContractGetBytecodeAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new SmartContractService.SmartContractServiceClient(channel).ContractGetBytecodeAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        internal ContractGetBytecodeQuery(Address contract) : this()
-        {
-            ContractID = new ContractID(contract);
-        }
+    internal ContractGetBytecodeQuery(Address contract) : this()
+    {
+        ContractID = new ContractID(contract);
     }
 }

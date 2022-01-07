@@ -1,37 +1,36 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Hashgraph.Test.Fixtures
+namespace Hashgraph.Test.Fixtures;
+
+public static class TestHelperExtensions
 {
-    public static class TestHelperExtensions
+    public static async Task<TRecord> RetryKnownNetworkIssues<TRecord>(this Client client, Func<Client, Task<TRecord>> callback) where TRecord : TransactionRecord
     {
-        public static async Task<TRecord> RetryKnownNetworkIssues<TRecord>(this Client client, Func<Client, Task<TRecord>> callback) where TRecord : TransactionRecord
+        try
         {
-            try
+            while (true)
             {
-                while (true)
+                try
                 {
-                    try
-                    {
-                        return await callback(client).ConfigureAwait(false);
-                    }
-                    catch (PrecheckException pex) when (pex.Status == ResponseCode.TransactionExpired || pex.Status == ResponseCode.Busy)
-                    {
-                        continue;
-                    }
+                    return await callback(client).ConfigureAwait(false);
+                }
+                catch (PrecheckException pex) when (pex.Status == ResponseCode.TransactionExpired || pex.Status == ResponseCode.Busy)
+                {
+                    continue;
                 }
             }
-            catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+        }
+        catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+        {
+            var record = await client.GetTransactionRecordAsync(ex.TxId) as TRecord;
+            if (record is not null)
             {
-                var record = await client.GetTransactionRecordAsync(ex.TxId) as TRecord;
-                if (record is not null)
-                {
-                    return record;
-                }
-                else
-                {
-                    throw;
-                }
+                return record;
+            }
+            else
+            {
+                throw;
             }
         }
     }

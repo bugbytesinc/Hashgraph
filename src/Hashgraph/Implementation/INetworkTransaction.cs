@@ -2,13 +2,12 @@
 using System;
 using System.Threading;
 
-namespace Hashgraph.Implementation
+namespace Hashgraph.Implementation;
+
+internal interface INetworkTransaction
 {
-    internal interface INetworkTransaction
-    {
-        Proto.TransactionBody CreateTransactionBody();
-        Proto.SchedulableTransactionBody CreateSchedulableTransactionBody();
-        Func<Proto.Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Proto.TransactionResponse>> InstantiateNetworkRequestMethod(Channel channel);
-        void CheckReceipt(NetworkResult result);
-    }
+    Proto.TransactionBody CreateTransactionBody();
+    Proto.SchedulableTransactionBody CreateSchedulableTransactionBody();
+    Func<Proto.Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Proto.TransactionResponse>> InstantiateNetworkRequestMethod(Channel channel);
+    void CheckReceipt(NetworkResult result);
 }

@@ -1,13 +1,12 @@
 ﻿using Hashgraph.Implementation;
 using System;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class TimestampSeconds
 {
-    public sealed partial class TimestampSeconds
+    internal DateTime ToDateTime()
     {
-        internal DateTime ToDateTime()
-        {
-            return Epoch.ToDate(Seconds, 0);
-        }
+        return Epoch.ToDate(Seconds, 0);
     }
 }

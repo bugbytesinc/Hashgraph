@@ -1,12 +1,11 @@
 ﻿using Hashgraph;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class ConsensusMessageChunkInfo
 {
-    public sealed partial class ConsensusMessageChunkInfo
+    internal Hashgraph.MessageSegmentInfo ToMessageSegmentInfo()
     {
-        internal Hashgraph.MessageSegmentInfo ToMessageSegmentInfo()
-        {
-            return new MessageSegmentInfo(this);
-        }
+        return new MessageSegmentInfo(this);
     }
 }
