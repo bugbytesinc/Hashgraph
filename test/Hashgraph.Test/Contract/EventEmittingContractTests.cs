@@ -53,7 +53,7 @@ public class EventEmittingContractTests
         Assert.NotNull(result);
         Assert.Empty(result.Error);
         Assert.False(result.Bloom.IsEmpty);
-        Assert.InRange(result.Gas, 0UL, 400UL);
+        Assert.InRange(result.Gas, 0UL, 4000UL);
         Assert.Empty(result.Events);
         Assert.Empty(result.CreatedContracts);
         Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
