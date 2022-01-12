@@ -4,29 +4,28 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class TokenGetNftInfoQuery : INetworkQuery
 {
-    public sealed partial class TokenGetNftInfoQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { TokenGetNftInfo = this };
-        }
+        return new Query { TokenGetNftInfo = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new TokenService.TokenServiceClient(channel).getTokenNftInfoAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new TokenService.TokenServiceClient(channel).getTokenNftInfoAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        internal TokenGetNftInfoQuery(Asset asset) : this()
-        {
+    internal TokenGetNftInfoQuery(Asset asset) : this()
+    {
 
-            NftID = new NftID(asset);
-        }
+        NftID = new NftID(asset);
     }
 }

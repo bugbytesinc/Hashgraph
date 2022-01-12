@@ -4,28 +4,27 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class FileGetContentsQuery : INetworkQuery
 {
-    public sealed partial class FileGetContentsQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { FileGetContents = this };
-        }
+        return new Query { FileGetContents = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new FileService.FileServiceClient(channel).getFileContentAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new FileService.FileServiceClient(channel).getFileContentAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        internal FileGetContentsQuery(Address file) : this()
-        {
-            FileID = new FileID(file);
-        }
+    internal FileGetContentsQuery(Address file) : this()
+    {
+        FileID = new FileID(file);
     }
 }

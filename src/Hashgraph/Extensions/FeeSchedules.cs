@@ -2,49 +2,48 @@
 using System;
 using System.Collections.Generic;
 
-namespace Hashgraph.Extensions
+namespace Hashgraph.Extensions;
+
+/// <summary>
+/// Object containing the current and next fee schedule
+/// returned from the network.
+/// </summary>
+public sealed class FeeSchedules
 {
     /// <summary>
-    /// Object containing the current and next fee schedule
-    /// returned from the network.
+    /// Internal constructor, used by the library to create an
+    /// initialized exchange rates object.
     /// </summary>
-    public sealed class FeeSchedules
+    /// <param name="current">Current Exchange Rate</param>
+    /// <param name="next">Next Exchange Rate</param>
+    internal FeeSchedules(FeeSchedule current, FeeSchedule next)
     {
-        /// <summary>
-        /// Internal constructor, used by the library to create an
-        /// initialized exchange rates object.
-        /// </summary>
-        /// <param name="current">Current Exchange Rate</param>
-        /// <param name="next">Next Exchange Rate</param>
-        internal FeeSchedules(FeeSchedule current, FeeSchedule next)
-        {
-            Current = current;
-            Next = next;
-        }
-        /// <summary>
-        /// Current Fee Schedule
-        /// </summary>
-        public FeeSchedule Current { get; }
-        /// <summary>
-        /// Exchange rate that is in effect after 
-        /// the current fee schedule expires.
-        /// </summary>
-        public FeeSchedule Next { get; }
+        Current = current;
+        Next = next;
     }
     /// <summary>
-    /// Contains a dictionary holding the fee calculation
-    /// parameters for various network functions.
+    /// Current Fee Schedule
     /// </summary>
-    public sealed record FeeSchedule
-    {
-        /// <summary>
-        /// A dictionary mapping hedera functionality (by name) to 
-        /// structured fee data (serialized as JSON data).
-        /// </summary>
-        public Dictionary<string, string[]> Data { get; internal init; }
-        /// <summary>
-        /// The Time at which this fee schedule expires.
-        /// </summary>
-        public DateTime Expires { get; internal init; }
-    }
+    public FeeSchedule Current { get; }
+    /// <summary>
+    /// Exchange rate that is in effect after 
+    /// the current fee schedule expires.
+    /// </summary>
+    public FeeSchedule Next { get; }
+}
+/// <summary>
+/// Contains a dictionary holding the fee calculation
+/// parameters for various network functions.
+/// </summary>
+public sealed record FeeSchedule
+{
+    /// <summary>
+    /// A dictionary mapping hedera functionality (by name) to 
+    /// structured fee data (serialized as JSON data).
+    /// </summary>
+    public Dictionary<string, string[]> Data { get; internal init; }
+    /// <summary>
+    /// The Time at which this fee schedule expires.
+    /// </summary>
+    public DateTime Expires { get; internal init; }
 }

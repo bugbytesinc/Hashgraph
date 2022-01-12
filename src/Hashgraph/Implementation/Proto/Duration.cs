@@ -1,16 +1,15 @@
 ﻿using System;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class Duration
 {
-    public sealed partial class Duration
+    internal Duration(TimeSpan timespan) : this()
     {
-        internal Duration(TimeSpan timespan) : this()
-        {
-            Seconds = (long)timespan.TotalSeconds;
-        }
-        internal TimeSpan ToTimeSpan()
-        {
-            return TimeSpan.FromSeconds(Seconds);
-        }
+        Seconds = (long)timespan.TotalSeconds;
+    }
+    internal TimeSpan ToTimeSpan()
+    {
+        return TimeSpan.FromSeconds(Seconds);
     }
 }

@@ -4,37 +4,36 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class CryptoGetAccountRecordsQuery : INetworkQuery
 {
-    public sealed partial class CryptoGetAccountRecordsQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { CryptoGetAccountRecords = this };
-        }
+        return new Query { CryptoGetAccountRecords = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new CryptoService.CryptoServiceClient(channel).getAccountRecordsAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new CryptoService.CryptoServiceClient(channel).getAccountRecordsAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        void INetworkQuery.CheckResponse(TransactionID transactionId, Response response)
+    void INetworkQuery.CheckResponse(TransactionID transactionId, Response response)
+    {
+        var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
+        if (precheckCode != ResponseCodeEnum.Ok)
         {
-            var precheckCode = response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
-            if (precheckCode != ResponseCodeEnum.Ok)
-            {
-                throw new TransactionException("Unable to retrieve transaction records.", transactionId, precheckCode);
-            }
+            throw new TransactionException("Unable to retrieve transaction records.", transactionId, precheckCode);
         }
+    }
 
-        internal CryptoGetAccountRecordsQuery(AddressOrAlias address) : this()
-        {
-            AccountID = new AccountID(address);
-        }
+    internal CryptoGetAccountRecordsQuery(AddressOrAlias address) : this()
+    {
+        AccountID = new AccountID(address);
     }
 }

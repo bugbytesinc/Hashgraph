@@ -4,37 +4,36 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class TokenRevokeKycTransactionBody : INetworkTransaction
 {
-    public sealed partial class TokenRevokeKycTransactionBody : INetworkTransaction
+    SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
     {
-        SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
-        {
-            return new SchedulableTransactionBody { TokenRevokeKyc = this };
-        }
+        return new SchedulableTransactionBody { TokenRevokeKyc = this };
+    }
 
-        TransactionBody INetworkTransaction.CreateTransactionBody()
-        {
-            return new TransactionBody { TokenRevokeKyc = this };
-        }
+    TransactionBody INetworkTransaction.CreateTransactionBody()
+    {
+        return new TransactionBody { TokenRevokeKyc = this };
+    }
 
-        Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new TokenService.TokenServiceClient(channel).revokeKycFromTokenAccountAsync;
-        }
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new TokenService.TokenServiceClient(channel).revokeKycFromTokenAccountAsync;
+    }
 
-        void INetworkTransaction.CheckReceipt(NetworkResult result)
+    void INetworkTransaction.CheckReceipt(NetworkResult result)
+    {
+        if (result.Receipt.Status != ResponseCodeEnum.Success)
         {
-            if (result.Receipt.Status != ResponseCodeEnum.Success)
-            {
-                throw new TransactionException(string.Format("Unable to Revoke Token, status: {0}", result.Receipt.Status), result);
-            }
+            throw new TransactionException(string.Format("Unable to Revoke Token, status: {0}", result.Receipt.Status), result);
         }
+    }
 
-        internal TokenRevokeKycTransactionBody(Address token, AddressOrAlias address) : this()
-        {
-            Token = new TokenID(token);
-            Account = new AccountID(address);
-        }
+    internal TokenRevokeKycTransactionBody(Address token, AddressOrAlias address) : this()
+    {
+        Token = new TokenID(token);
+        Account = new AccountID(address);
     }
 }

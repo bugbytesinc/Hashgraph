@@ -1,15 +1,14 @@
-﻿namespace Proto
+﻿namespace Proto;
+
+public sealed partial class ExchangeRate
 {
-    public sealed partial class ExchangeRate
+    internal Hashgraph.ExchangeRate ToExchangeRate()
     {
-        internal Hashgraph.ExchangeRate ToExchangeRate()
+        return new Hashgraph.ExchangeRate
         {
-            return new Hashgraph.ExchangeRate
-            {
-                HBarEquivalent = HbarEquiv,
-                USDCentEquivalent = CentEquiv,
-                Expiration = ExpirationTime.ToDateTime()
-            };
-        }
+            HBarEquivalent = HbarEquiv,
+            USDCentEquivalent = CentEquiv,
+            Expiration = ExpirationTime.ToDateTime()
+        };
     }
 }

@@ -4,28 +4,27 @@ using Hashgraph.Implementation;
 using System;
 using System.Threading;
 
-namespace Proto
+namespace Proto;
+
+public sealed partial class TokenGetInfoQuery : INetworkQuery
 {
-    public sealed partial class TokenGetInfoQuery : INetworkQuery
+    Query INetworkQuery.CreateEnvelope()
     {
-        Query INetworkQuery.CreateEnvelope()
-        {
-            return new Query { TokenGetInfo = this };
-        }
+        return new Query { TokenGetInfo = this };
+    }
 
-        Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
-        {
-            return new TokenService.TokenServiceClient(channel).getTokenInfoAsync;
-        }
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    {
+        return new TokenService.TokenServiceClient(channel).getTokenInfoAsync;
+    }
 
-        void INetworkQuery.SetHeader(QueryHeader header)
-        {
-            Header = header;
-        }
+    void INetworkQuery.SetHeader(QueryHeader header)
+    {
+        Header = header;
+    }
 
-        internal TokenGetInfoQuery(Address token) : this()
-        {
-            Token = new TokenID(token);
-        }
+    internal TokenGetInfoQuery(Address token) : this()
+    {
+        Token = new TokenID(token);
     }
 }
