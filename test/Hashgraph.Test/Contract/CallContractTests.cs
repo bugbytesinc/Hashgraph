@@ -22,7 +22,7 @@ public class CallContractTests
         var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "greet"
         }, ctx => ctx.Memo = "Call Contract");
         Assert.NotNull(record);
@@ -46,7 +46,7 @@ public class CallContractTests
         var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 7500,
+            Gas = 30000,
             FunctionName = "get_message"
         }, ctx => ctx.Memo = "Call Contract");
         Assert.NotNull(record);
@@ -69,7 +69,7 @@ public class CallContractTests
         var receipt = await fx.Client.CallContractAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 8000,
+            Gas = 30000,
             FunctionName = "get_message",
             Signatory = _network.PrivateKey
         }, ctx => ctx.Signatory = null);
@@ -85,7 +85,7 @@ public class CallContractTests
         var setRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 32000,
+            Gas = 40000,
             FunctionName = "set_message",
             FunctionArgs = new object[] { newMessage }
         }, ctx => ctx.Memo = "Call Contract");
@@ -104,7 +104,7 @@ public class CallContractTests
         var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 8000,
+            Gas = 30000,
             FunctionName = "get_message"
         });
         Assert.NotNull(getRecord);
@@ -130,7 +130,7 @@ public class CallContractTests
         var setRecord = await fx.Client.CallContractAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 20000,
+            Gas = 40000,
             FunctionName = "set_message",
             FunctionArgs = new object[] { newMessage }
         });
@@ -140,7 +140,7 @@ public class CallContractTests
         var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 8000,
+            Gas = 30000,
             FunctionName = "get_message"
         }, ctx => ctx.Memo = "Call Contract");
         Assert.NotNull(getRecord);

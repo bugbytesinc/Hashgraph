@@ -69,10 +69,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAccount.AssetCount);
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(infoFromAccount.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(infoFromAccount.Ledger);
 
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createReceipt.Address, infoFromAlias.Address);
@@ -89,10 +86,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(infoFromAlias.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
     }
 
     [Fact(DisplayName = "Create Account By Alias: Can Schedule Create Account")]
@@ -154,10 +148,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAccount.AssetCount);
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(infoFromAccount.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(infoFromAccount.Ledger);
 
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createReceipt.Address, infoFromAlias.Address);
@@ -174,10 +165,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(infoFromAlias.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
     }
     [Fact(DisplayName = "Create Account By Alias: Can Create Account and get Records")]
     public async Task CanCreateAccountAndGetRecords()
@@ -243,10 +231,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAccount.AssetCount);
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(infoFromAccount.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(infoFromAccount.Ledger);
 
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createRecord.Address, infoFromAlias.Address);
@@ -263,9 +248,6 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(infoFromAlias.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
     }
 }

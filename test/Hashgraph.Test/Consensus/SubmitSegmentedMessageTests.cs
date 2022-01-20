@@ -45,10 +45,7 @@ public class SubmitSegmentedMessageTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
 
         await Task.Delay(7000); // give the beta net time to sync
 
@@ -140,10 +137,7 @@ public class SubmitSegmentedMessageTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
 
         await Task.Delay(7000); // give the beta net time to sync
 
@@ -207,10 +201,7 @@ public class SubmitSegmentedMessageTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
 
         await Task.Delay(7000); // give the beta net time to sync
 
@@ -272,10 +263,7 @@ public class SubmitSegmentedMessageTests
         Assert.Null(info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Submit Segmented Message: Submit Without Topic Raises Error")]
     public async Task SubmitMessageWithoutTopicRaisesError()
@@ -556,10 +544,7 @@ public class SubmitSegmentedMessageTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Submit Segmented Message: Submitting Messages Can Return Record")]
     public async Task SubmittingMessagesCanReturnRecord()
@@ -635,9 +620,6 @@ public class SubmitSegmentedMessageTests
         Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fxTopic.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
 }

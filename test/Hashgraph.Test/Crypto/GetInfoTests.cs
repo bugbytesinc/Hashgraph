@@ -38,10 +38,7 @@ public class GetInfoTests
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Get Account Info: Can Get Info for Account Facet")]
     public async Task CanGetInfoForAccountFacet()
@@ -63,10 +60,7 @@ public class GetInfoTests
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Get Account Info: Can Get Info for Alias Facet")]
     public async Task CanGetInfoForAliasFacet()
@@ -88,10 +82,7 @@ public class GetInfoTests
         Assert.Equal(0, infoFromAddress.AssetCount);
         Assert.Equal(0, infoFromAddress.AutoAssociationLimit);
         Assert.Equal(fxAccount.Alias, infoFromAddress.Alias);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(infoFromAddress.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(infoFromAddress.Ledger);
 
         var infoFromAlias = await fxAccount.Client.GetAccountInfoAsync(fxAccount.Alias);
         Assert.Equal(fxAccount.CreateRecord.Address, infoFromAlias.Address);
@@ -109,10 +100,7 @@ public class GetInfoTests
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal(fxAccount.Alias, infoFromAlias.Alias);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(infoFromAlias.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(infoFromAddress.Ledger, infoFromAlias.Ledger);
     }
     [Fact(DisplayName = "Get Account Info: Can Get Info for Server Node")]
     public async Task CanGetInfoForGatewayAsync()
@@ -135,10 +123,7 @@ public class GetInfoTests
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(Alias.None, info.Alias);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Get Account Info: Getting Account Info without paying signature fails.")]
     public async Task GetInfoWithoutPayingSignatureThrowsException()
@@ -171,9 +156,6 @@ public class GetInfoTests
         Assert.Equal(fxAsset.Metadata.Length, info.AssetCount);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
 }

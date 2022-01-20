@@ -31,11 +31,7 @@ public sealed record AssetInfo
     /// Identification of the Ledger (Network) this 
     /// asset information was retrieved from.
     /// </summary>
-    /// <remarks>
-    /// Marked Internal for Now since this is not yet
-    /// implemented on previewnet or testnet.
-    /// </remarks>
-    internal ReadOnlyMemory<byte> Ledger { get; private init; }
+    public ReadOnlyMemory<byte> Ledger { get; private init; }
     /// <summary>
     /// Equality implementation
     /// </summary>

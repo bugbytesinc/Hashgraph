@@ -22,7 +22,7 @@ public class PayableContractTests
         var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "get_balance"
         }, ctx => ctx.Memo = "Call Contract");
         Assert.NotNull(record);
@@ -50,7 +50,7 @@ public class PayableContractTests
         var result = await fx.Client.QueryContractAsync(new QueryContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "get_balance",
         });
         Assert.NotNull(result);
@@ -79,7 +79,7 @@ public class PayableContractTests
         var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 20000,
+            Gas = 40000,
             FunctionName = "send_to",
             FunctionArgs = new[] { fx2.Record.Address }
         });
@@ -91,7 +91,7 @@ public class PayableContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
+        Assert.InRange(record.CallResult.Gas, 0UL, 40_000UL);
         Assert.Empty(record.CallResult.Events);
         Assert.Empty(record.CallResult.CreatedContracts);
 
@@ -108,7 +108,7 @@ public class PayableContractTests
         var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 20000,
+            Gas = 30000,
             PayableAmount = extraFunds
         });
         Assert.Equal(ResponseCode.Success, record.Status);
@@ -118,7 +118,7 @@ public class PayableContractTests
         record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 20000,
+            Gas = 40000,
             FunctionName = "send_to",
             FunctionArgs = new[] { fx2.Record.Address }
         }, ctx => ctx.Memo = "Call Contract");
@@ -130,7 +130,7 @@ public class PayableContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
+        Assert.InRange(record.CallResult.Gas, 0UL, 40_000UL);
         Assert.Empty(record.CallResult.Events);
         Assert.Empty(record.CallResult.CreatedContracts);
 
@@ -153,7 +153,7 @@ public class PayableContractTests
         var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 20000,
+            Gas = 30000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceBefore);
@@ -174,7 +174,7 @@ public class PayableContractTests
             await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = 20000,
+                Gas = 30000,
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fxAccount.Record.Address }
             });
@@ -186,7 +186,7 @@ public class PayableContractTests
         var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceAfter);
@@ -237,7 +237,7 @@ public class PayableContractTests
         var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 6000,
+            Gas = 30000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceBefore);
@@ -255,7 +255,7 @@ public class PayableContractTests
             await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = 20000,
+                Gas = 30000,
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fxAccount1.Record.Address }
             });
@@ -267,7 +267,7 @@ public class PayableContractTests
         var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 20000,
+            Gas = 30000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceAfter);
@@ -281,8 +281,8 @@ public class PayableContractTests
         // account is already deleted.
         var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
-                // So if this throws an error, why did the above call not fail?
-                await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
+            // So if this throws an error, why did the above call not fail?
+            await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
         });
 
         // Delete the Contract, returning any hidden hbars to account number 2
@@ -304,7 +304,7 @@ public class PayableContractTests
         var callBalanceBefore = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "get_balance"
         })).CallResult.Result.As<long>();
         Assert.Equal(initialBalance, apiBalanceBefore);
@@ -315,7 +315,7 @@ public class PayableContractTests
         var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             PayableAmount = extraFunds
         });
         Assert.Equal(ResponseCode.Success, record.Status);
@@ -326,7 +326,7 @@ public class PayableContractTests
         var callBalanceAfter = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "get_balance"
         })).CallResult.Result.As<long>();
         Assert.Equal(finalBalance, apiBalanceAfter);
@@ -334,52 +334,39 @@ public class PayableContractTests
         Assert.Equal(finalBalance, callBalanceAfter);
     }
 
-    [Fact(DisplayName = "NETWORK V0.7.0 UNSUPPORTED: Payable Contract: Transfer Funds to External Payable Default Function Raises Contract's Account Balance")]
-    public async Task TransferFundsToPayableContractWithExternalPayableRaisesContractBalanceVersion070Regression()
+    [Fact(DisplayName = "Payable Contract: Transfer Funds to External Payable Default Function Raises Contract's Account Balance")]
+    async Task TransferFundsToPayableContractWithExternalPayableRaisesContractBalance()
     {
-        // Version 0.6.0 allowed for transfer of crypto to an account using the
-        // crypto API calls if the contract had a default payable method.  This
-        // has changed with version 0.7.0.  We are marking this as a regression for
-        // now in the case that this change is reverted in a subsequent revision.
-        // We will need to revisit this in the future to decide how to test this
-        // behavior.
-        var testFailException = (await Assert.ThrowsAsync<TransactionException>(TransferFundsToPayableContractWithExternalPayableRaisesContractBalance));
-        Assert.StartsWith("Unable to execute transfers, status: InvalidAccountId", testFailException.Message);
+        await using var fx = await PayableContract.CreateAsync(_network);
 
-        //[Fact(DisplayName = "Payable Contract: Transfer Funds to External Payable Default Function Raises Contract's Account Balance")]
-        async Task TransferFundsToPayableContractWithExternalPayableRaisesContractBalance()
+        ulong initialBalance = (ulong)fx.ContractParams.InitialBalance;
+        var apiBalanceBefore = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+        var infoBalanceBefore = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+        var callBalanceBefore = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
-            await using var fx = await PayableContract.CreateAsync(_network);
+            Contract = fx.ContractRecord.Contract,
+            Gas = 30000,
+            FunctionName = "get_balance"
+        })).CallResult.Result.As<long>();
+        Assert.Equal(initialBalance, apiBalanceBefore);
+        Assert.Equal(initialBalance, infoBalanceBefore);
+        Assert.Equal(initialBalance, callBalanceBefore);
 
-            ulong initialBalance = (ulong)fx.ContractParams.InitialBalance;
-            var apiBalanceBefore = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
-            var infoBalanceBefore = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
-            var callBalanceBefore = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
-            {
-                Contract = fx.ContractRecord.Contract,
-                Gas = 4000,
-                FunctionName = "get_balance"
-            })).CallResult.Result.As<long>();
-            Assert.Equal(initialBalance, apiBalanceBefore);
-            Assert.Equal(initialBalance, infoBalanceBefore);
-            Assert.Equal(initialBalance, callBalanceBefore);
+        var extraFunds = Generator.Integer(500, 1000);
+        var record = await fx.Client.TransferAsync(_network.Payer, fx.ContractRecord.Contract, extraFunds);
+        Assert.Equal(ResponseCode.Success, record.Status);
 
-            var extraFunds = Generator.Integer(500, 1000);
-            var record = await fx.Client.TransferAsync(_network.Payer, fx.ContractRecord.Contract, extraFunds);
-            Assert.Equal(ResponseCode.Success, record.Status);
-
-            ulong finalBalance = (ulong)fx.ContractParams.InitialBalance + (ulong)extraFunds;
-            var apiBalanceAfter = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
-            var infoBalanceAfter = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
-            var callBalanceAfter = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
-            {
-                Contract = fx.ContractRecord.Contract,
-                Gas = 4000,
-                FunctionName = "get_balance"
-            })).CallResult.Result.As<long>();
-            Assert.Equal(finalBalance, apiBalanceAfter);
-            Assert.Equal(finalBalance, infoBalanceAfter);
-            Assert.Equal(finalBalance, callBalanceAfter);
-        }
+        ulong finalBalance = (ulong)fx.ContractParams.InitialBalance + (ulong)extraFunds;
+        var apiBalanceAfter = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
+        var infoBalanceAfter = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Balance;
+        var callBalanceAfter = (ulong)(await fx.Client.CallContractWithRecordAsync(new CallContractParams
+        {
+            Contract = fx.ContractRecord.Contract,
+            Gas = 30000,
+            FunctionName = "get_balance"
+        })).CallResult.Result.As<long>();
+        Assert.Equal(finalBalance, apiBalanceAfter);
+        Assert.Equal(finalBalance, infoBalanceAfter);
+        Assert.Equal(finalBalance, callBalanceAfter);
     }
 }

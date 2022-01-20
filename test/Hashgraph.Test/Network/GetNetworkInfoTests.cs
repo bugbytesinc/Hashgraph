@@ -22,7 +22,7 @@ public class GetNetworkInfoTests
 
         var info = await client.GetVersionInfoAsync();
         Assert.NotNull(info);
-        AssertHg.SemanticVersionGreaterOrEqualThan(new SemanticVersion(0, 18, 1), info.ApiProtobufVersion);
-        AssertHg.SemanticVersionGreaterOrEqualThan(new SemanticVersion(0, 18, 1), info.HederaServicesVersion);
+        AssertHg.SemanticVersionGreaterOrEqualThan(new SemanticVersion(0, 21, 2), info.ApiProtobufVersion);
+        AssertHg.SemanticVersionGreaterOrEqualThan(new SemanticVersion(0, 21, 2), info.HederaServicesVersion);
     }
 }

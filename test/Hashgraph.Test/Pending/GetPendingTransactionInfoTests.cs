@@ -34,9 +34,6 @@ public class GetPendingTransactionInfoTests
         Assert.Null(info.Executed);
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
 }

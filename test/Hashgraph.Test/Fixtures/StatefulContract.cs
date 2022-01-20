@@ -47,7 +47,7 @@ public class StatefulContract : IAsyncDisposable
             Administrator = fx.PublicKey,
             Signatory = fx.PrivateKey,
             Memo = "Stateful Contract " + Generator.Code(10),
-            Gas = 89532,
+            Gas = 150000,
             RenewPeriod = TimeSpan.FromSeconds(7890000),
             Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
         };

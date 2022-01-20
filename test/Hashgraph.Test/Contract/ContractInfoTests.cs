@@ -32,10 +32,7 @@ public class ContractInfoTests
         Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
         Assert.Equal(fx.ContractParams.Memo, info.Memo);
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Contract Info: Can Get Stateful Contract Info")]
     public async Task CanGetStatefulContractInfo()
@@ -53,10 +50,7 @@ public class ContractInfoTests
         Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
         Assert.Equal(fx.ContractParams.Memo, info.Memo);
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Contract Info: Retrieving Non Existent Contract Raises Error")]
     public async Task GetNonExistantContractRaisesError()
@@ -92,9 +86,6 @@ public class ContractInfoTests
         Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
         Assert.StartsWith(fx.ContractParams.Memo, info.Memo);
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
 }

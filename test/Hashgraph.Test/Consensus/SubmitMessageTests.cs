@@ -37,10 +37,7 @@ public class SubmitMessageTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Submit Message: Can Submit Message to Open Topic")]
     public async Task CanSubmitMessageToOpenTopic()
@@ -66,10 +63,7 @@ public class SubmitMessageTests
         Assert.Null(info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Submit Message: Submit Without Participant Key Raises Error")]
     public async Task SubmitMessageWithoutKeyRaisesError()
@@ -186,10 +180,7 @@ public class SubmitMessageTests
         Assert.Equal((ulong)expectedSequenceNumber, info.SequenceNumber);
         Assert.Equal((ulong)expectedSequenceNumber, record.SequenceNumber);
         Assert.Equal(info.RunningHash.ToArray(), record.RunningHash.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Submit Message: Submitting Messages Can Retrieve Records (without extra Signatory)")]
     public async Task CanCallWithRecordPayerSignatory()
@@ -216,10 +207,7 @@ public class SubmitMessageTests
         Assert.Equal((ulong)expectedSequenceNumber, info.SequenceNumber);
         Assert.Equal((ulong)expectedSequenceNumber, record.SequenceNumber);
         Assert.Equal(info.RunningHash.ToArray(), record.RunningHash.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Submit Message: Can Schedule Submit Message")]
     public async Task CanScheduleSubmitMessage()
@@ -261,9 +249,6 @@ public class SubmitMessageTests
         Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fxTopic.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
 }
