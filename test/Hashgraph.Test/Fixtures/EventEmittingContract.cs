@@ -47,7 +47,7 @@ public class EventEmittingContract : IAsyncDisposable
             File = fx.FileRecord.File,
             Administrator = fx.PublicKey,
             Signatory = fx.PrivateKey,
-            Gas = 22368,
+            Gas = 300000,
             InitialBalance = 1_000_000,
             RenewPeriod = TimeSpan.FromSeconds(7890000),//TimeSpan.FromDays(Generator.Integer(2, 4))
         };

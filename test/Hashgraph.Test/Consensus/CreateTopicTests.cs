@@ -33,10 +33,7 @@ public class CreateTopicTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Create Topic: Can Create (Receipt Version)")]
     public async Task CanCreateATopicWithReceiptAsync()
@@ -60,10 +57,7 @@ public class CreateTopicTests
         Assert.Null(info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Null(info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Create Topic: Can Create Topic with Null Memo raises error.")]
     public async Task CreateWithNullMemoRaisesError()
@@ -95,10 +89,7 @@ public class CreateTopicTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Create Topic: Can Create Topic with no Administrator and Auto Renew Raises Error")]
     public async Task CanCreateATopicWithNoAdministratorAndAutoRenewAccountRaisesError()
@@ -130,10 +121,7 @@ public class CreateTopicTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Null(info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Create Topic: Can Create Topic with no Participant Requirement")]
     public async Task CanCreateATopicWithNoParticipant()
@@ -151,10 +139,7 @@ public class CreateTopicTests
         Assert.Null(info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Equal(fx.TestAccount.Record.Address, info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Create Topic: Create Topic with no invalid renew period raises error.")]
     public async Task CanCreateATopicWithInvalidRenewPeriodRaisesError()
@@ -186,10 +171,7 @@ public class CreateTopicTests
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
         Assert.Null(info.RenewAccount);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Create Topic: Can Create Topic with Alias Renew Account")]
     public async Task CanCreateATopicWithAliasRenewAccountDefect()

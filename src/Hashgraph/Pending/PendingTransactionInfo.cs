@@ -65,11 +65,7 @@ public sealed record PendingTransactionInfo : PendingTransaction
     /// Identification of the Ledger (Network) this 
     /// pending transaction information was retrieved from.
     /// </summary>
-    /// <remarks>
-    /// Marked Internal for Now since this is not yet
-    /// implemented on previewnet or testnet.
-    /// </remarks>
-    internal ReadOnlyMemory<byte> Ledger { get; private init; }
+    public ReadOnlyMemory<byte> Ledger { get; private init; }
     /// <summary>
     /// Internal Constructor from Raw Results
     /// </summary>

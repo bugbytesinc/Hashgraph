@@ -83,7 +83,7 @@ public class GetRecordTests
             await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 4000,
+                Gas = 30000,
                 FunctionName = "not_a_real_method",
             });
         });
@@ -138,7 +138,7 @@ public class GetRecordTests
         var record1 = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "greet"
         }, ctx => ctx.Memo = "Call Contract");
         var record2 = await fx.Client.GetTransactionRecordAsync(record1.Id);

@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Extensions;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -272,5 +273,22 @@ public static class AssertHg
             throw new Xunit.Sdk.XunitException($"Semantic Version {actual.Major}.{actual.Minor}.{actual.Patch} is not greater than {expected.Major}.{expected.Minor}.{expected.Patch}");
         }
 
+    }
+
+    internal static void NotEmpty(ReadOnlyMemory<byte> value)
+    {
+        if (value.ToArray().Length == 0)
+        {
+            throw new Xunit.Sdk.NotEmptyException();
+        }
+    }
+
+    internal static void Equal(ReadOnlyMemory<byte> expected, ReadOnlyMemory<byte> actual)
+    {
+        var expectedBytes = expected.ToArray();
+        var actualBytes = actual.ToArray();
+        if (!Enumerable.SequenceEqual(expectedBytes, actualBytes)) {
+            throw new Xunit.Sdk.EqualException(expectedBytes, actualBytes);
+        }
     }
 }

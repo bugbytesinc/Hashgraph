@@ -95,11 +95,7 @@ public sealed record AccountInfo
     /// <remarks>
     /// Marked Internal for Now since this is not yet
     /// implemented on previewnet or testnet.
-    /// </remarks>
-    /// Marked Internal for Now since this is not yet
-    /// implemented on previewnet or testnet.
-    /// </remarks>
-    internal ReadOnlyMemory<byte> Ledger { get; private init; }
+    public ReadOnlyMemory<byte> Ledger { get; private init; }
     /// <summary>
     /// Internal Constructor from Raw Response
     /// </summary>

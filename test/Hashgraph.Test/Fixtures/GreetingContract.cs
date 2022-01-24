@@ -51,7 +51,7 @@ public class GreetingContract : IAsyncDisposable
             File = fx.FileRecord.File,
             Administrator = fx.PublicKey,
             Signatory = fx.PrivateKey,
-            Gas = 22301,
+            Gas = 200000,
             RenewPeriod = TimeSpan.FromSeconds(7890000),
             Memo = "Greeting Contract " + Generator.Code(10)
         };

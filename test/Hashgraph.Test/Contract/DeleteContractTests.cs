@@ -138,7 +138,7 @@ public class DeleteContractTests
         var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceBefore);

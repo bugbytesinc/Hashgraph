@@ -29,9 +29,6 @@ public class GetAssetInfoTests
         Assert.Equal(fxAccount.Record.Address, info.Owner);
         Assert.Equal(fxAsset.MintRecord.Concensus, info.Created);
         Assert.Equal(fxAsset.Metadata[0].ToArray(), info.Metadata.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
 }

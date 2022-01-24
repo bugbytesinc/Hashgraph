@@ -22,7 +22,7 @@ public class EventEmittingContractTests
         var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 40000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(record);
@@ -33,7 +33,7 @@ public class EventEmittingContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
+        Assert.InRange(record.CallResult.Gas, 0UL, 40_000UL);
         Assert.Empty(record.CallResult.Events);
         Assert.Empty(record.CallResult.CreatedContracts);
         Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
@@ -46,14 +46,14 @@ public class EventEmittingContractTests
         var result = await fx.Client.QueryContractAsync(new QueryContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 40000,
             FunctionName = "get_balance"
         });
 
         Assert.NotNull(result);
         Assert.Empty(result.Error);
         Assert.False(result.Bloom.IsEmpty);
-        Assert.InRange(result.Gas, 0UL, 4000UL);
+        Assert.InRange(result.Gas, 0UL, 40000UL);
         Assert.Empty(result.Events);
         Assert.Empty(result.CreatedContracts);
         Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
@@ -68,7 +68,7 @@ public class EventEmittingContractTests
         var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 20000,
+            Gas = 40000,
             FunctionName = "send_to",
             FunctionArgs = new[] { fx2.Record.Address }
         });
@@ -132,7 +132,7 @@ public class EventEmittingContractTests
         var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceBefore);
@@ -145,7 +145,7 @@ public class EventEmittingContractTests
             await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = 20000,
+                Gas = 30000,
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fxAccount1.Record.Address }
             });
@@ -157,7 +157,7 @@ public class EventEmittingContractTests
         var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceAfter);

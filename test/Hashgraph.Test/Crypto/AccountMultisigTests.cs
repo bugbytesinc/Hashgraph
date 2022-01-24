@@ -41,10 +41,7 @@ public class AccountMultisigTests
         Assert.Equal(endorsement, info.Endorsement);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
 
         Assert.Equal(new Address(0, 0, 0), info.Proxy);
         Assert.False(info.Deleted);

@@ -28,10 +28,7 @@ public class GetFileInfoTests
         Assert.Equal(test.CreateParams.Expiration, info.Expiration);
         Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "File Info: Can Get Imutable File Info")]
     public async Task CanGetImutableFileInfo()
@@ -49,10 +46,7 @@ public class GetFileInfoTests
         Assert.Equal(test.CreateParams.Expiration, info.Expiration);
         Assert.Empty(info.Endorsements);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "File Info: Can Get Empty File Info")]
     public async Task CanGetEmptyFileInfo()
@@ -70,10 +64,7 @@ public class GetFileInfoTests
         Assert.Equal(test.CreateParams.Expiration, info.Expiration);
         Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "File Info: Can Get Imutable Empty File Info")]
     public async Task CanGetImutableEmptyFileInfo()
@@ -92,9 +83,6 @@ public class GetFileInfoTests
         Assert.Equal(test.CreateParams.Expiration, info.Expiration);
         Assert.Empty(info.Endorsements);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
 }

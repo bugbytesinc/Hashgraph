@@ -44,10 +44,7 @@ public class DeletePendingTransactionTests
         Assert.Null(info.Executed);
         Assert.Equal(record.Concensus, info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.NotEmpty(info.Ledger);
     }
     [Fact(DisplayName = "Pending Transaction Delete: Can Delete Pending Transaction With Signatory Version")]
     public async Task CanGetTokenInfoWithSignatoryVersion()

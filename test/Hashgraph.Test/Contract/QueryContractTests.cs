@@ -22,7 +22,7 @@ public class QueryContractTests
         var result = await fx.Client.QueryContractAsync(new QueryContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 4000,
+            Gas = 30000,
             ReturnValueCharge = 4000,
             FunctionName = "greet"
         });
@@ -41,7 +41,7 @@ public class QueryContractTests
         var result = await fx.Client.QueryContractAsync(new QueryContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 8000,
+            Gas = 30000,
             ReturnValueCharge = 4000,
             FunctionName = "get_message"
         });
@@ -110,7 +110,7 @@ public class QueryContractTests
             await fx.Client.QueryContractAsync(new QueryContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 20000,
+                Gas = 30000,
                 FunctionName = "set_message",
                 FunctionArgs = new object[] { newMessage },
                 ReturnValueCharge = 900
@@ -128,7 +128,7 @@ public class QueryContractTests
         var result = await fx.Client.QueryContractAsync(new QueryContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 20000,
+            Gas = 30000,
             FunctionName = "set_message",
             FunctionArgs = new object[] { newMessage },
             ReturnValueCharge = 900,
