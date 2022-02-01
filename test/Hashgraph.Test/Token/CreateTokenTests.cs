@@ -40,7 +40,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.PauseEndorsement, info.PauseEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -98,7 +98,7 @@ public class CreateTokenTests
             PauseEndorsement = fxTreasury.PublicKey,
             ConfiscateEndorsement = fxTreasury.PublicKey,
             SupplyEndorsement = fxTreasury.PublicKey,
-            RoyaltyEndorsement = fxTreasury.PublicKey,
+            RoyaltiesEndorsement = fxTreasury.PublicKey,
             InitializeSuspended = false,
             Expiration = Generator.TruncatedFutureDate(2000, 3000),
             RenewAccount = fxRenew.Record.Address,
@@ -123,7 +123,7 @@ public class CreateTokenTests
         Assert.Equal(createParams.PauseEndorsement, info.PauseEndorsement);
         Assert.Equal(createParams.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(createParams.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(createParams.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(createParams.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -162,7 +162,7 @@ public class CreateTokenTests
                 PauseEndorsement = fxTreasury.PublicKey,
                 ConfiscateEndorsement = fxTreasury.PublicKey,
                 SupplyEndorsement = fxTreasury.PublicKey,
-                RoyaltyEndorsement = fxTreasury.PublicKey,
+                RoyaltiesEndorsement = fxTreasury.PublicKey,
                 InitializeSuspended = false,
                 Expiration = Generator.TruncatedFutureDate(2000, 3000),
                 RenewAccount = fxRenew.Record.Address,
@@ -187,7 +187,7 @@ public class CreateTokenTests
             Assert.Equal(createParams.PauseEndorsement, info.PauseEndorsement);
             Assert.Equal(createParams.ConfiscateEndorsement, info.ConfiscateEndorsement);
             Assert.Equal(createParams.SupplyEndorsement, info.SupplyEndorsement);
-            Assert.Equal(createParams.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+            Assert.Equal(createParams.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
             Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
             Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -471,7 +471,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -523,7 +523,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -611,7 +611,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -810,7 +810,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -863,7 +863,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -912,7 +912,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -956,7 +956,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Null(info.RenewPeriod);
         Assert.Null(info.RenewAccount);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
@@ -1025,7 +1025,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -1072,7 +1072,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
@@ -1121,7 +1121,7 @@ public class CreateTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);

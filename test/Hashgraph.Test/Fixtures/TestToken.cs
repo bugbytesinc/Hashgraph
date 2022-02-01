@@ -64,7 +64,7 @@ public class TestToken : IAsyncDisposable
             PauseEndorsement = fx.PausePublicKey,
             ConfiscateEndorsement = fx.ConfiscatePublicKey,
             SupplyEndorsement = fx.SupplyPublicKey,
-            RoyaltyEndorsement = fx.RoyaltiesPublicKey,
+            RoyaltiesEndorsement = fx.RoyaltiesPublicKey,
             InitializeSuspended = false,
             Expiration = Generator.TruncatedFutureDate(2000, 3000),
             RenewAccount = fx.RenewAccount.Record.Address,

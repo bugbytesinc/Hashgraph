@@ -90,7 +90,7 @@ public sealed class CreateTokenParams
     /// Administrator key for signing transactions updating the royalty
     /// (custom transfer fees) associated with this token.
     /// </summary>
-    public Endorsement? RoyaltyEndorsement { get; set; }
+    public Endorsement? RoyaltiesEndorsement { get; set; }
     /// <summary>
     /// The list of royalties applied to transactions
     /// transferring this token.  If a royalty endorsement is not

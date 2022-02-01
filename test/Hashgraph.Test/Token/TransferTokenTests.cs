@@ -40,7 +40,7 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
@@ -111,7 +111,7 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
@@ -182,7 +182,7 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
@@ -719,7 +719,7 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
@@ -808,7 +808,7 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
@@ -862,7 +862,7 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fxToken.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fxToken.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fxToken.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fxToken.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);

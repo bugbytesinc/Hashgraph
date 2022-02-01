@@ -225,7 +225,7 @@ public class RoyaltyTransferTests
                     new TokenRoyalty(fxComAccount,1,2,1,100)
             };
             fx.Params.GrantKycEndorsement = null;
-            fx.Params.RoyaltyEndorsement = null;
+            fx.Params.RoyaltiesEndorsement = null;
             fx.Params.Signatory = new Signatory(fx.Params.Signatory, fxComAccount.PrivateKey);
         }, fxAccount1, fxAccount2);
         Assert.Equal(ResponseCode.Success, fxToken.Record.Status);

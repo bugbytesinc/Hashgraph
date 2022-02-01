@@ -80,7 +80,7 @@ public class ContractInfoTests
         Assert.NotNull(info.SmartContractId);
         // Immutable Contracts list their "contract" key as the administrator Key.
         Assert.Equal(KeyType.Contract, info.Administrator.Type);
-        Assert.Equal(Abi.EncodeAddressPart(info.Contract).ToArray(), info.Administrator.PublicKey.ToArray());
+        Assert.Equal(fx.ContractRecord.Contract, info.Administrator.Contract);
         Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
         Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
         Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);

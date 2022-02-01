@@ -266,17 +266,30 @@ public class EndorsementsTests
         Assert.Equal(0U, endorsement.RequiredCount);
         Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
     }
+    [Fact(DisplayName = "Endorsements: Creating Contract Type from Bytes Produces Error.")]
+    public void CreatingContractTypeFromBytesProducesError()
+    {
+        var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
+        var bytes = Abi.EncodeArguments(new[] { contract });
+
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            new Endorsement(KeyType.Contract, bytes);
+        });
+        Assert.Equal("type", exception.ParamName);
+        Assert.StartsWith("Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the contract address constructor instead.", exception.Message);
+    }
     [Fact(DisplayName = "Endorsements: Creating Contract Type produces Contract type")]
     public void CanCreateContractType()
     {
         var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
-        var bytes = Abi.EncodeAddressPart(contract);
+        var endorsement = new Endorsement(contract);
 
-        var endorsement = new Endorsement(KeyType.Contract, bytes);
         Assert.Equal(KeyType.Contract, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(bytes.ToArray(), endorsement.PublicKey.ToArray());
+        AssertHg.Empty(endorsement.PublicKey);
+        Assert.Equal(contract, endorsement.Contract);
     }
     [Fact(DisplayName = "Endorsements: Creating n of m List produces n of m List type")]
     public void CanCreateNofMList()
@@ -366,16 +379,26 @@ public class EndorsementsTests
             new Endorsement(KeyType.List, publicKey);
         });
         Assert.Equal("type", exception.ParamName);
-        Assert.StartsWith("Only endorsements representing a single key are supported with this constructor, please use the list constructor instead.", exception.Message);
+        Assert.StartsWith("Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the list constructor instead.", exception.Message);
+    }
+    [Fact(DisplayName = "Endorsements: Make Contract Type from Key type constructor throws error.")]
+    public void MakeContractTypeFromKeyTypeConstructorThrowsError()
+    {
+        var (publicKey, _) = Generator.Ed25519KeyPair();
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            new Endorsement(KeyType.Contract, publicKey);
+        });
+        Assert.Equal("type", exception.ParamName);
+        Assert.StartsWith("Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the contract address constructor instead.", exception.Message);
     }
     [Fact(DisplayName = "Endorsements: Equivalent Contract Types are Considered Equal")]
     public void EquivalentContractEndorsementsAreConsideredEqual()
     {
         var contract = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
-        var bytes = Abi.EncodeAddressPart(contract);
 
-        var endorsement1 = new Endorsement(KeyType.Contract, bytes);
-        var endorsement2 = new Endorsement(KeyType.Contract, bytes);
+        var endorsement1 = new Endorsement(contract);
+        var endorsement2 = new Endorsement(new Address(contract.ShardNum, contract.RealmNum, contract.AccountNum));
         Assert.Equal(endorsement1, endorsement2);
         Assert.True(endorsement1 == endorsement2);
         Assert.False(endorsement1 != endorsement2);
@@ -392,11 +415,8 @@ public class EndorsementsTests
         var contract1 = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(1000, 20000));
         var contract2 = new Address(Generator.Integer(0, 100), Generator.Integer(0, 100), Generator.Integer(20001, 50000));
 
-        var bytes1 = Abi.EncodeAddressPart(contract1);
-        var bytes2 = Abi.EncodeAddressPart(contract2);
-
-        var endorsement1 = new Endorsement(KeyType.Contract, bytes1);
-        var endorsement2 = new Endorsement(KeyType.Contract, bytes2);
+        var endorsement1 = new Endorsement(contract1);
+        var endorsement2 = new Endorsement(contract2);
         Assert.NotEqual(endorsement1, endorsement2);
         Assert.False(endorsement1 == endorsement2);
         Assert.True(endorsement1 != endorsement2);
@@ -414,11 +434,10 @@ public class EndorsementsTests
         var contractID = new Proto.ContractID(contract);
         var key = new Proto.Key { ContractID = contractID };
         var endorsement = key.ToEndorsement();
-        var decoded = Abi.DecodeAddressPart(endorsement.PublicKey);
 
         Assert.Equal(KeyType.Contract, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(contract, decoded);
+        Assert.Equal(contract, endorsement.Contract);
     }
 }

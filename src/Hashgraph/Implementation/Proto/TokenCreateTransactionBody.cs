@@ -125,9 +125,9 @@ public sealed partial class TokenCreateTransactionBody : INetworkTransaction
         {
             SupplyKey = new Key(createParameters.SupplyEndorsement);
         }
-        if (!createParameters.RoyaltyEndorsement.IsNullOrNone())
+        if (!createParameters.RoyaltiesEndorsement.IsNullOrNone())
         {
-            FeeScheduleKey = new Key(createParameters.RoyaltyEndorsement);
+            FeeScheduleKey = new Key(createParameters.RoyaltiesEndorsement);
         }
         if (createParameters.Royalties is not null)
         {

@@ -33,7 +33,7 @@ public class GetTokenInfoTests
         Assert.Equal(fx.Params.SuspendEndorsement, info.SuspendEndorsement);
         Assert.Equal(fx.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
         Assert.Equal(fx.Params.SupplyEndorsement, info.SupplyEndorsement);
-        Assert.Equal(fx.Params.RoyaltyEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(fx.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
         Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);

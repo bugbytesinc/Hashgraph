@@ -275,6 +275,15 @@ public static class AssertHg
 
     }
 
+    internal static void Empty(ReadOnlyMemory<byte> value)
+    {
+        var array = value.ToArray();
+        if (array.Length != 0)
+        {
+            throw new Xunit.Sdk.EmptyException(array);
+        }
+    }
+
     internal static void NotEmpty(ReadOnlyMemory<byte> value)
     {
         if (value.ToArray().Length == 0)
