@@ -1,6 +1,5 @@
 ﻿using Google.Protobuf;
 using Hashgraph;
-using Hashgraph.Implementation;
 using Org.BouncyCastle.Crypto.Parameters;
 using System;
 
@@ -19,7 +18,7 @@ public sealed partial class Key
                 ECDSASecp256K1 = ByteString.CopyFrom(((ECPublicKeyParameters)endorsement._data).Q.GetEncoded(true));
                 break;
             case KeyType.Contract:
-                ContractID = new ContractID((Address)Abi.DecodeAddressPart((ReadOnlyMemory<byte>)endorsement._data));
+                ContractID = new ContractID((Address)endorsement._data);
                 break;
             case KeyType.List:
                 ThresholdKey = new ThresholdKey
@@ -38,7 +37,7 @@ public sealed partial class Key
         {
             KeyOneofCase.Ed25519 => new Endorsement(KeyType.Ed25519, Ed25519.Memory),
             KeyOneofCase.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, ECDSASecp256K1.Memory),
-            KeyOneofCase.ContractID => new Endorsement(KeyType.Contract, Abi.EncodeAddressPart(ContractID.AsAddress())),
+            KeyOneofCase.ContractID => new Endorsement(ContractID.AsAddress()),
             KeyOneofCase.ThresholdKey => ThresholdKey.Keys.Keys.Count == 0 ? Endorsement.None : new Endorsement(ThresholdKey.Threshold, ThresholdKey.Keys.ToEndorsements()),
             KeyOneofCase.KeyList => KeyList.Keys.Count == 0 ? Endorsement.None : new Endorsement(KeyList.ToEndorsements()),
             _ => throw new InvalidOperationException($"Unsupported Key Type {KeyCase}.  Do we have a network/library version mismatch?"),

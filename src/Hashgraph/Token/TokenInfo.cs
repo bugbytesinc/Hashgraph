@@ -134,11 +134,7 @@ public sealed record TokenInfo
     /// Identification of the Ledger (Network) 
     /// this token information was retrieved from.
     /// </summary>
-    /// <remarks>
-    /// Marked Internal for Now since this is not yet
-    /// implemented on previewnet or testnet.
-    /// </remarks>
-    internal ReadOnlyMemory<byte> Ledger { get; private init; }
+    public ReadOnlyMemory<byte> Ledger { get; private init; }
     internal TokenInfo(Response response)
     {
         var info = response.TokenGetInfo.TokenInfo;

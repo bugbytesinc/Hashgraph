@@ -47,26 +47,25 @@ public sealed class Endorsement : IEquatable<Endorsement>
     public KeyType Type { get; private set; }
     /// <summary>
     /// The value of the public key held by this endorsement if it is
-    /// of a key type.  If it is a list type, the value returned will
-    /// be <code>Empty</code>.
+    /// an Ed25519 or ECDSA Secp256K1 key type.  If it is a list or 
+    /// contract, the value returned will be <code>Empty</code>.
     /// </summary>
-    public ReadOnlyMemory<byte> PublicKey
+    public ReadOnlyMemory<byte> PublicKey => Type switch
     {
-        get
-        {
-            switch (Type)
-            {
-                case KeyType.Ed25519:
-                    return Ed25519Util.ToDerBytes((Ed25519PublicKeyParameters)_data);
-                case KeyType.ECDSASecp256K1:
-                    return EcdsaSecp256k1Util.ToDerBytes((ECPublicKeyParameters)_data);
-                case KeyType.Contract:
-                    return (ReadOnlyMemory<byte>)_data;
-                default:
-                    return new byte[0];
-            }
-        }
-    }
+        KeyType.Ed25519 => Ed25519Util.ToDerBytes((Ed25519PublicKeyParameters)_data),
+        KeyType.ECDSASecp256K1 => EcdsaSecp256k1Util.ToDerBytes((ECPublicKeyParameters)_data),
+        _ => ReadOnlyMemory<byte>.Empty,
+    };
+    /// <summary>
+    /// The contract address value held by this endorsement if it is
+    /// a Contract type.  If it is a list or other key type the value 
+    /// returned will be <code>None</code>.
+    /// </summary>
+    public Address Contract => Type switch
+    {
+        KeyType.Contract => (Address)_data,
+        _ => Address.None,
+    };
     /// <summary>
     /// A special designation of an endorsement key that can't be created.
     /// It represents an "empty" list of keys, which the network will 
@@ -93,16 +92,16 @@ public sealed class Endorsement : IEquatable<Endorsement>
     /// <summary>
     /// Convenience constructor converting an public key represented 
     /// in bytes into an <code>Endorsement</code>.  Ed25519 and 
-    /// ECDSA Secp256K1 keys are supported.  If the bytes entered
-    /// are not recognizable as either of these two types of keys
-    /// an exception is thrown.
+    /// ECDSA Secp256K1 keys.  If the bytes entered are not recognizable 
+    /// as either of these formats, an exception is thrown.
     /// </summary>
     /// <param name="publicKey">
-    /// Bytes representing a public Ed25519 or ECDSA Secp256K1 key.
+    /// Bytes representing a public Ed25519, ECDSA Secp256K1 key or
+    /// ABI or Protobuf encoded Contract ID.
     /// </param>
     /// <exception cref="ArgumentOutOfRangeException">
     /// If <code>publicKey</code> is not recognizable as an Ed25519 
-    /// or ECDSA Secp256K1 public key.
+    /// ECDSA Secp256K1 public key or encoded contract id.
     /// </exception>
     public Endorsement(ReadOnlyMemory<byte> publicKey)
     {
@@ -161,10 +160,8 @@ public sealed class Endorsement : IEquatable<Endorsement>
     }
     /// <summary>
     /// Creates an endorsement representing a single key of a
-    /// valid type.  Will accept Ed25519, RSA3072, ECDSA381
-    /// and Smart Contract ID.  Presently the only key 
-    /// implemented by the network Ed25519 and validity of 
-    /// this key is checked upon creation of this object.        
+    /// valid type.  Will accept Ed25519, ECDSASecp256K1 key
+    /// types.
     /// </summary>
     /// <param name="type">
     /// The type of key the bytes represent.
@@ -173,8 +170,8 @@ public sealed class Endorsement : IEquatable<Endorsement>
     /// The bytes for the public key.
     /// </param>        
     /// <exception cref="ArgumentOutOfRangeException">
-    /// If type passed into the constructor was not a valid single key type. 
-    /// Or, for an Ed25519 key that is not recognizable from supplied bytes.
+    /// If type passed into the constructor was not a valid single 
+    /// key type or not recognizable from supplied bytes.
     /// </exception>
     public Endorsement(KeyType type, ReadOnlyMemory<byte> publicKey)
     {
@@ -188,11 +185,19 @@ public sealed class Endorsement : IEquatable<Endorsement>
                 _data = EcdsaSecp256k1Util.PublicParamsFromDerOrRaw(publicKey);
                 break;
             case KeyType.Contract:
-                _data = publicKey;
-                break;
+                throw new ArgumentOutOfRangeException(nameof(type), "Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the contract address constructor instead.");
             default:
-                throw new ArgumentOutOfRangeException(nameof(type), "Only endorsements representing a single key are supported with this constructor, please use the list constructor instead.");
+                throw new ArgumentOutOfRangeException(nameof(type), "Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the list constructor instead.");
         }
+    }
+    /// <summary>
+    /// Creates an endorsement representing a contract instance.
+    /// </summary>
+    /// <param name="contract">The address of the contract instance.</param>
+    public Endorsement(Address contract)
+    {
+        Type = KeyType.Contract;
+        _data = contract;
     }
     /// <summary>
     /// Implicit constructor converting an public key represented 
@@ -211,6 +216,15 @@ public sealed class Endorsement : IEquatable<Endorsement>
     public static implicit operator Endorsement(ReadOnlyMemory<byte> publicKey)
     {
         return new Endorsement(publicKey);
+    }
+    /// <summary>
+    /// Implicit constructor converting a contract address into an
+    /// <code>Endorsement</code>.
+    /// </summary>
+    /// <param name="contract">The address of the contract instance.</param>
+    public static implicit operator Endorsement(Address contract)
+    {
+        return new Endorsement(contract);
     }
     /// <summary>
     /// Equality implementation.
@@ -307,7 +321,7 @@ public sealed class Endorsement : IEquatable<Endorsement>
             case KeyType.ECDSASecp256K1:
                 return $"Endorsement:{Type}:{((ECPublicKeyParameters)_data).GetHashCode()}".GetHashCode();
             case KeyType.Contract:
-                return $"Endorsement:{Type}:{BitConverter.ToString(((ReadOnlyMemory<byte>)_data).ToArray())}".GetHashCode();
+                return $"Endorsement:{Type}:{((Address)_data).GetHashCode()}".GetHashCode();
             case KeyType.List:
                 return $"Endorsement:{Type}:{string.Join(':', ((Endorsement[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode();
         }

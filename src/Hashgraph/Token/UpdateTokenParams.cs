@@ -70,12 +70,12 @@ public sealed class UpdateTokenParams
     /// If specified, replaces the current symbol for this 
     /// token with the new Symbol.
     /// </summary>
-    public string Symbol { get; set; }
+    public string? Symbol { get; set; }
     /// <summary>
     /// If specified, replaces the current name of this
     /// token with the new name.
     /// </summary>
-    public string Name { get; set; }
+    public string? Name { get; set; }
     /// <summary>
     /// If specified, changes to expiration new date, fees will be charged as appropriate.
     /// </summary>
