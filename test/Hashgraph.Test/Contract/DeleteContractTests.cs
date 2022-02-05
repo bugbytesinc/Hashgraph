@@ -31,20 +31,16 @@ public class DeleteContractTests
         var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);
     }
-    [Fact(DisplayName = "Contract Delete: Deleting contract removes it (get info should fail).")]
-    public async Task DeleteContractRemovesContract()
+    [Fact(DisplayName = "Contract Delete: Deleting Contract does not Immediately Remove Contract Info")]
+    public async Task DeletingContractDoesNotImmediatelyRemoveContractInfo()
     {
         await using var fx = await GreetingContract.CreateAsync(_network);
 
         var record = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-        {
-            await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
-        });
-        Assert.Equal(ResponseCode.ContractDeleted, pex.Status);
-        Assert.StartsWith("Transaction Failed Pre-Check: ContractDeleted", pex.Message);
+        var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+        Assert.False(info.Deleted);
     }
     [Fact(DisplayName = "Contract Delete: Deleting a deleted contract raises an error.")]
     public async Task DeleteTwiceRaisesAnError()
@@ -120,8 +116,8 @@ public class DeleteContractTests
         {
             await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, fx2.Record.Address, fx.PrivateKey);
         });
-        Assert.Equal(ResponseCode.AccountDeleted, tex.Status);
-        Assert.StartsWith("Unable to delete contract, status: AccountDeleted", tex.Message);
+        Assert.Equal(ResponseCode.ObtainerDoesNotExist, tex.Status);
+        Assert.StartsWith("Unable to delete contract, status: ObtainerDoesNotExist", tex.Message);
     }
     [Fact(DisplayName = "Contract Delete: Remaining Contract Balance is Returned to Account")]
     public async Task ReturnRemainingContractBalanceUponDelete()
