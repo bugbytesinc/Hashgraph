@@ -1,5 +1,6 @@
 ﻿using Proto;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Hashgraph;
@@ -28,12 +29,20 @@ public sealed record ContractCallResult
     /// <summary>
     /// Log events returned by the function.
     /// </summary>
-    public ContractEvent[] Events { get; private init; }
+    public ReadOnlyCollection<ContractEvent> Events { get; private init; }
     /// <summary>
-    /// Addresses of any contracts created as a side effect of
-    /// this contract call.
+    /// The list of storage slots having been read or
+    /// written to during the processing of the transaction
+    /// for each contract processed by this transaction.
     /// </summary>
-    public Address[] CreatedContracts { get; private init; }
+    public ReadOnlyCollection<ContractStateChange> StateChanges { get; internal init; }
+    /// <summary>
+    /// The contract's 20-byte EVM address, may or may 
+    /// correspond to the shard.realm.num encoded, the
+    /// EIP-1014 or <code>None</code> if not returned 
+    /// from the network.
+    /// </summary>
+    public Moniker EncodedAddress { get; private init; }
     /// <summary>
     /// Internal Constructor from Raw Results
     /// </summary>
@@ -49,8 +58,9 @@ public sealed record ContractCallResult
         Error = result.ErrorMessage;
         Bloom = result.Bloom.ToArray();
         Gas = result.GasUsed;
-        Events = result.LogInfo?.Select(log => new ContractEvent(log)).ToArray() ?? new ContractEvent[0];
-        CreatedContracts = result.CreatedContractIDs?.Select(id => id.AsAddress()).ToArray() ?? new Address[0];
+        Events = result.LogInfo.Select(log => new ContractEvent(log)).ToList().AsReadOnly();
+        StateChanges = result.StateChanges.Select(s => new ContractStateChange(s)).ToList().AsReadOnly();
+        EncodedAddress = result.EvmAddress is null || result.EvmAddress.IsEmpty ? Moniker.None : new Moniker(result.EvmAddress.Memory);
     }
 }
 /// <summary>

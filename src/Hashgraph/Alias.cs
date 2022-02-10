@@ -93,6 +93,23 @@ public sealed record Alias
         Endorsement = endorsement;
     }
     /// <summary>
+    /// Outputs a string representation of the alias 
+    /// in the form <code>shard.realm.alias</code>.
+    /// </summary>
+    /// <returns>
+    /// String representation of this account identifier in its
+    /// address or alias format.
+    /// </returns>
+    public override string ToString()
+    {
+        if (this == None)
+        {
+            return "None";
+        }
+        return $"{ShardNum}.{RealmNum}.{Endorsement}";
+
+    }
+    /// <summary>
     /// Implicit operator for converting a byte array into an alias.  It assumes
     /// the bytes represent an Ed25519 or ECDSA Secp 256K1  key and sets the shard 
     /// and realm values to zero.
@@ -115,6 +132,17 @@ public sealed record Alias
     public static implicit operator Alias(Endorsement endorsement)
     {
         return new Alias(endorsement);
+    }
+    /// <summary>
+    /// Implicitly converts an alias to an <code>Address</code>
+    /// from an <code>Alias</code> instance.
+    /// </summary>
+    /// <param name="alias">
+    /// Alias identifying the crypto account.
+    /// </param>
+    public static implicit operator Address(Alias alias)
+    {
+        return new Address(alias);
     }
 }
 internal static class AliasExtensions

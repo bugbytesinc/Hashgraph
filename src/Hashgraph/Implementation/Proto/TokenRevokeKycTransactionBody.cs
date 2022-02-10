@@ -31,7 +31,7 @@ public sealed partial class TokenRevokeKycTransactionBody : INetworkTransaction
         }
     }
 
-    internal TokenRevokeKycTransactionBody(Address token, AddressOrAlias address) : this()
+    internal TokenRevokeKycTransactionBody(Address token, Address address) : this()
     {
         Token = new TokenID(token);
         Account = new AccountID(address);

@@ -31,7 +31,7 @@ public sealed partial class TokenFreezeAccountTransactionBody : INetworkTransact
         }
     }
 
-    internal TokenFreezeAccountTransactionBody(Address token, AddressOrAlias address) : this()
+    internal TokenFreezeAccountTransactionBody(Address token, Address address) : this()
     {
         Token = new TokenID(token);
         Account = new AccountID(address);

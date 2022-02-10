@@ -126,7 +126,7 @@ public class AssetRoyaltyTests
             AssetTransfers = new[] {
                     new AssetTransfer(movedAsset,fxSeller,fxBuyer)
                 },
-            CryptoTransfers = new Dictionary<AddressOrAlias, long> {
+            CryptoTransfers = new Dictionary<Address, long> {
                     { fxBuyer.Record.Address, -10_00_000_000 },
                     { fxSeller.Record.Address, 10_00_000_000 }
                 },
@@ -205,7 +205,7 @@ public class AssetRoyaltyTests
                     new TokenTransfer(fxPaymentToken, fxBuyer, -100),
                     new TokenTransfer(fxPaymentToken, fxSeller, 100),
                 },
-            CryptoTransfers = new Dictionary<AddressOrAlias, long> {
+            CryptoTransfers = new Dictionary<Address, long> {
                     { fxBuyer.Record.Address, -10_00_000_000 },
                     { fxSeller.Record.Address, 10_00_000_000 }
                 },

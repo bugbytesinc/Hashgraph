@@ -35,7 +35,8 @@ public class CallContractTests
         Assert.False(record.CallResult.Bloom.IsEmpty);
         Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
         Assert.Empty(record.CallResult.Events);
-        Assert.Empty(record.CallResult.CreatedContracts);
+        Assert.Empty(record.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
         Assert.Equal("Hello, world!", record.CallResult.Result.As<string>()); ;
     }
     [Fact(DisplayName = "Call Contract: Can Call Contract that keeps State")]
@@ -99,7 +100,8 @@ public class CallContractTests
         Assert.False(setRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(setRecord.CallResult.Gas, 0UL, 50_000UL);
         Assert.Empty(setRecord.CallResult.Events);
-        Assert.Empty(setRecord.CallResult.CreatedContracts);
+        Assert.Empty(setRecord.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, setRecord.CallResult.EncodedAddress);
 
         var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
@@ -117,7 +119,8 @@ public class CallContractTests
         Assert.False(getRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         Assert.Empty(getRecord.CallResult.Events);
-        Assert.Empty(getRecord.CallResult.CreatedContracts);
+        Assert.Empty(getRecord.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, getRecord.CallResult.EncodedAddress);
         Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
         Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
     }
@@ -153,7 +156,8 @@ public class CallContractTests
         Assert.False(getRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         Assert.Empty(getRecord.CallResult.Events);
-        Assert.Empty(getRecord.CallResult.CreatedContracts);
+        Assert.Empty(getRecord.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, getRecord.CallResult.EncodedAddress);
         Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
         Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
     }

@@ -35,7 +35,8 @@ public class EventEmittingContractTests
         Assert.False(record.CallResult.Bloom.IsEmpty);
         Assert.InRange(record.CallResult.Gas, 0UL, 40_000UL);
         Assert.Empty(record.CallResult.Events);
-        Assert.Empty(record.CallResult.CreatedContracts);
+        Assert.Empty(record.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
         Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
     }
     [Fact(DisplayName = "Event Emitting Contract: Can Get Contract Balance from Call (Local Call)")]
@@ -55,7 +56,8 @@ public class EventEmittingContractTests
         Assert.False(result.Bloom.IsEmpty);
         Assert.InRange(result.Gas, 0UL, 40000UL);
         Assert.Empty(result.Events);
-        Assert.Empty(result.CreatedContracts);
+        Assert.Empty(result.StateChanges);
+        Assert.Equal(Moniker.None, result.EncodedAddress);
         Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
     }
     [Fact(DisplayName = "Event Emitting Contract: Can Call Contract that Sends Funds, Emitting Event")]
@@ -82,7 +84,8 @@ public class EventEmittingContractTests
         Assert.False(record.CallResult.Bloom.IsEmpty);
         Assert.InRange(record.CallResult.Gas, 0UL, 300_000UL);
         Assert.Single(record.CallResult.Events);
-        Assert.Empty(record.CallResult.CreatedContracts);
+        Assert.Empty(record.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
 
         // Now check the emitted Event
         var result = record.CallResult.Events[0];
@@ -91,7 +94,8 @@ public class EventEmittingContractTests
         Assert.Single(result.Topic);
         Assert.Equal("9277a4302be4a765ae8585e09a9306bd55da10e20e59ed4f611a04ba606fece8", Hex.FromBytes(result.Topic[0]));
 
-        Assert.Empty(record.CallResult.CreatedContracts);
+        Assert.Empty(record.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
 
         var (address, amount) = result.Data.As<Address, long>();
         Assert.Equal(fx2.Record.Address, address);

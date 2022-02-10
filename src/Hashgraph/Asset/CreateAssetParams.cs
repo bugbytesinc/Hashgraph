@@ -45,7 +45,7 @@ public sealed class CreateAssetParams
     /// <summary>
     /// The treasury account receiving the Initial Circulation balance of assets.
     /// </summary>
-    public AddressOrAlias Treasury { get; set; }
+    public Address Treasury { get; set; }
     /// <summary>
     /// Administrator key for signing transactions modifying this asset's properties.
     /// </summary>
@@ -117,7 +117,7 @@ public sealed class CreateAssetParams
     /// <remarks>
     /// If specified, an Administrator Endorsement must also be specified.
     /// </remarks>
-    public AddressOrAlias? RenewAccount { get; set; }
+    public Address? RenewAccount { get; set; }
     /// <summary>
     /// Additional private key, keys or signing callback method 
     /// required to create to this asset.  Typically matches the

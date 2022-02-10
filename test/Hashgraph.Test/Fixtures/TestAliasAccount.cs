@@ -70,11 +70,6 @@ public class TestAliasAccount : IAsyncDisposable
         Network.Output?.WriteLine("TEARDOWN COMPLETED: Pay to Alias Account Instance");
     }
 
-    public static implicit operator AddressOrAlias(TestAliasAccount fxAccount)
-    {
-        return fxAccount.CreateRecord.Address;
-    }
-
     public static implicit operator Address(TestAliasAccount fxAccount)
     {
         return fxAccount.CreateRecord.Address;

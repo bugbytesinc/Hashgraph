@@ -40,7 +40,7 @@ public class DeleteContractTests
         Assert.Equal(ResponseCode.Success, record.Status);
 
         var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
-        Assert.False(info.Deleted);
+        Assert.True(info.Deleted);
     }
     [Fact(DisplayName = "Contract Delete: Deleting a deleted contract raises an error.")]
     public async Task DeleteTwiceRaisesAnError()

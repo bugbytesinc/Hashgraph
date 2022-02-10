@@ -23,7 +23,7 @@ public sealed record RoyaltyTransfer
     /// <summary>
     /// The Address receiving the transferred token or crypto.
     /// </summary>
-    public AddressOrAlias Receiver { get; private init; }
+    public Address Receiver { get; private init; }
     /// <summary>
     /// The (divisible) amount of tokens or crypto transferred.
     /// </summary>

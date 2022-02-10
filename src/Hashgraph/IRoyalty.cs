@@ -9,7 +9,7 @@ public interface IRoyalty
     /// <summary>
     /// The account receiving the commision fee.
     /// </summary>
-    public AddressOrAlias Account { get; }
+    public Address Account { get; }
     /// <summary>
     /// The type of royalty this object represents,
     /// will match the concrete implementation type.

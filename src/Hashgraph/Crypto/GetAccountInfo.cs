@@ -23,7 +23,7 @@ public partial class Client
     /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
     /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-    public async Task<AccountInfo> GetAccountInfoAsync(AddressOrAlias address, Action<IContext>? configure = null)
+    public async Task<AccountInfo> GetAccountInfoAsync(Address address, Action<IContext>? configure = null)
     {
         return new AccountInfo(await ExecuteQueryAsync(new CryptoGetInfoQuery(address), configure).ConfigureAwait(false));
     }

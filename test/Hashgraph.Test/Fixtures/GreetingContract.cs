@@ -92,8 +92,4 @@ public class GreetingContract : IAsyncDisposable
     {
         return fxContract.ContractRecord.Contract;
     }
-    public static implicit operator AddressOrAlias(GreetingContract fxContract)
-    {
-        return fxContract.ContractRecord.Contract;
-    }
 }

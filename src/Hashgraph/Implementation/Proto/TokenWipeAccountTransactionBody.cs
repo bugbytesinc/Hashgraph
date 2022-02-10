@@ -32,7 +32,7 @@ public sealed partial class TokenWipeAccountTransactionBody : INetworkTransactio
         }
     }
 
-    internal TokenWipeAccountTransactionBody(Hashgraph.Address token, AddressOrAlias address, ulong amount) : this()
+    internal TokenWipeAccountTransactionBody(Hashgraph.Address token, Address address, ulong amount) : this()
     {
         if (amount == 0)
         {
@@ -43,7 +43,7 @@ public sealed partial class TokenWipeAccountTransactionBody : INetworkTransactio
         Amount = amount;
     }
 
-    internal TokenWipeAccountTransactionBody(Asset asset, AddressOrAlias address) : this()
+    internal TokenWipeAccountTransactionBody(Asset asset, Address address) : this()
     {
         if (Hashgraph.Asset.None.Equals(asset))
         {
@@ -57,7 +57,7 @@ public sealed partial class TokenWipeAccountTransactionBody : INetworkTransactio
         Account = new AccountID(address);
         SerialNumbers.Add(asset.SerialNum);
     }
-    internal TokenWipeAccountTransactionBody(Address token, IEnumerable<long> serialNumbers, AddressOrAlias address) : this()
+    internal TokenWipeAccountTransactionBody(Address token, IEnumerable<long> serialNumbers, Address address) : this()
     {
         if (Hashgraph.Asset.None.Equals(token))
         {

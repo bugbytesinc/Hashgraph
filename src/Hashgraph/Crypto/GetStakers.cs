@@ -29,7 +29,7 @@ public partial class Client
     /// <remarks>
     /// Marked internal at this point because it is not yet implemented by the network
     /// </remarks>
-    internal async Task<Dictionary<Address, long>> GetStakers(AddressOrAlias address, Action<IContext>? configure = null)
+    internal async Task<Dictionary<Address, long>> GetStakers(Address address, Action<IContext>? configure = null)
     {
         var response = await ExecuteQueryAsync(new CryptoGetStakersQuery(address), configure).ConfigureAwait(false);
         return response.CryptoGetProxyStakers.Stakers.ProxyStaker.ToDictionary(ps => ps.AccountID.AsAddress(), ps => ps.Amount);

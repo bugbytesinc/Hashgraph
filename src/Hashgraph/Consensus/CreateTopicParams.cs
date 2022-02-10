@@ -43,7 +43,7 @@ public sealed class CreateTopicParams
     /// <remarks>
     /// If specified, an Administrator Endorsement must also be specified.
     /// </remarks>
-    public AddressOrAlias? RenewAccount { get; set; }
+    public Address? RenewAccount { get; set; }
     /// <summary>
     /// Additional private key, keys or signing callback method 
     /// required to create to this topic.  Typically matches the

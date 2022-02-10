@@ -31,7 +31,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TokenReceipt> ConfiscateAssetAsync(Asset asset, AddressOrAlias address, Action<IContext>? configure = null)
+    public async Task<TokenReceipt> ConfiscateAssetAsync(Asset asset, Address address, Action<IContext>? configure = null)
     {
         return new TokenReceipt(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(asset, address), configure, false).ConfigureAwait(false));
     }
@@ -62,7 +62,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TokenReceipt> ConfiscateAssetsAsync(Address token, IEnumerable<long> serialNumbers, AddressOrAlias address, Action<IContext>? configure = null)
+    public async Task<TokenReceipt> ConfiscateAssetsAsync(Address token, IEnumerable<long> serialNumbers, Address address, Action<IContext>? configure = null)
     {
         return new TokenReceipt(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, serialNumbers, address), configure, false).ConfigureAwait(false));
     }
@@ -94,7 +94,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TokenReceipt> ConfiscateAssetAsync(Asset asset, AddressOrAlias address, Signatory signatory, Action<IContext>? configure = null)
+    public async Task<TokenReceipt> ConfiscateAssetAsync(Asset asset, Address address, Signatory signatory, Action<IContext>? configure = null)
     {
         return new TokenReceipt(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(asset, address), configure, false, signatory).ConfigureAwait(false));
     }
@@ -129,7 +129,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TokenReceipt> ConfiscateAssetsAsync(Address token, IEnumerable<long> serialNumbers, AddressOrAlias address, Signatory signatory, Action<IContext>? configure = null)
+    public async Task<TokenReceipt> ConfiscateAssetsAsync(Address token, IEnumerable<long> serialNumbers, Address address, Signatory signatory, Action<IContext>? configure = null)
     {
         return new TokenReceipt(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, serialNumbers, address), configure, false, signatory).ConfigureAwait(false));
     }
@@ -157,7 +157,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TokenRecord> ConfiscateAssetWithRecordAsync(Asset asset, AddressOrAlias address, Action<IContext>? configure = null)
+    public async Task<TokenRecord> ConfiscateAssetWithRecordAsync(Asset asset, Address address, Action<IContext>? configure = null)
     {
         return new TokenRecord(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(asset, address), configure, true).ConfigureAwait(false));
     }
@@ -188,7 +188,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TokenRecord> ConfiscateAssetsWithRecordAsync(Address token, IEnumerable<long> serialNumbers, AddressOrAlias address, Action<IContext>? configure = null)
+    public async Task<TokenRecord> ConfiscateAssetsWithRecordAsync(Address token, IEnumerable<long> serialNumbers, Address address, Action<IContext>? configure = null)
     {
         return new TokenRecord(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(token, serialNumbers, address), configure, true).ConfigureAwait(false));
     }
@@ -220,7 +220,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission, for example of the asset is already deleted.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TokenRecord> ConfiscateAssetWithRecordAsync(Asset asset, AddressOrAlias address, Signatory signatory, Action<IContext>? configure = null)
+    public async Task<TokenRecord> ConfiscateAssetWithRecordAsync(Asset asset, Address address, Signatory signatory, Action<IContext>? configure = null)
     {
         return new TokenRecord(await ExecuteTransactionAsync(new TokenWipeAccountTransactionBody(asset, address), configure, true, signatory).ConfigureAwait(false));
     }

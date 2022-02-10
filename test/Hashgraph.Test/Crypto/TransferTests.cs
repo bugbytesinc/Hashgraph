@@ -56,7 +56,7 @@ public class TransferTests
 
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<AddressOrAlias, long> { { _network.Payer, -transferAmount }, { fx.Record.Address, transferAmount } }
+            CryptoTransfers = new Dictionary<Address, long> { { _network.Payer, -transferAmount }, { fx.Record.Address, transferAmount } }
         };
         var receipt = await fx.Client.TransferAsync(transfers);
         var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
@@ -108,7 +108,7 @@ public class TransferTests
         Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<AddressOrAlias, long> { { fx.Record.Address, -transferAmount }, { _network.Payer, transferAmount } },
+            CryptoTransfers = new Dictionary<Address, long> { { fx.Record.Address, -transferAmount }, { _network.Payer, transferAmount } },
             Signatory = fx.PrivateKey
         };
         var receipt = await client.TransferAsync(transfers);
@@ -168,7 +168,7 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<AddressOrAlias, long>
+            CryptoTransfers = new Dictionary<Address, long>
                 {
                     { payer, -2 * transferAmount },
                     { account1, transferAmount },
@@ -182,7 +182,7 @@ public class TransferTests
         Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
         transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<AddressOrAlias, long>
+            CryptoTransfers = new Dictionary<Address, long>
                 {
                     { account1, -transferAmount },
                     { account2, -transferAmount },
@@ -209,7 +209,7 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<AddressOrAlias, long>
+            CryptoTransfers = new Dictionary<Address, long>
                 {
                     { payer, -transferAmount },
                     { account1, transferAmount },
@@ -236,7 +236,7 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<AddressOrAlias, long>
+            CryptoTransfers = new Dictionary<Address, long>
                 {
                     { account1, 0 },
                     { account2, 0 },
@@ -275,7 +275,7 @@ public class TransferTests
         var payer = _network.Payer;
         var transferAmount = (long)Generator.Integer(100, 200);
 
-        var transfers = new TransferParams { CryptoTransfers = new Dictionary<AddressOrAlias, long> { } };
+        var transfers = new TransferParams { CryptoTransfers = new Dictionary<Address, long> { } };
         var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
         {
             await fx1.Client.TransferWithRecordAsync(transfers);
