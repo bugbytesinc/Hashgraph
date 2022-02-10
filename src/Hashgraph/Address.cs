@@ -9,18 +9,18 @@ namespace Hashgraph;
 public sealed record Address
 {
     /// <summary>
-    /// Enum identifying any special types of address
-    /// beyond <code>shard.realm.num</code> that this
-    /// addrss may hold, including alias and monikers.
-    /// </summary>
-    private readonly AddressType _addressType;
-    /// <summary>
     /// Internal field to hold an Alias or Moniker if
     /// this address represents such a type of address.
     /// Will be null for <code>shard.realm.num</code>
     /// forms.
     /// </summary>
     private readonly object? _alternate;
+    /// <summary>
+    /// Enum identifying any special types of address
+    /// beyond <code>shard.realm.num</code> that this
+    /// addrss may hold, including alias and monikers.
+    /// </summary>
+    internal AddressType AddressType { get; private init; }
     /// <summary>
     /// Network Shard Number for Account
     /// </summary>
@@ -49,7 +49,7 @@ public sealed record Address
     /// </summary>
     private Address()
     {
-        _addressType = AddressType.ShardRealmNum;
+        AddressType = AddressType.ShardRealmNum;
         ShardNum = 0;
         RealmNum = 0;
         AccountNum = 0;
@@ -81,7 +81,7 @@ public sealed record Address
         {
             throw new ArgumentOutOfRangeException(nameof(accountNum), "Account Number cannot be negative.");
         }
-        _addressType = AddressType.ShardRealmNum;
+        AddressType = AddressType.ShardRealmNum;
         ShardNum = shardNum;
         RealmNum = realmNum;
         AccountNum = accountNum;
@@ -98,7 +98,7 @@ public sealed record Address
     /// </returns>
     public override string ToString()
     {
-        return _addressType switch
+        return AddressType switch
         {
             AddressType.Alias => ((Alias)_alternate!).ToString(),
             AddressType.Moniker => ((Moniker)_alternate!).ToString(),
@@ -116,7 +116,7 @@ public sealed record Address
     /// </param>
     internal Address(Alias alias)
     {
-        _addressType = AddressType.Alias;
+        AddressType = AddressType.Alias;
         ShardNum = alias.ShardNum;
         RealmNum = alias.RealmNum;
         AccountNum = 0;
@@ -132,34 +132,11 @@ public sealed record Address
     /// <param name="moniker"></param>
     internal Address(Moniker moniker)
     {
-        _addressType = AddressType.Moniker;
+        AddressType = AddressType.Moniker;
         ShardNum = moniker.ShardNum;
         RealmNum = moniker.RealmNum;
         AccountNum = 0;
         _alternate = moniker;
-    }
-    /// <summary>
-    /// Private enumerator indicating which type of
-    /// address this object represents.
-    /// </summary>
-    private enum AddressType
-    {
-        /// <summary>
-        /// Traditional hedera shard.realm.num address.
-        /// </summary>
-        ShardRealmNum,
-        /// <summary>
-        /// Enumeration (Public Key) Alias form of address,
-        /// used to identify crypto accounts.
-        /// </summary>
-        Alias,
-        /// <summary>
-        /// EIP-1014 Hedera VM contract form of address,
-        /// used only as an alternate way to address
-        /// contract instances created via the 
-        /// solidity CREATE2 function.
-        /// </summary>
-        Moniker
     }
     /// <summary>
     /// Attempts to retrieve the moniker wrapped by this
@@ -176,7 +153,7 @@ public sealed record Address
     /// </returns>
     public bool TryGetMoniker([MaybeNullWhen(false)] out Moniker moniker)
     {
-        if (_addressType == AddressType.Moniker)
+        if (AddressType == AddressType.Moniker)
         {
             moniker = (Moniker)_alternate!;
             return true;
@@ -199,7 +176,7 @@ public sealed record Address
     /// </returns>
     public bool TryGetAlias([MaybeNullWhen(false)] out Alias alias)
     {
-        if (_addressType == AddressType.Alias)
+        if (AddressType == AddressType.Alias)
         {
             alias = (Alias)_alternate!;
             return true;
@@ -207,6 +184,29 @@ public sealed record Address
         alias = null;
         return false;
     }
+}
+/// <summary>
+/// Internal enumerator indicating which type of
+/// address this object represents.
+/// </summary>
+internal enum AddressType
+{
+    /// <summary>
+    /// Traditional hedera shard.realm.num address.
+    /// </summary>
+    ShardRealmNum,
+    /// <summary>
+    /// Enumeration (Public Key) Alias form of address,
+    /// used to identify crypto accounts.
+    /// </summary>
+    Alias,
+    /// <summary>
+    /// EIP-1014 Hedera VM contract form of address,
+    /// used only as an alternate way to address
+    /// contract instances created via the 
+    /// solidity CREATE2 function.
+    /// </summary>
+    Moniker
 }
 internal static class AddressExtensions
 {

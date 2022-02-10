@@ -15,9 +15,16 @@ public sealed partial class ScheduleID
         {
             throw new ArgumentOutOfRangeException(nameof(pending), "Pending Transaction Schedule Addresss can not be empty or None.  Please provide a valid value.");
         }
-        ShardNum = pending.ShardNum;
-        RealmNum = pending.RealmNum;
-        ScheduleNum = pending.AccountNum;
+        else if (pending.AddressType == AddressType.ShardRealmNum)
+        {
+            ShardNum = pending.ShardNum;
+            RealmNum = pending.RealmNum;
+            ScheduleNum = pending.AccountNum;
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(pending), "Pending Address does not appear to be in a valid <shard>.<realm>.<num> form.");
+        }
     }
     internal Address ToAddress()
     {

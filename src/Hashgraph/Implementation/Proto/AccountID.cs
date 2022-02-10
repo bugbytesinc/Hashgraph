@@ -18,11 +18,15 @@ public sealed partial class AccountID
             RealmNum = alias.RealmNum;
             Alias = new Key(alias.Endorsement).ToByteString();
         }
-        else
+        else if(account.AddressType == AddressType.ShardRealmNum)
         {
             ShardNum = account.ShardNum;
             RealmNum = account.RealmNum;
             AccountNum = account.AccountNum;
+        } 
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(account), "Crypto Account Address does not appear to be a valid <shard>.<realm>.<num> or alias.");
         }
     }
 }

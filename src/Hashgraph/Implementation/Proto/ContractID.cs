@@ -18,11 +18,15 @@ public sealed partial class ContractID
             RealmNum = moniker.RealmNum;
             EvmAddress = ByteString.CopyFrom(moniker.Bytes.Span);
         }
-        else
+        else if (contract.AddressType == AddressType.ShardRealmNum)
         {
             ShardNum = contract.ShardNum;
             RealmNum = contract.RealmNum;
             ContractNum = contract.AccountNum;
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(contract), "Contract Address does not appear to be a valid <shard>.<realm>.<num> or moniker.");
         }
     }
 }

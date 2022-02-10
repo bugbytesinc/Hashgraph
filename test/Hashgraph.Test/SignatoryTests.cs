@@ -1,5 +1,7 @@
 ﻿using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +20,25 @@ public class SignatoriesTests
         new Signatory(privateKey1);
         new Signatory(privateKey1, privateKey2);
         new Signatory(new Signatory(privateKey1, privateKey2), new Signatory(privateKey1, privateKey2));
+    }
+    [Fact(DisplayName = "Signatories: Can Create Explicit Ed25519 Signatories Object")]
+    public void CanCreateExplicitEd25519SignatoriesObject()
+    {
+        var (_, privateKey) = Generator.Ed25519KeyPair();
+
+        var sig1 = new Signatory(KeyType.Ed25519, privateKey[^32..]);
+        var sig2 = new Signatory(KeyType.Ed25519, privateKey);
+        Assert.Equal(sig1, sig2);
+    }
+    [Fact(DisplayName = "Signatories: Can Create Explicit ECDSASecp256K1 Signatories Object")]
+    public void CanCreateExplicitECDSASecp256K1SignatoriesObject()
+    {
+        var (_, privateKey) = Generator.Secp256k1KeyPair();
+        var unencoded = ((ECPrivateKeyParameters)PrivateKeyFactory.CreateKey(privateKey.ToArray())).D.ToByteArray();
+
+        var sig1 = new Signatory(KeyType.ECDSASecp256K1, Hex.ToBytes(Hex.FromBytes(unencoded)));
+        var sig2 = new Signatory(KeyType.ECDSASecp256K1, Hex.ToBytes(Hex.FromBytes(privateKey)));
+        Assert.Equal(sig1, sig2);
     }
     [Fact(DisplayName = "Signatories: Empty Private key throws Exception")]
     public void EmptyValueForKeyThrowsError()
@@ -40,6 +61,12 @@ public class SignatoriesTests
             new Signatory(KeyType.Ed25519, invalidKey);
         });
         Assert.StartsWith("The private key does not appear to be encoded as a recognizable Ed25519 format.", exception.Message);
+
+        exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            new Signatory(KeyType.ECDSASecp256K1, invalidKey);
+        });
+        Assert.StartsWith("The private key was not provided in a recognizable ECDSA Secp256K1 format.", exception.Message);
     }
     [Fact(DisplayName = "Signatories: Invalid Byte Length in Private key throws Exception")]
     public void InvalidByteLengthForValueForKeyThrowsError()
@@ -51,6 +78,11 @@ public class SignatoriesTests
             new Signatory(KeyType.Ed25519, invalidKey);
         });
         Assert.StartsWith("The private key does not appear to be encoded as a recognizable Ed25519 format.", exception.Message);
+        exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            new Signatory(KeyType.ECDSASecp256K1, invalidKey);
+        });
+        Assert.StartsWith("The private key was not provided in a recognizable ECDSA Secp256K1 format.", exception.Message);
     }
     [Fact(DisplayName = "Signatories: Equivalent Signatories are considered Equal")]
     public void EquivalentSignatoriesAreConsideredEqual()

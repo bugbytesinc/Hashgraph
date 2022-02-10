@@ -11,9 +11,16 @@ public sealed partial class TopicID
         {
             throw new ArgumentNullException(nameof(topic), "Topic Address is missing. Please check that it is not null.");
         }
-        ShardNum = topic.ShardNum;
-        RealmNum = topic.RealmNum;
-        TopicNum = topic.AccountNum;
+        else if (topic.AddressType == AddressType.ShardRealmNum)
+        {
+            ShardNum = topic.ShardNum;
+            RealmNum = topic.RealmNum;
+            TopicNum = topic.AccountNum;
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(topic), "Topic Address does not appear to be in a valid <shard>.<realm>.<num> form.");
+        }
     }
 }
 

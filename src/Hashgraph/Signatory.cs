@@ -136,15 +136,13 @@ public sealed class Signatory : ISignatory, IEquatable<Signatory>
     /// The bytes of a private key corresponding to the specified type.
     /// </param>
     /// <remarks>
-    /// At this time, the library only supports Ed25519 keys, any other
-    /// key type will result in an exception.  This is why this method
-    /// is marked as <code>internal</code> at the moment.  When the library 
-    /// can support other key types, it will make sense to make this public.
+    /// At this time, the library only supports Ed25519 and 
+    /// ECDSA Secp2516k key types.
     /// </remarks>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// If any key type other than Ed25519 is used.
+    /// If any key type other than Ed25519 or ECDSA Secp2516k is used.
     /// </exception>
-    internal Signatory(KeyType type, ReadOnlyMemory<byte> privateKey)
+    public Signatory(KeyType type, ReadOnlyMemory<byte> privateKey)
     {
         switch (type)
         {
