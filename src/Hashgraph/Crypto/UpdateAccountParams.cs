@@ -79,4 +79,19 @@ public sealed class UpdateAccountParams
     /// or other related actions).
     /// </summary>
     public int? AutoAssociationLimit { get; set; }
+    /// <summary>
+    /// If set, updates the account's alias.  The Alias can only be updated
+    /// on an account if it has not yet been set.  Once set, the Alias is
+    /// imutable for the life of the account.
+    /// </summary>
+    /// <remarks>
+    /// Additionally: The private key corresponding to the Alias' public key
+    /// must sign the update transaction.
+    /// 
+    /// NOTE: MARKED INTERNAL UNTIL IMPLEMENTED BY THE NETWORK
+    /// While this feature exists in the HAPI protobuf, it appears
+    /// to not be implemented by the network yet, when it is, the
+    /// marker tests will indicate it and this will made public.
+    /// </remarks>
+    internal Alias? Alias { get; set; }
 }

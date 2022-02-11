@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf;
+using Grpc.Core;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -51,12 +52,13 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
             updateParameters.AutoRenewPeriod is null &&
             updateParameters.Proxy is null &&
             updateParameters.Memo is null &&
-            updateParameters.AutoAssociationLimit is null)
+            updateParameters.AutoAssociationLimit is null &&
+            updateParameters.Alias is null)
         {
             throw new ArgumentException(nameof(updateParameters), "The Account Updates contains no update properties, it is blank.");
         }
         AccountIDToUpdate = new AccountID(updateParameters.Address);
-        if (!(updateParameters.Endorsement is null))
+        if (updateParameters.Endorsement is not null)
         {
             Key = new Key(updateParameters.Endorsement);
         }
@@ -72,15 +74,15 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         {
             ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
         }
-        if (!(updateParameters.Proxy is null))
+        if (updateParameters.Proxy is not null)
         {
             ProxyAccountID = new AccountID(updateParameters.Proxy);
         }
-        if (!(updateParameters.Memo is null))
+        if (updateParameters.Memo is not null)
         {
             Memo = updateParameters.Memo;
         }
-        if (!(updateParameters.AutoAssociationLimit is null))
+        if (updateParameters.AutoAssociationLimit is not null)
         {
             var limit = updateParameters.AutoAssociationLimit.Value;
             if (limit < 0 || limit > 1000)
@@ -88,6 +90,10 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
                 throw new ArgumentOutOfRangeException(nameof(updateParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be between zero and 1000.");
             }
             MaxAutomaticTokenAssociations = updateParameters.AutoAssociationLimit.Value;
+        }
+        if(updateParameters.Alias is not null)
+        {
+            Alias = new Key(updateParameters.Alias.Endorsement).ToByteString();
         }
     }
 }

@@ -240,6 +240,130 @@ public class UpdateAccountTests
         var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
         Assert.Equal(_network.Gateway, updatedInfo.Proxy);
     }
+    [Fact(DisplayName = "NETWORK V0.22.5 DEFECT: Update Account: Can Update Alias Test Fails")]
+    public async Task CanUpdateAliasDefect()
+    {
+        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanUpdateAlias));
+        Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
+
+        //[Fact(DisplayName = "Update Account: Can Update Alias")]
+        async Task CanUpdateAlias()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();
+            var fx = await TestAccount.CreateAsync(_network);
+
+            var originalInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(Alias.None, originalInfo.Alias);
+
+            var updateResult = await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Address = fx.Record.Address,
+                Signatory = new Signatory(fx.PrivateKey, privateKey),
+                Alias = publicKey
+            }); ;
+            Assert.Equal(ResponseCode.Success, updateResult.Status);
+
+            var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(new Alias(publicKey), updatedInfo.Alias);
+        }
+    }
+    [Fact(DisplayName = "NETWORK V0.22.5 DEFECT: Update Account: Can Not Update Alias wihtout Signature Test Fails")]
+    public async Task DefectCanNotUpdateAliasWihtoutSignature()
+    {
+        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(CanNotUpdateAliasWihtoutSignature));
+        Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+
+        //[Fact(DisplayName = "Update Account: Can Not Update Alias wihtout Signature")]
+        async Task CanNotUpdateAliasWihtoutSignature()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();
+            var fx = await TestAccount.CreateAsync(_network);
+
+            var originalInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(Alias.None, originalInfo.Alias);
+
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+                {
+                    Address = fx.Record.Address,
+                    Signatory = new Signatory(fx.PrivateKey, privateKey)
+                }); ;
+            });
+            Assert.Equal(ResponseCode.InvalidSignature, pex.Status);
+            Assert.StartsWith("Unable to update account, status: InvalidSignature", pex.Message);
+
+            var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(new Alias(fx.PublicKey), updatedInfo.Alias);
+        }
+    }
+
+    [Fact(DisplayName = "NETWORK V0.22.5 DEFECT: Update Account: Can not Update Alias If Already Set Test Fails")]
+    public async Task Defect()
+    {
+        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(CanNotUpdateAliasIfAlreadySet));
+        Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+
+        //[Fact(DisplayName = "Update Account: Can not Update Alias If Already Set")]
+        async Task CanNotUpdateAliasIfAlreadySet()
+        {
+            var (publicKey1, privateKey1) = Generator.KeyPair();
+            var (publicKey2, privateKey2) = Generator.KeyPair();
+            var fx = await TestAccount.CreateAsync(_network);
+            await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+            {
+                Address = fx.Record.Address,
+                Signatory = new Signatory(fx.PrivateKey, privateKey1),
+                Alias = publicKey1
+            }); ;
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+                {
+                    Address = fx.Record.Address,
+                    Signatory = new Signatory(fx.PrivateKey, privateKey2),
+                    Alias = publicKey2
+                }); ;
+            });
+            Assert.Equal(ResponseCode.AliasIsImmutable, tex.Status);
+            Assert.StartsWith("Unable to update account, status: AliasIsImmutable", tex.Message);
+
+            var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
+            Assert.Equal(new Alias(publicKey1), updatedInfo.Alias);
+        }
+    }
+    [Fact(DisplayName = "NETWORK V0.22.5 DEFECT: Update Account: Can not Update Alias That was Created with PayToAlias Test Fails")]
+    public async Task CanNotUpdateAliasThatWasCreatedWithPayToAliasDefect()
+    {
+        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(CanNotUpdateAliasThatWasCreatedWithPayToAlias));
+        Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
+
+        //[Fact(DisplayName = "Update Account: Can not Update Alias That was Created with PayToAlias")]
+        async Task CanNotUpdateAliasThatWasCreatedWithPayToAlias()
+        {
+            var (publicKey, privateKey) = Generator.KeyPair();
+            var fx = await TestAliasAccount.CreateAsync(_network);
+
+            var originalInfo = await fx.Client.GetAccountInfoAsync(fx.CreateRecord.Address);
+            Assert.Equal(fx.Alias, originalInfo.Alias);
+
+            var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+            {
+                await fx.Client.UpdateAccountAsync(new UpdateAccountParams
+                {
+                    Address = fx.CreateRecord.Address,
+                    Signatory = new Signatory(fx.PrivateKey, privateKey),
+                    Alias = publicKey
+                }); ;
+            });
+            Assert.Equal(ResponseCode.AliasIsImmutable, tex.Status);
+            Assert.StartsWith("Unable to update account, status: AliasIsImmutable", tex.Message);
+
+            var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.CreateRecord.Address);
+            Assert.Equal(fx.Alias, updatedInfo.Alias);
+        }
+    }
     [Fact(DisplayName = "Update Account: Can Update Proxy Stake to Invalid Address")]
     public async Task CanUpdateProxyStakeToInvalidAddress()
     {
