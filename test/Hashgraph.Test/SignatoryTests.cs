@@ -35,7 +35,7 @@ public class SignatoriesTests
     {
         var (_, privateKey) = Generator.Secp256k1KeyPair();
         var unencoded = ((ECPrivateKeyParameters)PrivateKeyFactory.CreateKey(privateKey.ToArray())).D.ToByteArray();
-
+        
         var sig1 = new Signatory(KeyType.ECDSASecp256K1, Hex.ToBytes(Hex.FromBytes(unencoded)));
         var sig2 = new Signatory(KeyType.ECDSASecp256K1, Hex.ToBytes(Hex.FromBytes(privateKey)));
         Assert.Equal(sig1, sig2);
@@ -72,7 +72,7 @@ public class SignatoriesTests
     public void InvalidByteLengthForValueForKeyThrowsError()
     {
         var (_, originalKey) = Generator.KeyPair();
-        var invalidKey = originalKey.ToArray().Take(31).ToArray();
+        var invalidKey = originalKey.ToArray().Take(30).ToArray();
         var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
         {
             new Signatory(KeyType.Ed25519, invalidKey);
