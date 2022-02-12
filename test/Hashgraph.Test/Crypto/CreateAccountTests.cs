@@ -43,6 +43,9 @@ public class CreateAccountTests
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.Empty(info.CryptoAllowances);
+        Assert.Empty(info.TokenAllowances);
+        Assert.Empty(info.AssetAllowances);
 
         // Move remaining funds back to primary account.
         var from = createResult.Address;

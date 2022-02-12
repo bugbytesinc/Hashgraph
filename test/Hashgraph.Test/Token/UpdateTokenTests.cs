@@ -24,7 +24,7 @@ public class UpdateTokenTests
 
         await fxTemplate.TreasuryAccount.Client.AssociateTokenAsync(fxToken, fxTemplate.TreasuryAccount, fxTemplate.TreasuryAccount);
 
-        var newSymbol = Generator.UppercaseAlphaCode(20);
+        var newSymbol = Generator.Code(20);
         var newName = Generator.String(20, 50);
         var updateParams = new UpdateTokenParams
         {
@@ -84,7 +84,7 @@ public class UpdateTokenTests
         // this seems unecessary.
         await fxTemplate.TreasuryAccount.Client.AssociateTokenAsync(fxToken, fxTemplate.TreasuryAccount, fxTemplate.TreasuryAccount);
 
-        var newSymbol = Generator.UppercaseAlphaCode(20);
+        var newSymbol = Generator.Code(20);
         var newName = Generator.String(20, 50);
         var updateParams = new UpdateTokenParams
         {
@@ -276,7 +276,7 @@ public class UpdateTokenTests
     public async Task CanUpdateSymbol()
     {
         await using var fxToken = await TestToken.CreateAsync(_network);
-        var newSymbol = Generator.UppercaseAlphaCode(20);
+        var newSymbol = Generator.Code(20);
 
         var updateParams = new UpdateTokenParams
         {
@@ -1045,7 +1045,7 @@ public class UpdateTokenTests
     {
         await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
         await using var fxToken = await TestToken.CreateAsync(_network);
-        var newSymbol = Generator.UppercaseAlphaCode(20);
+        var newSymbol = Generator.Code(20);
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams

@@ -43,6 +43,10 @@ public sealed partial class TokenCreateTransactionBody : INetworkTransaction
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Name), "The name cannot be null or empty.");
         }
+        if (createParameters.Name.Length > 100)
+        {
+            throw new ArgumentOutOfRangeException(nameof(createParameters.Name), "The token name cannot exceed 100 characters in length.");
+        }
         if (string.IsNullOrWhiteSpace(createParameters.Symbol))
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol must be specified.");
@@ -51,13 +55,9 @@ public sealed partial class TokenCreateTransactionBody : INetworkTransaction
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol cannot contain leading or trailing white space.");
         }
-        if (createParameters.Symbol.Length > 32)
+        if (createParameters.Symbol.Length > 100)
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol cannot exceed 32 characters in length.");
-        }
-        if (!createParameters.Symbol.Equals(createParameters.Symbol.ToUpperInvariant()))
-        {
-            throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol must contain upper case characters.");
         }
         if (createParameters.Circulation < 1)
         {
@@ -155,6 +155,10 @@ public sealed partial class TokenCreateTransactionBody : INetworkTransaction
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Name), "The name cannot be null or empty.");
         }
+        if (createParameters.Name.Length > 100)
+        {
+            throw new ArgumentOutOfRangeException(nameof(createParameters.Name), "The token name cannot exceed 100 characters in length.");
+        }
         if (string.IsNullOrWhiteSpace(createParameters.Symbol))
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol must be specified.");
@@ -163,13 +167,9 @@ public sealed partial class TokenCreateTransactionBody : INetworkTransaction
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol cannot contain leading or trailing white space.");
         }
-        if (createParameters.Symbol.Length > 32)
+        if (createParameters.Symbol.Length > 100)
         {
-            throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol cannot exceed 32 characters in length.");
-        }
-        if (!createParameters.Symbol.Equals(createParameters.Symbol.ToUpperInvariant()))
-        {
-            throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol must contain upper case characters.");
+            throw new ArgumentOutOfRangeException(nameof(createParameters.Symbol), "The token symbol cannot exceed 100 characters in length.");
         }
         if (createParameters.Treasury is null || createParameters.Treasury == Hashgraph.Address.None)
         {

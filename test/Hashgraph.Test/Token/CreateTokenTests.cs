@@ -88,7 +88,7 @@ public class CreateTokenTests
         var createParams = new CreateTokenParams
         {
             Name = Generator.Code(50),
-            Symbol = Generator.UppercaseAlphaCode(20),
+            Symbol = Generator.Code(20),
             Circulation = (ulong)(Generator.Integer(10, 20) * 100000),
             Decimals = (uint)Generator.Integer(2, 5),
             Treasury = fxTreasury.Record.Address,
@@ -152,7 +152,7 @@ public class CreateTokenTests
             var createParams = new CreateTokenParams
             {
                 Name = Generator.Code(50),
-                Symbol = Generator.UppercaseAlphaCode(20),
+                Symbol = Generator.Code(20),
                 Circulation = (ulong)(Generator.Integer(10, 20) * 100000),
                 Decimals = (uint)Generator.Integer(2, 5),
                 Treasury = fxTreasury.Alias,
@@ -451,7 +451,7 @@ public class CreateTokenTests
     {
         await using var fxToken = await TestToken.CreateAsync(_network, ctx =>
         {
-            ctx.Params.Symbol = "123" + Generator.UppercaseAlphaCode(20) + "456";
+            ctx.Params.Symbol = "123" + Generator.Code(20) + "456";
         });
         Assert.NotNull(fxToken.Record);
         Assert.NotNull(fxToken.Record.Token);
@@ -579,7 +579,7 @@ public class CreateTokenTests
     {
         await using var fx = await TestToken.CreateAsync(_network, ctx =>
         {
-            ctx.Params.Name = Generator.UppercaseAlphaCode(20) + " 123\r\n\t?";
+            ctx.Params.Name = Generator.Code(20) + " 123\r\n\t?";
         });
         var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
         Assert.Equal(fx.Params.Name, info.Name);

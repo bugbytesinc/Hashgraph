@@ -659,6 +659,9 @@ public class UpdateAccountTests
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.Empty(info.CryptoAllowances);
+        Assert.Empty(info.TokenAllowances);
+        Assert.Empty(info.AssetAllowances);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Update Account: Can Update Key of Alias Account")]
     public async Task CanUpdateKeyOfAliasAccountDefect()

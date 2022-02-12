@@ -52,8 +52,8 @@ public class TestToken : IAsyncDisposable
         fx.RenewAccount = await TestAccount.CreateAsync(networkCredentials);
         fx.Params = new CreateTokenParams
         {
-            Name = Generator.Code(50),
-            Symbol = Generator.UppercaseAlphaCode(20),
+            Name = Generator.Code(100),
+            Symbol = Generator.Code(100),
             Circulation = circulation,
             Decimals = decimals,
             Ceiling = maxSupply,
@@ -70,14 +70,14 @@ public class TestToken : IAsyncDisposable
             RenewAccount = fx.RenewAccount.Record.Address,
             RenewPeriod = TimeSpan.FromDays(90),
             Signatory = new Signatory(fx.AdminPrivateKey, fx.RenewAccount.PrivateKey, fx.TreasuryAccount.PrivateKey),
-            Memo = "Test Token: " + Generator.Code(20)
+            Memo = ("Test Token: " + Generator.Code(20)).TruncateMemo()
         };
         customize?.Invoke(fx);
         fx.Record = await fx.Client.RetryKnownNetworkIssues(async client =>
         {
             return await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
             {
-                ctx.Memo = "TestToken Setup: " + fx.Params.Symbol ?? "(null symbol)";
+                ctx.Memo = ("TestToken Setup: " + fx.Params.Symbol ?? "(null symbol)").TruncateMemo();
             });
         });
         Assert.Equal(ResponseCode.Success, fx.Record.Status);

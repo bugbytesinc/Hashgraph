@@ -40,7 +40,7 @@ public sealed record RoyaltyTransfer
         Amount = 0;
     }
     /// <summary>
-    /// Intenral Helper Class to Create Royalty Transfer
+    /// Internal Helper Class to Create Royalty Transfer
     /// from raw protobuf.
     /// </summary>        
     internal RoyaltyTransfer(AssessedCustomFee fee)

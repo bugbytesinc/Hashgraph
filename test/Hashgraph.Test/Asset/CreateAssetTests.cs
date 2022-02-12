@@ -219,7 +219,7 @@ public class CreateAssetTests
         var createParams = new CreateAssetParams
         {
             Name = Generator.Code(50),
-            Symbol = Generator.UppercaseAlphaCode(20),
+            Symbol = Generator.Code(100),
             Ceiling = (long)(Generator.Integer(10, 20) * 100000),
             Treasury = fxTreasury.Record.Address,
             Administrator = fxTreasury.PublicKey,
@@ -278,7 +278,7 @@ public class CreateAssetTests
             var createParams = new CreateAssetParams
             {
                 Name = Generator.Code(50),
-                Symbol = Generator.UppercaseAlphaCode(20),
+                Symbol = Generator.Code(100),
                 Ceiling = (long)(Generator.Integer(10, 20) * 100000),
                 Treasury = fxTreasury.Alias,
                 Administrator = fxTreasury.PublicKey,
@@ -548,7 +548,7 @@ public class CreateAssetTests
     {
         await using var fxAsset = await TestAsset.CreateAsync(_network, ctx =>
         {
-            ctx.Params.Symbol = "123" + Generator.UppercaseAlphaCode(20) + "456";
+            ctx.Params.Symbol = "123" + Generator.Code(20) + "456";
         });
         Assert.NotNull(fxAsset.Record);
         Assert.NotNull(fxAsset.Record.Token);
@@ -674,7 +674,7 @@ public class CreateAssetTests
     {
         await using var fx = await TestAsset.CreateAsync(_network, ctx =>
         {
-            ctx.Params.Name = Generator.UppercaseAlphaCode(20) + " 123\r\n\t?";
+            ctx.Params.Name = Generator.Code(20) + " 123\r\n\t?";
         });
         var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
         Assert.Equal(fx.Params.Name, info.Name);

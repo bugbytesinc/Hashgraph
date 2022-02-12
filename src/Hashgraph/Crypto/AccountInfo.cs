@@ -1,6 +1,8 @@
 ﻿using Proto;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Hashgraph;
 
@@ -97,6 +99,21 @@ public sealed record AccountInfo
     /// implemented on previewnet or testnet.
     public ReadOnlyMemory<byte> Ledger { get; private init; }
     /// <summary>
+    /// List of crypto delegate allowances 
+    /// allocated  by this account.
+    /// </summary>
+    public IReadOnlyCollection<CryptoAllowance> CryptoAllowances { get; private init; }
+    /// <summary>
+    /// List of token delegate allowances 
+    /// allocated  by this account.
+    /// </summary>
+    public IReadOnlyCollection<TokenAllowance> TokenAllowances { get; private init; }
+    /// <summary>
+    /// List of asset delegate allowances 
+    /// allocated  by this account.
+    /// </summary>
+    public IReadOnlyCollection<AssetAllowance> AssetAllowances { get; private init; }
+    /// <summary>
     /// Internal Constructor from Raw Response
     /// </summary>
     internal AccountInfo(Response response)
@@ -118,5 +135,8 @@ public sealed record AccountInfo
         AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
         Alias = info.Alias.ToAlias(info.AccountID.ShardNum, info.AccountID.RealmNum);
         Ledger = info.LedgerId.Memory;
+        CryptoAllowances = info.CryptoAllowances?.Select(a => new CryptoAllowance(a)).ToList().AsReadOnly() ?? new ReadOnlyCollection<CryptoAllowance>(Array.Empty<CryptoAllowance>());
+        TokenAllowances = info.TokenAllowances?.Select(a => new TokenAllowance(a)).ToList().AsReadOnly() ?? new ReadOnlyCollection<TokenAllowance>(Array.Empty<TokenAllowance>());
+        AssetAllowances = info.NftAllowances?.Select(a => new AssetAllowance(a)).ToList().AsReadOnly() ?? new ReadOnlyCollection<AssetAllowance>(Array.Empty<AssetAllowance>());
     }
 }
