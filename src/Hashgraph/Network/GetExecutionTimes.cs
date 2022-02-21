@@ -27,7 +27,7 @@ public partial class Client
     /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
     /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-    public async Task<IReadOnlyCollection<ulong>> GetExecutionTimes(IEnumerable<TxId> transactionIds, Action<IContext>? configure = null)
+    public async Task<IReadOnlyList<ulong>> GetExecutionTimes(IEnumerable<TxId> transactionIds, Action<IContext>? configure = null)
     {
         return (await ExecuteQueryAsync(new NetworkGetExecutionTimeQuery(transactionIds), configure).ConfigureAwait(false)).NetworkGetExecutionTime.ExecutionTimes;
     }

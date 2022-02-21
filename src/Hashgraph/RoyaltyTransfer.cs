@@ -19,7 +19,7 @@ public sealed record RoyaltyTransfer
     /// <summary>
     /// The Address(s) that were charged the assessed fee.
     /// </summary>
-    public IReadOnlyCollection<Address> Payers { get; private init; }
+    public IReadOnlyList<Address> Payers { get; private init; }
     /// <summary>
     /// The Address receiving the transferred token or crypto.
     /// </summary>

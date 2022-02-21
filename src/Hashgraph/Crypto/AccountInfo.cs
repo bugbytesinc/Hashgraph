@@ -102,17 +102,17 @@ public sealed record AccountInfo
     /// List of crypto delegate allowances 
     /// allocated  by this account.
     /// </summary>
-    public IReadOnlyCollection<CryptoAllowance> CryptoAllowances { get; private init; }
+    public IReadOnlyList<CryptoAllowance> CryptoAllowances { get; private init; }
     /// <summary>
     /// List of token delegate allowances 
     /// allocated  by this account.
     /// </summary>
-    public IReadOnlyCollection<TokenAllowance> TokenAllowances { get; private init; }
+    public IReadOnlyList<TokenAllowance> TokenAllowances { get; private init; }
     /// <summary>
     /// List of asset delegate allowances 
     /// allocated  by this account.
     /// </summary>
-    public IReadOnlyCollection<AssetAllowance> AssetAllowances { get; private init; }
+    public IReadOnlyList<AssetAllowance> AssetAllowances { get; private init; }
     /// <summary>
     /// Internal Constructor from Raw Response
     /// </summary>
