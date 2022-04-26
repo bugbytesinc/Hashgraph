@@ -24,7 +24,11 @@ public class GetDetailTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -65,7 +69,11 @@ public class GetDetailTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -104,7 +112,11 @@ public class GetDetailTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -165,7 +177,11 @@ public class GetDetailTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -174,7 +190,7 @@ public class GetDetailTests
 
         async Task checkDetails(Address payer)
         {
-            var detail = await client.GetAccountDetailAsync(account, ctx=>ctx.Payer = payer);
+            var detail = await client.GetAccountDetailAsync(account, ctx => ctx.Payer = payer);
             Assert.NotNull(detail.Address);
             Assert.Equal(account.ShardNum, detail.Address.ShardNum);
             Assert.Equal(account.RealmNum, detail.Address.RealmNum);
@@ -216,7 +232,11 @@ public class GetDetailTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {

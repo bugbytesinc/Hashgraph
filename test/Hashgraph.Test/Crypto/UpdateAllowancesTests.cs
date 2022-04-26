@@ -45,7 +45,11 @@ public class UpdateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -92,7 +96,11 @@ public class UpdateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {

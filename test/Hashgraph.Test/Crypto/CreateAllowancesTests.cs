@@ -31,7 +31,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -66,7 +70,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -101,7 +109,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -137,7 +149,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -174,7 +190,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -212,7 +232,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -249,7 +273,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -284,7 +312,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -323,7 +355,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -369,7 +405,11 @@ public class CreateAllowancesTests
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await checkDetails(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
@@ -401,20 +441,24 @@ public class CreateAllowancesTests
     [Fact(DisplayName = "Create Allowances: Can Create a Crypto and Token and All Assset Allowance")]
     public async Task CanCreateACryptoAndTokenAndAllAsssetAllowance()
     {
+        await using var fxAllowances = await TestAllowance.CreateAsync(_network);
+
         var systemAddress = await _network.GetGenisisAccountAddress();
         if (systemAddress is null)
         {
-            await executeTestAsync(_network.Payer);
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+            {
+                await checkDetails(_network.Payer);
+            });
+            Assert.Equal(ResponseCode.NotSupported, pex.Status);
         }
         else
         {
-            await executeTestAsync(systemAddress);
+            await checkDetails(systemAddress);
         }
 
-        async Task executeTestAsync(Address payer)
+        async Task checkDetails(Address payer)
         {
-            await using var fxAllowances = await TestAllowance.CreateAsync(_network);
-
             var info = await fxAllowances.Client.GetAccountDetailAsync(fxAllowances.Owner, ctx => ctx.Payer = payer);
             Assert.Single(info.CryptoAllowances);
             Assert.Single(info.TokenAllowances);
