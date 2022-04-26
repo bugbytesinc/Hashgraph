@@ -88,7 +88,7 @@ public class CreateAssetTests
         // Associating an asset with an account using its alias address has not yet been
         // implemented by the network, although it will accept the transaction.
         var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCreateAssetDefinitionWithAliasTreasury));
-        Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", testFailException.Message);
+        Assert.StartsWith("Unable to create Token, status: AccountIdDoesNotExist", testFailException.Message);
 
         //[Fact(DisplayName = "Create Asset: Can Create Asset Definition with Alias Treasury")]
         async Task CanCreateAssetDefinitionWithAliasTreasury()
@@ -268,7 +268,7 @@ public class CreateAssetTests
         // Creating an asset with a treasury identified by its alias address has not yet been
         // implemented by the network, although it will accept the transaction.
         var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCreateAnAssetWithAliasTreasuryWithReceipt));
-        Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", testFailException.Message);
+        Assert.StartsWith("Unable to create Token, status: AccountIdDoesNotExist", testFailException.Message);
         //[Fact(DisplayName = "Create Asset: Can Create Asset with Alias Treasury")]
         async Task CanCreateAnAssetWithAliasTreasuryWithReceipt()
         {
@@ -356,9 +356,9 @@ public class CreateAssetTests
                 fx.Params.Treasury = fxFile.Record.File;
             });
         });
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Receipt.Status);
-        Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", tex.Message);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Status);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Receipt.Status);
+        Assert.StartsWith("Unable to create Token, status: AccountIdDoesNotExist", tex.Message);
     }
     [Fact(DisplayName = "Create Asset: Can Set Treasury to Contract Account")]
     public async Task CanSetTreasuryToNodeContractAccount()

@@ -168,6 +168,23 @@ public class GrantTokenTests
         Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Status);
         Assert.StartsWith("Unable to Grant Token, status: TokenHasNoKycKey", tex.Message);
     }
+    [Fact(DisplayName = "Grant Tokens: Cannot Grant Token Coins Before Auto Association")]
+    public async Task CannotGrantTokenCoinsBeforeAutoAssociation()
+    {
+        await using var fxAccount1 = await TestAccount.CreateAsync(_network);
+        await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+        await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount2);
+
+        var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        {
+            await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount1, fxToken.GrantPrivateKey);
+        });
+        Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
+        Assert.StartsWith("Unable to Grant Token, status: TokenNotAssociatedToAccount", tex.Message);
+
+        var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount2, fxToken.GrantPrivateKey);
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+    }
     [Fact(DisplayName = "Grant Tokens: Can Not Schedule Grant Token Coins")]
     public async Task CanNotScheduleGrantTokenCoins()
     {

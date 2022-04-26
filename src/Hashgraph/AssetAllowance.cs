@@ -18,43 +18,42 @@ public sealed record AssetAllowance
     /// </summary>
     public Address Token { get; private init; }
     /// <summary>
-    /// The Account owner holding the assets that
-    /// may be spent by the delegate.
-    /// </summary>
-    public Address Owner { get; private init; }
-    /// <summary>
     /// The account that may spend the allocated
     /// allowance of assets.
     /// </summary>
-    public Address Delegate { get; private init; }
+    public Address Agent { get; private init; }
     /// <summary>
     /// The explicit list of serial numbers that
     /// can be spent by the delegate.  If the value
     /// is <code>null</code> then all assets of the
-    /// token class may be spend.  If the list is 
+    /// token class may be spent.  If the list is 
     /// empty, it means all of the identified assets
     /// with specific serial numbers have already been
     /// removed from the account.
     /// </summary>
     public IReadOnlyCollection<long>? SerialNumbers { get; private init; }
-    internal AssetAllowance(Proto.NftAllowance allowance)
+    /// <summary>
+    /// Internal helper constructor for creating the
+    /// allowance from protobuf object.
+    /// </summary>
+    internal AssetAllowance(Proto.GrantedNftAllowance allowance)
     {
         if (allowance is not null)
         {
             Token = allowance.TokenId.AsAddress();
-            Owner = allowance.Owner.AsAddress();
-            Delegate = allowance.Spender.AsAddress();
-            SerialNumbers = allowance.ApprovedForAll.GetValueOrDefault() ?
-                null :
-                    (allowance.SerialNumbers is null ?
-                        Array.Empty<long>() :
-                        new ReadOnlyCollection<long>(allowance.SerialNumbers));
+            Agent = allowance.Spender.AsAddress();
+            // This is a in HAPI, not sure if it
+            // will be fixed.
+            //SerialNumbers = allowance.ApprovedForAll ?
+            //    null :
+            //        (allowance.SerialNumbers is null ?
+            //            Array.Empty<long>() :
+            //            new ReadOnlyCollection<long>(allowance.SerialNumbers));
         }
         else
         {
             Token = Address.None;
-            Owner = Address.None;
-            Delegate = Address.None;
+            Agent = Address.None;
             SerialNumbers = Array.Empty<long>();
         }
     }

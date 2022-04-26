@@ -15,36 +15,32 @@ public sealed record TokenAllowance
     /// </summary>
     public Address Token { get; private init; }
     /// <summary>
-    /// The Account owner holding the tokens that
-    /// may be spent by the delegate.
-    /// </summary>
-    public Address Owner { get; private init; }
-    /// <summary>
     /// The account that may spend the allocated
     /// allowance of tokens.
     /// </summary>
-    public Address Delegate { get; private init; }
+    public Address Agent { get; private init; }
     /// <summary>
     /// The increase or decrease of the amount of
     /// tokens that the delegate may spend.
     /// </summary>
     public long Amount { get; private init; }
-    internal TokenAllowance(Proto.TokenAllowance allowance)
+    /// <summary>
+    /// Internal helper function creating an allowance
+    /// representation from protobuf object.
+    /// </summary>
+    internal TokenAllowance(Proto.GrantedTokenAllowance allowance)
     {
         if (allowance is not null)
         {
             Token = allowance.TokenId.AsAddress();
-            Owner = allowance.Owner.AsAddress();
-            Delegate = allowance.Spender.AsAddress();
+            Agent = allowance.Spender.AsAddress();
             Amount = allowance.Amount;
         }
         else
         {
             Token = Address.None;
-            Owner = Address.None;
-            Delegate = Address.None;
+            Agent = Address.None;
             Amount = 0;
         }
     }
-
 }

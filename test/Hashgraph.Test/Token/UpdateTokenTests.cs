@@ -572,9 +572,9 @@ public class UpdateTokenTests
         {
             await fxToken.Client.UpdateTokenAsync(updateParams);
         });
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Receipt.Status);
-        Assert.StartsWith("Unable to update Token, status: InvalidTreasuryAccountForToken", tex.Message);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Status);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Receipt.Status);
+        Assert.StartsWith("Unable to update Token, status: AccountIdDoesNotExist", tex.Message);
 
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
         Assert.Equal(fxToken.Record.Token, info.Token);

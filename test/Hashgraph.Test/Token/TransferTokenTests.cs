@@ -613,7 +613,7 @@ public class TransferTokenTests
         Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
         Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
     }
-    [Fact(DisplayName = "Associate Tokens: Can Transfer Tokens to Contract")]
+    [Fact(DisplayName = "Transfer Tokens: Can Transfer Tokens to Contract")]
     public async Task CanTransferTokensToContract()
     {
         await using var fxContract = await GreetingContract.CreateAsync(_network);
@@ -891,5 +891,41 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token]);
         Assert.Equal(fxToken.Params.Circulation - xferAmount, balances.Tokens[fxToken.Record.Token].Balance);
         Assert.Equal(fxToken.Params.Decimals, balances.Tokens[fxToken.Record.Token].Decimals);
+    }
+
+    [Fact(DisplayName = "Transfer Tokens: Can Transfer Tokens using Contract")]
+    public async Task CanTransferTokensUsingContract()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
+        await using var fxContract = await TransferTokenContract.CreateAsync(_network);
+        await using var client = fxContract.Client.Clone(ctx => ctx.SignaturePrefixTrimLimit = int.MaxValue);
+
+        long xferAmount = (long)(fxToken.Params.Circulation / 3);
+
+        await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
+
+        var receipt = await client.CallContractAsync(new CallContractParams
+        {
+            Contract = fxContract.ContractRecord.Contract,
+            Gas = 60000,
+            FunctionName = "transferToken",
+            FunctionArgs = new object[]
+            {
+                fxToken.Record.Token,
+                fxToken.TreasuryAccount.Record.Address,
+                fxAccount.Record.Address,
+                xferAmount
+            },            
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });;
+
+        var record = await fxAccount.Client.GetTransactionRecordAsync(receipt.Id) as CallContractRecord;
+        Assert.Equal(ResponseCode.Success, record.Status);
+
+        var result = record.CallResult.Result.As<long>();
+        Assert.Equal((long)ResponseCode.Success, result);
+
+        await AssertHg.TokenBalanceAsync(fxToken, fxAccount, (ulong)xferAmount);
     }
 }

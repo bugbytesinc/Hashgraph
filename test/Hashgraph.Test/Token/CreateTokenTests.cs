@@ -141,7 +141,7 @@ public class CreateTokenTests
         // Associating an asset with an account using its alias address has not yet been
         // implemented by the network, although it will accept the transaction.
         var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCreateWithAliasTreasury));
-        Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", testFailException.Message);
+        Assert.StartsWith("Unable to create Token, status: AccountIdDoesNotExist", testFailException.Message);
 
         //[Fact(DisplayName = "Create Token: Can Create with Alias Treasury")]
         async Task CanCreateWithAliasTreasury()
@@ -262,8 +262,8 @@ public class CreateTokenTests
                 fx.Params.Treasury = fxFile.Record.File;
             });
         });
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
-        Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", tex.Message);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Status);
+        Assert.StartsWith("Unable to create Token, status: AccountIdDoesNotExist", tex.Message);
     }
     [Fact(DisplayName = "Create Token: Can Set Treasury to Contract Account")]
     public async Task CanSetTreasuryToNodeContractAccount()

@@ -11,7 +11,7 @@ namespace Hashgraph;
 /// It represents the details concerning a Hedera Network Account, including 
 /// the public key value to use in smart contract interaction.
 /// </summary>
-public sealed record AccountInfo
+public sealed record AccountDetail
 {
     /// <summary>
     /// The Hedera address of this account.
@@ -96,15 +96,30 @@ public sealed record AccountInfo
     /// </summary>
     public ReadOnlyMemory<byte> Ledger { get; private init; }
     /// <summary>
+    /// List of crypto delegate allowances 
+    /// allocated  by this account.
+    /// </summary>
+    public IReadOnlyList<CryptoAllowance> CryptoAllowances { get; private init; }
+    /// <summary>
+    /// List of token delegate allowances 
+    /// allocated  by this account.
+    /// </summary>
+    public IReadOnlyList<TokenAllowance> TokenAllowances { get; private init; }
+    /// <summary>
+    /// List of asset delegate allowances 
+    /// allocated  by this account.
+    /// </summary>
+    public IReadOnlyList<AssetAllowance> AssetAllowances { get; private init; }
+    /// <summary>
     /// Internal Constructor from Raw Response
     /// </summary>
-    internal AccountInfo(Response response)
+    internal AccountDetail(Response response)
     {
-        var info = response.CryptoGetInfo.AccountInfo;
-        Address = info.AccountID.AsAddress();
-        SmartContractId = info.ContractAccountID;
+        var info = response.AccountDetails.AccountDetails;
+        Address = info.AccountId.AsAddress();
+        SmartContractId = info.ContractAccountId;
         Deleted = info.Deleted;
-        Proxy = info.ProxyAccountID.AsAddress();
+        Proxy = info.ProxyAccountId.AsAddress();
         ProxiedToAccount = info.ProxyReceived;
         Endorsement = info.Key.ToEndorsement();
         Balance = info.Balance;
@@ -115,7 +130,10 @@ public sealed record AccountInfo
         Memo = info.Memo;
         AssetCount = info.OwnedNfts;
         AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
-        Alias = info.Alias.ToAlias(info.AccountID.ShardNum, info.AccountID.RealmNum);
+        Alias = info.Alias.ToAlias(info.AccountId.ShardNum, info.AccountId.RealmNum);
         Ledger = info.LedgerId.Memory;
+        CryptoAllowances = info.GrantedCryptoAllowances?.Select(a => new CryptoAllowance(a)).ToList().AsReadOnly() ?? new ReadOnlyCollection<CryptoAllowance>(Array.Empty<CryptoAllowance>());
+        TokenAllowances = info.GrantedTokenAllowances?.Select(a => new TokenAllowance(a)).ToList().AsReadOnly() ?? new ReadOnlyCollection<TokenAllowance>(Array.Empty<TokenAllowance>());
+        AssetAllowances = info.GrantedNftAllowances?.Select(a => new AssetAllowance(a)).ToList().AsReadOnly() ?? new ReadOnlyCollection<AssetAllowance>(Array.Empty<AssetAllowance>());
     }
 }

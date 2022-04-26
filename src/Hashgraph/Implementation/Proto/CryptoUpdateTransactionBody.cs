@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -91,9 +90,9 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
             }
             MaxAutomaticTokenAssociations = updateParameters.AutoAssociationLimit.Value;
         }
-        if(updateParameters.Alias is not null)
+        if (updateParameters.Alias is not null)
         {
-            Alias = new Key(updateParameters.Alias.Endorsement).ToByteString();
+            //Alias = new Key(updateParameters.Alias.Endorsement).ToByteString();
         }
     }
 }

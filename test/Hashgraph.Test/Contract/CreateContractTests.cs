@@ -234,4 +234,17 @@ public class CreateContractTests
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
     }
+    [Fact(DisplayName = "Create Contract: Can Create Token Transfer Contract")]
+    public async Task CanCreateTokenTransferContract()
+    {
+        await using var fx = await TransferTokenContract.CreateAsync(_network);
+        Assert.NotNull(fx.ContractRecord);
+        Assert.NotNull(fx.ContractRecord.Contract);
+        Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+        Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+        Assert.NotNull(fx.ContractRecord.Concensus);
+        Assert.NotNull(fx.ContractRecord.Memo);
+        Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
+    }
+
 }

@@ -33,6 +33,7 @@ public sealed partial class Response
                 ResponseOneofCase.TokenGetNftInfo => (response_ as TokenGetNftInfoResponse)?.Header,
                 ResponseOneofCase.TokenGetNftInfos => (response_ as TokenGetNftInfosResponse)?.Header,
                 ResponseOneofCase.NetworkGetExecutionTime => (response_ as NetworkGetExecutionTimeResponse)?.Header,
+                ResponseOneofCase.AccountDetails => (response_ as GetAccountDetailsResponse)?.Header,
                 _ => null
             };
         }

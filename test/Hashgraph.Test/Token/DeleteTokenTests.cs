@@ -347,7 +347,10 @@ public class DeleteTokenTests
     [Fact(DisplayName = "Token Delete: Can Delete Treasury after Deleting Token")]
     public async Task CanDeleteTreasuryAfterDeletingToken()
     {
-        await using var fx = await TestToken.CreateAsync(_network);
+        await using var fxBagHolder = await TestAccount.CreateAsync(_network);
+        await using var fx = await TestToken.CreateAsync(_network, ctx => ctx.Params.GrantKycEndorsement = null, fxBagHolder);
+
+        await fx.Client.TransferTokensAsync(fx.Record.Token, fx.TreasuryAccount, fxBagHolder, (long) fx.Params.Circulation, fx.TreasuryAccount);
 
         var record = await fx.Client.DeleteTokenAsync(fx.Record.Token, fx.AdminPrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);

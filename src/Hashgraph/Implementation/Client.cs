@@ -90,7 +90,7 @@ public sealed partial class Client
             Payment = new Transaction { SignedTransactionBytes = ByteString.Empty },
             ResponseType = ResponseType.CostAnswer
         });
-        var response = await executeUnsignedAskQuery().ConfigureAwait(false);
+        var response = await executeAskQuery().ConfigureAwait(false);
         ulong cost = response.ResponseHeader?.Cost ?? 0UL;
         if (cost > 0)
         {
@@ -101,12 +101,30 @@ public sealed partial class Client
         }
         return response;
 
-        async Task<Response> executeUnsignedAskQuery()
+        async Task<Response> executeAskQuery()
         {
             var answer = await context.ExecuteNetworkRequestWithRetryAsync(envelope, query.InstantiateNetworkRequestMethod, shouldRetryRequest).ConfigureAwait(false);
             var code = answer.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (code != ResponseCodeEnum.Ok)
             {
+                if(code == ResponseCodeEnum.NotSupported)
+                {
+                    // This may be a backdoor call that must be signed by a superuser account.
+                    // It will not answer a COST_ASK without a signature.  Try signing with an
+                    // empty transfer instead, this is not the most efficient, but we're already
+                    // in a failure mode and performance is already broken.
+                    var transactionId = context.GetOrCreateTransactionID();
+                    query.SetHeader(await createEmptyQueryHeader(transactionId).ConfigureAwait(false));
+                    answer = await executeSignedQuery().ConfigureAwait(false);
+                    // If we get a valid repsonse back, it turns out that we needed to identify
+                    // ourselves with the signature, the rest of the process can proceed as normal.
+                    // If it was a failure then we fall back to the original NOT_SUPPORTED error
+                    // we received on the first attempt.
+                    if(answer.ResponseHeader?.NodeTransactionPrecheckCode  == ResponseCodeEnum.Ok)
+                    {
+                        return answer;
+                    }
+                }
                 throw new PrecheckException($"Transaction Failed Pre-Check: {code}", TxId.None, (ResponseCode)code, 0);
             }
             return answer;
@@ -163,11 +181,50 @@ public sealed partial class Client
             };
         }
 
+        async Task<QueryHeader> createEmptyQueryHeader(TransactionID transactionId)
+        {
+            var payer = context.Payer;
+            if (payer is null)
+            {
+                throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.");
+            }
+            var signatory = context.Signatory as ISignatory;
+            if (signatory is null)
+            {
+                throw new InvalidOperationException("The Payer's signatory (signing key/callback) has not been configured. This is required for retreiving records and other general network Queries. Please check that 'Signatory' is set in the Client context.");
+            }
+            var gateway = context.Gateway;
+            if (gateway is null)
+            {
+                throw new InvalidOperationException("The Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
+            }
+            var feeLimit = context.FeeLimit;          
+            var transactionBody = new TransactionBody
+            {
+                TransactionID = transactionId,
+                NodeAccountID = new AccountID(gateway),
+                TransactionFee = (ulong)context.FeeLimit,
+                TransactionValidDuration = new Duration(context.TransactionDuration),
+                Memo = context.Memo ?? "",
+                CryptoTransfer = new CryptoTransferTransactionBody { Transfers = null }
+            };
+            var invoice = new Invoice(transactionBody, context.SignaturePrefixTrimLimit);
+            await signatory.SignAsync(invoice).ConfigureAwait(false);
+            var signedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString();
+            return new QueryHeader
+            {
+                Payment = new Transaction
+                {
+                    SignedTransactionBytes = signedTransactionBytes
+                }
+            };
+        }
+
         Task<Response> executeSignedQuery()
         {
             return context.ExecuteSignedRequestWithRetryImplementationAsync(envelope, query.InstantiateNetworkRequestMethod, getResponseCode);
 
-            ResponseCodeEnum getResponseCode(Response response)
+            static ResponseCodeEnum getResponseCode(Response response)
             {
                 return response.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             }

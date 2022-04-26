@@ -75,7 +75,7 @@ public class QueryContractTests
         Assert.Equal(0ul, qex.RequiredFee);
         Assert.NotNull(qex.CallResult);
         Assert.Equal("INSUFFICIENT_GAS", qex.CallResult.Error);
-        Assert.False(qex.CallResult.Bloom.IsEmpty);
+        Assert.True(qex.CallResult.Bloom.IsEmpty);
         Assert.InRange(qex.CallResult.Gas, 0UL, ulong.MaxValue);
         Assert.Empty(qex.CallResult.Events);
         Assert.Equal(0, qex.CallResult.Result.Size);
@@ -96,7 +96,7 @@ public class QueryContractTests
         });
         Assert.NotNull(result);
         Assert.Equal("INSUFFICIENT_GAS", result.Error);
-        Assert.False(result.Bloom.IsEmpty);
+        Assert.True(result.Bloom.IsEmpty);
         Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
         Assert.Empty(result.Events);
         Assert.Equal(0, result.Result.Size);
@@ -140,7 +140,7 @@ public class QueryContractTests
         });
         Assert.NotNull(result);
         Assert.Equal("ILLEGAL_STATE_CHANGE", result.Error);
-        Assert.False(result.Bloom.IsEmpty);
+        Assert.True(result.Bloom.IsEmpty);
         Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
         Assert.Empty(result.Events);
         Assert.Equal(0, result.Result.Size);

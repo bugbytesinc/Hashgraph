@@ -107,7 +107,7 @@ public class UpdateAccountTests
         // Updating an account using its alias address has not yet been
         // implemented by the network, although it will accept the transaction.
         var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanUpdateMemoUsingAlias));
-        Assert.StartsWith("Unable to update account, status: InvalidAccountId", testFailException.Message);
+        Assert.StartsWith("Unable to update account, status: AccountIdDoesNotExist", testFailException.Message);
 
         //[Fact(DisplayName = "Update Account: Can Update Memo using Alias")]
         async Task CanUpdateMemoUsingAlias()
@@ -659,9 +659,9 @@ public class UpdateAccountTests
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Empty(info.CryptoAllowances);
-        Assert.Empty(info.TokenAllowances);
-        Assert.Empty(info.AssetAllowances);
+        //Assert.Empty(info.CryptoAllowances);
+        //Assert.Empty(info.TokenAllowances);
+        //Assert.Empty(info.AssetAllowances);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Update Account: Can Update Key of Alias Account")]
     public async Task CanUpdateKeyOfAliasAccountDefect()
@@ -669,7 +669,7 @@ public class UpdateAccountTests
         // Updating an account using its alias address has not yet been
         // implemented by the network, although it will accept the transaction.
         var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanUpdateKeyOfAliasAccount));
-        Assert.StartsWith("Unable to update account, status: InvalidAccountId", testFailException.Message);
+        Assert.StartsWith("Unable to update account, status: AccountIdDoesNotExist", testFailException.Message);
 
         //[Fact(DisplayName = "Update Account: Can Update Key of Alias Account")]
         async Task CanUpdateKeyOfAliasAccount()
@@ -691,5 +691,17 @@ public class UpdateAccountTests
             var updatedInfo = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
             Assert.Equal(new Endorsement(updatedKeyPair.publicKey), updatedInfo.Endorsement);
         }
+    }
+
+    [Fact(DisplayName = "Update Account: Protobuf does not contain Alias Update Functionality")]
+    public void ProtobufCoesNotContainAliasUpdateFunctionality()
+    {
+        // This is a marker test as a backup to catch when the functionality
+        // for updating an Alias re-appears in the protobuf (it was taken out)
+        // When it re-appears, we re-implement the feature, basic tests are
+        // already in place for when this happens.
+        var type = typeof(Proto.CryptoUpdateTransactionBody);
+        var definition = type.GetProperty("Alias");
+        Assert.Null(definition);
     }
 }

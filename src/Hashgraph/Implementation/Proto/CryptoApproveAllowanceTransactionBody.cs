@@ -1,10 +1,7 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace Proto;
@@ -23,7 +20,7 @@ public sealed partial class CryptoApproveAllowanceTransactionBody : INetworkTran
 
     Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
     {
-        return new SmartContractService.SmartContractServiceClient(channel).createContractAsync;
+        return new CryptoService.CryptoServiceClient(channel).approveAllowancesAsync;
     }
 
     void INetworkTransaction.CheckReceipt(NetworkResult result)
@@ -42,12 +39,26 @@ public sealed partial class CryptoApproveAllowanceTransactionBody : INetworkTran
         }
         if (allowances.CryptoAllowances is not null)
         {
-            foreach(var allowance in allowances.CryptoAllowances)
+            foreach (var allowance in allowances.CryptoAllowances)
             {
                 CryptoAllowances.Add(new CryptoAllowance(allowance, true));
             }
         }
-        if (CryptoAllowances.Count == 0)
+        if (allowances.TokenAllowances is not null)
+        {
+            foreach (var allowance in allowances.TokenAllowances)
+            {
+                TokenAllowances.Add(new TokenAllowance(allowance, true));
+            }
+        }
+        if (allowances.AssetAllowances is not null)
+        {
+            foreach (var allowance in allowances.AssetAllowances)
+            {
+                NftAllowances.Add(new NftAllowance(allowance));
+            }
+        }
+        if (CryptoAllowances.Count == 0 && TokenAllowances.Count == 0 && NftAllowances.Count == 0)
         {
             throw new ArgumentException(nameof(allowances), "Both crypto, token and asset allowance lists are null or empty.  At least one must include a net amount.");
         }

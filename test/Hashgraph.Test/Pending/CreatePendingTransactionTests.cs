@@ -28,7 +28,7 @@ public class CreatePendingTransactionTests
         // Associating an asset with an account using its alias address has not yet been
         // implemented by the network, although it will accept the transaction.
         var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanScheduleATransferTransactionWithAliasPayer));
-        Assert.StartsWith("Unable to schedule transaction, status: InvalidAccountId", testFailException.Message);
+        Assert.StartsWith("Unable to schedule transaction, status: AccountIdDoesNotExist", testFailException.Message);
 
         //[Fact(DisplayName = "Pending Transaction Create: Can Schedule a Transfer Transaction with Alias Payer")]
         async Task CanScheduleATransferTransactionWithAliasPayer()

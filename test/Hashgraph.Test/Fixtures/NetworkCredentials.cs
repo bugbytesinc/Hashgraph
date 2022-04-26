@@ -193,6 +193,14 @@ public class NetworkCredentials
         }
         return _systemAccountAddress == Address.None ? null : _systemAccountAddress;
     }
+    public async Task<Address> GetGenisisAccountAddress()
+    {
+        if (_systemAccountAddress is null)
+        {
+            _systemAccountAddress = await GetSpecialAccount(new Address(0, 0, 2));
+        }
+        return _systemAccountAddress == Address.None ? null : _systemAccountAddress;
+    }
     public async Task<Address> GetSystemDeleteAdminAddress()
     {
         if (_systemDeleteAdminAddress is null)

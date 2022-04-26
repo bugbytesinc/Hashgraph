@@ -1,24 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Hashgraph;
 
 /// <summary>
 /// Allowance Creation and Adjustment Parameters
 /// </summary>
-/// <remarks>
-/// MARKED INTERNAL because this feature is not 
-/// implemented in full by the network and should
-/// not be made publicly available.
-/// </remarks>
-internal sealed class AllowanceParams
+public sealed class AllowanceParams
 {
     /// <summary>
     /// A list of accounts and allocated allowances that 
     /// each account may sign transactions moving crypto
     /// out of this account up to the specified limit.
     /// </summary>
-    public IEnumerable<CryptoAllowance>? CryptoAllowances { get; set; }
+    public IEnumerable<CryptoAllowanceGrant>? CryptoAllowances { get; set; }
+    /// <summary>
+    /// A list of accounts and allocated allowances that 
+    /// each account may sign transactions moving tokens
+    /// out of this account up to the specified limit.
+    /// </summary>
+    public IEnumerable<TokenAllowanceGrant>? TokenAllowances { get; set; }
+    /// <summary>
+    /// A list of accounts and allocated allowances that 
+    /// each account may sign transactions moving assets
+    /// out of this account up to the specified limit.
+    /// </summary>
+    public IEnumerable<AssetAllowanceGrant>? AssetAllowances { get; set; }
     /// <summary>
     /// Additional private key, keys or signing callback method 
     /// required to authorize the transaction.
