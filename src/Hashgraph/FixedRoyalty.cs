@@ -15,7 +15,7 @@ public sealed record FixedRoyalty : IRoyalty
     /// <summary>
     /// Account receiving the royalty assessment.
     /// </summary>
-    public AddressOrAlias Account { get; private init; }
+    public Address Account { get; private init; }
     /// <summary>
     /// The address id of the token type used to pay
     /// the royalty, if <code>None</code> then
@@ -56,7 +56,7 @@ public sealed record FixedRoyalty : IRoyalty
     /// the account sending the associated token
     /// or asset.
     /// </param>
-    public FixedRoyalty(AddressOrAlias account, Address token, long amount)
+    public FixedRoyalty(Address account, Address token, long amount)
     {
         Account = account;
         Token = token;

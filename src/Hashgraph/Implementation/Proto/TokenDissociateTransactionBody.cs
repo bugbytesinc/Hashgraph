@@ -33,12 +33,12 @@ public sealed partial class TokenDissociateTransactionBody : INetworkTransaction
         }
     }
 
-    internal TokenDissociateTransactionBody(Address token, AddressOrAlias account) : this()
+    internal TokenDissociateTransactionBody(Address token, Address account) : this()
     {
         Tokens.Add(new TokenID(token));
         Account = new AccountID(account);
     }
-    internal TokenDissociateTransactionBody(IEnumerable<Address> tokens, AddressOrAlias account) : this()
+    internal TokenDissociateTransactionBody(IEnumerable<Address> tokens, Address account) : this()
     {
         if (tokens is null)
         {

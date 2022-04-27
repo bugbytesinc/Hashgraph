@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
+using System.Linq;
 using Xunit;
 
 namespace Hashgraph.Test.Internals;
@@ -25,6 +26,22 @@ public class AbiConversionTests
         var decoded = Abi.DecodeArguments(bytes, typeof(Address));
         Assert.Single(decoded);
         var actual = decoded[0] as Address;
+        Assert.NotNull(actual);
+        Assert.Equal(expected, actual);
+    }
+    [Fact(DisplayName = "ABI: Can Pack and Unpack Address Array")]
+    public void CanPackAndUnpackAddressArray()
+    {
+        var expected = Enumerable.Range(3, Generator.Integer(4, 10)).Select(_ => {
+            var shard = Generator.Integer(1, 50);
+            var realm = Generator.Integer(1, 50);
+            var num = Generator.Integer(1, 50);
+            return new Address(shard, realm, num);
+        }).ToArray();
+        var bytes = Abi.EncodeArguments(new[] { expected });
+        var decoded = Abi.DecodeArguments(bytes, typeof(Address[]));
+        Assert.Single(decoded);
+        var actual = decoded[0] as Address[];
         Assert.NotNull(actual);
         Assert.Equal(expected, actual);
     }

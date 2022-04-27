@@ -21,13 +21,13 @@
 
   <ItemGroup>
     <PackageReference Include="BouncyCastle.NetCoreSdk" Version="1.9.3.1" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.8.1">
+    <PackageReference Include="GitVersion.MsBuild" Version="5.10.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Google.Protobuf" Version="3.19.1" />
-    <PackageReference Include="Grpc.Core" Version="2.42.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.42.0">
+    <PackageReference Include="Google.Protobuf" Version="3.20.0" />
+    <PackageReference Include="Grpc.Core" Version="2.45.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.45.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

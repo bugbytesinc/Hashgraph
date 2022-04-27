@@ -32,5 +32,5 @@ public sealed record PendingParams
     /// for the pending transaction.  (Which is the current account 
     /// identified as the payer in the Context).
     /// </summary>
-    public AddressOrAlias? PendingPayer { get; init; }
+    public Address? PendingPayer { get; init; }
 }

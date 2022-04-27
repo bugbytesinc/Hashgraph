@@ -33,7 +33,7 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
         }
     }
 
-    internal CryptoTransferTransactionBody(AddressOrAlias fromAddress, AddressOrAlias toAddress, long amount) : this()
+    internal CryptoTransferTransactionBody(Address fromAddress, Address toAddress, long amount) : this()
     {
         if (fromAddress is null)
         {
@@ -52,11 +52,11 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
         xferList.AccountAmounts.Add(new AccountAmount(toAddress, amount));
         Transfers = xferList;
     }
-    internal CryptoTransferTransactionBody(Address token, AddressOrAlias fromAddress, AddressOrAlias toAddress, long amount) : this()
+    internal CryptoTransferTransactionBody(Address token, Address fromAddress, Address toAddress, long amount) : this()
     {
         TokenTransfers.Add(new TokenTransferList(token, fromAddress, toAddress, amount));
     }
-    internal CryptoTransferTransactionBody(Asset asset, AddressOrAlias fromAddress, AddressOrAlias toAddress) : this()
+    internal CryptoTransferTransactionBody(Asset asset, Address fromAddress, Address toAddress) : this()
     {
         TokenTransfers.Add(new TokenTransferList(asset, fromAddress, toAddress));
     }
@@ -70,7 +70,7 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
         if (transfers.CryptoTransfers is not null)
         {
             long sum = 0;
-            var netRequests = new Dictionary<AddressOrAlias, long>();
+            var netRequests = new Dictionary<Address, long>();
             foreach (var transfer in transfers.CryptoTransfers)
             {
                 if (transfer.Value == 0)
@@ -115,7 +115,7 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
                     throw new ArgumentException("Token", "The list of token transfers cannot contain a null or empty Token value.");
                 }
                 long sum = 0;
-                var netRequests = new Dictionary<AddressOrAlias, long>();
+                var netRequests = new Dictionary<Address, long>();
                 foreach (var xfer in tokenGroup)
                 {
                     if (xfer.Address.IsNullOrNone())

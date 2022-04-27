@@ -29,7 +29,7 @@ public static class GetTokenBalanceExtension
     /// It is executed prior to submitting the request to the network.
     /// </param>
     /// <returns></returns>
-    public static async Task<ulong> GetAccountTokenBalanceAsync(this Client client, AddressOrAlias address, Address token, Action<IContext>? configure = null)
+    public static async Task<ulong> GetAccountTokenBalanceAsync(this Client client, Address address, Address token, Action<IContext>? configure = null)
     {
         var balances = await client.GetAccountBalancesAsync(address, configure).ConfigureAwait(false);
         return balances.Tokens.TryGetValue(token, out CryptoBalance? crypto) ? crypto.Balance : 0;

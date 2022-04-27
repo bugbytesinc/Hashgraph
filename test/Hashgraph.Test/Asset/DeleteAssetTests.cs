@@ -377,7 +377,15 @@ public class DeleteAssetTests
     [Fact(DisplayName = "Asset Delete: Can Delete Treasury after Deleting Asset")]
     public async Task CanDeleteTreasuryAfterDeletingAsset()
     {
-        await using var fx = await TestAsset.CreateAsync(_network);
+        await using var fxBagHolder = await TestAccount.CreateAsync(_network);
+        await using var fx = await TestAsset.CreateAsync(_network, ctx => ctx.Params.GrantKycEndorsement = null, fxBagHolder);
+
+        var xfers = fx.MintRecord.SerialNumbers.Select(s => new AssetTransfer(new Asset(fx.Record.Token, s), fx.TreasuryAccount, fxBagHolder)).ToArray();
+
+        await fx.Client.TransferAsync(new TransferParams { 
+            AssetTransfers = xfers,            
+            Signatory = fx.TreasuryAccount
+        });
 
         var record = await fx.Client.DeleteTokenAsync(fx.Record.Token, fx.AdminPrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);

@@ -30,7 +30,7 @@ public sealed partial class CryptoGetAccountBalanceQuery : INetworkQuery
             ContractID = new ContractID(contract)
         };
     }
-    internal static CryptoGetAccountBalanceQuery ForAccount(AddressOrAlias account)
+    internal static CryptoGetAccountBalanceQuery ForAccount(Address account)
     {
         return new CryptoGetAccountBalanceQuery
         {

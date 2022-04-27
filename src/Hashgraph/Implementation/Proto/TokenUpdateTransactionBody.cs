@@ -65,13 +65,9 @@ public sealed partial class TokenUpdateTransactionBody : INetworkTransaction
             {
                 throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol cannot contain leading or trailing white space.");
             }
-            if (updateParameters.Symbol.Length > 32)
+            if (updateParameters.Symbol.Length > 100)
             {
-                throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol cannot exceed 32 characters in length.");
-            }
-            if (!updateParameters.Symbol.Equals(updateParameters.Symbol.ToUpperInvariant()))
-            {
-                throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol must contain upper case characters.");
+                throw new ArgumentOutOfRangeException(nameof(updateParameters.Symbol), "The new token symbol cannot exceed 100 characters in length.");
             }
             Symbol = updateParameters.Symbol;
         }

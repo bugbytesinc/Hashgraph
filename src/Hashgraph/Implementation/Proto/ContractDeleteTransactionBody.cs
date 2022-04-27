@@ -31,7 +31,7 @@ public sealed partial class ContractDeleteTransactionBody : INetworkTransaction
         }
     }
 
-    internal ContractDeleteTransactionBody(Address contractToDelete, AddressOrAlias transferToAddress) : this()
+    internal ContractDeleteTransactionBody(Address contractToDelete, Address transferToAddress) : this()
     {
         if (contractToDelete is null)
         {

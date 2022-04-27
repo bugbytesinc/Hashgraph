@@ -31,7 +31,7 @@ public sealed partial class CryptoDeleteTransactionBody : INetworkTransaction
         }
     }
 
-    internal CryptoDeleteTransactionBody(AddressOrAlias addressToDelete, AddressOrAlias transferToAddress) : this()
+    internal CryptoDeleteTransactionBody(Address addressToDelete, Address transferToAddress) : this()
     {
         if (addressToDelete is null)
         {

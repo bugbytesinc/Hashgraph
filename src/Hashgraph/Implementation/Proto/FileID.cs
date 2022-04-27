@@ -11,9 +11,16 @@ public sealed partial class FileID
         {
             throw new ArgumentNullException(nameof(file), "File is missing. Please check that it is not null.");
         }
-        ShardNum = file.ShardNum;
-        RealmNum = file.RealmNum;
-        FileNum = file.AccountNum;
+        else if (file.AddressType == AddressType.ShardRealmNum)
+        {
+            ShardNum = file.ShardNum;
+            RealmNum = file.RealmNum;
+            FileNum = file.AccountNum;
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(file), "File Address does not appear to be in a valid <shard>.<realm>.<num> form.");
+        }
     }
 }
 

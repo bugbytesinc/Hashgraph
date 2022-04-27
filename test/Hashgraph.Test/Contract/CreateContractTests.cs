@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Implementation;
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -129,7 +130,8 @@ public class CreateContractTests
         Assert.False(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(fxContract.ContractRecord.CallResult.Gas, 0UL, (ulong)fxContract.ContractParams.Gas);
         Assert.Empty(fxContract.ContractRecord.CallResult.Events);
-        Assert.NotEmpty(fxContract.ContractRecord.CallResult.CreatedContracts);
+        Assert.Empty(fxContract.ContractRecord.CallResult.StateChanges);
+        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fxContract.ContractRecord.Contract }).Slice(12)), fxContract.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fxContract.ContractRecord.CallResult.Result.Size);
         Assert.False(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
     }
@@ -152,8 +154,8 @@ public class CreateContractTests
         Assert.False(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(fxContract.ContractRecord.CallResult.Gas, 0UL, (ulong)fxContract.ContractParams.Gas);
         Assert.Empty(fxContract.ContractRecord.CallResult.Events);
-        Assert.Single(fxContract.ContractRecord.CallResult.CreatedContracts);
-        Assert.Equal(fxContract.ContractRecord.Contract, fxContract.ContractRecord.CallResult.CreatedContracts[0]);
+        Assert.Empty(fxContract.ContractRecord.CallResult.StateChanges);
+        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fxContract.ContractRecord.Contract }).Slice(12)), fxContract.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fxContract.ContractRecord.CallResult.Result.Size);
         Assert.False(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
     }
@@ -182,8 +184,8 @@ public class CreateContractTests
         Assert.False(fx.ContractRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(fx.ContractRecord.CallResult.Gas, 0UL, (ulong)fx.ContractParams.Gas);
         Assert.Empty(fx.ContractRecord.CallResult.Events);
-        Assert.Single(fx.ContractRecord.CallResult.CreatedContracts);
-        Assert.Equal(fx.ContractRecord.Contract, fx.ContractRecord.CallResult.CreatedContracts[0]);
+        Assert.Empty(fx.ContractRecord.CallResult.StateChanges);
+        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract }).Slice(12)), fx.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fx.ContractRecord.CallResult.Result.Size);
         Assert.False(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
     }
@@ -232,4 +234,17 @@ public class CreateContractTests
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
     }
+    [Fact(DisplayName = "Create Contract: Can Create Token Transfer Contract")]
+    public async Task CanCreateTokenTransferContract()
+    {
+        await using var fx = await TransferTokenContract.CreateAsync(_network);
+        Assert.NotNull(fx.ContractRecord);
+        Assert.NotNull(fx.ContractRecord.Contract);
+        Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+        Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+        Assert.NotNull(fx.ContractRecord.Concensus);
+        Assert.NotNull(fx.ContractRecord.Memo);
+        Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
+    }
+
 }

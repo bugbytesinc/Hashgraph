@@ -24,7 +24,7 @@ public class UpdateAssetTests
 
         await fxTemplate.TreasuryAccount.Client.AssociateTokenAsync(fxAsset, fxTemplate.TreasuryAccount, fxTemplate.TreasuryAccount);
 
-        var newSymbol = Generator.UppercaseAlphaCode(20);
+        var newSymbol = Generator.Code(20);
         var newName = Generator.String(20, 50);
         var updateParams = new UpdateTokenParams
         {
@@ -88,7 +88,7 @@ public class UpdateAssetTests
         // this seems unecessary.
         await fxTemplate.TreasuryAccount.Client.AssociateTokenAsync(fxAsset, fxTemplate.TreasuryAccount, fxTemplate.TreasuryAccount);
 
-        var newSymbol = Generator.UppercaseAlphaCode(20);
+        var newSymbol = Generator.Code(100);
         var newName = Generator.String(20, 50);
         var updateParams = new UpdateTokenParams
         {
@@ -298,7 +298,7 @@ public class UpdateAssetTests
     public async Task CanUpdateSymbol()
     {
         await using var fxAsset = await TestAsset.CreateAsync(_network);
-        var newSymbol = Generator.UppercaseAlphaCode(20);
+        var newSymbol = Generator.Code(20);
 
         var updateParams = new UpdateTokenParams
         {
@@ -591,9 +591,9 @@ public class UpdateAssetTests
         {
             await fxAsset.Client.UpdateTokenAsync(updateParams);
         });
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Receipt.Status);
-        Assert.StartsWith("Unable to update Token, status: InvalidTreasuryAccountForToken", tex.Message);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Status);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Receipt.Status);
+        Assert.StartsWith("Unable to update Token, status: AccountIdDoesNotExist", tex.Message);
 
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
         Assert.Equal(fxAsset.Record.Token, info.Token);
@@ -1056,7 +1056,7 @@ public class UpdateAssetTests
     {
         await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
         await using var fxAsset = await TestAsset.CreateAsync(_network);
-        var newSymbol = Generator.UppercaseAlphaCode(20);
+        var newSymbol = Generator.Code(20);
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxAsset.Client.UpdateTokenAsync(new UpdateTokenParams

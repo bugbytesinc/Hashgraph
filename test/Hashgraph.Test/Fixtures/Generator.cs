@@ -33,25 +33,15 @@ public static class Generator
         return Code(Integer(minLengthInclusive, maxLengthInclusive));
     }
 
-    public static String Code(Int32 length)
+    public static string Code(Int32 length)
     {
         var buffer = new char[length];
         for (int i = 0; i < length; i++)
         {
-            buffer[i] = _sample[_random.Next(0, _sample.Length)];
+            buffer[i] = _sample[_random.Next(1, _sample.Length)];
         }
         return new string(buffer);
     }
-    public static String UppercaseAlphaCode(Int32 length)
-    {
-        var buffer = new char[length];
-        for (int i = 0; i < length; i++)
-        {
-            buffer[i] = _alphaSample[_random.Next(0, _alphaSample.Length)];
-        }
-        return new string(buffer);
-    }
-
     public static String[] ArrayOfStrings(Int32 minCount, Int32 maxCount, Int32 minLength, Int32 maxLength)
     {
         String[] result = new String[Integer(minCount, maxCount)];

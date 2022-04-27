@@ -32,7 +32,7 @@ public sealed partial class CryptoGetAccountRecordsQuery : INetworkQuery
         }
     }
 
-    internal CryptoGetAccountRecordsQuery(AddressOrAlias address) : this()
+    internal CryptoGetAccountRecordsQuery(Address address) : this()
     {
         AccountID = new AccountID(address);
     }

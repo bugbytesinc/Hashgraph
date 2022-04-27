@@ -1010,4 +1010,78 @@ public enum ResponseCode
     /// type actually has.
     /// </summary>
     [Description("UNEXPECTED_TOKEN_DECIMALS")] UnexpectedTokenDecimals = 283,
+    /// <summary>
+    /// The proxy account id is invalid or does not exist.
+    /// </summary>
+    [Description("INVALID_PROXY_ACCOUNT_ID")] InvalidProxyAccountId = 284,
+    /// <summary>
+    /// The transfer account id in CryptoDelete transaction is invalid or does not exist.
+    /// </summary>
+    [Description("INVALID_TRANSFER_ACCOUNT_ID")] InvalidTransferAccountId = 285,
+    /// <summary>
+    /// The fee collector account id in TokenFeeScheduleUpdate is invalid or does not exist.
+    /// </summary>
+    [Description("INVALID_FEE_COLLECTOR_ACCOUNT_ID")] InvalidFeeCollectorAccountId = 286,
+    /// <summary>
+    /// The alias already set on an account cannot be updated using CryptoUpdate transaction.
+    /// </summary>
+    [Description("ALIAS_IS_IMMUTABLE")] AliasIsImmutable = 287,
+    /// <summary>
+    /// An approved allowance specifies a spender account that is the same as the hbar/token
+    /// owner account.
+    /// </summary>
+    [Description("SPENDER_ACCOUNT_SAME_AS_OWNER")] SpenderAccountSameAsOwner = 288,
+    /// <summary>
+    /// The establishment or adjustment of an approved allowance cause the token allowance
+    /// to exceed the token maximum supply.
+    /// </summary>
+    [Description("AMOUNT_EXCEEDS_TOKEN_MAX_SUPPLY")] AmountExceedsTokenMaxSupply = 289,
+    /// <summary>
+    /// The specified amount for an approved allowance cannot be negative.
+    /// </summary>
+    [Description("NEGATIVE_ALLOWANCE_AMOUNT")] NegativeAllowanceAmount = 290,
+    /// <summary>
+    /// The approveForAll flag cannot be set for a fungible token.
+    /// </summary>
+    [Description("CANNOT_APPROVE_FOR_ALL_FUNGIBLE_COMMON")] CannotApproveForAllFungibleCommon = 291,
+    /// <summary>
+    /// The spender does not have an existing approved allowance with the hbar/token owner.
+    /// </summary>
+    [Description("SPENDER_DOES_NOT_HAVE_ALLOWANCE")] SpenderDoesNotHaveAllowance = 292,
+    /// <summary>
+    /// The transfer amount exceeds the current approved allowance for the spender account.
+    /// </summary>
+    [Description("AMOUNT_EXCEEDS_ALLOWANCE")] AmountExceedsAllowance = 293,
+    /// <summary>
+    /// The payer account of an approveAllowances or adjustAllowance transaction is attempting
+    /// to go beyond the maximum allowed number of allowances.
+    /// </summary>
+    [Description("MAX_ALLOWANCES_EXCEEDED")] MaxAllowancesExceeded = 294,
+    /// <summary>
+    /// No allowances have been specified in the approval/adjust transaction.
+    /// </summary>
+    [Description("EMPTY_ALLOWANCES")] EmptyAllowances = 295,
+    /// <summary>
+    /// Spender is repeated more than once in Crypto or Token or NFT allowance lists in a single
+    /// CryptoApproveAllowance or CryptoAdjustAllowance transaction.
+    /// </summary>
+    [Description("SPENDER_ACCOUNT_REPEATED_IN_ALLOWANCES")] SpenderAccountRepeatedInAllowances = 296,
+    /// <summary>
+    /// Serial numbers are repeated in nft allowance for a single spender account
+    /// </summary>
+    [Description("REPEATED_SERIAL_NUMS_IN_NFT_ALLOWANCES")] RepeatedSerialNumsInNftAllowances = 297,
+    /// <summary>
+    /// Fungible common token used in NFT allowances
+    /// </summary>
+    [Description("FUNGIBLE_TOKEN_IN_NFT_ALLOWANCES")] FungibleTokenInNftAllowances = 298,
+    /// <summary>
+    /// Non fungible token used in fungible token allowances
+    /// </summary>
+    [Description("NFT_IN_FUNGIBLE_TOKEN_ALLOWANCES")] NftInFungibleTokenAllowances = 299,
+    /// <summary>
+    /// An approval/adjustment transaction was submitted where the payer and owner account are
+    /// not the same. Currently only the owner is permitted to perform these operations.
+    /// </summary>
+    [Description("PAYER_AND_OWNER_NOT_EQUAL")] PayerAndOwnerNotEqual = 300,
+
 }

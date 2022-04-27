@@ -32,7 +32,8 @@ public class QueryContractTests
         Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
         Assert.Empty(result.Events);
         Assert.Equal("Hello, world!", result.Result.As<string>());
-        Assert.Empty(result.CreatedContracts);
+        Assert.Empty(result.StateChanges);
+        Assert.Equal(Moniker.None, result.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Can call Contract that Keeps State")]
     public async Task CanCreateAContractWithStateAsync()
@@ -51,7 +52,8 @@ public class QueryContractTests
         Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
         Assert.Empty(result.Events);
         Assert.Equal(fx.ContractParams.Arguments[0] as string, result.Result.As<string>());
-        Assert.Empty(result.CreatedContracts);
+        Assert.Empty(result.StateChanges);
+        Assert.Equal(Moniker.None, result.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Query Contract with Insufficent funds defaults to Throw Exception")]
     public async Task QueryContractWithInsufficientFundsThrowsErrorByDefault()
@@ -73,11 +75,12 @@ public class QueryContractTests
         Assert.Equal(0ul, qex.RequiredFee);
         Assert.NotNull(qex.CallResult);
         Assert.Equal("INSUFFICIENT_GAS", qex.CallResult.Error);
-        Assert.False(qex.CallResult.Bloom.IsEmpty);
+        Assert.True(qex.CallResult.Bloom.IsEmpty);
         Assert.InRange(qex.CallResult.Gas, 0UL, ulong.MaxValue);
         Assert.Empty(qex.CallResult.Events);
         Assert.Equal(0, qex.CallResult.Result.Size);
-        Assert.Empty(qex.CallResult.CreatedContracts);
+        Assert.Empty(qex.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, qex.CallResult.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Error Query Contract without Flag Set Returns without Error")]
     public async Task ErrorQueryContractWithoutFlagReturnsWithoutError()
@@ -93,11 +96,12 @@ public class QueryContractTests
         });
         Assert.NotNull(result);
         Assert.Equal("INSUFFICIENT_GAS", result.Error);
-        Assert.False(result.Bloom.IsEmpty);
+        Assert.True(result.Bloom.IsEmpty);
         Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
         Assert.Empty(result.Events);
         Assert.Equal(0, result.Result.Size);
-        Assert.Empty(result.CreatedContracts);
+        Assert.Empty(result.StateChanges);
+        Assert.Equal(Moniker.None, result.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Call Contract that sets State fails.")]
     public async Task CanCreateAContractAndSetStateAsync()
@@ -136,11 +140,12 @@ public class QueryContractTests
         });
         Assert.NotNull(result);
         Assert.Equal("ILLEGAL_STATE_CHANGE", result.Error);
-        Assert.False(result.Bloom.IsEmpty);
+        Assert.True(result.Bloom.IsEmpty);
         Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
         Assert.Empty(result.Events);
         Assert.Equal(0, result.Result.Size);
-        Assert.Empty(result.CreatedContracts);
+        Assert.Empty(result.StateChanges);
+        Assert.Equal(Moniker.None, result.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Invalid Network Call Still Raises PreCheckError when ThrowOnFail is False")]
     public async Task InvalidNetworkCallStillRaisesPreCheckErrorWhenThrowOnFailFalse()

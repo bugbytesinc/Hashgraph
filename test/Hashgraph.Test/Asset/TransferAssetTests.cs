@@ -321,7 +321,7 @@ public class TransferAssetTests
         var cryptoAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<AddressOrAlias, long>
+            CryptoTransfers = new Dictionary<Address, long>
                 {
                     { _network.Payer, -2 * cryptoAmount },
                     { fxAccount1, cryptoAmount },
@@ -355,7 +355,7 @@ public class TransferAssetTests
         var cryptoAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<AddressOrAlias, long>
+            CryptoTransfers = new Dictionary<Address, long>
                 {
                     { _network.Payer, -2 * cryptoAmount },
                     { fxAccount1, cryptoAmount },

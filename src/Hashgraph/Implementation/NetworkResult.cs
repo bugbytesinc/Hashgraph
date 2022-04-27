@@ -63,10 +63,6 @@ internal class NetworkResult
         {
             return new CreateTopicRecord(this);
         }
-        else if (Receipt.ContractID != null)
-        {
-            return new CreateContractRecord(this);
-        }
         else if (Receipt.TokenID != null)
         {
             return new CreateTokenRecord(this);
@@ -82,6 +78,10 @@ internal class NetworkResult
         else if (Receipt.NewTotalSupply != 0)
         {
             return new TokenRecord(this);
+        }
+        else if (Record?.ContractCreateResult != null)
+        {
+            return new CreateContractRecord(this);
         }
         else if (Record?.ContractCallResult != null)
         {

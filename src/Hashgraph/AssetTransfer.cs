@@ -12,11 +12,11 @@ public sealed record AssetTransfer
     /// <summary>
     /// The Address having the asset to send.
     /// </summary>
-    public AddressOrAlias From { get; private init; }
+    public Address From { get; private init; }
     /// <summary>
     /// The Address receiving the asset.
     /// </summary>
-    public AddressOrAlias To { get; private init; }
+    public Address To { get; private init; }
     /// <summary>
     /// Internal Constructor representing the "None" version of an
     /// version.  This is a special construct indicating the version
@@ -40,7 +40,7 @@ public sealed record AssetTransfer
     /// <param name="toAddress">
     /// The address of the crypto account sending the token.
     /// </param>
-    public AssetTransfer(Asset asset, AddressOrAlias fromAddress, AddressOrAlias toAddress)
+    public AssetTransfer(Asset asset, Address fromAddress, Address toAddress)
     {
         Asset = asset;
         From = fromAddress;

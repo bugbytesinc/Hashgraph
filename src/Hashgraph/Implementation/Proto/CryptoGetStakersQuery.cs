@@ -23,7 +23,7 @@ public sealed partial class CryptoGetStakersQuery : INetworkQuery
         Header = header;
     }
 
-    internal CryptoGetStakersQuery(AddressOrAlias address) : this()
+    internal CryptoGetStakersQuery(Address address) : this()
     {
         AccountID = new AccountID(address);
     }

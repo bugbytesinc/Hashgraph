@@ -32,7 +32,7 @@ public sealed record TokenInfo
     /// <summary>
     /// The treasury account holding uncirculated tokens.
     /// </summary>
-    public AddressOrAlias Treasury { get; private init; }
+    public Address Treasury { get; private init; }
     /// <summary>
     /// The total balance of tokens in all accounts (the whole denomination).
     /// </summary>

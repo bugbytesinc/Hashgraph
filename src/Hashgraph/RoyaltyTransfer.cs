@@ -19,11 +19,11 @@ public sealed record RoyaltyTransfer
     /// <summary>
     /// The Address(s) that were charged the assessed fee.
     /// </summary>
-    public IReadOnlyCollection<Address> Payers { get; private init; }
+    public IReadOnlyList<Address> Payers { get; private init; }
     /// <summary>
     /// The Address receiving the transferred token or crypto.
     /// </summary>
-    public AddressOrAlias Receiver { get; private init; }
+    public Address Receiver { get; private init; }
     /// <summary>
     /// The (divisible) amount of tokens or crypto transferred.
     /// </summary>
@@ -40,7 +40,7 @@ public sealed record RoyaltyTransfer
         Amount = 0;
     }
     /// <summary>
-    /// Intenral Helper Class to Create Royalty Transfer
+    /// Internal Helper Class to Create Royalty Transfer
     /// from raw protobuf.
     /// </summary>        
     internal RoyaltyTransfer(AssessedCustomFee fee)

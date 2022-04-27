@@ -88,7 +88,7 @@ public class CreateAssetTests
         // Associating an asset with an account using its alias address has not yet been
         // implemented by the network, although it will accept the transaction.
         var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCreateAssetDefinitionWithAliasTreasury));
-        Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", testFailException.Message);
+        Assert.StartsWith("Unable to create Token, status: AccountIdDoesNotExist", testFailException.Message);
 
         //[Fact(DisplayName = "Create Asset: Can Create Asset Definition with Alias Treasury")]
         async Task CanCreateAssetDefinitionWithAliasTreasury()
@@ -219,7 +219,7 @@ public class CreateAssetTests
         var createParams = new CreateAssetParams
         {
             Name = Generator.Code(50),
-            Symbol = Generator.UppercaseAlphaCode(20),
+            Symbol = Generator.Code(100),
             Ceiling = (long)(Generator.Integer(10, 20) * 100000),
             Treasury = fxTreasury.Record.Address,
             Administrator = fxTreasury.PublicKey,
@@ -268,7 +268,7 @@ public class CreateAssetTests
         // Creating an asset with a treasury identified by its alias address has not yet been
         // implemented by the network, although it will accept the transaction.
         var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCreateAnAssetWithAliasTreasuryWithReceipt));
-        Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", testFailException.Message);
+        Assert.StartsWith("Unable to create Token, status: AccountIdDoesNotExist", testFailException.Message);
         //[Fact(DisplayName = "Create Asset: Can Create Asset with Alias Treasury")]
         async Task CanCreateAnAssetWithAliasTreasuryWithReceipt()
         {
@@ -278,7 +278,7 @@ public class CreateAssetTests
             var createParams = new CreateAssetParams
             {
                 Name = Generator.Code(50),
-                Symbol = Generator.UppercaseAlphaCode(20),
+                Symbol = Generator.Code(100),
                 Ceiling = (long)(Generator.Integer(10, 20) * 100000),
                 Treasury = fxTreasury.Alias,
                 Administrator = fxTreasury.PublicKey,
@@ -356,9 +356,9 @@ public class CreateAssetTests
                 fx.Params.Treasury = fxFile.Record.File;
             });
         });
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Receipt.Status);
-        Assert.StartsWith("Unable to create Token, status: InvalidTreasuryAccountForToken", tex.Message);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Status);
+        Assert.Equal(ResponseCode.AccountIdDoesNotExist, tex.Receipt.Status);
+        Assert.StartsWith("Unable to create Token, status: AccountIdDoesNotExist", tex.Message);
     }
     [Fact(DisplayName = "Create Asset: Can Set Treasury to Contract Account")]
     public async Task CanSetTreasuryToNodeContractAccount()
@@ -548,7 +548,7 @@ public class CreateAssetTests
     {
         await using var fxAsset = await TestAsset.CreateAsync(_network, ctx =>
         {
-            ctx.Params.Symbol = "123" + Generator.UppercaseAlphaCode(20) + "456";
+            ctx.Params.Symbol = "123" + Generator.Code(20) + "456";
         });
         Assert.NotNull(fxAsset.Record);
         Assert.NotNull(fxAsset.Record.Token);
@@ -674,7 +674,7 @@ public class CreateAssetTests
     {
         await using var fx = await TestAsset.CreateAsync(_network, ctx =>
         {
-            ctx.Params.Name = Generator.UppercaseAlphaCode(20) + " 123\r\n\t?";
+            ctx.Params.Name = Generator.Code(20) + " 123\r\n\t?";
         });
         var info = await fx.Client.GetTokenInfoAsync(fx.Record.Token);
         Assert.Equal(fx.Params.Name, info.Name);

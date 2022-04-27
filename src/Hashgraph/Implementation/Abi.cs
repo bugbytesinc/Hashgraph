@@ -264,6 +264,29 @@ internal static class Abi
 
         return new Address(shard, realm, num);
     }
+
+    private static ReadOnlyMemory<byte> EncodeAddressArrayPart(object value)
+    {
+        var addresses = (Address[])value;
+        var result = new byte[32 * (addresses.Length + 1)];
+        WriteInt256(result.AsSpan(0, 32), addresses.Length);
+        for (var i = 0; i < addresses.Length; i++)
+        {
+            EncodeAddressPart(addresses[i]).CopyTo(result.AsMemory(32 * (i + 1)));
+        }
+        return result;
+    }
+    private static object DecodeAddressArrayPart(ReadOnlyMemory<byte> arg)
+    {
+        var size = (int)ReadInt256(arg.Slice(0, 32));
+        var result = new Address[size];
+        for (var i = 0; i < size; i++)
+        {
+            result[i] = (Address)DecodeAddressPart(arg.Slice((i + 1) * 32, 32));
+        }
+        return result;
+    }
+
     private static void WriteInt256(Span<byte> buffer, long value)
     {
         var valueAsBytes = BitConverter.GetBytes(value);
@@ -331,6 +354,7 @@ internal static class Abi
         _typeMap.Add(typeof(byte[]), new TypeMapping("bytes", true, 32, EncodeByteArrayPart, DecodeByteArrayPart));
         _typeMap.Add(typeof(ReadOnlyMemory<byte>), new TypeMapping("bytes", true, 32, EncodeReadOnlyMemoryPart, DecodeReadOnlyMemoryPart));
         _typeMap.Add(typeof(Address), new TypeMapping("address", false, 32, EncodeAddressPart, DecodeAddressPart));
+        _typeMap.Add(typeof(Address[]), new TypeMapping("address[]", true, 32, EncodeAddressArrayPart, DecodeAddressArrayPart));
     }
     internal class TypeMapping
     {

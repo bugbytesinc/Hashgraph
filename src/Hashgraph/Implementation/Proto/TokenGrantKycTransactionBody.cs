@@ -31,7 +31,7 @@ public sealed partial class TokenGrantKycTransactionBody : INetworkTransaction
         }
     }
 
-    internal TokenGrantKycTransactionBody(Address token, AddressOrAlias address) : this()
+    internal TokenGrantKycTransactionBody(Address token, Address address) : this()
     {
         Token = new TokenID(token);
         Account = new AccountID(address);

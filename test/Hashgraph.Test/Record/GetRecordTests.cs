@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Extensions;
+using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
 using Proto;
 using System;
@@ -155,7 +156,8 @@ public class GetRecordTests
         Assert.Equal(record1.CallResult.Bloom.ToArray(), callRecord.CallResult.Bloom.ToArray());
         Assert.Equal(record1.CallResult.Gas, callRecord.CallResult.Gas);
         Assert.Equal(record1.CallResult.Events, callRecord.CallResult.Events);
-        Assert.Equal(record1.CallResult.CreatedContracts, callRecord.CallResult.CreatedContracts);
+        Assert.Empty(record1.CallResult.StateChanges);
+        Assert.Equal(Moniker.None, record1.CallResult.EncodedAddress);
         Assert.Equal(record1.CallResult.Result.As<string>(), callRecord.CallResult.Result.As<string>());
     }
     [Fact(DisplayName = "Get Record: Can get Create Topic Record")]
@@ -177,7 +179,8 @@ public class GetRecordTests
         Assert.Equal(fx.ContractRecord.CallResult.Bloom.ToArray(), createRecord.CallResult.Bloom.ToArray());
         Assert.Equal(fx.ContractRecord.CallResult.Gas, createRecord.CallResult.Gas);
         Assert.Equal(fx.ContractRecord.CallResult.Events, createRecord.CallResult.Events);
-        Assert.Equal(fx.ContractRecord.CallResult.CreatedContracts, createRecord.CallResult.CreatedContracts);
+        Assert.Empty(fx.ContractRecord.CallResult.StateChanges);
+        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract }).Slice(12)), fx.ContractRecord.CallResult.EncodedAddress);
         Assert.Equal(fx.ContractRecord.CallResult.Result.Size, createRecord.CallResult.Result.Size);
     }
     [Fact(DisplayName = "Get Record: Can get Create Account Record")]

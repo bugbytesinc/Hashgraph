@@ -22,7 +22,7 @@ public partial class Client
     /// account in addition to a list of all tokens held by the account
     /// with their balances.
     /// </returns>
-    public async Task<AccountBalances> GetAccountBalancesAsync(AddressOrAlias address, Action<IContext>? configure = null)
+    public async Task<AccountBalances> GetAccountBalancesAsync(Address address, Action<IContext>? configure = null)
     {
         return new AccountBalances(await ExecuteQueryAsync(CryptoGetAccountBalanceQuery.ForAccount(address), configure).ConfigureAwait(false));
     }
@@ -43,7 +43,7 @@ public partial class Client
     /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
     /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-    public async Task<ulong> GetAccountBalanceAsync(AddressOrAlias address, Action<IContext>? configure = null)
+    public async Task<ulong> GetAccountBalanceAsync(Address address, Action<IContext>? configure = null)
     {
         return new AccountBalances(await ExecuteQueryAsync(CryptoGetAccountBalanceQuery.ForAccount(address), configure).ConfigureAwait(false)).Crypto;
     }
