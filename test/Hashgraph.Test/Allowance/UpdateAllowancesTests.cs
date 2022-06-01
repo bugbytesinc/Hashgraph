@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Hashgraph.Test.Crypto;
+namespace Hashgraph.Test.Allowance;
 
 [Collection(nameof(NetworkCredentials))]
 public class UpdateAllowancesTests
@@ -21,9 +21,9 @@ public class UpdateAllowancesTests
         await using var fxAgent = await TestAccount.CreateAsync(_network);
 
         var amount = (long)fxOwner.CreateParams.InitialBalance / 4;
-        await fxOwner.Client.CreateAllowancesAsync(new AllowanceParams
+        await fxOwner.Client.AllocateAsync(new AllowanceParams
         {
-            CryptoAllowances = new[] { new CryptoAllowanceGrant(fxOwner, fxAgent, amount) },
+            CryptoAllowances = new[] { new CryptoAllowance(fxOwner, fxAgent, amount) },
             Signatory = fxOwner
         }, ctx =>
         {
@@ -31,9 +31,9 @@ public class UpdateAllowancesTests
             ctx.Signatory = fxOwner;
         });
 
-        var receipt = await fxOwner.Client.CreateAllowancesAsync(new AllowanceParams
+        var receipt = await fxOwner.Client.AllocateAsync(new AllowanceParams
         {
-            CryptoAllowances = new[] { new CryptoAllowanceGrant(fxOwner, fxAgent, amount * 2) },
+            CryptoAllowances = new[] { new CryptoAllowance(fxOwner, fxAgent, amount * 2) },
             Signatory = fxOwner
         }, ctx =>
         {
@@ -61,6 +61,7 @@ public class UpdateAllowancesTests
             var info = await fxOwner.Client.GetAccountDetailAsync(fxOwner, ctx => ctx.Payer = payer);
             Assert.Single(info.CryptoAllowances);
             var allowance = info.CryptoAllowances[0];
+            Assert.Equal(info.Address, allowance.Owner);
             Assert.Equal(fxAgent.Record.Address, allowance.Agent);
             Assert.Equal(amount * 2, allowance.Amount);
         }
@@ -72,9 +73,9 @@ public class UpdateAllowancesTests
         await using var fxAgent = await TestAccount.CreateAsync(_network);
 
         var amount = (long)fxOwner.CreateParams.InitialBalance / 3;
-        await fxOwner.Client.CreateAllowancesAsync(new AllowanceParams
+        await fxOwner.Client.AllocateAsync(new AllowanceParams
         {
-            CryptoAllowances = new[] { new CryptoAllowanceGrant(fxOwner, fxAgent, amount) },
+            CryptoAllowances = new[] { new CryptoAllowance(fxOwner, fxAgent, amount) },
             Signatory = fxOwner
         }, ctx =>
         {
@@ -82,9 +83,9 @@ public class UpdateAllowancesTests
             ctx.Signatory = fxOwner;
         });
 
-        var record = await fxOwner.Client.CreateAllowancesWithRecordAsync(new AllowanceParams
+        var record = await fxOwner.Client.AllocateWithRecordAsync(new AllowanceParams
         {
-            CryptoAllowances = new[] { new CryptoAllowanceGrant(fxOwner, fxAgent, amount * 2) },
+            CryptoAllowances = new[] { new CryptoAllowance(fxOwner, fxAgent, amount * 2) },
             Signatory = fxOwner
         }, ctx =>
         {
@@ -112,6 +113,7 @@ public class UpdateAllowancesTests
             var info = await fxOwner.Client.GetAccountDetailAsync(fxOwner, ctx => ctx.Payer = payer);
             Assert.Single(info.CryptoAllowances);
             var allowance = info.CryptoAllowances[0];
+            Assert.Equal(info.Address, allowance.Owner);
             Assert.Equal(fxAgent.Record.Address, allowance.Agent);
             Assert.Equal(amount * 2, allowance.Amount);
         }

@@ -23,8 +23,8 @@ public sealed partial class TokenTransferList
             throw new ArgumentOutOfRangeException(nameof(amount), "The amount to transfer must be non-negative.");
         }
         Token = new TokenID(token);
-        Transfers.Add(new AccountAmount(fromAddress, -amount));
-        Transfers.Add(new AccountAmount(toAddress, amount));
+        Transfers.Add(new AccountAmount(fromAddress, -amount, false));
+        Transfers.Add(new AccountAmount(toAddress, amount, false));
     }
     internal TokenTransferList(Asset asset, Address fromAddress, Address toAddress) : this()
     {

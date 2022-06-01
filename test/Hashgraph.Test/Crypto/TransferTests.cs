@@ -2,7 +2,6 @@
 using Hashgraph.Test.Fixtures;
 using NSec.Cryptography;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -56,7 +55,7 @@ public class TransferTests
 
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long> { { _network.Payer, -transferAmount }, { fx.Record.Address, transferAmount } }
+            CryptoTransfers = new[] { new CryptoTransfer(_network.Payer, -transferAmount), new CryptoTransfer(fx.Record.Address, transferAmount) }
         };
         var receipt = await fx.Client.TransferAsync(transfers);
         var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
@@ -108,7 +107,7 @@ public class TransferTests
         Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long> { { fx.Record.Address, -transferAmount }, { _network.Payer, transferAmount } },
+            CryptoTransfers = new[] { new CryptoTransfer(fx.Record.Address, -transferAmount), new CryptoTransfer(_network.Payer, transferAmount) },
             Signatory = fx.PrivateKey
         };
         var receipt = await client.TransferAsync(transfers);
@@ -168,11 +167,11 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { payer, -2 * transferAmount },
-                    { account1, transferAmount },
-                    { account2, transferAmount }
+                    new CryptoTransfer( payer, -2 * transferAmount ),
+                    new CryptoTransfer(account1, transferAmount ),
+                    new CryptoTransfer(account2, transferAmount )
                 }
         };
         var sendRecord = await fx1.Client.TransferWithRecordAsync(transfers);
@@ -182,11 +181,11 @@ public class TransferTests
         Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
         transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { account1, -transferAmount },
-                    { account2, -transferAmount },
-                    { payer, 2 * transferAmount }
+                    new CryptoTransfer( account1, -transferAmount ),
+                    new CryptoTransfer( account2, -transferAmount ),
+                    new CryptoTransfer( payer, 2 * transferAmount )
                 },
             Signatory = new Signatory(sig1, sig2)
         };
@@ -209,11 +208,11 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { payer, -transferAmount },
-                    { account1, transferAmount },
-                    { account2, transferAmount }
+                    new CryptoTransfer( payer, -transferAmount ),
+                    new CryptoTransfer(account1, transferAmount ),
+                    new CryptoTransfer(account2, transferAmount )
                 }
         };
         var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
@@ -236,10 +235,10 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { account1, 0 },
-                    { account2, 0 },
+                    new CryptoTransfer( account1, 0 ),
+                    new CryptoTransfer( account2, 0 ),
                 },
             Signatory = sig1
         };
@@ -275,13 +274,13 @@ public class TransferTests
         var payer = _network.Payer;
         var transferAmount = (long)Generator.Integer(100, 200);
 
-        var transfers = new TransferParams { CryptoTransfers = new Dictionary<Address, long> { } };
+        var transfers = new TransferParams { CryptoTransfers = new CryptoTransfer[] { } };
         var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
         {
             await fx1.Client.TransferWithRecordAsync(transfers);
         });
         Assert.Equal("CryptoTransfers", aor.ParamName);
-        Assert.StartsWith("The dictionary of crypto transfers can not be empty", aor.Message);
+        Assert.StartsWith("The list of crypto transfers can not be empty.", aor.Message);
     }
     [Fact(DisplayName = "Transfer: Transaction ID Information Makes Sense for Receipt")]
     public async Task TransactionIdMakesSenseForReceipt()

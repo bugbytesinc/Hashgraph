@@ -12,19 +12,19 @@ public sealed class AllowanceParams
     /// each account may sign transactions moving crypto
     /// out of this account up to the specified limit.
     /// </summary>
-    public IEnumerable<CryptoAllowanceGrant>? CryptoAllowances { get; set; }
+    public IEnumerable<CryptoAllowance>? CryptoAllowances { get; set; }
     /// <summary>
     /// A list of accounts and allocated allowances that 
     /// each account may sign transactions moving tokens
     /// out of this account up to the specified limit.
     /// </summary>
-    public IEnumerable<TokenAllowanceGrant>? TokenAllowances { get; set; }
+    public IEnumerable<TokenAllowance>? TokenAllowances { get; set; }
     /// <summary>
     /// A list of accounts and allocated allowances that 
     /// each account may sign transactions moving assets
     /// out of this account up to the specified limit.
     /// </summary>
-    public IEnumerable<AssetAllowanceGrant>? AssetAllowances { get; set; }
+    public IEnumerable<AssetAllowance>? AssetAllowances { get; set; }
     /// <summary>
     /// Additional private key, keys or signing callback method 
     /// required to authorize the transaction.

@@ -48,8 +48,8 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
             throw new ArgumentOutOfRangeException(nameof(amount), "The amount to transfer must be non-negative.");
         }
         var xferList = new TransferList();
-        xferList.AccountAmounts.Add(new AccountAmount(fromAddress, -amount));
-        xferList.AccountAmounts.Add(new AccountAmount(toAddress, amount));
+        xferList.AccountAmounts.Add(new AccountAmount(fromAddress, -amount, false));
+        xferList.AccountAmounts.Add(new AccountAmount(toAddress, amount, false));
         Transfers = xferList;
     }
     internal CryptoTransferTransactionBody(Address token, Address fromAddress, Address toAddress, long amount) : this()
@@ -70,26 +70,26 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
         if (transfers.CryptoTransfers is not null)
         {
             long sum = 0;
-            var netRequests = new Dictionary<Address, long>();
+            var netRequests = new Dictionary<Address, (long Amount, bool Delegated)>();
             foreach (var transfer in transfers.CryptoTransfers)
             {
-                if (transfer.Value == 0)
+                if (transfer.Amount == 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(transfers.CryptoTransfers), $"The amount to transfer crypto to/from {transfer.Key} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
+                    throw new ArgumentOutOfRangeException(nameof(transfers.CryptoTransfers), $"The amount to transfer crypto to/from {transfer.Address} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
                 }
-                if (netRequests.TryGetValue(transfer.Key, out long value))
+                if (netRequests.TryGetValue(transfer.Address, out (long Amount, bool Delegated) existing))
                 {
-                    netRequests[transfer.Key] = value + transfer.Value;
+                    netRequests[transfer.Address] = (existing.Amount + transfer.Amount, existing.Delegated || transfer.Delegated);
                 }
                 else
                 {
-                    netRequests[transfer.Key] = transfer.Value;
+                    netRequests[transfer.Address] = (transfer.Amount, transfer.Delegated);
                 }
-                sum += transfer.Value;
+                sum += transfer.Amount;
             }
             if (netRequests.Count == 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(transfers.CryptoTransfers), "The dictionary of crypto transfers can not be empty.");
+                throw new ArgumentOutOfRangeException(nameof(transfers.CryptoTransfers), "The list of crypto transfers can not be empty.");
             }
             if (sum != 0)
             {
@@ -98,9 +98,9 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
             var xferList = new TransferList();
             foreach (var transfer in netRequests)
             {
-                if (transfer.Value != 0)
+                if (transfer.Value.Amount != 0)
                 {
-                    xferList.AccountAmounts.Add(new AccountAmount(transfer.Key, transfer.Value));
+                    xferList.AccountAmounts.Add(new AccountAmount(transfer.Key, transfer.Value.Amount, transfer.Value.Delegated));
                 }
             }
             missingTransfers = xferList.AccountAmounts.Count == 0;
@@ -115,7 +115,7 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
                     throw new ArgumentException("Token", "The list of token transfers cannot contain a null or empty Token value.");
                 }
                 long sum = 0;
-                var netRequests = new Dictionary<Address, long>();
+                var netRequests = new Dictionary<Address, (long Amount, bool Delegated)>();
                 foreach (var xfer in tokenGroup)
                 {
                     if (xfer.Address.IsNullOrNone())
@@ -126,13 +126,13 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
                     {
                         throw new ArgumentOutOfRangeException(nameof(xfer.Amount), $"The amount to transfer tokens to/from {xfer.Address} must be a value, negative for transfers out, and positive for transfers in. A value of zero is not allowed.");
                     }
-                    if (netRequests.TryGetValue(xfer.Address, out long value))
+                    if (netRequests.TryGetValue(xfer.Address, out (long Amount, bool Delegated) existing))
                     {
-                        netRequests[xfer.Address] = value + xfer.Amount;
+                        netRequests[xfer.Address] = (existing.Amount + xfer.Amount, existing.Delegated || xfer.Delegated);
                     }
                     else
                     {
-                        netRequests[xfer.Address] = xfer.Amount;
+                        netRequests[xfer.Address] = (xfer.Amount, xfer.Delegated);
                     }
                     sum += xfer.Amount;
                 }
@@ -146,9 +146,9 @@ public sealed partial class CryptoTransferTransactionBody : INetworkTransaction
                 };
                 foreach (var netTransfer in netRequests)
                 {
-                    if (netTransfer.Value != 0)
+                    if (netTransfer.Value.Amount != 0)
                     {
-                        xferList.Transfers.Add(new AccountAmount(netTransfer.Key, netTransfer.Value));
+                        xferList.Transfers.Add(new AccountAmount(netTransfer.Key, netTransfer.Value.Amount, netTransfer.Value.Delegated));
                     }
                 }
                 if (xferList.Transfers.Count > 0)

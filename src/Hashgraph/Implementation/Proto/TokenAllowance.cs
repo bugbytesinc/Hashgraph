@@ -4,11 +4,11 @@ namespace Proto;
 
 public sealed partial class TokenAllowance
 {
-    internal TokenAllowance(Hashgraph.TokenAllowanceGrant allowance, bool isCreateNew) : this()
+    internal TokenAllowance(Hashgraph.TokenAllowance allowance) : this()
     {
-        if (allowance.Amount <= 0 && isCreateNew)
+        if (allowance.Amount < 0)
         {
-            throw new ArgumentOutOfRangeException(nameof(allowance.Amount), "The allowance amount must be greater than zero.");
+            throw new ArgumentOutOfRangeException(nameof(allowance.Amount), "The allowance amount must be greater than or equal to zero.");
         }
         TokenId = new TokenID(allowance.Token);
         Owner = new AccountID(allowance.Owner);

@@ -1,7 +1,6 @@
 ﻿using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -870,9 +869,9 @@ public class RoyaltyTransferTests
             AssetTransfers = new[] {
                     new AssetTransfer(movedAsset, fxSeller, fxBuyer)
                 },
-            CryptoTransfers = new Dictionary<Address, long> {
-                    { fxBuyer.Record.Address, -5_00_000_000 },
-                    { fxSeller.Record.Address, 5_00_000_000 }
+            CryptoTransfers = new[] {
+                    new CryptoTransfer( fxBuyer.Record.Address, -5_00_000_000 ),
+                    new CryptoTransfer(fxSeller.Record.Address, 5_00_000_000 )
                 },
             Signatory = new Signatory(fxBuyer, fxSeller)
         });
@@ -1358,9 +1357,9 @@ public class RoyaltyTransferTests
             AssetTransfers = new[] {
                     new AssetTransfer(movedAsset, fxSeller, fxBuyer)
                 },
-            CryptoTransfers = new Dictionary<Address, long> {
-                    { fxSeller.Record.Address, -5_00_000_000 },
-                    { fxBuyer.Record.Address, 5_00_000_000 }
+            CryptoTransfers = new[] {
+                    new CryptoTransfer( fxSeller.Record.Address, -5_00_000_000 ),
+                    new CryptoTransfer( fxBuyer.Record.Address, 5_00_000_000 )
                 },
             Signatory = new Signatory(fxBuyer, fxSeller)
         });
@@ -1482,9 +1481,9 @@ public class RoyaltyTransferTests
             AssetTransfers = new[] {
                     new AssetTransfer(movedAsset, fxSeller, fxBuyer)
                 },
-            CryptoTransfers = new Dictionary<Address, long> {
-                    { fxBuyer.Record.Address, -5_00_000_000 },
-                    { fxBystander.Record.Address, 5_00_000_000 }
+            CryptoTransfers = new[] {
+                    new CryptoTransfer( fxBuyer.Record.Address, -5_00_000_000 ),
+                    new CryptoTransfer(fxBystander.Record.Address, 5_00_000_000 )
                 },
             Signatory = new Signatory(fxBuyer, fxSeller)
         });

@@ -20,7 +20,7 @@ public class TestAllowance : IAsyncDisposable
         var fx = new TestAllowance();
         networkCredentials.Output?.WriteLine("STARTING SETUP: Test Allowance Instance");
         fx.Network = networkCredentials;
-        fx.Agent = await TestAccount.CreateAsync(networkCredentials);
+        fx.Agent = await TestAccount.CreateAsync(networkCredentials, fxA => fxA.CreateParams.InitialBalance = 50_00_000_000);
         fx.Owner = await TestAccount.CreateAsync(networkCredentials, fxO => fxO.CreateParams.InitialBalance = 50_00_000_000);
         fx.TestToken = await TestToken.CreateAsync(networkCredentials, fxT => fxT.Params.GrantKycEndorsement = null, fx.Owner);
         fx.TestAsset = await TestAsset.CreateAsync(networkCredentials, fxA => fxA.Params.GrantKycEndorsement = null, fx.Owner);
@@ -33,11 +33,11 @@ public class TestAllowance : IAsyncDisposable
             AssetTransfers = fx.TestAsset.MintRecord.SerialNumbers.Select(s => new AssetTransfer(new Asset(fx.TestAsset.Record.Token, s), fx.TestAsset.TreasuryAccount, fx.Owner)),
             Signatory = new Signatory(fx.TestToken.TreasuryAccount.PrivateKey, fx.TestAsset.TreasuryAccount.PrivateKey)
         });
-        fx.AssociateRecord = await fx.Owner.Client.CreateAllowancesWithRecordAsync(new AllowanceParams
+        fx.AssociateRecord = await fx.Owner.Client.AllocateWithRecordAsync(new AllowanceParams
         {
-            CryptoAllowances = new[] { new CryptoAllowanceGrant(fx.Owner, fx.Agent, (long) fx.Owner.CreateParams.InitialBalance) },
-            TokenAllowances = new[] { new TokenAllowanceGrant(fx.TestToken.Record.Token, fx.Owner, fx.Agent, (long) fx.TestToken.Params.Circulation) },
-            AssetAllowances = new[] { new AssetAllowanceGrant(fx.TestAsset.Record.Token, fx.Owner, fx.Agent) },
+            CryptoAllowances = new[] { new CryptoAllowance(fx.Owner, fx.Agent, (long) fx.Owner.CreateParams.InitialBalance) },
+            TokenAllowances = new[] { new TokenAllowance(fx.TestToken.Record.Token, fx.Owner, fx.Agent, (long) fx.TestToken.Params.Circulation) },
+            AssetAllowances = new[] { new AssetAllowance(fx.TestAsset.Record.Token, fx.Owner, fx.Agent) },
             Signatory = fx.Owner.PrivateKey
         });
         fx.Client = fx.Owner.Client;

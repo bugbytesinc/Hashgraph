@@ -1,22 +1,21 @@
-﻿namespace Hashgraph;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Hashgraph;
 
 /// <summary>
 /// Represents a token transfer (Token, Account, Amount)
 /// </summary>
-public sealed record TokenTransfer
+public sealed record CryptoTransfer
 {
     /// <summary>
-    /// The Address of the Token who's coins have transferred.
-    /// </summary>
-    public Address Token { get; private init; }
-    /// <summary>
-    /// The Address receiving or sending the token's coins.
+    /// The Address receiving or sending the crypto.
     /// </summary>
     public Address Address { get; private init; }
     /// <summary>
-    /// The (divisible) amount of coins transferred.  Negative values
-    /// indicate an outflow of coins to the <code>Account</code> positive
-    /// values indicate an inflow of coins from the associated <code>Account</code>.
+    /// The amount of crypto transferred in itnybars.  Negative values
+    /// indicate an outflow of tinybars to the <code>Account</code> positive
+    /// values indicate an inflow of tinybars from the associated <code>Account</code>.
     /// </summary>
     public long Amount { get; init; }
     /// <summary>
@@ -28,12 +27,10 @@ public sealed record TokenTransfer
     /// Internal Constructor representing the "None" 
     /// version of an transfer.
     /// </summary>
-    private TokenTransfer()
+    private CryptoTransfer()
     {
-        Token = Hashgraph.Address.None;
         Address = Hashgraph.Address.None;
         Amount = 0;
-        Delegated = false;
     }
     /// <summary>
     /// Public Constructor, an <code>TokenTransfer</code> is immutable after creation.
@@ -53,9 +50,8 @@ public sealed record TokenTransfer
     /// Indicates the parties involved in the transaction
     /// are acting as delegates thru a granted allowance.
     /// </param>
-    public TokenTransfer(Address token, Address address, long amount, bool delegated = false)
+    public CryptoTransfer(Address address, long amount, bool delegated = false)
     {
-        Token = token;
         Address = address;
         Amount = amount;
         Delegated = delegated;

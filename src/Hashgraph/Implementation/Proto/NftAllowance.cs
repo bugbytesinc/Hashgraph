@@ -4,7 +4,7 @@ namespace Proto;
 
 public sealed partial class NftAllowance
 {
-    internal NftAllowance(Hashgraph.AssetAllowanceGrant allowance) : this()
+    internal NftAllowance(Hashgraph.AssetAllowance allowance) : this()
     {
         TokenId = new TokenID(allowance.Token);
         Owner = new AccountID(allowance.Owner);

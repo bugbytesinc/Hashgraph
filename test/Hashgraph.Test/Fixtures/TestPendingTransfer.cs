@@ -33,9 +33,9 @@ public class TestPendingTransfer : IAsyncDisposable
         var xferAmount = (long)fx.SendingAccount.CreateParams.InitialBalance / 2;
         fx.TransferParams = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long> {
-                    { fx.SendingAccount, -xferAmount },
-                    { fx.ReceivingAccount, xferAmount }
+            CryptoTransfers = new [] {
+                    new CryptoTransfer( fx.SendingAccount, -xferAmount ),
+                    new CryptoTransfer( fx.ReceivingAccount, xferAmount )
                 },
             Signatory = new Signatory(
                 fx.PayingAccount.PrivateKey,
