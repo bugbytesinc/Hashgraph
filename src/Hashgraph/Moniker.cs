@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using System;
+﻿using System;
 
 namespace Hashgraph;
 
@@ -198,27 +197,5 @@ public sealed record Moniker
     public static implicit operator Address(Moniker moniker)
     {
         return new Address(moniker);
-    }
-}
-internal static class EncodedAddressExtensions
-{
-    internal static bool IsNullOrNone(this Moniker? address)
-    {
-        return address is null || address == Moniker.None;
-    }
-    internal static Moniker ToEncodedAddress(this ByteString? bytes, long shard, long realm)
-    {
-        if (bytes is not null && !bytes.IsEmpty)
-        {
-            try
-            {
-                return new Moniker(shard, realm, bytes.Memory);
-            }
-            catch
-            {
-                // For now we punt.
-            }
-        }
-        return Moniker.None;
     }
 }
