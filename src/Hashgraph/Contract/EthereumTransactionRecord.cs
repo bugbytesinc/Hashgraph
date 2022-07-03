@@ -6,7 +6,7 @@ namespace Hashgraph;
 /// <summary>
 /// Record produced from an Ethereum Transaction call.
 /// </summary>
-public sealed record EthereumRecord : TransactionRecord
+public sealed record EthereumTransactionRecord : TransactionRecord
 {
     /// <summary>
     /// The keccak256 hash of the ethereumData.
@@ -15,7 +15,7 @@ public sealed record EthereumRecord : TransactionRecord
     /// <summary>
     /// Internal Constructor of the record.
     /// </summary>
-    internal EthereumRecord(NetworkResult result) : base(result)
+    internal EthereumTransactionRecord(NetworkResult result) : base(result)
     {
         var record = result.Record!;
         EthereumHash = record.EthereumHash.Memory;

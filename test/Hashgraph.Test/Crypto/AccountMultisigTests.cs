@@ -51,6 +51,7 @@ public class AccountMultisigTests
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
         Assert.Equal(0, info.StakingInfo.Node);
         Assert.False(info.Deleted);
+        Assert.Equal(0, info.ContractNonce);
 
         // Move remaining funds back to primary account.
         var from = createResult.Address;

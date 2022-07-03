@@ -86,7 +86,7 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
             {
                 throw new ArgumentOutOfRangeException(nameof(updateParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be nonnegative.");
             }
-            MaxAutomaticTokenAssociations = updateParameters.AutoAssociationLimit.Value;
+            MaxAutomaticTokenAssociations = limit;
         }
         if (updateParameters.Alias is not null)
         {

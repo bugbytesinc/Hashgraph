@@ -89,7 +89,7 @@ internal class NetworkResult
         }
         else if (Record is not null && !Record.EthereumHash.IsEmpty)
         {
-            return new EthereumRecord(this);
+            return new EthereumTransactionRecord(this);
         }
         else
         {

@@ -101,6 +101,30 @@ public class UpdateAccountTests
         var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
         Assert.Equal(newMemo, info.Memo);
     }
+    [Fact(DisplayName = "Update Account: Can Update Auto Association Limit")]
+    public async Task CanUpdateAutoAssociationLimit()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        var newLimit = Generator.Integer(fxAccount.CreateParams.AutoAssociationLimit + 1, fxAccount.CreateParams.AutoAssociationLimit + 100);
+        var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
+        {
+            Address = fxAccount,
+            AutoAssociationLimit = newLimit,
+            Signatory = fxAccount
+        });
+        Assert.Equal(ResponseCode.Success, record.Status);
+        Assert.False(record.Hash.IsEmpty);
+        Assert.NotNull(record.Concensus);
+        Assert.NotNull(record.CurrentExchangeRate);
+        Assert.NotNull(record.NextExchangeRate);
+        Assert.NotEmpty(record.Hash.ToArray());
+        Assert.Empty(record.Memo);
+        Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(_network.Payer, record.Id.Address);
+
+        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+        Assert.Equal(newLimit, info.AutoAssociationLimit);
+    }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Update Account: Can Update Memo using Alias")]
     public async Task CanUpdateMemoUsingAliasDefect()
     {
@@ -542,7 +566,8 @@ public class UpdateAccountTests
             Address = fxAccount,
             AutoAssociationLimit = limit,
             Signatory = fxAccount
-        }, ctx => {
+        }, ctx =>
+        {
             ctx.FeeLimit = ctx.FeeLimit * limit / 100;
         });
 
@@ -656,5 +681,60 @@ public class UpdateAccountTests
         var type = typeof(Proto.CryptoUpdateTransactionBody);
         var definition = type.GetProperty("Alias");
         Assert.Null(definition);
+    }
+    [Fact(DisplayName = "Update Account: Can Update Staking Node")]
+    public async Task CanUpdateStakingNode()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);        
+        await fxAccount.Client.UpdateAccountAsync(new UpdateAccountParams
+        {
+            Address = fxAccount,
+            StakedNode = 3,
+            Signatory = fxAccount
+        });
+
+        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(3, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Update Account: Can Update Staking Address")]
+    public async Task CanUpdateStakingPrxoyAddress()
+    {
+        await using var fxProxied = await TestAccount.CreateAsync(_network);
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await fxAccount.Client.UpdateAccountAsync(new UpdateAccountParams
+        {
+            Address = fxAccount,
+            ProxyAccount = fxProxied.Record.Address,
+            Signatory = fxAccount
+        });
+
+        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(fxProxied.Record.Address, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Update Account: Can Decline State Reward")]
+    public async Task CanDeclineStateReward()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await fxAccount.Client.UpdateAccountAsync(new UpdateAccountParams
+        {
+            Address = fxAccount,
+            DeclineStakeReward = true,
+            Signatory = fxAccount
+        }); ;
+
+        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
+        Assert.NotNull(info.StakingInfo);
+        Assert.True(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
     }
 }

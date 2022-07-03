@@ -295,4 +295,71 @@ public class CreateContractTests
         Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
     }
 
+    [Fact(DisplayName = "NETWORK V0.27.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
+    public async Task CanCreateTokenTransferContractWithMaxAutoAssociationsDefect()
+    {
+        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanCreateTokenTransferContractWithMaxAutoAssociations));
+        Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
+        Assert.Equal("0", testFailException.Actual);
+
+        //[Fact(DisplayName = "Create Contract: Can Create Token Transfer Contract With Max Auto Associations")]
+        async Task CanCreateTokenTransferContractWithMaxAutoAssociations()
+        {
+            var limit = Generator.Integer(20, 400);
+            await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
+            {
+                fx.ContractParams.AutoAssociationLimit = limit;
+            });
+
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(limit, info.AutoAssociationLimit);
+        }
+    }
+    [Fact(DisplayName = "Create Contract: Can Set Staking Node")]
+    public async Task CanCreateTokenTransferContractWithMaxAutoAssociations()
+    {        
+        await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
+        {
+            fx.ContractParams.StakedNode = 3;
+        });
+
+        var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(3, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Create Contract: Can Set Proxy Address")]
+    public async Task CanSetProxyAddress()
+    {
+        await using var fxProxied = await TestAccount.CreateAsync(_network);
+        await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
+        {
+            fx.ContractParams.ProxyAccount = fxProxied.Record.Address;
+        });
+
+        var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(fxProxied.Record.Address, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Create Contract: Can Decline Staking Reward")]
+    public async Task CanDeclineStakingReward()
+    {
+        await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
+        {
+            fx.ContractParams.DeclineStakeReward = true;
+        });
+
+        var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.True(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
 }

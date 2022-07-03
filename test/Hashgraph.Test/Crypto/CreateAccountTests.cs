@@ -39,6 +39,7 @@ public class CreateAccountTests
         Assert.Equal(createResult.Address.AccountNum, info.Address.AccountNum);
         Assert.Empty(info.Tokens);
         Assert.False(info.Deleted);
+        Assert.Equal(0, info.ContractNonce);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
@@ -147,6 +148,88 @@ public class CreateAccountTests
 
         var info = await client.GetAccountInfoAsync(createResult.Address);
         Assert.Equal(memo, info.Memo);
+    }
+    [Fact(DisplayName = "Create Account: Can Set Positive Max Token Association")]
+    public async Task CanSetMaxTokenAssociation()
+    {
+        var (publicKey, privateKey) = Generator.KeyPair();
+        var limit = Generator.Integer(20, 200);
+        await using var client = _network.NewClient();
+        var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
+        {
+            InitialBalance = 1,
+            Endorsement = publicKey,
+            Signatory = privateKey,
+            AutoAssociationLimit = limit
+        });
+        Assert.Equal(ResponseCode.Success, createResult.Status);
+
+        var info = await client.GetAccountInfoAsync(createResult.Address);
+        Assert.Equal(limit, info.AutoAssociationLimit);
+    }
+    [Fact(DisplayName = "Create Account: Can Set Staking Node")]
+    public async Task CanSetStakingNode()
+    {
+        var (publicKey, privateKey) = Generator.KeyPair();        
+        await using var client = _network.NewClient();
+        var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
+        {
+            InitialBalance = 1,
+            Endorsement = publicKey,
+            Signatory = privateKey,
+            StakedNode = 3,
+        });
+        Assert.Equal(ResponseCode.Success, createResult.Status);
+
+        var info = await client.GetAccountInfoAsync(createResult.Address);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(3, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Create Account: Can Set Proxy Address")]
+    public async Task CanSetProxyAddress()
+    {
+        await using var fxProxied = await TestAccount.CreateAsync(_network);
+        var (publicKey, privateKey) = Generator.KeyPair();
+        await using var client = _network.NewClient();
+        var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
+        {
+            InitialBalance = 1,
+            Endorsement = publicKey,
+            Signatory = privateKey,
+            ProxyAccount = fxProxied.Record.Address
+        });
+        Assert.Equal(ResponseCode.Success, createResult.Status);
+
+        var info = await client.GetAccountInfoAsync(createResult.Address);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(fxProxied.Record.Address, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Create Account: Can Decline Staking Reward")]
+    public async Task CanDeclineStakingReward()
+    {
+        var (publicKey, privateKey) = Generator.KeyPair();
+        await using var client = _network.NewClient();
+        var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
+        {
+            InitialBalance = 1,
+            Endorsement = publicKey,
+            Signatory = privateKey,
+            DeclineStakeReward = true
+        });
+        Assert.Equal(ResponseCode.Success, createResult.Status);
+
+        var info = await client.GetAccountInfoAsync(createResult.Address);
+        Assert.NotNull(info.StakingInfo);
+        Assert.True(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
     }
     [Fact(DisplayName = "Create Account: Can Not Schedule Create Account")]
     public async Task CanScheduleCreateAccount()

@@ -176,6 +176,34 @@ public class UpdateContractTests
         Assert.Equal(newMemo, info.Memo);
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
     }
+    [Fact(DisplayName = "NETWORK V0.27.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
+    public async Task CanUpdateAutoAssociationLimitDefect()
+    {
+        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanUpdateAutoAssociationLimit));
+        Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
+        Assert.Equal("0", testFailException.Actual);
+
+        //[Fact(DisplayName = "Contract Update: Can Update Auto Association Limit")]
+        async Task CanUpdateAutoAssociationLimit()
+        {
+            await using var fx = await GreetingContract.CreateAsync(_network);
+            var newLimit = Generator.Integer(fx.ContractParams.AutoAssociationLimit + 1, fx.ContractParams.AutoAssociationLimit + 100);
+            var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                AutoAssociationLimit = newLimit,
+                Signatory = fx.PrivateKey
+            });
+            var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(fx.ContractRecord.Contract, info.Contract);
+            Assert.Equal(fx.ContractRecord.Contract, info.Address);
+            Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
+            Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
+            Assert.Equal(newLimit, info.AutoAssociationLimit);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
+        }
+    }
     [Fact(DisplayName = "Contract Update: Can Update Memo, skip Record")]
     public async Task CanUpdateMemoNoRecord()
     {
@@ -371,4 +399,57 @@ public class UpdateContractTests
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
     }
+    [Fact(DisplayName = "Contract Update: Can Update Staking Node")]
+    public async Task CanUpdateStakingNode()
+    {        
+        await using var fx = await GreetingContract.CreateAsync(_network);
+        var receipt = await fx.Client.UpdateContractAsync(new UpdateContractParams
+        {
+            Contract = fx.ContractRecord.Contract,
+            StakedNode = 3,
+            Signatory = fx.PrivateKey
+        });
+        var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(3, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Contract Update: Can Update Proxied Address")]
+    public async Task CanUpdateProxiedAddress()
+    {
+        await using var fxProxied = await TestAccount.CreateAsync(_network);
+        await using var fx = await GreetingContract.CreateAsync(_network);
+        var receipt = await fx.Client.UpdateContractAsync(new UpdateContractParams
+        {
+            Contract = fx.ContractRecord.Contract,
+            ProxyAccount = fxProxied.Record.Address,
+            Signatory = fx.PrivateKey
+        });
+        var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(fxProxied.Record.Address, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Contract Update: Can Decline Staking Reward")]
+    public async Task CanDeclineStakingReward()
+    {
+        await using var fx = await GreetingContract.CreateAsync(_network);
+        var receipt = await fx.Client.UpdateContractAsync(new UpdateContractParams
+        {
+            Contract = fx.ContractRecord.Contract,
+            DeclineStakeReward = true,
+            Signatory = fx.PrivateKey
+        });
+        var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.True(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+
 }

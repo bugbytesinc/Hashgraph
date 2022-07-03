@@ -59,6 +59,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(alias, infoFromAccount.Alias);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
+        Assert.Equal(0, infoFromAccount.ContractNonce);
         Assert.Equal(new Endorsement(publicKey), infoFromAccount.Endorsement);
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
@@ -81,6 +82,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(alias, infoFromAlias.Alias);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
+        Assert.Equal(0, infoFromAlias.ContractNonce);
         Assert.Equal(new Endorsement(publicKey), infoFromAlias.Endorsement);
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
@@ -148,6 +150,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(alias, infoFromAccount.Alias);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
+        Assert.Equal(0, infoFromAccount.ContractNonce);
         Assert.Equal(new Endorsement(publicKey), infoFromAccount.Endorsement);
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
@@ -170,6 +173,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(alias, infoFromAlias.Alias);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
+        Assert.Equal(0, infoFromAlias.ContractNonce);
         Assert.Equal(new Endorsement(publicKey), infoFromAlias.Endorsement);
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
@@ -241,6 +245,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(alias, infoFromAccount.Alias);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
+        Assert.Equal(0, infoFromAccount.ContractNonce);
         Assert.Equal(new Endorsement(publicKey), infoFromAccount.Endorsement);
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
@@ -263,6 +268,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(alias, infoFromAlias.Alias);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
+        Assert.Equal(0, infoFromAlias.ContractNonce);
         Assert.Equal(new Endorsement(publicKey), infoFromAlias.Endorsement);
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);

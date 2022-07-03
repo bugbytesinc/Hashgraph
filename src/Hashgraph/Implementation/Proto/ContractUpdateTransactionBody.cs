@@ -81,7 +81,7 @@ public sealed partial class ContractUpdateTransactionBody : INetworkTransaction
             {
                 throw new ArgumentOutOfRangeException(nameof(updateParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be nonnegative.");
             }
-            MaxAutomaticTokenAssociations = updateParameters.AutoAssociationLimit.Value;
+            MaxAutomaticTokenAssociations = limit;
         }
         if (updateParameters.ProxyAccount is not null)
         {

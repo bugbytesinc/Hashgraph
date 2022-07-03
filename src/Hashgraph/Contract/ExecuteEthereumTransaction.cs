@@ -48,8 +48,8 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<EthereumRecord> ExecuteEthereumTransactionWithRecordAsync(EthereumTransactionParams transactionParams, Action<IContext>? configure = null)
+    public async Task<EthereumTransactionRecord> ExecuteEthereumTransactionWithRecordAsync(EthereumTransactionParams transactionParams, Action<IContext>? configure = null)
     {
-        return new EthereumRecord(await ExecuteTransactionAsync(new EthereumTransactionBody(transactionParams), configure, true, transactionParams.Signatory).ConfigureAwait(false));
+        return new EthereumTransactionRecord(await ExecuteTransactionAsync(new EthereumTransactionBody(transactionParams), configure, true, transactionParams.Signatory).ConfigureAwait(false));
     }
 }

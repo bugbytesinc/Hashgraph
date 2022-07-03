@@ -27,6 +27,7 @@ public class GetInfoTests
         Assert.Equal(account.AccountNum, info.Address.AccountNum);
         Assert.NotNull(info.ContractId);
         Assert.False(info.Deleted);
+        Assert.Equal(0, info.ContractNonce);
         Assert.Equal(new Endorsement(_network.PublicKey), info.Endorsement);
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
@@ -52,6 +53,7 @@ public class GetInfoTests
         Assert.Equal(fxAccount.Record.Address, info.Address);
         Assert.NotNull(info.ContractId);
         Assert.False(info.Deleted);
+        Assert.Equal(0, info.ContractNonce);
         Assert.Equal(fxAccount.PublicKey, info.Endorsement);
         Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
         Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
@@ -78,6 +80,7 @@ public class GetInfoTests
         Assert.Equal(fxAccount.CreateRecord.Address, infoFromAddress.Address);
         Assert.NotNull(infoFromAddress.ContractId);
         Assert.False(infoFromAddress.Deleted);
+        Assert.Equal(0, infoFromAddress.ContractNonce);
         Assert.Equal(fxAccount.PublicKey, infoFromAddress.Endorsement);
         Assert.True(infoFromAddress.Balance > 0);
         Assert.False(infoFromAddress.ReceiveSignatureRequired);
@@ -100,6 +103,7 @@ public class GetInfoTests
         Assert.Equal(fxAccount.CreateRecord.Address, infoFromAlias.Address);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
+        Assert.Equal(0, infoFromAlias.ContractNonce);
         Assert.Equal(fxAccount.PublicKey, infoFromAlias.Endorsement);
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
@@ -130,6 +134,7 @@ public class GetInfoTests
         Assert.Equal(account.AccountNum, info.Address.AccountNum);
         Assert.NotNull(info.ContractId);
         Assert.False(info.Deleted);
+        Assert.Equal(0, info.ContractNonce);
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
@@ -166,6 +171,7 @@ public class GetInfoTests
         Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Address);
         Assert.NotNull(info.ContractId);
         Assert.False(info.Deleted);
+        Assert.Equal(0, info.ContractNonce);
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
