@@ -57,10 +57,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createReceipt.Address);
         Assert.Equal(createReceipt.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
-        Assert.NotNull(infoFromAccount.SmartContractId);
+        Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
-        Assert.NotNull(infoFromAccount.Proxy);
-        Assert.Equal(0, infoFromAccount.ProxiedToAccount);
         Assert.Equal(new Endorsement(publicKey), infoFromAccount.Endorsement);
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
@@ -70,17 +68,19 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
         AssertHg.NotEmpty(infoFromAccount.Ledger);
-        //Assert.Empty(infoFromAccount.CryptoAllowances);
-        //Assert.Empty(infoFromAccount.TokenAllowances);
-        //Assert.Empty(infoFromAccount.AssetAllowances);
+        Assert.NotNull(infoFromAccount.StakingInfo);
+        Assert.False(infoFromAccount.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Node);
 
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createReceipt.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
-        Assert.NotNull(infoFromAlias.SmartContractId);
+        Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
-        Assert.NotNull(infoFromAlias.Proxy);
-        Assert.Equal(0, infoFromAlias.ProxiedToAccount);
         Assert.Equal(new Endorsement(publicKey), infoFromAlias.Endorsement);
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
@@ -90,9 +90,13 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
         AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
-        //Assert.NotStrictEqual(infoFromAccount.CryptoAllowances, infoFromAlias.CryptoAllowances);
-        //Assert.NotStrictEqual(infoFromAccount.TokenAllowances, infoFromAlias.TokenAllowances);
-        //Assert.NotStrictEqual(infoFromAccount.AssetAllowances, infoFromAlias.AssetAllowances);
+        Assert.NotNull(infoFromAlias.StakingInfo);
+        Assert.False(infoFromAlias.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAlias.StakingInfo.Node);
     }
 
     [Fact(DisplayName = "Create Account By Alias: Can Schedule Create Account")]
@@ -142,10 +146,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createReceipt.Address);
         Assert.Equal(createReceipt.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
-        Assert.NotNull(infoFromAccount.SmartContractId);
+        Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
-        Assert.NotNull(infoFromAccount.Proxy);
-        Assert.Equal(0, infoFromAccount.ProxiedToAccount);
         Assert.Equal(new Endorsement(publicKey), infoFromAccount.Endorsement);
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
@@ -155,17 +157,19 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
         AssertHg.NotEmpty(infoFromAccount.Ledger);
-        //Assert.Empty(infoFromAccount.CryptoAllowances);
-        //Assert.Empty(infoFromAccount.TokenAllowances);
-        //Assert.Empty(infoFromAccount.AssetAllowances);
+        Assert.NotNull(infoFromAccount.StakingInfo);
+        Assert.False(infoFromAccount.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Node);
 
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createReceipt.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
-        Assert.NotNull(infoFromAlias.SmartContractId);
+        Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
-        Assert.NotNull(infoFromAlias.Proxy);
-        Assert.Equal(0, infoFromAlias.ProxiedToAccount);
         Assert.Equal(new Endorsement(publicKey), infoFromAlias.Endorsement);
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
@@ -175,9 +179,13 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
         AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
-        //Assert.NotStrictEqual(infoFromAccount.CryptoAllowances, infoFromAlias.CryptoAllowances);
-        //Assert.NotStrictEqual(infoFromAccount.TokenAllowances, infoFromAlias.TokenAllowances);
-        //Assert.NotStrictEqual(infoFromAccount.AssetAllowances, infoFromAlias.AssetAllowances);
+        Assert.NotNull(infoFromAccount.StakingInfo);
+        Assert.False(infoFromAccount.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Node);
     }
     [Fact(DisplayName = "Create Account By Alias: Can Create Account and get Records")]
     public async Task CanCreateAccountAndGetRecords()
@@ -231,10 +239,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createRecord.Address);
         Assert.Equal(createRecord.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
-        Assert.NotNull(infoFromAccount.SmartContractId);
+        Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
-        Assert.NotNull(infoFromAccount.Proxy);
-        Assert.Equal(0, infoFromAccount.ProxiedToAccount);
         Assert.Equal(new Endorsement(publicKey), infoFromAccount.Endorsement);
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
@@ -244,17 +250,19 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
         AssertHg.NotEmpty(infoFromAccount.Ledger);
-        //Assert.Empty(infoFromAccount.CryptoAllowances);
-        //Assert.Empty(infoFromAccount.TokenAllowances);
-        //Assert.Empty(infoFromAccount.AssetAllowances);
+        Assert.NotNull(infoFromAccount.StakingInfo);
+        Assert.False(infoFromAccount.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Node);
 
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createRecord.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
-        Assert.NotNull(infoFromAlias.SmartContractId);
+        Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
-        Assert.NotNull(infoFromAlias.Proxy);
-        Assert.Equal(0, infoFromAlias.ProxiedToAccount);
         Assert.Equal(new Endorsement(publicKey), infoFromAlias.Endorsement);
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
@@ -264,8 +272,12 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
         AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
-        //Assert.NotStrictEqual(infoFromAccount.CryptoAllowances, infoFromAlias.CryptoAllowances);
-        //Assert.NotStrictEqual(infoFromAccount.TokenAllowances, infoFromAlias.TokenAllowances);
-        //Assert.NotStrictEqual(infoFromAccount.AssetAllowances, infoFromAlias.AssetAllowances);
+        Assert.NotNull(infoFromAlias.StakingInfo);
+        Assert.False(infoFromAlias.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAlias.StakingInfo.Node);
     }
 }

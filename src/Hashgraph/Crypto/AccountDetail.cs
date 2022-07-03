@@ -32,10 +32,6 @@ public sealed record AccountDetail
     /// </summary>
     public bool Deleted { get; private init; }
     /// <summary>
-    /// The Address of the Account to which this account has staked.
-    /// </summary>
-    public Address Proxy { get; private init; }
-    /// <summary>
     /// The total number of tinybars that are proxy staked to this account.
     /// </summary>
     public long ProxiedToAccount { get; private init; }
@@ -119,7 +115,6 @@ public sealed record AccountDetail
         var address = Address = info.AccountId.AsAddress();
         SmartContractId = info.ContractAccountId;
         Deleted = info.Deleted;
-        Proxy = info.ProxyAccountId.AsAddress();
         ProxiedToAccount = info.ProxyReceived;
         Endorsement = info.Key.ToEndorsement();
         Balance = info.Balance;

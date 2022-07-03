@@ -118,9 +118,6 @@ public sealed record TokenInfo
     /// this account must sign the transaction if RenewAccount is
     /// specified.
     /// </summary>
-    /// <remarks>
-    /// If specified, an Administrator Endorsement must also be specified.
-    /// </remarks>
     public Address? RenewAccount { get; private init; }
     /// <summary>
     /// Flag indicating the token has been deleted.

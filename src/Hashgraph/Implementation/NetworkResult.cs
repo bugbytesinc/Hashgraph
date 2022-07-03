@@ -87,6 +87,10 @@ internal class NetworkResult
         {
             return new CallContractRecord(this);
         }
+        else if (Record is not null && !Record.EthereumHash.IsEmpty)
+        {
+            return new EthereumRecord(this);
+        }
         else
         {
             return new TransactionRecord(this);

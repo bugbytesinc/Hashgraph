@@ -154,11 +154,19 @@ public class GetRecordTests
         Assert.Equal(record1.Fee, callRecord.Fee);
         Assert.Equal(record1.CallResult.Error, callRecord.CallResult.Error);
         Assert.Equal(record1.CallResult.Bloom.ToArray(), callRecord.CallResult.Bloom.ToArray());
-        Assert.Equal(record1.CallResult.Gas, callRecord.CallResult.Gas);
+        Assert.Equal(record1.CallResult.GasUsed, callRecord.CallResult.GasUsed);
+        Assert.Equal(record1.CallResult.GasLimit, callRecord.CallResult.GasLimit);
+        Assert.Equal(record1.CallResult.PayableAmount, callRecord.CallResult.PayableAmount);
+        Assert.Equal(record1.CallResult.MessageSender, callRecord.CallResult.MessageSender);
         Assert.Equal(record1.CallResult.Events, callRecord.CallResult.Events);
-        Assert.Empty(record1.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(record1.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, record1.CallResult.EncodedAddress);
         Assert.Equal(record1.CallResult.Result.As<string>(), callRecord.CallResult.Result.As<string>());
+        Assert.Equal(record1.CallResult.FunctionArgs.Size, record1.CallResult.FunctionArgs.Size);
     }
     [Fact(DisplayName = "Get Record: Can get Create Topic Record")]
     public async Task CanGetCreateContractRecord()
@@ -177,11 +185,19 @@ public class GetRecordTests
         Assert.Equal(fx.ContractRecord.Contract, createRecord.Contract);
         Assert.Equal(fx.ContractRecord.CallResult.Error, createRecord.CallResult.Error);
         Assert.Equal(fx.ContractRecord.CallResult.Bloom.ToArray(), createRecord.CallResult.Bloom.ToArray());
-        Assert.Equal(fx.ContractRecord.CallResult.Gas, createRecord.CallResult.Gas);
+        Assert.Equal(fx.ContractRecord.CallResult.GasUsed, createRecord.CallResult.GasUsed);
+        Assert.Equal(fx.ContractRecord.CallResult.GasLimit, createRecord.CallResult.GasLimit);
+        Assert.Equal(fx.ContractRecord.CallResult.PayableAmount, createRecord.CallResult.PayableAmount);
+        Assert.Equal(fx.ContractRecord.CallResult.MessageSender, createRecord.CallResult.MessageSender);
         Assert.Equal(fx.ContractRecord.CallResult.Events, createRecord.CallResult.Events);
-        Assert.Empty(fx.ContractRecord.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(fx.ContractRecord.CallResult.StateChanges);
+         */
         Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract }).Slice(12)), fx.ContractRecord.CallResult.EncodedAddress);
         Assert.Equal(fx.ContractRecord.CallResult.Result.Size, createRecord.CallResult.Result.Size);
+        Assert.Equal(fx.ContractRecord.CallResult.FunctionArgs.Size, createRecord.CallResult.FunctionArgs.Size);
     }
     [Fact(DisplayName = "Get Record: Can get Create Account Record")]
     public async Task CanGetCreateAccountRecord()

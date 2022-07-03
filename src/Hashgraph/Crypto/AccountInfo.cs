@@ -1,8 +1,6 @@
 ﻿using Proto;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Hashgraph;
 
@@ -23,7 +21,12 @@ public sealed record AccountInfo
     /// ID of a smart contract instance if this is the account
     /// associated with a smart contract.
     /// </summary>
-    public string SmartContractId { get; private init; }
+    public string ContractId { get; private init; }
+    /// <summary>
+    /// The smart contract (EVM) transaction counter nonce
+    /// associated with this account.
+    /// </summary>
+    public long ContractNonce { get; private init; }
     /// <summary>
     /// <code>True</code> if this account has been deleted.
     /// Its existence in the network will cease after the expiration
@@ -31,14 +34,6 @@ public sealed record AccountInfo
     /// transactions except to extend the expiration/removal date.
     /// </summary>
     public bool Deleted { get; private init; }
-    /// <summary>
-    /// The Address of the Account to which this account has staked.
-    /// </summary>
-    public Address Proxy { get; private init; }
-    /// <summary>
-    /// The total number of tinybars that are proxy staked to this account.
-    /// </summary>
-    public long ProxiedToAccount { get; private init; }
     /// <summary>
     /// Account's Public Key (typically a single Ed25519 key).
     /// </summary>
@@ -96,16 +91,19 @@ public sealed record AccountInfo
     /// </summary>
     public ReadOnlyMemory<byte> Ledger { get; private init; }
     /// <summary>
+    /// Staking Metadata Information for the account.
+    /// </summary>
+    public StakingInfo StakingInfo { get; private init; }
+    /// <summary>
     /// Internal Constructor from Raw Response
     /// </summary>
     internal AccountInfo(Response response)
     {
         var info = response.CryptoGetInfo.AccountInfo;
         Address = info.AccountID.AsAddress();
-        SmartContractId = info.ContractAccountID;
+        ContractId = info.ContractAccountID;
+        ContractNonce = info.EthereumNonce;
         Deleted = info.Deleted;
-        Proxy = info.ProxyAccountID.AsAddress();
-        ProxiedToAccount = info.ProxyReceived;
         Endorsement = info.Key.ToEndorsement();
         Balance = info.Balance;
         Tokens = info.TokenRelationships.ToBalances();
@@ -117,5 +115,6 @@ public sealed record AccountInfo
         AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
         Alias = info.Alias.ToAlias(info.AccountID.ShardNum, info.AccountID.RealmNum);
         Ledger = info.LedgerId.Memory;
+        StakingInfo = new StakingInfo(info.StakingInfo);
     }
 }

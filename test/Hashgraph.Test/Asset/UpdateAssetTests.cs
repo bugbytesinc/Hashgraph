@@ -1022,7 +1022,9 @@ public class UpdateAssetTests
     [Fact(DisplayName = "Update Asset: Can Not Change Treasury to Unassociated Account")]
     public async Task CanChangeTreasuryToUnassociatedAccount()
     {
-        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxAccount = await TestAccount.CreateAsync(_network, fx => {
+            fx.CreateParams.AutoAssociationLimit = 0;
+        });
         await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
         {
             fx.Params.ConfiscateEndorsement = null;
@@ -1044,12 +1046,38 @@ public class UpdateAssetTests
                 Signatory = new Signatory(fxAsset.AdminPrivateKey, fxAccount.PrivateKey)
             });
         });
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Status);
-        Assert.Equal(ResponseCode.InvalidTreasuryAccountForToken, tex.Receipt.Status);
+        Assert.Equal(ResponseCode.NoRemainingAutomaticAssociations, tex.Status);
+        Assert.Equal(ResponseCode.NoRemainingAutomaticAssociations, tex.Receipt.Status);
 
         // Confirm it did not change the Treasury Account
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
         Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+    }
+    [Fact(DisplayName = "Update Asset: Can Change Treasury to Auto-Associated Account")]
+    public async Task CanChangeTreasuryToAutoAssociatedAccount()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
+        {
+            fx.Params.ConfiscateEndorsement = null;
+            fx.Params.SuspendEndorsement = null;
+            fx.Params.GrantKycEndorsement = null;
+        });
+        var totalCirculation = (ulong)fxAsset.Metadata.Length;
+
+        Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
+        Assert.Equal(totalCirculation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+
+        await fxAsset.Client.UpdateTokenAsync(new UpdateTokenParams
+        {
+            Token = fxAsset.Record.Token,
+            Treasury = fxAccount.Record.Address,
+            Signatory = new Signatory(fxAsset.AdminPrivateKey, fxAccount.PrivateKey)
+        });
+
+        // Confirm it did change the Treasury Account
+        var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
+        Assert.Equal(fxAccount.Record.Address, info.Treasury);
     }
     [Fact(DisplayName = "Update Asset: Can Not Schedule Update Asset")]
     public async Task CanNotScheduleUpdateAsset()

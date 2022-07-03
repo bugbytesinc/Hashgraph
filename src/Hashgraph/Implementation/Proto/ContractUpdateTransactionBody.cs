@@ -44,7 +44,12 @@ public sealed partial class ContractUpdateTransactionBody : INetworkTransaction
         if (updateParameters.Expiration is null &&
             updateParameters.Administrator is null &&
             updateParameters.RenewPeriod is null &&
-            updateParameters.Memo is null)
+            updateParameters.RenewAccount is null &&
+            updateParameters.Memo is null &&
+            updateParameters.ProxyAccount is null &&
+            updateParameters.StakedNode is null &&
+            updateParameters.DeclineStakeReward is null &&
+            updateParameters.AutoAssociationLimit is null)
         {
             throw new ArgumentException("The Contract Updates contains no update properties, it is blank.", nameof(updateParameters));
         }
@@ -53,7 +58,7 @@ public sealed partial class ContractUpdateTransactionBody : INetworkTransaction
         {
             ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
         }
-        if (!(updateParameters.Administrator is null))
+        if (updateParameters.Administrator is not null)
         {
             AdminKey = new Key(updateParameters.Administrator);
         }
@@ -61,9 +66,38 @@ public sealed partial class ContractUpdateTransactionBody : INetworkTransaction
         {
             AutoRenewPeriod = new Duration(updateParameters.RenewPeriod.Value);
         }
+        if (updateParameters.RenewAccount is not null)
+        {
+            AutoRenewAccountId = new AccountID(updateParameters.RenewAccount);
+        }
         if (!string.IsNullOrWhiteSpace(updateParameters.Memo))
         {
             MemoWrapper = updateParameters.Memo;
+        }
+        if (updateParameters.AutoAssociationLimit is not null)
+        {
+            var limit = updateParameters.AutoAssociationLimit.Value;
+            if (limit < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(updateParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be nonnegative.");
+            }
+            MaxAutomaticTokenAssociations = updateParameters.AutoAssociationLimit.Value;
+        }
+        if (updateParameters.ProxyAccount is not null)
+        {
+            if (updateParameters.StakedNode is not null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(updateParameters.ProxyAccount), "Can not set ProxyAccount and StakedNode at the same time.");
+            }
+            StakedAccountId = new AccountID(updateParameters.ProxyAccount);
+        }
+        if (updateParameters.StakedNode is not null)
+        {
+            StakedNodeId = updateParameters.StakedNode.Value;
+        }
+        if (updateParameters.DeclineStakeReward is not null)
+        {
+            DeclineReward = updateParameters.DeclineStakeReward.Value;
         }
     }
 }

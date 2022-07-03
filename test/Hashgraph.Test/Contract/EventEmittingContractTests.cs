@@ -33,11 +33,20 @@ public class EventEmittingContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 40_000UL);
+        Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, record.CallResult.GasLimit);
+        Assert.Equal(0, record.CallResult.PayableAmount);
+        Assert.Equal(Address.None, record.CallResult.MessageSender);
         Assert.Empty(record.CallResult.Events);
-        Assert.Empty(record.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(record.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
         Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
+        Assert.Equal(0, record.CallResult.FunctionArgs.Size);
     }
     [Fact(DisplayName = "Event Emitting Contract: Can Get Contract Balance from Call (Local Call)")]
     public async Task CanGetContractBalanceFromLocalCall()
@@ -54,11 +63,20 @@ public class EventEmittingContractTests
         Assert.NotNull(result);
         Assert.Empty(result.Error);
         Assert.False(result.Bloom.IsEmpty);
-        Assert.InRange(result.Gas, 0UL, 40000UL);
+        Assert.InRange(result.GasUsed, 0UL, 40000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, result.GasLimit);
+        Assert.Equal(0, result.PayableAmount);
+        Assert.Equal(Address.None, result.MessageSender);
         Assert.Empty(result.Events);
-        Assert.Empty(result.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(result.StateChanges);
+         */
         Assert.Equal(Moniker.None, result.EncodedAddress);
         Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
+        Assert.Equal(0, result.FunctionArgs.Size);
     }
     [Fact(DisplayName = "Event Emitting Contract: Can Call Contract that Sends Funds, Emitting Event")]
     public async Task CanCallContractMethodSendingFunds()
@@ -82,9 +100,17 @@ public class EventEmittingContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 300_000UL);
+        Assert.InRange(record.CallResult.GasUsed, 0UL, 300_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, record.CallResult.GasLimit);
+        Assert.Equal(0, record.CallResult.PayableAmount);
+        Assert.Equal(Address.None, record.CallResult.MessageSender);
         Assert.Single(record.CallResult.Events);
-        Assert.Empty(record.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(record.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
 
         // Now check the emitted Event
@@ -94,7 +120,11 @@ public class EventEmittingContractTests
         Assert.Single(result.Topic);
         Assert.Equal("9277a4302be4a765ae8585e09a9306bd55da10e20e59ed4f611a04ba606fece8", Hex.FromBytes(result.Topic[0]));
 
-        Assert.Empty(record.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(record.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
 
         var (address, amount) = result.Data.As<Address, long>();
@@ -171,8 +201,8 @@ public class EventEmittingContractTests
         // but this will fail because the account is already deleted.
         pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
-                // So if this throws an error, why did the above transfer not fail?
-                await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
+            // So if this throws an error, why did the above transfer not fail?
+            await fxAccount1.Client.GetAccountInfoAsync(fxAccount1.Record.Address);
         });
         Assert.Equal(ResponseCode.AccountDeleted, pex.Status);
 

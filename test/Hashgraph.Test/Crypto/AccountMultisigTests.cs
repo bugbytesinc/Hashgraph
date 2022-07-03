@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Test.Fixtures;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,11 +43,13 @@ public class AccountMultisigTests
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
-        //Assert.Empty(info.CryptoAllowances);
-        //Assert.Empty(info.TokenAllowances);
-        //Assert.Empty(info.AssetAllowances);
-
-        Assert.Equal(new Address(0, 0, 0), info.Proxy);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(0, info.StakingInfo.PendingReward);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Node);
         Assert.False(info.Deleted);
 
         // Move remaining funds back to primary account.

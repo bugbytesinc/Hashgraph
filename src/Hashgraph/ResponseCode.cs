@@ -936,52 +936,52 @@ public enum ResponseCode
     /// The provided pause key was invalid
     /// </summary>
     [Description("INVALID_PAUSE_KEY")] InvalidPauseKey = 267,
-    /// <summary>
+    /// <summary> 
     /// The update file in a freeze transaction body must exist.
     /// </summary>
     [Description("FREEZE_UPDATE_FILE_DOES_NOT_EXIST")] FreezeUpdateFileDoesNotExist = 268,
-    /// <summary>
+    /// <summary> 
     /// The hash of the update file in a freeze transaction body must match the in-memory hash.
     /// </summary>
     [Description("FREEZE_UPDATE_FILE_HASH_DOES_NOT_MATCH")] FreezeUpdateFileHashDoesNotMatch = 269,
-    /// <summary>
+    /// <summary> 
     /// A FREEZE_UPGRADE transaction was handled with no previous update prepared.
     /// </summary>
     [Description("NO_UPGRADE_HAS_BEEN_PREPARED")] NoUpgradeHasBeenPrepared = 270,
-    /// <summary>
+    /// <summary> 
     /// A FREEZE_ABORT transaction was handled with no scheduled freeze.
     /// </summary>
     [Description("NO_FREEZE_IS_SCHEDULED")] NoFreezeIsScheduled = 271,
-    /// <summary>
+    /// <summary> 
     /// The update file hash when handling a FREEZE_UPGRADE transaction differs from the file
     /// hash at the time of handling the PREPARE_UPGRADE transaction.
     /// </summary>
     [Description("UPDATE_FILE_HASH_CHANGED_SINCE_PREPARE_UPGRADE")] UpdateFileHashChangedSincePrepareUpgrade = 272,
-    /// <summary>
+    /// <summary> 
     /// The given freeze start time was in the (consensus) past.
     /// </summary>
     [Description("FREEZE_START_TIME_MUST_BE_FUTURE")] FreezeStartTimeMustBeFuture = 273,
-    /// <summary>
+    /// <summary> 
     /// The prepared update file cannot be updated or appended until either the upgrade has
     /// been completed, or a FREEZE_ABORT has been handled.
     /// </summary>
     [Description("PREPARED_UPDATE_FILE_IS_IMMUTABLE")] PreparedUpdateFileIsImmutable = 274,
-    /// <summary>
+    /// <summary> 
     /// Once a freeze is scheduled, it must be aborted before any other type of freeze can
     /// can be performed.
     /// </summary>
     [Description("FREEZE_ALREADY_SCHEDULED")] FreezeAlreadyScheduled = 275,
-    /// <summary>
+    /// <summary> 
     /// If an NMT upgrade has been prepared, the following operation must be a FREEZE_UPGRADE.
     /// (To issue a FREEZE_ONLY, submit a FREEZE_ABORT first.)
     /// </summary>
     [Description("FREEZE_UPGRADE_IN_PROGRESS")] FreezeUpgradeInProgress = 276,
-    /// <summary>
+    /// <summary> 
     /// If an NMT upgrade has been prepared, the subsequent FREEZE_UPGRADE transaction must 
     /// confirm the id of the file to be used in the upgrade.
     /// </summary>
     [Description("UPDATE_FILE_ID_DOES_NOT_MATCH_PREPARED")] UpdateFileIdDoesNotMatchPrepared = 277,
-    /// <summary>
+    /// <summary> 
     /// If an NMT upgrade has been prepared, the subsequent FREEZE_UPGRADE transaction must 
     /// confirm the hash of the file to be used in the upgrade.
     /// </summary>
@@ -1011,7 +1011,7 @@ public enum ResponseCode
     /// </summary>
     [Description("UNEXPECTED_TOKEN_DECIMALS")] UnexpectedTokenDecimals = 283,
     /// <summary>
-    /// The proxy account id is invalid or does not exist.
+    /// [Deprecated] The proxy account id is invalid or does not exist.
     /// </summary>
     [Description("INVALID_PROXY_ACCOUNT_ID")] InvalidProxyAccountId = 284,
     /// <summary>
@@ -1041,7 +1041,7 @@ public enum ResponseCode
     /// </summary>
     [Description("NEGATIVE_ALLOWANCE_AMOUNT")] NegativeAllowanceAmount = 290,
     /// <summary>
-    /// The approveForAll flag cannot be set for a fungible token.
+    /// [Deprecated] The approveForAll flag cannot be set for a fungible token.
     /// </summary>
     [Description("CANNOT_APPROVE_FOR_ALL_FUNGIBLE_COMMON")] CannotApproveForAllFungibleCommon = 291,
     /// <summary>
@@ -1058,16 +1058,16 @@ public enum ResponseCode
     /// </summary>
     [Description("MAX_ALLOWANCES_EXCEEDED")] MaxAllowancesExceeded = 294,
     /// <summary>
-    /// No allowances have been specified in the approval/adjust transaction.
+    /// No allowances have been specified in the approval transaction.
     /// </summary>
     [Description("EMPTY_ALLOWANCES")] EmptyAllowances = 295,
     /// <summary>
-    /// Spender is repeated more than once in Crypto or Token or NFT allowance lists in a single
-    /// CryptoApproveAllowance or CryptoAdjustAllowance transaction.
+    /// [Deprecated] Spender is repeated more than once in Crypto or Token or NFT allowance lists in a single
+    /// CryptoApproveAllowance transaction.
     /// </summary>
     [Description("SPENDER_ACCOUNT_REPEATED_IN_ALLOWANCES")] SpenderAccountRepeatedInAllowances = 296,
     /// <summary>
-    /// Serial numbers are repeated in nft allowance for a single spender account
+    /// [Deprecated] Serial numbers are repeated in nft allowance for a single spender account
     /// </summary>
     [Description("REPEATED_SERIAL_NUMS_IN_NFT_ALLOWANCES")] RepeatedSerialNumsInNftAllowances = 297,
     /// <summary>
@@ -1079,9 +1079,102 @@ public enum ResponseCode
     /// </summary>
     [Description("NFT_IN_FUNGIBLE_TOKEN_ALLOWANCES")] NftInFungibleTokenAllowances = 299,
     /// <summary>
-    /// An approval/adjustment transaction was submitted where the payer and owner account are
-    /// not the same. Currently only the owner is permitted to perform these operations.
+    /// The account id specified as the owner is invalid or does not exist.
     /// </summary>
-    [Description("PAYER_AND_OWNER_NOT_EQUAL")] PayerAndOwnerNotEqual = 300,
-
+    [Description("INVALID_ALLOWANCE_OWNER_ID")] InvalidAllowanceOwnerId = 300,
+    /// <summary>
+    /// The account id specified as the spender is invalid or does not exist.
+    /// </summary>
+    [Description("INVALID_ALLOWANCE_SPENDER_ID")] InvalidAllowanceSpenderId = 301,
+    /// <summary>
+    /// [Deprecated] If the CryptoDeleteAllowance transaction has repeated crypto or token or Nft allowances to delete.
+    /// </summary>
+    [Description("REPEATED_ALLOWANCES_TO_DELETE")] RepeatedAllowancesToDelete = 302,
+    /// <summary>
+    /// If the account Id specified as the delegating spender is invalid or does not exist.
+    /// </summary>
+    [Description("INVALID_DELEGATING_SPENDER")] InvalidDelegatingSpender = 303,
+    /// <summary>
+    /// The delegating Spender cannot grant approveForAll allowance on a NFT token type for another spender.
+    /// </summary>
+    [Description("DELEGATING_SPENDER_CANNOT_GRANT_APPROVE_FOR_ALL")] DelegatingSpenderCannotGrantApproveForAll = 304,
+    /// <summary>
+    /// The delegating Spender cannot grant allowance on a NFT serial for another spender as it doesnt not have approveForAll
+    /// granted on token-owner.
+    /// </summary>
+    [Description("DELEGATING_SPENDER_DOES_NOT_HAVE_APPROVE_FOR_ALL")] DelegatingSpenderDoesNotHaveApproveForAll = 305,
+    /// <summary>
+    /// The scheduled transaction could not be created because it's expiration_time was too far in the future.
+    /// </summary>
+    [Description("SCHEDULE_EXPIRATION_TIME_TOO_FAR_IN_FUTURE")] ScheduleExpirationTimeTooFarInFuture = 306,
+    /// <summary>
+    /// The scheduled transaction could not be created because it's expiration_time was less than or equal to the consensus time.
+    /// </summary>
+    [Description("SCHEDULE_EXPIRATION_TIME_MUST_BE_HIGHER_THAN_CONSENSUS_TIME")] ScheduleExpirationTimeMustBeHigherThanConsensusTime = 307,
+    /// <summary>
+    /// The scheduled transaction could not be created because it would cause throttles to be violated on the specified expiration_time.
+    /// </summary>
+    [Description("SCHEDULE_FUTURE_THROTTLE_EXCEEDED")] ScheduleFutureThrottleExceeded = 308,
+    /// <summary>
+    /// The scheduled transaction could not be created because it would cause the gas limit to be violated on the specified expiration_time.
+    /// </summary>
+    [Description("SCHEDULE_FUTURE_GAS_LIMIT_EXCEEDED")] ScheduleFutureGasLimitExceeded = 309,
+    /// <summary>
+    /// The ethereum transaction either failed parsing or failed signature validation, or some other EthereumTransaction error not covered by another response code.
+    /// </summary>
+    [Description("INVALID_ETHEREUM_TRANSACTION")] InvalidEthereumTransaction = 310,
+    /// <summary>
+    /// EthereumTransaction was signed against a chainId that this network does not support.
+    /// </summary>
+    [Description("WRONG_CHAIN_ID")] WrongChainId = 311,
+    /// <summary>
+    /// This transaction specified an ethereumNonce that is not the current ethereumNonce of the account.
+    /// </summary>
+    [Description("WRONG_NONCE")] WrongNonce = 312,
+    /// <summary>
+    /// The ethereum transaction specified an access list, which the network does not support.
+    /// </summary>
+    [Description("ACCESS_LIST_UNSUPPORTED")] AccessListUnsupported = 313,
+    /// <summary>
+    /// A schedule being signed or deleted has passed it's expiration date and is pending execution if needed and then expiration.
+    /// </summary>
+    [Description("SCHEDULE_PENDING_EXPIRATION")] SchedulePendingExpiration = 314,
+    /// <summary>
+    /// A selfdestruct or ContractDelete targeted a contract that is a token treasury.
+    /// </summary>
+    [Description("CONTRACT_IS_TOKEN_TREASURY")] ContractIsTokenTreasury = 315,
+    /// <summary>
+    /// A selfdestruct or ContractDelete targeted a contract with non-zero token balances.
+    /// </summary>
+    [Description("CONTRACT_HAS_NON_ZERO_TOKEN_BALANCES")] ContractHasNonZeroTokenBalances = 316,
+    /// <summary>
+    /// A contract referenced by a transaction is "detached"; that is, expired and lacking any
+    /// hbar funds for auto-renewal payment---but still within its post-expiry grace period.
+    /// </summary>
+    [Description("CONTRACT_EXPIRED_AND_PENDING_REMOVAL")] ContractExpiredAndPendingRemoval = 317,
+    /// <summary>
+    /// A ContractUpdate requested removal of a contract's auto-renew account, but that contract has  
+    /// no auto-renew account.
+    /// </summary>
+    [Description("CONTRACT_HAS_NO_AUTO_RENEW_ACCOUNT")] ContractHasNoAutoRenewAccount = 318,
+    /// <summary>
+    /// A delete transaction submitted via HAPI set permanent_removal=true 
+    /// </summary>
+    [Description("PERMANENT_REMOVAL_REQUIRES_SYSTEM_INITIATION")] PermanentRemovalRequiresSystemInitiation = 319,
+    /// <summary>
+    /// A CryptoCreate or ContractCreate used the deprecated proxyAccountID field.
+    /// </summary>
+    [Description("PROXY_ACCOUNT_ID_FIELD_IS_DEPRECATED")] ProxyAccountIdFieldIsDeprecated = 320,
+    /// <summary>
+    /// An account set the staked_account_id to itself in CryptoUpdate or ContractUpdate transactions.
+    /// </summary>
+    [Description("SELF_STAKING_IS_NOT_ALLOWED")] SelfStakingIsNotAllowed = 321,
+    /// <summary>
+    /// The staking account id or staking node id given is invalid or does not exist.
+    /// </summary>
+    [Description("INVALID_STAKING_ID")] InvalidStakingId = 322,
+    /// <summary>
+    /// Native staking, while implemented, has not yet enabled by the council.
+    /// </summary>
+    [Description("INVALID_STAKING_ID")] STAKING_NOT_ENABLED = 323,
 }

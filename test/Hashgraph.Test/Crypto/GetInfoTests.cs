@@ -25,11 +25,8 @@ public class GetInfoTests
         Assert.Equal(account.RealmNum, info.Address.RealmNum);
         Assert.Equal(account.ShardNum, info.Address.ShardNum);
         Assert.Equal(account.AccountNum, info.Address.AccountNum);
-        Assert.NotNull(info.SmartContractId);
+        Assert.NotNull(info.ContractId);
         Assert.False(info.Deleted);
-        Assert.NotNull(info.Proxy);
-        Assert.Equal(new Address(0, 0, 0), info.Proxy);
-        Assert.Equal(0, info.ProxiedToAccount);
         Assert.Equal(new Endorsement(_network.PublicKey), info.Endorsement);
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
@@ -39,9 +36,13 @@ public class GetInfoTests
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
-        //Assert.Empty(info.CryptoAllowances);
-        //Assert.Empty(info.TokenAllowances);
-        //Assert.Empty(info.AssetAllowances);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(0, info.StakingInfo.PendingReward);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Node);
     }
     [Fact(DisplayName = "Get Account Info: Can Get Info for Account Facet")]
     public async Task CanGetInfoForAccountFacet()
@@ -49,11 +50,8 @@ public class GetInfoTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
         Assert.Equal(fxAccount.Record.Address, info.Address);
-        Assert.NotNull(info.SmartContractId);
+        Assert.NotNull(info.ContractId);
         Assert.False(info.Deleted);
-        Assert.NotNull(info.Proxy);
-        Assert.Equal(Address.None, info.Proxy);
-        Assert.Equal(0, info.ProxiedToAccount);
         Assert.Equal(fxAccount.PublicKey, info.Endorsement);
         Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
         Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
@@ -64,9 +62,13 @@ public class GetInfoTests
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
-        //Assert.Empty(info.CryptoAllowances);
-        //Assert.Empty(info.TokenAllowances);
-        //Assert.Empty(info.AssetAllowances);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(0, info.StakingInfo.PendingReward);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Node);
     }
     [Fact(DisplayName = "Get Account Info: Can Get Info for Alias Facet")]
     public async Task CanGetInfoForAliasFacet()
@@ -74,11 +76,8 @@ public class GetInfoTests
         await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
         var infoFromAddress = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
         Assert.Equal(fxAccount.CreateRecord.Address, infoFromAddress.Address);
-        Assert.NotNull(infoFromAddress.SmartContractId);
+        Assert.NotNull(infoFromAddress.ContractId);
         Assert.False(infoFromAddress.Deleted);
-        Assert.NotNull(infoFromAddress.Proxy);
-        Assert.Equal(Address.None, infoFromAddress.Proxy);
-        Assert.Equal(0, infoFromAddress.ProxiedToAccount);
         Assert.Equal(fxAccount.PublicKey, infoFromAddress.Endorsement);
         Assert.True(infoFromAddress.Balance > 0);
         Assert.False(infoFromAddress.ReceiveSignatureRequired);
@@ -89,17 +88,18 @@ public class GetInfoTests
         Assert.Equal(0, infoFromAddress.AutoAssociationLimit);
         Assert.Equal(fxAccount.Alias, infoFromAddress.Alias);
         AssertHg.NotEmpty(infoFromAddress.Ledger);
-        //Assert.Empty(infoFromAddress.CryptoAllowances);
-        //Assert.Empty(infoFromAddress.TokenAllowances);
-        //Assert.Empty(infoFromAddress.AssetAllowances);
+        Assert.NotNull(infoFromAddress.StakingInfo);
+        Assert.False(infoFromAddress.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, infoFromAddress.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAddress.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAddress.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAddress.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAddress.StakingInfo.Node);
 
         var infoFromAlias = await fxAccount.Client.GetAccountInfoAsync(fxAccount.Alias);
         Assert.Equal(fxAccount.CreateRecord.Address, infoFromAlias.Address);
-        Assert.NotNull(infoFromAlias.SmartContractId);
+        Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
-        Assert.NotNull(infoFromAlias.Proxy);
-        Assert.Equal(Address.None, infoFromAlias.Proxy);
-        Assert.Equal(0, infoFromAlias.ProxiedToAccount);
         Assert.Equal(fxAccount.PublicKey, infoFromAlias.Endorsement);
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
@@ -110,9 +110,13 @@ public class GetInfoTests
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal(fxAccount.Alias, infoFromAlias.Alias);
         AssertHg.Equal(infoFromAddress.Ledger, infoFromAlias.Ledger);
-        //Assert.NotStrictEqual(infoFromAddress.CryptoAllowances, infoFromAlias.CryptoAllowances);
-        //Assert.NotStrictEqual(infoFromAddress.TokenAllowances, infoFromAlias.TokenAllowances);
-        //Assert.NotStrictEqual(infoFromAddress.AssetAllowances, infoFromAlias.AssetAllowances);
+        Assert.NotNull(infoFromAlias.StakingInfo);
+        Assert.False(infoFromAlias.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAlias.StakingInfo.Node);
     }
     [Fact(DisplayName = "Get Account Info: Can Get Info for Server Node")]
     public async Task CanGetInfoForGatewayAsync()
@@ -124,11 +128,8 @@ public class GetInfoTests
         Assert.Equal(account.ShardNum, info.Address.ShardNum);
         Assert.Equal(account.RealmNum, info.Address.RealmNum);
         Assert.Equal(account.AccountNum, info.Address.AccountNum);
-        Assert.NotNull(info.SmartContractId);
+        Assert.NotNull(info.ContractId);
         Assert.False(info.Deleted);
-        Assert.NotNull(info.Proxy);
-        Assert.Equal(new Address(0, 0, 0), info.Proxy);
-        Assert.True(info.ProxiedToAccount > -1);
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
@@ -136,9 +137,13 @@ public class GetInfoTests
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
-        //Assert.Empty(info.CryptoAllowances);
-        //Assert.Empty(info.TokenAllowances);
-        //Assert.Empty(info.AssetAllowances);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(0, info.StakingInfo.PendingReward);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Node);
     }
     [Fact(DisplayName = "Get Account Info: Getting Account Info without paying signature fails.")]
     public async Task GetInfoWithoutPayingSignatureThrowsException()
@@ -159,11 +164,8 @@ public class GetInfoTests
 
         var info = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Address);
-        Assert.NotNull(info.SmartContractId);
+        Assert.NotNull(info.ContractId);
         Assert.False(info.Deleted);
-        Assert.NotNull(info.Proxy);
-        Assert.Equal(new Address(0, 0, 0), info.Proxy);
-        Assert.True(info.ProxiedToAccount > -1);
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
@@ -172,8 +174,12 @@ public class GetInfoTests
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
-        //Assert.Empty(info.CryptoAllowances);
-        //Assert.Empty(info.TokenAllowances);
-        //Assert.Empty(info.AssetAllowances);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(0, info.StakingInfo.PendingReward);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Node);
     }
 }

@@ -42,6 +42,8 @@ public sealed partial class Client
                 ScheduledTransactionBody = scheduledTransactionBody,
                 AdminKey = schedule.Administrator is null ? null : new Key(schedule.Administrator),
                 PayerAccountID = schedule.PendingPayer is null ? null : new AccountID(schedule.PendingPayer),
+                ExpirationTime = schedule.Expiration is null ? null : new Timestamp(schedule.Expiration.Value),
+                WaitForExpiry = schedule.DelayExecution,
                 Memo = schedule.Memo ?? ""
             };
         }
@@ -82,7 +84,7 @@ public sealed partial class Client
         return await ExecuteQueryInContextAsync(query, context, supplementalCost).ConfigureAwait(false);
 
     }
-    private async Task<Response> ExecuteQueryInContextAsync(INetworkQuery query, GossipContextStack context, long supplementalCost)
+    private static async Task<Response> ExecuteQueryInContextAsync(INetworkQuery query, GossipContextStack context, long supplementalCost)
     {
         var envelope = query.CreateEnvelope();
         query.SetHeader(new QueryHeader
@@ -107,7 +109,7 @@ public sealed partial class Client
             var code = answer.ResponseHeader?.NodeTransactionPrecheckCode ?? ResponseCodeEnum.Unknown;
             if (code != ResponseCodeEnum.Ok)
             {
-                if(code == ResponseCodeEnum.NotSupported)
+                if (code == ResponseCodeEnum.NotSupported)
                 {
                     // This may be a backdoor call that must be signed by a superuser account.
                     // It will not answer a COST_ASK without a signature.  Try signing with an
@@ -120,7 +122,7 @@ public sealed partial class Client
                     // ourselves with the signature, the rest of the process can proceed as normal.
                     // If it was a failure then we fall back to the original NOT_SUPPORTED error
                     // we received on the first attempt.
-                    if(answer.ResponseHeader?.NodeTransactionPrecheckCode  == ResponseCodeEnum.Ok)
+                    if (answer.ResponseHeader?.NodeTransactionPrecheckCode == ResponseCodeEnum.Ok)
                     {
                         return answer;
                     }
@@ -198,7 +200,7 @@ public sealed partial class Client
             {
                 throw new InvalidOperationException("The Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
             }
-            var feeLimit = context.FeeLimit;          
+            var feeLimit = context.FeeLimit;
             var transactionBody = new TransactionBody
             {
                 TransactionID = transactionId,

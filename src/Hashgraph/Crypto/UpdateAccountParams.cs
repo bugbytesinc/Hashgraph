@@ -63,13 +63,6 @@ public sealed class UpdateAccountParams
     /// </summary>
     public TimeSpan? AutoRenewPeriod { get; set; }
     /// <summary>
-    /// The account to which the created account will proxy its stake to.
-    /// If invalid, or is the account that is not a node, or the
-    /// node does not accept proxy staking; then this account is automatically 
-    /// proxy staked to a node chosen by the network without earning payments.
-    /// </summary>
-    public Address? Proxy { get; set; }
-    /// <summary>
     /// If not null, a new description of the account.
     /// </summary>
     public string? Memo { get; set; }
@@ -94,4 +87,29 @@ public sealed class UpdateAccountParams
     /// marker tests will indicate it and this will made public.
     /// </remarks>
     internal Alias? Alias { get; set; }
+    /// <summary>
+    /// If set, updates this account's staking proxy
+    /// account.  If set The funds of this account will 
+    /// be staked to the node that this account is staked 
+    /// to and the specified proxy account will receive 
+    /// the earned reward.
+    /// </summary>
+    public Address? ProxyAccount { get; set; }
+    /// <summary>
+    /// If set, updates this accounts's staked node.
+    /// The funds of this account will be staked to
+    /// the gossip node with the given ID.
+    /// </summary>
+    /// <remarks>
+    /// Node IDs are used instead of node account
+    /// IDs because a node has the ability to change
+    /// its wallet account ID.
+    /// </remarks>
+    public long? StakedNode { get; set; }
+    /// <summary>
+    /// If set, updates the flag indicating to the network 
+    /// that this account does not wish to receive any 
+    /// earned staking rewards.
+    /// </summary>
+    public bool? DeclineStakeReward { get; set; }
 }

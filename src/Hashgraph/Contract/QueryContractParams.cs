@@ -33,6 +33,11 @@ public class QueryContractParams
     /// </summary>
     public object[] FunctionArgs { get; set; }
     /// <summary>
+    /// The account that is the "message.sender" of the contract
+    /// call, if not specified it is the transaction Payer.
+    /// </summary>
+    public Address MessageSender { get; set; }
+    /// <summary>
     /// Throw a <see cref="ContractException"/> exception if the query
     /// call returns a code other than success.  Default is true to maintain
     /// backwards compatibility.  If set to false, the 

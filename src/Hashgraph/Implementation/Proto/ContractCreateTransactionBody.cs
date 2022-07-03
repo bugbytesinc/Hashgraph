@@ -38,16 +38,49 @@ public sealed partial class ContractCreateTransactionBody : INetworkTransaction
         {
             throw new ArgumentNullException(nameof(createParameters), "The create parameters are missing. Please check that the argument is not null.");
         }
-        if (createParameters.File is null)
+        if (createParameters.AutoAssociationLimit < 0)
         {
-            throw new ArgumentNullException(nameof(createParameters.File), "The File Address containing the contract is missing, it cannot be null.");
+            throw new ArgumentOutOfRangeException(nameof(createParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be a non-negative number.");
         }
-        FileID = new FileID(createParameters.File);
+        if (createParameters.File.IsNullOrNone())
+        {
+            if (createParameters.ByteCode.IsEmpty)
+            {
+                throw new ArgumentNullException(nameof(createParameters.File), "Both the File address and ByteCode properties missing, one must be specified.");
+            }
+            Initcode = ByteString.CopyFrom(createParameters.ByteCode.Span);
+        }
+        else if (!createParameters.ByteCode.IsEmpty)
+        {
+            throw new ArgumentException("Both the File address and ByteCode properties are specified, only one can be set.", nameof(createParameters.File));
+        }
+        else
+        {
+            FileID = new FileID(createParameters.File);
+        }
+        if (createParameters.ProxyAccount.IsNullOrNone())
+        {
+            if (createParameters.StakedNode > 0)
+            {
+                StakedNodeId = createParameters.StakedNode;
+            }
+        }
+        else if (createParameters.StakedNode > 0)
+        {
+            throw new ArgumentNullException(nameof(createParameters.ProxyAccount), "Both the ProxyAccount and StakedNode properties are specified, only one can be set.");
+        }
+        else
+        {
+            StakedAccountId = new AccountID(createParameters.ProxyAccount);
+        }
         AdminKey = createParameters.Administrator is null ? null : new Key(createParameters.Administrator);
         Gas = createParameters.Gas;
         InitialBalance = createParameters.InitialBalance;
+        MaxAutomaticTokenAssociations = createParameters.AutoAssociationLimit;
         AutoRenewPeriod = new Duration(createParameters.RenewPeriod);
+        AutoRenewAccountId = createParameters.RenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.RenewAccount);
         ConstructorParameters = ByteString.CopyFrom(Abi.EncodeArguments(createParameters.Arguments).ToArray());
+        DeclineReward = createParameters.DeclineStakeReward;
         Memo = createParameters.Memo ?? "";
     }
 }

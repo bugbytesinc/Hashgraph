@@ -571,6 +571,7 @@ public class TransferTests
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.False(info.DelayExecution);
 
         await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
         await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
@@ -625,6 +626,7 @@ public class TransferTests
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.False(info.DelayExecution);
 
         await AssertHg.CryptoBalanceAsync(fxSender, initialBalance);
         await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance);

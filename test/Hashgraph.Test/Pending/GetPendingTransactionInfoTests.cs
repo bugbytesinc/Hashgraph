@@ -35,5 +35,6 @@ public class GetPendingTransactionInfoTests
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.False(info.DelayExecution);
     }
 }
