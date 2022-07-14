@@ -286,4 +286,77 @@ public class ExecuteAllowancesTests
         Assert.Equal(Address.None, info.Agent);
 
     }
+
+    [Fact(DisplayName = "Execute Allowances: Can Spend an Asset Allowance From Delegate")]
+    public async Task CanSpendAnAssetAllowanceFromDelegate()
+    {
+        await using var fxAllowances = await TestAllowance.CreateAsync(_network);
+        await using var fxDestination = await TestAccount.CreateAsync(_network);
+
+        await fxDestination.Client.AssociateTokenAsync(fxAllowances.TestAsset, fxDestination, fxDestination.PrivateKey);
+
+        var client = fxAllowances.Client.Clone(ctx =>
+        {
+            ctx.Payer = fxAllowances.DelegatedAgent;
+            ctx.Signatory = fxAllowances.DelegatedAgent.PrivateKey;
+        });
+
+        var receipt = await client.TransferAsync(new TransferParams
+        {
+            AssetTransfers = new[] { new AssetTransfer(new Asset(fxAllowances.TestAsset, 1), fxAllowances.Owner, fxDestination, true) }
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 1);
+    }
+
+    [Fact(DisplayName = "Execute Allowances: Can Spend an Asset Having Delegate by Original Agent")]
+    public async Task CanSpendAnAssetHavingDelegateByOriginalAgent()
+    {
+        await using var fxAllowances = await TestAllowance.CreateAsync(_network);
+        await using var fxDestination = await TestAccount.CreateAsync(_network);
+
+        await fxDestination.Client.AssociateTokenAsync(fxAllowances.TestAsset, fxDestination, fxDestination.PrivateKey);
+
+        var client = fxAllowances.Client.Clone(ctx =>
+        {
+            ctx.Payer = fxAllowances.Agent;
+            ctx.Signatory = fxAllowances.Agent.PrivateKey;
+        });
+
+        var receipt = await client.TransferAsync(new TransferParams
+        {
+            AssetTransfers = new[] { new AssetTransfer(new Asset(fxAllowances.TestAsset, 1), fxAllowances.Owner, fxDestination, true) }
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 1);
+    }
+
+    [Fact(DisplayName = "Execute Allowances: Can Not Spend an Asset Allowance From Delegate Without Permission")]
+    public async Task CanNotSpendAnAssetAllowanceFromDelegateWithoutPermission()
+    {
+        await using var fxAllowances = await TestAllowance.CreateAsync(_network);
+        await using var fxDestination = await TestAccount.CreateAsync(_network);
+
+        await fxDestination.Client.AssociateTokenAsync(fxAllowances.TestAsset, fxDestination, fxDestination.PrivateKey);
+
+        var client = fxAllowances.Client.Clone(ctx =>
+        {
+            ctx.Payer = fxAllowances.DelegatedAgent;
+            ctx.Signatory = fxAllowances.DelegatedAgent.PrivateKey;
+        });
+
+        var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        {
+            var receipt = await client.TransferAsync(new TransferParams
+            {
+                AssetTransfers = new[] { new AssetTransfer(new Asset(fxAllowances.TestAsset, 2), fxAllowances.Owner, fxDestination, true) }
+            });
+        });
+        Assert.Equal(ResponseCode.SpenderDoesNotHaveAllowance, tex.Status);
+
+        await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxAllowances.Owner, fxAllowances.TestAsset.Metadata.Length);
+        await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 0);
+    }
 }

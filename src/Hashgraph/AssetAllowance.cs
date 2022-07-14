@@ -27,6 +27,15 @@ public sealed record AssetAllowance
     /// </summary>
     public Address Agent { get; private init; }
     /// <summary>
+    /// The Owner's Agent has been previously
+    /// given access to all of the Owner's 
+    /// Assets of this class, and can therefore
+    /// in turn allocate a specific asset instance
+    /// to a 3rd party to sell on behalf of the
+    /// original owner.
+    /// </summary>
+    public Address OwnersAgent { get; private init; }
+    /// <summary>
     /// The explicit list of serial numbers that
     /// can be spent by the delegate.  If the value
     /// is <code>null</code> then all assets of the
@@ -62,7 +71,7 @@ public sealed record AssetAllowance
     /// <exception cref="ArgumentException">
     /// If any of the addresses are null or empty.
     /// </exception>
-    public AssetAllowance(Address token, Address owner, Address agent, IReadOnlyCollection<long>? serialNumbers = null)
+    public AssetAllowance(Address token, Address owner, Address agent, IReadOnlyCollection<long>? serialNumbers = null, Address? ownersAgent = null)
     {
         if (token.IsNullOrNone())
         {
@@ -76,10 +85,15 @@ public sealed record AssetAllowance
         {
             throw new ArgumentException(nameof(agent), "The allowance agent account cannot be null or empty.");
         }
+        if (serialNumbers == null && !ownersAgent.IsNullOrNone())
+        {
+            throw new ArgumentException(nameof(agent), "The when an agent is delegating to another agent, the serial numbers must be specified.");
+        }
         Token = token;
         Owner = owner;
         Agent = agent;
         SerialNumbers = serialNumbers;
+        OwnersAgent = ownersAgent is null ? Address.None : ownersAgent;
     }
     /// <summary>
     /// Represents an allowance allocation permitting a
@@ -103,7 +117,7 @@ public sealed record AssetAllowance
     /// <exception cref="ArgumentException">
     /// If any of the addresses are null or empty.
     /// </exception>
-    public AssetAllowance(Asset asset, Address owner, Address agent)
+    public AssetAllowance(Asset asset, Address owner, Address agent, Address? ownersAgent = null)
     {
         if (asset is null || Asset.None.Equals(asset))
         {
@@ -121,6 +135,7 @@ public sealed record AssetAllowance
         Owner = owner;
         Agent = agent;
         SerialNumbers = new[] { asset.SerialNum };
+        OwnersAgent = ownersAgent is null ? Address.None : ownersAgent;
     }
     /// <summary>
     /// Internal helper constructor for creating the
@@ -134,6 +149,7 @@ public sealed record AssetAllowance
             Owner = owner;
             Agent = allowance.Spender.AsAddress();
             SerialNumbers = Array.Empty<long>();
+            OwnersAgent = Address.None;
         }
         else
         {
@@ -141,6 +157,7 @@ public sealed record AssetAllowance
             Owner = Address.None;
             Agent = Address.None;
             SerialNumbers = Array.Empty<long>();
+            OwnersAgent = Address.None;
         }
     }
 }
