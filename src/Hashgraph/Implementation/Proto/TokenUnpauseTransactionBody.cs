@@ -20,7 +20,7 @@ public sealed partial class TokenUnpauseTransactionBody : INetworkTransaction
 
     Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
     {
-        return new TokenService.TokenServiceClient(channel).pauseTokenAsync;
+        return new TokenService.TokenServiceClient(channel).unpauseTokenAsync;
     }
 
     void INetworkTransaction.CheckReceipt(NetworkResult result)
