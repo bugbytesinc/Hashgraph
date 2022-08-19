@@ -146,7 +146,7 @@ public class GetInfoTests
         Assert.False(info.StakingInfo.Declined);
         Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
-        Assert.Equal(0, info.StakingInfo.Proxied);
+        Assert.True(info.StakingInfo.Proxied > -1);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
         Assert.Equal(0, info.StakingInfo.Node);
     }

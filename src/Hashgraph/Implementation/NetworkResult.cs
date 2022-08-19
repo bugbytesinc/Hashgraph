@@ -91,6 +91,14 @@ internal class NetworkResult
         {
             return new EthereumTransactionRecord(this);
         }
+        else if (Record?.EntropyCase == Proto.TransactionRecord.EntropyOneofCase.PrngNumber)
+        {
+            return new RangedPsudoRandomNumberRecord(this);
+        }
+        else if (Record?.EntropyCase == Proto.TransactionRecord.EntropyOneofCase.PrngBytes)
+        {
+            return new BytesPsudoRandomNumberRecord(this);
+        }
         else
         {
             return new TransactionRecord(this);

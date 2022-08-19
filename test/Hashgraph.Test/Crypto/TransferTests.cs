@@ -754,31 +754,43 @@ public class TransferTests
         var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
         Assert.Equal(aliasStartingBalance - (ulong)transferAmount, aliasEndingBalance);
     }
-    // PRESENTLY NOT SUPPORTED
-    // Since this is not yet support on the hedera network the PAYER property of the context
-    // has been left as an Address instead of an AddressOrAlias.  The SDK will only generate
-    // transaction IDs using the Address form.
-    //
-    //[Fact(DisplayName = "Transfer: Can Send From Paying Alias Account")]
-    //public async Task CanSendFromPayingAliasAccount()
-    //{
-    //    await using var fxAccount = await TestAccount.CreateAsync(_network);
-    //    await using var fxAlias = await TestAliasAccount.CreateAsync(_network, fx => fx.InitialTransfer = 5_00_000_000);
-
-    //    var aliasStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
-    //    var transferAmount = (aliasStartingBalance) / 2 + 1;
-
-    //    var accountStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
-    //    var receipt = await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx => ctx.Payer = fxAlias.Alias);
-    //    var accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
-    //    Assert.Equal(accountStartingBalance + (ulong)transferAmount, accountEndingBalance);
-
-    //    var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
-    //    Assert.Equal(aliasStartingBalance - (ulong)transferAmount, aliasEndingBalance);
-    //}
-    [Fact(DisplayName = "Transfer: Can Not Send From Paying Alias Account (API Marker Test)")]
-    public void CanSendFromPayingAliasAccount()
+    [Fact(DisplayName = "Transfer: Can Not Use Alias as Payer")]
+    public async Task CanNotUseAliasAsPayer()
     {
-        Assert.Equal(typeof(Address), typeof(IContext).GetProperty("Payer").PropertyType);
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxAlias = await TestAliasAccount.CreateAsync(_network, fx => fx.InitialTransfer = 5_00_000_000);
+
+        var aliasStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+        var transferAmount = (aliasStartingBalance) / 2 + 1;
+
+        var accountStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+        {
+            await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx =>
+            {
+                ctx.Payer = fxAlias.Alias;
+                ctx.Signatory = fxAlias.PrivateKey;
+            });
+        });
+        Assert.StartsWith("Transaction Failed Pre-Check: PayerAccountNotFound", pex.Message);
+        Assert.Equal(ResponseCode.PayerAccountNotFound, pex.Status);
+
+        var accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+        var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+        Assert.Equal(accountStartingBalance, (ulong)accountEndingBalance);
+        Assert.Equal(aliasStartingBalance, (ulong)aliasEndingBalance);
+
+        var receipt = await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx =>
+        {
+            ctx.Payer = fxAlias.CreateRecord.Address;
+            ctx.Signatory = fxAlias.PrivateKey;
+        });
+
+        accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+        aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+        Assert.Equal(accountStartingBalance + (ulong)transferAmount, accountEndingBalance);
+        // Don't forget fees.
+        Assert.True(aliasEndingBalance < aliasStartingBalance - (ulong)transferAmount);
     }
 }

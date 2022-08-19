@@ -41,7 +41,8 @@ internal static class AccountIDExtensions
         }
         if (accountId.AccountCase == AccountID.AccountOneofCase.Alias)
         {
-            return new Address(new Alias(accountId.ShardNum, accountId.RealmNum, accountId.Alias.Memory));
+            var publicKey = Key.Parser.ParseFrom(accountId.Alias.Memory.Span);            
+            return new Address(new Alias(accountId.ShardNum, accountId.RealmNum, publicKey.ToEndorsement()));
         }
         return new Address(accountId.ShardNum, accountId.RealmNum, accountId.AccountNum);
     }
