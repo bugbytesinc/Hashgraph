@@ -39,11 +39,11 @@ public class GetInfoTests
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.True(DateTime.MinValue <= info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
-        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.True(0 <= info.StakingInfo.Node);
     }
     [Fact(DisplayName = "Get Account Info: Can Get Info for Account Facet")]
     public async Task CanGetInfoForAccountFacet()
