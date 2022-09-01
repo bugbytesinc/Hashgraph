@@ -87,6 +87,18 @@ internal class NetworkResult
         {
             return new CallContractRecord(this);
         }
+        else if (Record is not null && !Record.EthereumHash.IsEmpty)
+        {
+            return new EthereumTransactionRecord(this);
+        }
+        else if (Record?.EntropyCase == Proto.TransactionRecord.EntropyOneofCase.PrngNumber)
+        {
+            return new RangedPsudoRandomNumberRecord(this);
+        }
+        else if (Record?.EntropyCase == Proto.TransactionRecord.EntropyOneofCase.PrngBytes)
+        {
+            return new BytesPsudoRandomNumberRecord(this);
+        }
         else
         {
             return new TransactionRecord(this);

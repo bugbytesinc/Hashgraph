@@ -218,6 +218,12 @@ public static class AssertHg
         Assert.Equal(expectedBalance, balance);
     }
 
+    public static async Task CryptoContractBalanceAsync(PayableContract fxAccount, ulong expectedBalance)
+    {
+        var balance = await fxAccount.Client.GetContractBalanceAsync(fxAccount.ContractRecord.Contract);
+        Assert.Equal(expectedBalance, balance);
+    }
+
     internal static void ContainsRoyalty(TestToken fxToken, TestAccount fxPayer, TestAccount fxReceiver, int amount, ReadOnlyCollection<RoyaltyTransfer> royalties)
     {
         var token = fxToken.Record.Token;

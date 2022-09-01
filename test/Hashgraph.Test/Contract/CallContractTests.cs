@@ -33,9 +33,13 @@ public class CallContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
+        Assert.InRange(record.CallResult.GasUsed, 0UL, 30_000UL);
         Assert.Empty(record.CallResult.Events);
-        Assert.Empty(record.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(record.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
         Assert.Equal("Hello, world!", record.CallResult.Result.As<string>()); ;
     }
@@ -58,7 +62,11 @@ public class CallContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
+        Assert.InRange(record.CallResult.GasUsed, 0UL, 30_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, record.CallResult.GasLimit);
+        Assert.Equal(0, record.CallResult.PayableAmount);
+        Assert.Equal(Address.None, record.CallResult.MessageSender);
         Assert.Empty(record.CallResult.Events);
         Assert.Equal(fx.ContractParams.Arguments[0] as string, record.CallResult.Result.As<string>());
     }
@@ -98,9 +106,17 @@ public class CallContractTests
         Assert.InRange(setRecord.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(setRecord.CallResult.Error);
         Assert.False(setRecord.CallResult.Bloom.IsEmpty);
-        Assert.InRange(setRecord.CallResult.Gas, 0UL, 50_000UL);
+        Assert.InRange(setRecord.CallResult.GasUsed, 0UL, 50_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, setRecord.CallResult.GasLimit);
+        Assert.Equal(0, setRecord.CallResult.PayableAmount);
+        Assert.Equal(Address.None, setRecord.CallResult.MessageSender);
         Assert.Empty(setRecord.CallResult.Events);
-        Assert.Empty(setRecord.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(setRecord.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, setRecord.CallResult.EncodedAddress);
 
         var getRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
@@ -117,12 +133,19 @@ public class CallContractTests
         Assert.InRange(getRecord.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(getRecord.CallResult.Error);
         Assert.False(getRecord.CallResult.Bloom.IsEmpty);
-        Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         Assert.Empty(getRecord.CallResult.Events);
-        Assert.Empty(getRecord.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(getRecord.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, getRecord.CallResult.EncodedAddress);
         Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
-        Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
+        Assert.InRange(getRecord.CallResult.GasUsed, 0UL, 30_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, getRecord.CallResult.GasLimit);
+        Assert.Equal(0, getRecord.CallResult.PayableAmount);
+        Assert.Equal(Address.None, getRecord.CallResult.MessageSender);
     }
     [Fact(DisplayName = "Call Contract: Can Call Contract that sets State (receipt version)")]
     public async Task CanCreateAContractAndSetStateWithoutRecordAsync()
@@ -154,12 +177,17 @@ public class CallContractTests
         Assert.InRange(getRecord.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(getRecord.CallResult.Error);
         Assert.False(getRecord.CallResult.Bloom.IsEmpty);
-        Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
         Assert.Empty(getRecord.CallResult.Events);
-        Assert.Empty(getRecord.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(getRecord.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, getRecord.CallResult.EncodedAddress);
         Assert.Equal(newMessage, getRecord.CallResult.Result.As<string>());
-        Assert.InRange(getRecord.CallResult.Gas, 0UL, 30_000UL);
+        Assert.InRange(getRecord.CallResult.GasUsed, 0UL, 30_000UL);
+        Assert.Equal(0, getRecord.CallResult.PayableAmount);
+        Assert.Equal(Address.None, getRecord.CallResult.MessageSender);
     }
     [Fact(DisplayName = "Call Contract: Calling Deleted Contract Raises Error")]
     public async Task CallingDeletedContractRaisesError()

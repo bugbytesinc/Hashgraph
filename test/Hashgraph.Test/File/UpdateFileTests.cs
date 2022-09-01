@@ -38,6 +38,62 @@ public class UpdateFileTests
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
     }
+    [Fact(DisplayName = "File Update: Can Update File Key to Empty")]
+    public async Task CanUpdateFileKeyToEmpty()
+    {
+        await using var test = await TestFile.CreateAsync(_network);
+
+        var updateRecord = await test.Client.UpdateFileWithRecordAsync(new UpdateFileParams
+        {
+            File = test.Record.File,
+            Endorsements = new Endorsement[0],
+            Signatory = test.PrivateKey
+        });
+        Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+        var info = await test.Client.GetFileInfoAsync(test.Record.File);
+        Assert.NotNull(info);
+        Assert.Equal(test.Record.File, info.File);
+        Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+        Assert.Equal(test.CreateParams.Expiration, info.Expiration);
+        Assert.Empty(info.Endorsements);
+        Assert.False(info.Deleted);
+        AssertHg.NotEmpty(info.Ledger);
+    }
+    [Fact(DisplayName = "File Update: Can Not Update File Key from Empty")]
+    public async Task CanNotUpdateFileKeyFromEmpty()
+    {
+        await using var test = await TestFile.CreateAsync(_network);
+        var (newPublicKey, newPrivateKey) = Generator.KeyPair();
+
+        var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
+        {
+            File = test.Record.File,
+            Endorsements = new Endorsement[0],
+            Signatory = test.PrivateKey
+        });
+        Assert.Equal(ResponseCode.Success, updateRecord.Status);
+
+        var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        {
+            await test.Client.UpdateFileAsync(new UpdateFileParams
+            {
+                File = test.Record.File,
+                Endorsements = new[] { new Endorsement(newPublicKey) },
+                Signatory = newPrivateKey
+            });
+        });
+        Assert.Equal(ResponseCode.Unauthorized, tex.Status);
+
+        var info = await test.Client.GetFileInfoAsync(test.Record.File);
+        Assert.NotNull(info);
+        Assert.Equal(test.Record.File, info.File);
+        Assert.Equal(test.CreateParams.Contents.Length, info.Size);
+        Assert.Equal(test.CreateParams.Expiration, info.Expiration);
+        Assert.Empty(info.Endorsements);
+        Assert.False(info.Deleted);
+        AssertHg.NotEmpty(info.Ledger);
+    }
     [Fact(DisplayName = "File Update: Can Replace Contents")]
     public async Task CanUpdateFileContents()
     {

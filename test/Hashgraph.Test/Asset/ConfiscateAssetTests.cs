@@ -44,43 +44,34 @@ public class ConfiscateAssetTests
         Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
         Assert.Equal(expectedTreasury, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
     }
-    [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Confiscate Assets: Can Confiscate Asset Coins from Alias")]
-    public async Task CanConfiscateAssetCoinsFromAliasDefect()
+    [Fact(DisplayName = "Confiscate Assets: Can Confiscate Asset Coins from Alias")]
+    public async Task CanConfiscateAssetCoinsFromAlias()
     {
-        // Confiscating an asset with an account using its alias address has not yet been
-        // implemented by the network, although it will accept the transaction.
-        var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanConfiscateAssetCoinsFromAlias));
-        Assert.StartsWith("Unable to Confiscate Token, status: InvalidAccountId", testFailException.Message);
+        await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
+        await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+        await fxAsset.Client.AssociateTokenAsync(fxAsset, fxAccount, fxAccount.PrivateKey);
+        var circulation = (ulong)fxAsset.Metadata.Length;
+        var xferAmount = circulation / (ulong)Generator.Integer(3, 5) + 1;
+        var expectedTreasury = (ulong)fxAsset.Metadata.Length - xferAmount;
+        var serialNumbersToConfiscate = Enumerable.Range(1, (int)xferAmount).Select(i => (long)i);
 
-        //[Fact(DisplayName = "Confiscate Assets: Can Confiscate Asset Coins from Alias")]
-        async Task CanConfiscateAssetCoinsFromAlias()
+        await fxAsset.Client.TransferAsync(new TransferParams
         {
-            await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
-            await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
-            await fxAsset.Client.AssociateTokenAsync(fxAsset, fxAccount, fxAccount.PrivateKey);
-            var circulation = (ulong)fxAsset.Metadata.Length;
-            var xferAmount = circulation / (ulong)Generator.Integer(3, 5) + 1;
-            var expectedTreasury = (ulong)fxAsset.Metadata.Length - xferAmount;
-            var serialNumbersToConfiscate = Enumerable.Range(1, (int)xferAmount).Select(i => (long)i);
+            AssetTransfers = serialNumbersToConfiscate.Select(sn => new AssetTransfer(new Asset(fxAsset.Record.Token, sn), fxAsset.TreasuryAccount, fxAccount)),
+            Signatory = fxAsset.TreasuryAccount
+        });
 
-            await fxAsset.Client.TransferAsync(new TransferParams
-            {
-                AssetTransfers = serialNumbersToConfiscate.Select(sn => new AssetTransfer(new Asset(fxAsset.Record.Token, sn), fxAsset.TreasuryAccount, fxAccount)),
-                Signatory = fxAsset.TreasuryAccount
-            });
+        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
+        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        Assert.Equal(circulation, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
 
-            Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
-            Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
-            Assert.Equal(circulation, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
+        var receipt = await fxAsset.Client.ConfiscateAssetsAsync(fxAsset.Record.Token, serialNumbersToConfiscate, fxAccount.Alias, fxAsset.ConfiscatePrivateKey);
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+        Assert.Equal(expectedTreasury, receipt.Circulation);
 
-            var receipt = await fxAsset.Client.ConfiscateAssetsAsync(fxAsset.Record.Token, serialNumbersToConfiscate, fxAccount.Alias, fxAsset.ConfiscatePrivateKey);
-            Assert.Equal(ResponseCode.Success, receipt.Status);
-            Assert.Equal(expectedTreasury, receipt.Circulation);
-
-            Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
-            Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
-            Assert.Equal(expectedTreasury, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
-        }
+        Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
+        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        Assert.Equal(expectedTreasury, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Assets: Can Confiscate A Single Asset")]
     public async Task CanConfiscateASingleAsset()

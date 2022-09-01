@@ -36,18 +36,37 @@ public sealed class CreateAccountParams
     /// </remarks>
     public int AutoAssociationLimit { get; set; } = 0;
     /// <summary>
+    /// The funds of this account will be staked to
+    /// the node that this specified account is staked to 
+    /// and the specified account will receive the earned reward.
+    /// </summary>
+    /// <remarks>
+    /// This value must be set to <code>null</code> or
+    /// <code>None</code> if the <code>StakedNode</code>
+    /// property is set.
+    /// </remarks>
+    public Address? ProxyAccount { get; set; } = null;
+    /// <summary>
+    /// The funds of this account will be staked to
+    /// the gossip node with the given ID.
+    /// </summary>
+    /// <remarks>
+    /// Can not be greater than zero if the 
+    /// <code>ProxyAccount</code> property is set.
+    /// </remarks>
+    public long StakedNode { get; set; } = 0;
+    /// <summary>
+    /// Indicate to the network that this account
+    /// does not wish to receive any earned 
+    /// staking rewards.
+    /// </summary>
+    public bool DeclineStakeReward { get; set; } = false;
+    /// <summary>
     /// The auto-renew period for the newly created account, it will continue 
     /// to be renewed at the given interval for as long as the account contains 
     /// hbars sufficient to cover the renewal charge.
     /// </summary>
     public TimeSpan AutoRenewPeriod { get; set; } = TimeSpan.FromSeconds(7890000);
-    /// <summary>
-    /// The account to which the created account will proxy its stake to.
-    /// If null or is an invalid, or is the account that is not a node, or the
-    /// node does not accept proxy staking; then this account is automatically 
-    /// proxy staked to a node chosen by the network without earning payments.
-    /// </summary>
-    public Address? Proxy { get; set; }
     /// <summary>
     /// Additional private key, keys or signing callback method 
     /// required to create this account.  Typically matches the

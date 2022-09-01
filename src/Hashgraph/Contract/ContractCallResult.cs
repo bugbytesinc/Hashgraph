@@ -13,7 +13,7 @@ public sealed record ContractCallResult
     /// <summary>
     /// The values returned from the contract call.
     /// </summary>
-    public ContractCallResultData Result { get; private init; }
+    public EncodedParams Result { get; private init; }
     /// <summary>
     /// An error string returned from the system if there was a problem.
     /// </summary>
@@ -25,17 +25,35 @@ public sealed record ContractCallResult
     /// <summary>
     /// The amount of gas that was used.
     /// </summary>
-    public ulong Gas { get; private init; }
+    public ulong GasUsed { get; private init; }
+    /// <summary>
+    /// The amount of gas available for the call.
+    /// </summary>
+    public long GasLimit { get; private init; }
+    /// <summary>
+    /// Number of tinybars sent into this contract transaction call
+    /// (the function must be payable if this is nonzero).
+    /// </summary>
+    public long PayableAmount { get; private init; }
+    /// <summary>
+    /// The account that is the "message.sender" of the contract
+    /// call, if not present it is the transaction Payer.
+    /// </summary>
+    public Address MessageSender { get; private init; }
     /// <summary>
     /// Log events returned by the function.
     /// </summary>
     public ReadOnlyCollection<ContractEvent> Events { get; private init; }
-    /// <summary>
-    /// The list of storage slots having been read or
-    /// written to during the processing of the transaction
-    /// for each contract processed by this transaction.
-    /// </summary>
-    public ReadOnlyCollection<ContractStateChange> StateChanges { get; internal init; }
+    /**
+     * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+     * 
+     *     /// <summary>
+     *     /// The list of storage slots having been read or
+     *     /// written to during the processing of the transaction
+     *     /// for each contract processed by this transaction.
+     *     /// </summary>
+     *     public ReadOnlyCollection<ContractStateChange> StateChanges { get; internal init; }
+     */
     /// <summary>
     /// The contract's 20-byte EVM address, may or may 
     /// correspond to the shard.realm.num encoded, the
@@ -43,6 +61,10 @@ public sealed record ContractCallResult
     /// from the network.
     /// </summary>
     public Moniker EncodedAddress { get; private init; }
+    /// <summary>
+    /// The parameters passed into the contract call.
+    /// </summary>
+    public EncodedParams FunctionArgs { get; private init; }
     /// <summary>
     /// Internal Constructor from Raw Results
     /// </summary>
@@ -54,13 +76,21 @@ public sealed record ContractCallResult
     /// </summary>
     internal ContractCallResult(ContractFunctionResult result)
     {
-        Result = new ContractCallResultData(result.ContractCallResult.ToArray());
+        Result = new EncodedParams(result.ContractCallResult.Memory);
         Error = result.ErrorMessage;
         Bloom = result.Bloom.ToArray();
-        Gas = result.GasUsed;
+        GasUsed = result.GasUsed;
+        GasLimit = result.Gas;
+        PayableAmount = result.Amount;
+        MessageSender = result.SenderId.AsAddress();
         Events = result.LogInfo.Select(log => new ContractEvent(log)).ToList().AsReadOnly();
-        StateChanges = result.StateChanges.Select(s => new ContractStateChange(s)).ToList().AsReadOnly();
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *        StateChanges = result.StateChanges.Select(s => new ContractStateChange(s)).ToList().AsReadOnly();
+         */
         EncodedAddress = result.EvmAddress is null || result.EvmAddress.IsEmpty ? Moniker.None : new Moniker(result.EvmAddress.Memory);
+        FunctionArgs = new EncodedParams(result.FunctionParameters.Memory);
     }
 }
 /// <summary>
@@ -83,7 +113,7 @@ public sealed class ContractEvent
     /// <summary>
     /// The event data returned.
     /// </summary>
-    public ContractCallResultData Data { get; private init; }
+    public EncodedParams Data { get; private init; }
     /// <summary>
     /// Internal Constructor from Raw Results
     /// </summary>
@@ -92,6 +122,6 @@ public sealed class ContractEvent
         Contract = log.ContractID.AsAddress();
         Bloom = log.Bloom.ToArray();
         Topic = log.Topic.Select(bs => new ReadOnlyMemory<byte>(bs.ToArray())).ToArray();
-        Data = new ContractCallResultData(log.Data.ToArray());
+        Data = new EncodedParams(log.Data.ToArray());
     }
 }

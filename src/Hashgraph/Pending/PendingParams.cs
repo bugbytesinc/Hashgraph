@@ -1,4 +1,6 @@
-﻿namespace Hashgraph;
+﻿using System;
+
+namespace Hashgraph;
 
 /// <summary>
 /// Pending (Scheduled) Transaction Parameters.  Used for creating
@@ -33,4 +35,24 @@ public sealed record PendingParams
     /// identified as the payer in the Context).
     /// </summary>
     public Address? PendingPayer { get; init; }
+    /// <summary>
+    /// The date/time at which the network will discard this
+    /// pending (scheduled) transaction if it has not already 
+    /// been signed by a sufficient number of signatures or
+    /// deleted by the holder of the admin key.
+    /// </summary>
+    /// <remarks>
+    /// If not specified, the network will set the expiration
+    /// time to 30 minutes after the consensus creation time
+    /// of the pending transaction.
+    /// </remarks>
+    public DateTime? Expiration { get; init; }
+    /// <summary>
+    /// If set to <code>true</code>, the network will delay the
+    /// attempt to execute the pending transaction until the
+    /// expiration time, even if it receives sufficient signatures
+    /// satisfying the signing requirements prior to the deadline.
+    /// </summary>
+    public bool DelayExecution { get; init; }
+
 }

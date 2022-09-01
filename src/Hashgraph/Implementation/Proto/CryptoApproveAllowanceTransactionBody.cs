@@ -41,14 +41,14 @@ public sealed partial class CryptoApproveAllowanceTransactionBody : INetworkTran
         {
             foreach (var allowance in allowances.CryptoAllowances)
             {
-                CryptoAllowances.Add(new CryptoAllowance(allowance, true));
+                CryptoAllowances.Add(new CryptoAllowance(allowance));
             }
         }
         if (allowances.TokenAllowances is not null)
         {
             foreach (var allowance in allowances.TokenAllowances)
             {
-                TokenAllowances.Add(new TokenAllowance(allowance, true));
+                TokenAllowances.Add(new TokenAllowance(allowance));
             }
         }
         if (allowances.AssetAllowances is not null)

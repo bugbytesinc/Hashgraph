@@ -1,7 +1,6 @@
 ﻿using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -321,11 +320,11 @@ public class TransferAssetTests
         var cryptoAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { _network.Payer, -2 * cryptoAmount },
-                    { fxAccount1, cryptoAmount },
-                    { fxAccount2, cryptoAmount }
+                    new CryptoTransfer( _network.Payer, -2 * cryptoAmount ),
+                    new CryptoTransfer( fxAccount1, cryptoAmount ),
+                    new CryptoTransfer( fxAccount2, cryptoAmount )
                 },
             AssetTransfers = new AssetTransfer[]
             {
@@ -355,11 +354,11 @@ public class TransferAssetTests
         var cryptoAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { _network.Payer, -2 * cryptoAmount },
-                    { fxAccount1, cryptoAmount },
-                    { fxAccount2, cryptoAmount }
+                    new CryptoTransfer( _network.Payer, -2 * cryptoAmount ),
+                    new CryptoTransfer(fxAccount1, cryptoAmount ),
+                    new CryptoTransfer(fxAccount2, cryptoAmount )
                 },
             AssetTransfers = new AssetTransfer[]
             {
@@ -853,6 +852,7 @@ public class TransferAssetTests
             Assert.Equal(fxAsset.Record.Token, asset.Asset);
             Assert.Equal(asset.Asset.SerialNum % 2 == 0 ? fxAccount.Record.Address : fxAsset.TreasuryAccount.Record.Address, asset.Owner);
             Assert.True(fxAsset.Metadata[sn - 1].Span.SequenceEqual(asset.Metadata.Span));
+            Assert.Equal(Address.None, asset.Agent);
         }
     }
 }

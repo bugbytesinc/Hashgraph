@@ -41,7 +41,7 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         {
             throw new ArgumentNullException(nameof(updateParameters.Address), "Account is missing. Please check that it is not null.");
         }
-        if (Hashgraph.Endorsement.None.Equals(updateParameters.Endorsement))
+        if (Endorsement.None.Equals(updateParameters.Endorsement))
         {
             throw new ArgumentOutOfRangeException(nameof(updateParameters.Endorsement), "Endorsement can not be 'None', it must contain at least one key requirement.");
         }
@@ -49,12 +49,14 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
             updateParameters.RequireReceiveSignature is null &&
             updateParameters.Expiration is null &&
             updateParameters.AutoRenewPeriod is null &&
-            updateParameters.Proxy is null &&
             updateParameters.Memo is null &&
             updateParameters.AutoAssociationLimit is null &&
-            updateParameters.Alias is null)
+            updateParameters.Alias is null &&
+            updateParameters.ProxyAccount is null &&
+            updateParameters.StakedNode is null &&
+            updateParameters.DeclineStakeReward is null)
         {
-            throw new ArgumentException(nameof(updateParameters), "The Account Updates contains no update properties, it is blank.");
+            throw new ArgumentException("The Account Updates contains no update properties, it is blank.", nameof(updateParameters));
         }
         AccountIDToUpdate = new AccountID(updateParameters.Address);
         if (updateParameters.Endorsement is not null)
@@ -73,10 +75,6 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         {
             ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
         }
-        if (updateParameters.Proxy is not null)
-        {
-            ProxyAccountID = new AccountID(updateParameters.Proxy);
-        }
         if (updateParameters.Memo is not null)
         {
             Memo = updateParameters.Memo;
@@ -84,15 +82,31 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         if (updateParameters.AutoAssociationLimit is not null)
         {
             var limit = updateParameters.AutoAssociationLimit.Value;
-            if (limit < 0 || limit > 1000)
+            if (limit < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(updateParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be between zero and 1000.");
+                throw new ArgumentOutOfRangeException(nameof(updateParameters.AutoAssociationLimit), "The maximum number of auto-associaitons must be nonnegative.");
             }
-            MaxAutomaticTokenAssociations = updateParameters.AutoAssociationLimit.Value;
+            MaxAutomaticTokenAssociations = limit;
         }
         if (updateParameters.Alias is not null)
         {
             //Alias = new Key(updateParameters.Alias.Endorsement).ToByteString();
+        }
+        if (updateParameters.ProxyAccount is not null)
+        {
+            if (updateParameters.StakedNode is not null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(updateParameters.ProxyAccount), "Can not set ProxyAccount and StakedNode at the same time.");
+            }
+            StakedAccountId = new AccountID(updateParameters.ProxyAccount);
+        }
+        if (updateParameters.StakedNode is not null)
+        {
+            StakedNodeId = updateParameters.StakedNode.Value;
+        }
+        if (updateParameters.DeclineStakeReward is not null)
+        {
+            DeclineReward = updateParameters.DeclineStakeReward.Value;
         }
     }
 }

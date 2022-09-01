@@ -66,6 +66,10 @@ public record TransactionRecord : TransactionReceipt
     /// </summary>
     public DateTime? ParentTransactionConcensus { get; internal init; }
     /// <summary>
+    /// A List of account staking rewards paid  as a result of this transaction.
+    /// </summary>
+    public ReadOnlyDictionary<Address, long> StakingRewards { get; internal init; }
+    /// <summary>
     /// Internal Constructor of the record.
     /// </summary>
     internal TransactionRecord(NetworkResult result) : base(result)
@@ -82,6 +86,7 @@ public record TransactionRecord : TransactionReceipt
         Royalties = record.AssessedCustomFees.AsRoyaltyTransferList();
         Associations = record.AutomaticTokenAssociations.AsAssociationList();
         ParentTransactionConcensus = record.ParentConsensusTimestamp?.ToDateTime();
+        StakingRewards = record.PaidStakingRewards.AsStakingRewards();
     }
 }
 
@@ -137,5 +142,20 @@ internal static class TransactionRecordExtensions
             return result.AsReadOnly();
         }
         return EMPTY_RESULT;
+    }
+
+    internal static ReadOnlyDictionary<Address, long> AsStakingRewards(this RepeatedField<AccountAmount> rewards)
+    {
+        var results = new Dictionary<Address, long>();
+        if(rewards is not null)
+        {
+            foreach (var xfer in rewards)
+            {
+                var account = xfer.AccountID.AsAddress();
+                results.TryGetValue(account, out long amount);
+                results[account] = amount + xfer.Amount;
+            }
+        }
+        return new ReadOnlyDictionary<Address, long>(results);
     }
 }

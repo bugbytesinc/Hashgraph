@@ -210,7 +210,7 @@ internal enum AddressType
 }
 internal static class AddressExtensions
 {
-    internal static bool IsNullOrNone(this Address? address)
+    internal static bool IsNullOrNone([NotNullWhen(false)] this Address? address)
     {
         return address is null || address == Address.None;
     }

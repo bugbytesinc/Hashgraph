@@ -44,8 +44,6 @@ public class GetDetailTests
             Assert.Equal(account.AccountNum, detail.Address.AccountNum);
             Assert.NotNull(detail.SmartContractId);
             Assert.False(detail.Deleted);
-            Assert.NotNull(detail.Proxy);
-            Assert.Equal(new Address(0, 0, 0), detail.Proxy);
             Assert.Equal(0, detail.ProxiedToAccount);
             Assert.Equal(new Endorsement(_network.PublicKey), detail.Endorsement);
             Assert.True(detail.Balance > 0);
@@ -86,8 +84,6 @@ public class GetDetailTests
             Assert.Equal(fxAccount.Record.Address, detail.Address);
             Assert.NotNull(detail.SmartContractId);
             Assert.False(detail.Deleted);
-            Assert.NotNull(detail.Proxy);
-            Assert.Equal(Address.None, detail.Proxy);
             Assert.Equal(0, detail.ProxiedToAccount);
             Assert.Equal(fxAccount.PublicKey, detail.Endorsement);
             Assert.Equal(fxAccount.CreateParams.InitialBalance, detail.Balance);
@@ -129,8 +125,6 @@ public class GetDetailTests
             Assert.Equal(fxAccount.CreateRecord.Address, detailFromAddress.Address);
             Assert.NotNull(detailFromAddress.SmartContractId);
             Assert.False(detailFromAddress.Deleted);
-            Assert.NotNull(detailFromAddress.Proxy);
-            Assert.Equal(Address.None, detailFromAddress.Proxy);
             Assert.Equal(0, detailFromAddress.ProxiedToAccount);
             Assert.Equal(fxAccount.PublicKey, detailFromAddress.Endorsement);
             Assert.True(detailFromAddress.Balance > 0);
@@ -150,8 +144,6 @@ public class GetDetailTests
             Assert.Equal(fxAccount.CreateRecord.Address, detailFromAlias.Address);
             Assert.NotNull(detailFromAlias.SmartContractId);
             Assert.False(detailFromAlias.Deleted);
-            Assert.NotNull(detailFromAlias.Proxy);
-            Assert.Equal(Address.None, detailFromAlias.Proxy);
             Assert.Equal(0, detailFromAlias.ProxiedToAccount);
             Assert.Equal(fxAccount.PublicKey, detailFromAlias.Endorsement);
             Assert.True(detailFromAlias.Balance > 0);
@@ -197,8 +189,6 @@ public class GetDetailTests
             Assert.Equal(account.AccountNum, detail.Address.AccountNum);
             Assert.NotNull(detail.SmartContractId);
             Assert.False(detail.Deleted);
-            Assert.NotNull(detail.Proxy);
-            Assert.Equal(new Address(0, 0, 0), detail.Proxy);
             Assert.True(detail.ProxiedToAccount > -1);
             Assert.True(detail.Balance > 0);
             Assert.False(detail.ReceiveSignatureRequired);
@@ -249,8 +239,6 @@ public class GetDetailTests
             Assert.Equal(fxAsset.TreasuryAccount.Record.Address, detail.Address);
             Assert.NotNull(detail.SmartContractId);
             Assert.False(detail.Deleted);
-            Assert.NotNull(detail.Proxy);
-            Assert.Equal(new Address(0, 0, 0), detail.Proxy);
             Assert.True(detail.ProxiedToAccount > -1);
             Assert.True(detail.Balance > 0);
             Assert.False(detail.ReceiveSignatureRequired);

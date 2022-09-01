@@ -33,11 +33,20 @@ public class PayableContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 30_000UL);
+        Assert.InRange(record.CallResult.GasUsed, 0UL, 30_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, record.CallResult.GasLimit);
+        Assert.Equal(0, record.CallResult.PayableAmount);
+        Assert.Equal(Address.None, record.CallResult.MessageSender);
         Assert.Empty(record.CallResult.Events);
-        Assert.Empty(record.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(record.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
         Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
+        Assert.Equal(0, record.CallResult.FunctionArgs.Size);
 
         // Ensure matches API vesion.
         var apiBalance = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
@@ -57,10 +66,19 @@ public class PayableContractTests
         Assert.NotNull(result);
         Assert.Empty(result.Error);
         Assert.False(result.Bloom.IsEmpty);
-        Assert.InRange(result.Gas, 0UL, 30_000UL);
+        Assert.InRange(result.GasUsed, 0UL, 30_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, result.GasLimit);
+        Assert.Equal(0, result.PayableAmount);
+        Assert.Equal(Address.None, result.MessageSender);
         Assert.Empty(result.Events);
         Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
-        Assert.Empty(result.StateChanges);
+        Assert.Equal(0, result.FunctionArgs.Size);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(result.StateChanges);
+         */
         Assert.Equal(Moniker.None, result.EncodedAddress);
 
         // Ensure matches API vesion.
@@ -93,9 +111,15 @@ public class PayableContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 40_000UL);
+        Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, record.CallResult.GasLimit);
         Assert.Empty(record.CallResult.Events);
-        Assert.Empty(record.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(record.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
 
         var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
@@ -133,9 +157,17 @@ public class PayableContractTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.Gas, 0UL, 40_000UL);
+        Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, record.CallResult.GasLimit);
+        Assert.Equal(0, record.CallResult.PayableAmount);
+        Assert.Equal(Address.None, record.CallResult.MessageSender);
         Assert.Empty(record.CallResult.Events);
-        Assert.Empty(record.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(record.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
 
         var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);

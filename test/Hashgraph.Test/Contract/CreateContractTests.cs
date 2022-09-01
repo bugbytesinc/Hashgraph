@@ -28,6 +28,18 @@ public class CreateContractTests
         Assert.NotNull(fx.ContractRecord.Memo);
         Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
     }
+    [Fact(DisplayName = "Create Contract: Can Create Using ByteCode")]
+    public async Task CanCreateAContractUsingByteCode()
+    {
+        await using var fx = await InitCodeContract.CreateAsync(_network);
+        Assert.NotNull(fx.ContractRecord);
+        Assert.NotNull(fx.ContractRecord.Contract);
+        Assert.Equal(ResponseCode.Success, fx.ContractRecord.Status);
+        Assert.NotEmpty(fx.ContractRecord.Hash.ToArray());
+        Assert.NotNull(fx.ContractRecord.Concensus);
+        Assert.NotNull(fx.ContractRecord.Memo);
+        Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
+    }
     [Fact(DisplayName = "Create Contract: Can Create with Payer Signature")]
     public async Task CanCreateAContractWithSignatureAsync()
     {
@@ -69,7 +81,20 @@ public class CreateContractTests
                 fx.ContractParams.File = null;
             });
         });
-        Assert.StartsWith("The File Address containing the contract is missing, it cannot be null.", ex.Message);
+        Assert.StartsWith("Both the File address and ByteCode properties missing, one must be specified", ex.Message);
+        Assert.Equal("File", ex.ParamName);
+    }
+    [Fact(DisplayName = "Create Contract: File and InitCode Raises Error")]
+    public async Task FileAndInitCodeRaisesError()
+    {
+        var ex = await Assert.ThrowsAsync<ArgumentException>(async () =>
+        {
+            await GreetingContract.CreateAsync(_network, fx =>
+            {
+                fx.ContractParams.ByteCode = Hex.ToBytes(InitCodeContract.CONTRACT_BYTECODE);
+            });
+        });
+        Assert.StartsWith("Both the File address and ByteCode properties are specified, only one can be set.", ex.Message);
         Assert.Equal("File", ex.ParamName);
     }
     [Fact(DisplayName = "Create Contract: Missing Gas Raises Error")]
@@ -128,9 +153,16 @@ public class CreateContractTests
 
         Assert.Empty(fxContract.ContractRecord.CallResult.Error);
         Assert.False(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
-        Assert.InRange(fxContract.ContractRecord.CallResult.Gas, 0UL, (ulong)fxContract.ContractParams.Gas);
+        Assert.InRange(fxContract.ContractRecord.CallResult.GasUsed, 0UL, (ulong)fxContract.ContractParams.Gas);
+        Assert.Equal(0, fxContract.ContractRecord.CallResult.GasLimit);
+        Assert.Equal(0, fxContract.ContractRecord.CallResult.PayableAmount);
+        Assert.Equal(Address.None, fxContract.ContractRecord.CallResult.MessageSender);
         Assert.Empty(fxContract.ContractRecord.CallResult.Events);
-        Assert.Empty(fxContract.ContractRecord.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(fxContract.ContractRecord.CallResult.StateChanges);
+         */
         Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fxContract.ContractRecord.Contract }).Slice(12)), fxContract.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fxContract.ContractRecord.CallResult.Result.Size);
         Assert.False(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
@@ -152,9 +184,16 @@ public class CreateContractTests
 
         Assert.Empty(fxContract.ContractRecord.CallResult.Error);
         Assert.False(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
-        Assert.InRange(fxContract.ContractRecord.CallResult.Gas, 0UL, (ulong)fxContract.ContractParams.Gas);
+        Assert.InRange(fxContract.ContractRecord.CallResult.GasUsed, 0UL, (ulong)fxContract.ContractParams.Gas);
+        Assert.Equal(0, fxContract.ContractRecord.CallResult.GasLimit);
+        Assert.Equal(0, fxContract.ContractRecord.CallResult.PayableAmount);
+        Assert.Equal(Address.None, fxContract.ContractRecord.CallResult.MessageSender);
         Assert.Empty(fxContract.ContractRecord.CallResult.Events);
-        Assert.Empty(fxContract.ContractRecord.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(fxContract.ContractRecord.CallResult.StateChanges);
+         */
         Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fxContract.ContractRecord.Contract }).Slice(12)), fxContract.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fxContract.ContractRecord.CallResult.Result.Size);
         Assert.False(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
@@ -182,12 +221,21 @@ public class CreateContractTests
 
         Assert.Empty(fx.ContractRecord.CallResult.Error);
         Assert.False(fx.ContractRecord.CallResult.Bloom.IsEmpty);
-        Assert.InRange(fx.ContractRecord.CallResult.Gas, 0UL, (ulong)fx.ContractParams.Gas);
+        Assert.InRange(fx.ContractRecord.CallResult.GasUsed, 0UL, (ulong)fx.ContractParams.Gas);
+        Assert.Equal(0, fx.ContractRecord.CallResult.GasLimit);
+        Assert.Equal(0, fx.ContractRecord.CallResult.PayableAmount);
+        Assert.Equal(Address.None, fx.ContractRecord.CallResult.MessageSender);
         Assert.Empty(fx.ContractRecord.CallResult.Events);
-        Assert.Empty(fx.ContractRecord.CallResult.StateChanges);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(fx.ContractRecord.CallResult.StateChanges);
+         */
         Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract }).Slice(12)), fx.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fx.ContractRecord.CallResult.Result.Size);
         Assert.False(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, fx.ContractRecord.CallResult.FunctionArgs.Size);
     }
 
     [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]
@@ -247,4 +295,71 @@ public class CreateContractTests
         Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
     }
 
+    [Fact(DisplayName = "NETWORK V0.27.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
+    public async Task CanCreateTokenTransferContractWithMaxAutoAssociationsDefect()
+    {
+        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanCreateTokenTransferContractWithMaxAutoAssociations));
+        Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
+        Assert.Equal("0", testFailException.Actual);
+
+        //[Fact(DisplayName = "Create Contract: Can Create Token Transfer Contract With Max Auto Associations")]
+        async Task CanCreateTokenTransferContractWithMaxAutoAssociations()
+        {
+            var limit = Generator.Integer(20, 400);
+            await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
+            {
+                fx.ContractParams.AutoAssociationLimit = limit;
+            });
+
+            var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+            Assert.NotNull(info);
+            Assert.Equal(limit, info.AutoAssociationLimit);
+        }
+    }
+    [Fact(DisplayName = "Create Contract: Can Set Staking Node")]
+    public async Task CanCreateTokenTransferContractWithMaxAutoAssociations()
+    {        
+        await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
+        {
+            fx.ContractParams.StakedNode = 3;
+        });
+
+        var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(3, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Create Contract: Can Set Proxy Address")]
+    public async Task CanSetProxyAddress()
+    {
+        await using var fxProxied = await TestAccount.CreateAsync(_network);
+        await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
+        {
+            fx.ContractParams.ProxyAccount = fxProxied.Record.Address;
+        });
+
+        var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(fxProxied.Record.Address, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
+    [Fact(DisplayName = "Create Contract: Can Decline Staking Reward")]
+    public async Task CanDeclineStakingReward()
+    {
+        await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
+        {
+            fx.ContractParams.DeclineStakeReward = true;
+        });
+
+        var info = await fxContract.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+        Assert.NotNull(info.StakingInfo);
+        Assert.True(info.StakingInfo.Declined);
+        Assert.Equal(0, info.StakingInfo.Node);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+    }
 }

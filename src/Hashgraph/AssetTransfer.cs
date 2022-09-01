@@ -18,6 +18,11 @@ public sealed record AssetTransfer
     /// </summary>
     public Address To { get; private init; }
     /// <summary>
+    /// Indicates the parties involved in the transaction
+    /// are acting as delegates thru a granted allowance.
+    /// </summary>
+    public bool Delegated { get; private init; }
+    /// <summary>
     /// Internal Constructor representing the "None" version of an
     /// version.  This is a special construct indicating the version
     /// number is not known or is not specified.
@@ -27,6 +32,7 @@ public sealed record AssetTransfer
         Asset = Asset.None;
         From = Address.None;
         To = Address.None;
+        Delegated = false;
     }
     /// <summary>
     /// Public Constructor, an <code>TokenTransfer</code> is immutable after creation.
@@ -40,10 +46,15 @@ public sealed record AssetTransfer
     /// <param name="toAddress">
     /// The address of the crypto account sending the token.
     /// </param>
-    public AssetTransfer(Asset asset, Address fromAddress, Address toAddress)
+    /// <param name="delegated">
+    /// Indicates the parties involved in the transaction
+    /// are acting as delegates thru a granted allowance.
+    /// </param>
+    public AssetTransfer(Asset asset, Address fromAddress, Address toAddress, bool delegated = false)
     {
         Asset = asset;
         From = fromAddress;
         To = toAddress;
+        Delegated = delegated;
     }
 }

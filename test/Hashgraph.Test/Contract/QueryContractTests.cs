@@ -29,10 +29,19 @@ public class QueryContractTests
         Assert.NotNull(result);
         Assert.Empty(result.Error);
         Assert.False(result.Bloom.IsEmpty);
-        Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
+        Assert.InRange(result.GasUsed, 0UL, ulong.MaxValue);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, result.GasLimit);
+        Assert.Equal(0, result.PayableAmount);
+        Assert.Equal(Address.None, result.MessageSender);
         Assert.Empty(result.Events);
         Assert.Equal("Hello, world!", result.Result.As<string>());
-        Assert.Empty(result.StateChanges);
+        Assert.Equal(0, result.FunctionArgs.Size);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(result.StateChanges);
+         */
         Assert.Equal(Moniker.None, result.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Can call Contract that Keeps State")]
@@ -49,10 +58,19 @@ public class QueryContractTests
         Assert.NotNull(result);
         Assert.Empty(result.Error);
         Assert.False(result.Bloom.IsEmpty);
-        Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
+        Assert.InRange(result.GasUsed, 0UL, ulong.MaxValue);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, result.GasLimit);
+        Assert.Equal(0, result.PayableAmount);
+        Assert.Equal(Address.None, result.MessageSender);
         Assert.Empty(result.Events);
         Assert.Equal(fx.ContractParams.Arguments[0] as string, result.Result.As<string>());
-        Assert.Empty(result.StateChanges);
+        Assert.Equal(0, result.FunctionArgs.Size);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(result.StateChanges);
+         */
         Assert.Equal(Moniker.None, result.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Query Contract with Insufficent funds defaults to Throw Exception")]
@@ -76,10 +94,19 @@ public class QueryContractTests
         Assert.NotNull(qex.CallResult);
         Assert.Equal("INSUFFICIENT_GAS", qex.CallResult.Error);
         Assert.True(qex.CallResult.Bloom.IsEmpty);
-        Assert.InRange(qex.CallResult.Gas, 0UL, ulong.MaxValue);
+        Assert.InRange(qex.CallResult.GasUsed, 0UL, ulong.MaxValue);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, qex.CallResult.GasLimit);
+        Assert.Equal(0, qex.CallResult.PayableAmount);
+        Assert.Equal(Address.None, qex.CallResult.MessageSender);
         Assert.Empty(qex.CallResult.Events);
         Assert.Equal(0, qex.CallResult.Result.Size);
-        Assert.Empty(qex.CallResult.StateChanges);
+        Assert.Equal(0, qex.CallResult.FunctionArgs.Size);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(qex.CallResult.StateChanges);
+         */
         Assert.Equal(Moniker.None, qex.CallResult.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Error Query Contract without Flag Set Returns without Error")]
@@ -97,10 +124,19 @@ public class QueryContractTests
         Assert.NotNull(result);
         Assert.Equal("INSUFFICIENT_GAS", result.Error);
         Assert.True(result.Bloom.IsEmpty);
-        Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
+        Assert.InRange(result.GasUsed, 0UL, ulong.MaxValue);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, result.GasLimit);
+        Assert.Equal(0, result.PayableAmount);
+        Assert.Equal(Address.None, result.MessageSender);
         Assert.Empty(result.Events);
         Assert.Equal(0, result.Result.Size);
-        Assert.Empty(result.StateChanges);
+        Assert.Equal(0, result.FunctionArgs.Size);
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(result.StateChanges);
+         */
         Assert.Equal(Moniker.None, result.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Call Contract that sets State fails.")]
@@ -141,10 +177,21 @@ public class QueryContractTests
         Assert.NotNull(result);
         Assert.Equal("ILLEGAL_STATE_CHANGE", result.Error);
         Assert.True(result.Bloom.IsEmpty);
-        Assert.InRange(result.Gas, 0UL, ulong.MaxValue);
+        Assert.InRange(result.GasUsed, 0UL, ulong.MaxValue);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, result.GasLimit);
+        Assert.Equal(0, result.PayableAmount);
+        Assert.Equal(Address.None, result.MessageSender);
         Assert.Empty(result.Events);
         Assert.Equal(0, result.Result.Size);
-        Assert.Empty(result.StateChanges);
+        // NETWORK DEFECT: NOT IMPLEMENED
+        Assert.Equal(0, result.FunctionArgs.Size);
+        //Assert.Equal(newMessage, result.FunctionArgs.As<string>());
+        /**
+         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+         * 
+         *  Assert.Empty(result.StateChanges);
+         */
         Assert.Equal(Moniker.None, result.EncodedAddress);
     }
     [Fact(DisplayName = "Query Contract: Invalid Network Call Still Raises PreCheckError when ThrowOnFail is False")]

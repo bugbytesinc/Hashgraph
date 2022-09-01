@@ -1,6 +1,5 @@
 ﻿using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -296,11 +295,11 @@ public class TransferTokenTests
         var cryptoAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { _network.Payer, -2 * cryptoAmount },
-                    { fxAccount1, cryptoAmount },
-                    { fxAccount2, cryptoAmount }
+                    new CryptoTransfer( _network.Payer, -2 * cryptoAmount ),
+                    new CryptoTransfer(fxAccount1, cryptoAmount ),
+                    new CryptoTransfer(fxAccount2, cryptoAmount )
                 },
             TokenTransfers = new TokenTransfer[]
             {
@@ -333,11 +332,11 @@ public class TransferTokenTests
         var cryptoAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { _network.Payer, -2 * cryptoAmount },
-                    { fxAccount1, cryptoAmount },
-                    { fxAccount2, cryptoAmount }
+                    new CryptoTransfer( _network.Payer, -2 * cryptoAmount ),
+                    new CryptoTransfer( fxAccount1, cryptoAmount ),
+                    new CryptoTransfer( fxAccount2, cryptoAmount )
                 },
             TokenTransfers = new TokenTransfer[]
             {
@@ -916,9 +915,9 @@ public class TransferTokenTests
                 fxToken.TreasuryAccount.Record.Address,
                 fxAccount.Record.Address,
                 xferAmount
-            },            
+            },
             Signatory = fxToken.TreasuryAccount.PrivateKey
-        });;
+        }); ;
 
         var record = await fxAccount.Client.GetTransactionRecordAsync(receipt.Id) as CallContractRecord;
         Assert.Equal(ResponseCode.Success, record.Status);

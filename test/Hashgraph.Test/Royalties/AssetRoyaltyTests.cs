@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -126,9 +125,9 @@ public class AssetRoyaltyTests
             AssetTransfers = new[] {
                     new AssetTransfer(movedAsset,fxSeller,fxBuyer)
                 },
-            CryptoTransfers = new Dictionary<Address, long> {
-                    { fxBuyer.Record.Address, -10_00_000_000 },
-                    { fxSeller.Record.Address, 10_00_000_000 }
+            CryptoTransfers = new[] {
+                    new CryptoTransfer( fxBuyer.Record.Address, -10_00_000_000 ),
+                    new CryptoTransfer(fxSeller.Record.Address, 10_00_000_000 )
                 },
             Signatory = new Signatory(fxBuyer, fxSeller)
         });
@@ -205,9 +204,9 @@ public class AssetRoyaltyTests
                     new TokenTransfer(fxPaymentToken, fxBuyer, -100),
                     new TokenTransfer(fxPaymentToken, fxSeller, 100),
                 },
-            CryptoTransfers = new Dictionary<Address, long> {
-                    { fxBuyer.Record.Address, -10_00_000_000 },
-                    { fxSeller.Record.Address, 10_00_000_000 }
+            CryptoTransfers = new[] {
+                    new CryptoTransfer(fxBuyer.Record.Address, -10_00_000_000 ),
+                    new CryptoTransfer(fxSeller.Record.Address, 10_00_000_000 )
                 },
             Signatory = new Signatory(fxBuyer, fxSeller)
         });

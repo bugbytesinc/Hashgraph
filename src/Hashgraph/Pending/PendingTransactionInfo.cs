@@ -67,6 +67,13 @@ public sealed record PendingTransactionInfo : PendingTransaction
     /// </summary>
     public ReadOnlyMemory<byte> Ledger { get; private init; }
     /// <summary>
+    /// If set to <code>true</code>, the network will delay the
+    /// attempt to execute the pending transaction until the
+    /// expiration time, even if it receives sufficient signatures
+    /// satisfying the signing requirements prior to the deadline.
+    /// </summary>
+    public bool DelayExecution { get; init; }
+    /// <summary>
     /// Internal Constructor from Raw Results
     /// </summary>
     internal PendingTransactionInfo(Response response)
@@ -84,5 +91,6 @@ public sealed record PendingTransactionInfo : PendingTransaction
         Deleted = info.DeletionTime?.ToDateTime();
         PendingTransactionBody = info.ScheduledTransactionBody.ToByteArray();
         Ledger = info.LedgerId.Memory;
+        DelayExecution = info.WaitForExpiry;
     }
 }

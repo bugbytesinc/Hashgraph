@@ -103,39 +103,39 @@ public sealed partial class TokenUpdateTransactionBody : INetworkTransaction
             }
             Memo = updateParameters.Memo;
         }
-        if (!(updateParameters.Treasury is null))
+        if (updateParameters.Treasury is not null)
         {
             Treasury = new AccountID(updateParameters.Treasury);
         }
-        if (!(updateParameters.Administrator is null))
+        if (updateParameters.Administrator is not null)
         {
             AdminKey = new Key(updateParameters.Administrator);
         }
-        if (!(updateParameters.GrantKycEndorsement is null))
+        if (updateParameters.GrantKycEndorsement is not null)
         {
             KycKey = new Key(updateParameters.GrantKycEndorsement);
         }
-        if (!(updateParameters.SuspendEndorsement is null))
+        if (updateParameters.SuspendEndorsement is not null)
         {
             FreezeKey = new Key(updateParameters.SuspendEndorsement);
         }
-        if (!(updateParameters.PauseEndorsement is null))
+        if (updateParameters.PauseEndorsement is not null)
         {
             PauseKey = new Key(updateParameters.PauseEndorsement);
         }
-        if (!(updateParameters.ConfiscateEndorsement is null))
+        if (updateParameters.ConfiscateEndorsement is not null)
         {
             WipeKey = new Key(updateParameters.ConfiscateEndorsement);
         }
-        if (!(updateParameters.SupplyEndorsement is null))
+        if (updateParameters.SupplyEndorsement is not null)
         {
             SupplyKey = new Key(updateParameters.SupplyEndorsement);
         }
-        if (!(updateParameters.RoyaltiesEndorsement is null))
+        if (updateParameters.RoyaltiesEndorsement is not null)
         {
             FeeScheduleKey = new Key(updateParameters.RoyaltiesEndorsement);
         }
-        if (!(updateParameters.RenewAccount is null))
+        if (updateParameters.RenewAccount is not null)
         {
             AutoRenewAccount = new AccountID(updateParameters.RenewAccount);
         }

@@ -29,8 +29,7 @@ public class GetAccountInfoTests
             var account = new Address(0, 0, queryAccountNo);
             var info = await client.GetAccountInfoAsync(account);
             Console.WriteLine($"Account:               0.0.{info.Address.AccountNum}");
-            Console.WriteLine($"Smart Contract ID:     {info.SmartContractId}");
-            Console.WriteLine($"Proxy Address:         0.0.{info.Proxy.AccountNum}");
+            Console.WriteLine($"Smart Contract ID:     {info.ContractId}");
             Console.WriteLine($"Balance:               {info.Balance:#,#} tb");
             Console.WriteLine($"Receive Sig. Required: {info.ReceiveSignatureRequired}");
             Console.WriteLine($"Auto-Renewal Period:   {info.AutoRenewPeriod}");

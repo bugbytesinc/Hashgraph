@@ -6,8 +6,8 @@ namespace Hashgraph;
 
 /// <summary>
 /// The information returned from the GetTokenInfo Client 
-/// method call.  It represents the details concerning a 
-/// Hedera Fungable Token.
+/// method call.  It represents the details concerning an 
+/// Hedera Non Fungable Token.
 /// </summary>
 public sealed record AssetInfo
 {
@@ -19,6 +19,11 @@ public sealed record AssetInfo
     /// The account currently owning the asset.
     /// </summary>
     public Address Owner { get; private init; }
+    /// <summary>
+    /// The account that has the rights to spend
+    /// this asset via an allowance grant.
+    /// </summary>
+    public Address Agent { get; private init; }
     /// <summary>
     /// The Consensus Timestamp for when this asset was created (minted).
     /// </summary>
@@ -48,7 +53,8 @@ public sealed record AssetInfo
             Owner.Equals(other.Owner) &&
             Created.Equals(other.Created) &&
             Metadata.Span.SequenceEqual(other.Metadata.Span) &&
-            Ledger.Span.SequenceEqual(other.Ledger.Span);
+            Ledger.Span.SequenceEqual(other.Ledger.Span) &&
+            Agent.Equals(other.Agent);
     }
     /// <summary>
     /// Equality implementation.
@@ -60,7 +66,7 @@ public sealed record AssetInfo
     /// </returns>
     public override int GetHashCode()
     {
-        return $"AssetInfo.{Asset.GetHashCode()}.{Owner.GetHashCode()}.{Created.GetHashCode()}.{Hex.FromBytes(Metadata)}.{Hex.FromBytes(Ledger)}".GetHashCode();
+        return $"AssetInfo.{Asset.GetHashCode()}.{Owner.GetHashCode()}.{Created.GetHashCode()}.{Hex.FromBytes(Metadata)}.{Hex.FromBytes(Ledger)}.{Agent.GetHashCode()}".GetHashCode();
     }
     private AssetInfo(TokenNftInfo info)
     {
@@ -69,6 +75,7 @@ public sealed record AssetInfo
         Created = info.CreationTime.ToDateTime();
         Metadata = info.Metadata.Memory;
         Ledger = info.LedgerId.Memory;
+        Agent = info.SpenderId.AsAddress();
     }
     internal AssetInfo(Response response) : this(response.TokenGetNftInfo.Nft)
     {

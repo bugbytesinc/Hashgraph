@@ -52,10 +52,46 @@ public sealed class UpdateContractParams
     /// </summary>
     public TimeSpan? RenewPeriod { get; set; }
     /// <summary>
+    /// If specified updates the address of the account supporting the auto 
+    /// renewal of the contract at expiration time.  The topic lifetime will be
+    /// extended by the RenewPeriod at expiration time if this account
+    /// contains sufficient funds.  The private key associated with
+    /// this account must sign the transaction if RenewAccount is
+    /// specified.  Setting the value to <code>Address.None</code> clears the
+    /// renewal account.
+    /// </summary>
+    public Address? RenewAccount { get; set; }
+    /// <summary>
     /// The memo to be associated with the contract.  Maximum
     /// of 100 bytes.
     /// </summary>
     public string? Memo { get; set; }
+    /// <summary>
+    /// If set, updates the maximum number of token or assets that this contract may
+    /// be implicitly assoicated with (by means of being made a treasury
+    /// or other related actions).
+    /// </summary>
+    public int? AutoAssociationLimit { get; set; }
+    /// <summary>
+    /// If set, updates this contract's staking proxy
+    /// account.  If set The funds of this contract will 
+    /// be staked to the node that this account is staked 
+    /// to and the specified account will receive 
+    /// the earned reward.
+    /// </summary>
+    public Address? ProxyAccount { get; set; }
+    /// <summary>
+    /// If set, updates this contract's staked node.
+    /// The funds of this contract will be staked to
+    /// the gossip node with the given ID.
+    /// </summary>
+    public long? StakedNode { get; set; }
+    /// <summary>
+    /// If set, updates the flag indicating to the network 
+    /// that this contract does not wish to receive any 
+    /// earned staking rewards.
+    /// </summary>
+    public bool? DeclineStakeReward { get; set; }
     /// <summary>
     /// Additional private key, keys or signing callback method 
     /// required to update this contract.  Typically matches the

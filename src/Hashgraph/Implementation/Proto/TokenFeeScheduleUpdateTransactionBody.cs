@@ -12,7 +12,7 @@ public sealed partial class TokenFeeScheduleUpdateTransactionBody : INetworkTran
 {
     SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
     {
-        throw new InvalidOperationException("Updating Token Royalties is not a schedulable transaction.");
+        return new SchedulableTransactionBody { TokenFeeScheduleUpdate = this };
     }
 
     TransactionBody INetworkTransaction.CreateTransactionBody()

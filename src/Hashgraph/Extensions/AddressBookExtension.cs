@@ -1,5 +1,5 @@
-﻿#pragma warning disable CS8604 // Possible null reference argument.
-using System;
+﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Hashgraph.Extensions;
@@ -13,7 +13,7 @@ public static class AddressBookExtension
     /// <summary>
     /// Well known address of the exchange rate file.
     /// </summary>
-    public static readonly Address ADDRESS_BOOK_FILE_ADDRESS = new Address(0, 0, 102);
+    public static readonly Address ADDRESS_BOOK_FILE_ADDRESS = new(0, 0, 102);
     /// <summary>
     /// Retrieves the current USD to hBar exchange rate information from the
     /// network.
@@ -34,7 +34,7 @@ public static class AddressBookExtension
     public static async Task<NodeInfo[]> GetAddressBookAsync(this Client client, Action<IContext>? configure = null)
     {
         var file = await client.GetFileContentAsync(ADDRESS_BOOK_FILE_ADDRESS, configure).ConfigureAwait(false);
-        var book = Proto.NodeAddressBook.Parser.ParseFrom(file.ToArray());
+        var book = Proto.NodeAddressBook.Parser.ParseFrom(file.Span);
         return book.ToNodeInfoArray();
     }
 }

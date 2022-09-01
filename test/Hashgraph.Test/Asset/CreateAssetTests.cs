@@ -469,29 +469,31 @@ public class CreateAssetTests
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
         Assert.Null(info.ConfiscateEndorsement);
     }
-    [Fact(DisplayName = "Create Asset: Null Supply Key is Allowed")]
-    public async Task NullSupplyKeyIsAllowed()
+    [Fact(DisplayName = "Create Asset: Null Supply Key is not Allowed")]
+    public async Task NullSupplyKeyIsNotAllowed()
     {
-        await using var fxAsset = await TestAsset.CreateAsync(_network, ctx =>
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
-            ctx.Params.SupplyEndorsement = null;
-            ctx.Metadata = null;
+            await TestAsset.CreateAsync(_network, ctx =>
+            {
+                ctx.Params.SupplyEndorsement = null;
+                ctx.Metadata = null;
+            });
         });
-
-        var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-        Assert.Null(info.SupplyEndorsement);
+        Assert.Equal(ResponseCode.TokenHasNoSupplyKey, pex.Status);
     }
-    [Fact(DisplayName = "Create Asset: Empty Supply Key is Allowed")]
-    public async Task EmptySupplyKeyIsAllowed()
+    [Fact(DisplayName = "Create Asset: Empty Supply Key is Not Allowed")]
+    public async Task EmptySupplyKeyIsNotAllowed()
     {
-        await using var fxAsset = await TestAsset.CreateAsync(_network, ctx =>
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
-            ctx.Params.SupplyEndorsement = Endorsement.None;
-            ctx.Metadata = null;
+            await TestAsset.CreateAsync(_network, ctx =>
+            {
+                ctx.Params.SupplyEndorsement = Endorsement.None;
+                ctx.Metadata = null;
+            });
         });
-
-        var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
-        Assert.Null(info.SupplyEndorsement);
+        Assert.Equal(ResponseCode.TokenHasNoSupplyKey, pex.Status);
     }
     [Fact(DisplayName = "Create Asset: Null Royalty Key is Allowed")]
     public async Task NullRoyaltyKeyIsAllowed()

@@ -40,8 +40,4 @@ public sealed record NodeInfo
     /// A Description of the node.
     /// </summary>
     public string Description { get; internal set; }
-    /// <summary>
-    /// The amount of tinybars staked to the node.
-    /// </summary>
-    public long Stake { get; internal set; }
 }

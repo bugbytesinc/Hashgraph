@@ -45,6 +45,7 @@ public class DeletePendingTransactionTests
         Assert.Equal(record.Concensus, info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.False(info.DelayExecution);
     }
     [Fact(DisplayName = "Pending Transaction Delete: Can Delete Pending Transaction With Signatory Version")]
     public async Task CanGetTokenInfoWithSignatoryVersion()

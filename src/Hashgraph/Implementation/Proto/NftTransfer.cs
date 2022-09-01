@@ -7,5 +7,6 @@ public sealed partial class NftTransfer
         SenderAccountID = new AccountID(xfer.From);
         ReceiverAccountID = new AccountID(xfer.To);
         SerialNumber = xfer.Asset.SerialNum;
+        IsApproval = xfer.Delegated;
     }
 }

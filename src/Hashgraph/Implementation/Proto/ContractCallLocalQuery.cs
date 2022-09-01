@@ -57,6 +57,7 @@ public sealed partial class ContractCallLocalQuery : INetworkQuery
         ContractID = new ContractID(queryParameters.Contract);
         Gas = queryParameters.Gas;
         FunctionParameters = ByteString.CopyFrom(Abi.EncodeFunctionWithArguments(queryParameters.FunctionName, queryParameters.FunctionArgs).Span);
+        SenderId = queryParameters.MessageSender.IsNullOrNone() ? null : new AccountID(queryParameters.MessageSender);
         _throwOnFail = queryParameters.ThrowOnFail;
     }
 }

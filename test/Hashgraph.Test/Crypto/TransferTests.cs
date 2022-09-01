@@ -2,7 +2,6 @@
 using Hashgraph.Test.Fixtures;
 using NSec.Cryptography;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -56,7 +55,7 @@ public class TransferTests
 
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long> { { _network.Payer, -transferAmount }, { fx.Record.Address, transferAmount } }
+            CryptoTransfers = new[] { new CryptoTransfer(_network.Payer, -transferAmount), new CryptoTransfer(fx.Record.Address, transferAmount) }
         };
         var receipt = await fx.Client.TransferAsync(transfers);
         var newBalanceAfterTransfer = await fx.Client.GetAccountBalanceAsync(fx.Record.Address);
@@ -108,7 +107,7 @@ public class TransferTests
         Assert.Equal(new Endorsement(fx.PublicKey), info.Endorsement);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long> { { fx.Record.Address, -transferAmount }, { _network.Payer, transferAmount } },
+            CryptoTransfers = new[] { new CryptoTransfer(fx.Record.Address, -transferAmount), new CryptoTransfer(_network.Payer, transferAmount) },
             Signatory = fx.PrivateKey
         };
         var receipt = await client.TransferAsync(transfers);
@@ -168,11 +167,11 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { payer, -2 * transferAmount },
-                    { account1, transferAmount },
-                    { account2, transferAmount }
+                    new CryptoTransfer( payer, -2 * transferAmount ),
+                    new CryptoTransfer(account1, transferAmount ),
+                    new CryptoTransfer(account2, transferAmount )
                 }
         };
         var sendRecord = await fx1.Client.TransferWithRecordAsync(transfers);
@@ -182,11 +181,11 @@ public class TransferTests
         Assert.Equal((ulong)transferAmount + fx2.CreateParams.InitialBalance, await fx2.Client.GetAccountBalanceAsync(account2));
         transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { account1, -transferAmount },
-                    { account2, -transferAmount },
-                    { payer, 2 * transferAmount }
+                    new CryptoTransfer( account1, -transferAmount ),
+                    new CryptoTransfer( account2, -transferAmount ),
+                    new CryptoTransfer( payer, 2 * transferAmount )
                 },
             Signatory = new Signatory(sig1, sig2)
         };
@@ -209,11 +208,11 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { payer, -transferAmount },
-                    { account1, transferAmount },
-                    { account2, transferAmount }
+                    new CryptoTransfer( payer, -transferAmount ),
+                    new CryptoTransfer(account1, transferAmount ),
+                    new CryptoTransfer(account2, transferAmount )
                 }
         };
         var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
@@ -236,10 +235,10 @@ public class TransferTests
         var transferAmount = (long)Generator.Integer(100, 200);
         var transfers = new TransferParams
         {
-            CryptoTransfers = new Dictionary<Address, long>
+            CryptoTransfers = new[]
                 {
-                    { account1, 0 },
-                    { account2, 0 },
+                    new CryptoTransfer( account1, 0 ),
+                    new CryptoTransfer( account2, 0 ),
                 },
             Signatory = sig1
         };
@@ -275,13 +274,13 @@ public class TransferTests
         var payer = _network.Payer;
         var transferAmount = (long)Generator.Integer(100, 200);
 
-        var transfers = new TransferParams { CryptoTransfers = new Dictionary<Address, long> { } };
+        var transfers = new TransferParams { CryptoTransfers = new CryptoTransfer[] { } };
         var aor = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
         {
             await fx1.Client.TransferWithRecordAsync(transfers);
         });
         Assert.Equal("CryptoTransfers", aor.ParamName);
-        Assert.StartsWith("The dictionary of crypto transfers can not be empty", aor.Message);
+        Assert.StartsWith("The list of crypto transfers can not be empty.", aor.Message);
     }
     [Fact(DisplayName = "Transfer: Transaction ID Information Makes Sense for Receipt")]
     public async Task TransactionIdMakesSenseForReceipt()
@@ -572,6 +571,7 @@ public class TransferTests
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.False(info.DelayExecution);
 
         await AssertHg.CryptoBalanceAsync(fxSender, initialBalance - transferAmount);
         await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance + transferAmount);
@@ -626,6 +626,7 @@ public class TransferTests
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.False(info.DelayExecution);
 
         await AssertHg.CryptoBalanceAsync(fxSender, initialBalance);
         await AssertHg.CryptoBalanceAsync(fxReceiver, initialBalance);
@@ -753,31 +754,43 @@ public class TransferTests
         var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
         Assert.Equal(aliasStartingBalance - (ulong)transferAmount, aliasEndingBalance);
     }
-    // PRESENTLY NOT SUPPORTED
-    // Since this is not yet support on the hedera network the PAYER property of the context
-    // has been left as an Address instead of an AddressOrAlias.  The SDK will only generate
-    // transaction IDs using the Address form.
-    //
-    //[Fact(DisplayName = "Transfer: Can Send From Paying Alias Account")]
-    //public async Task CanSendFromPayingAliasAccount()
-    //{
-    //    await using var fxAccount = await TestAccount.CreateAsync(_network);
-    //    await using var fxAlias = await TestAliasAccount.CreateAsync(_network, fx => fx.InitialTransfer = 5_00_000_000);
-
-    //    var aliasStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
-    //    var transferAmount = (aliasStartingBalance) / 2 + 1;
-
-    //    var accountStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
-    //    var receipt = await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx => ctx.Payer = fxAlias.Alias);
-    //    var accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
-    //    Assert.Equal(accountStartingBalance + (ulong)transferAmount, accountEndingBalance);
-
-    //    var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
-    //    Assert.Equal(aliasStartingBalance - (ulong)transferAmount, aliasEndingBalance);
-    //}
-    [Fact(DisplayName = "Transfer: Can Not Send From Paying Alias Account (API Marker Test)")]
-    public void CanSendFromPayingAliasAccount()
+    [Fact(DisplayName = "Transfer: Can Not Use Alias as Payer")]
+    public async Task CanNotUseAliasAsPayer()
     {
-        Assert.Equal(typeof(Address), typeof(IContext).GetProperty("Payer").PropertyType);
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxAlias = await TestAliasAccount.CreateAsync(_network, fx => fx.InitialTransfer = 5_00_000_000);
+
+        var aliasStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+        var transferAmount = (aliasStartingBalance) / 2 + 1;
+
+        var accountStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+        {
+            await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx =>
+            {
+                ctx.Payer = fxAlias.Alias;
+                ctx.Signatory = fxAlias.PrivateKey;
+            });
+        });
+        Assert.StartsWith("Transaction Failed Pre-Check: PayerAccountNotFound", pex.Message);
+        Assert.Equal(ResponseCode.PayerAccountNotFound, pex.Status);
+
+        var accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+        var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+        Assert.Equal(accountStartingBalance, (ulong)accountEndingBalance);
+        Assert.Equal(aliasStartingBalance, (ulong)aliasEndingBalance);
+
+        var receipt = await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx =>
+        {
+            ctx.Payer = fxAlias.CreateRecord.Address;
+            ctx.Signatory = fxAlias.PrivateKey;
+        });
+
+        accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+        aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+        Assert.Equal(accountStartingBalance + (ulong)transferAmount, accountEndingBalance);
+        // Don't forget fees.
+        Assert.True(aliasEndingBalance < aliasStartingBalance - (ulong)transferAmount);
     }
 }

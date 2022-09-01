@@ -32,7 +32,7 @@ public sealed partial class ContractCallTransactionBody : INetworkTransaction
         }
     }
 
-    internal ContractCallTransactionBody(Hashgraph.CallContractParams callParameters) : this()
+    internal ContractCallTransactionBody(CallContractParams callParameters) : this()
     {
         if (callParameters is null)
         {

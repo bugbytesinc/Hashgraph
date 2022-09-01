@@ -7,7 +7,7 @@ namespace Hashgraph;
 /// Provides services to decode smart contract ABI data into .net primitives.
 /// Typically represents data returned from a smart contract invocation.
 /// </summary>
-public class ContractCallResultData
+public class EncodedParams
 {
     /// <summary>
     /// The raw bytes returned from a function call (in ABI format).
@@ -16,7 +16,7 @@ public class ContractCallResultData
     /// <summary>
     /// Internal Constructor from the Raw Data
     /// </summary>
-    internal ContractCallResultData(ReadOnlyMemory<byte> data)
+    internal EncodedParams(ReadOnlyMemory<byte> data)
     {
         _data = data;
     }
