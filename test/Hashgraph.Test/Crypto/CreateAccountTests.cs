@@ -99,24 +99,6 @@ public class CreateAccountTests
         var info = await client.GetAccountInfoAsync(createResult.Address);
         Assert.False(info.ReceiveSignatureRequired);
     }
-    [Fact(DisplayName = "Create Account: Can't Set Auto Renew Period other than 7890000 seconds")]
-    public async Task CanSetAutoRenewPeriod()
-    {
-        var (publicKey, privateKey) = Generator.KeyPair();
-        var expectedValue = TimeSpan.FromDays(Generator.Integer(20, 60));
-        await using var client = _network.NewClient();
-        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-        {
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = 1,
-                Endorsement = publicKey,
-                AutoRenewPeriod = expectedValue
-            });
-        });
-        Assert.Equal(ResponseCode.AutorenewDurationNotInRange, pex.Status);
-        Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", pex.Message);
-    }
     [Fact(DisplayName = "Create Account: Empty Endorsement is Not Allowed")]
     public async Task EmptyEndorsementIsNotAllowed()
     {
