@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Test.Fixtures;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -97,24 +98,6 @@ public class CreateAccountTests
 
         var info = await client.GetAccountInfoAsync(createResult.Address);
         Assert.False(info.ReceiveSignatureRequired);
-    }
-    [Fact(DisplayName = "Create Account: Can't Set Auto Renew Period other than 7890000 seconds")]
-    public async Task CanSetAutoRenewPeriod()
-    {
-        var (publicKey, privateKey) = Generator.KeyPair();
-        var expectedValue = TimeSpan.FromDays(Generator.Integer(20, 60));
-        await using var client = _network.NewClient();
-        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-        {
-            var createResult = await client.CreateAccountAsync(new CreateAccountParams
-            {
-                InitialBalance = 1,
-                Endorsement = publicKey,
-                AutoRenewPeriod = expectedValue
-            });
-        });
-        Assert.Equal(ResponseCode.AutorenewDurationNotInRange, pex.Status);
-        Assert.StartsWith("Transaction Failed Pre-Check: AutorenewDurationNotInRange", pex.Message);
     }
     [Fact(DisplayName = "Create Account: Empty Endorsement is Not Allowed")]
     public async Task EmptyEndorsementIsNotAllowed()
@@ -268,5 +251,44 @@ public class CreateAccountTests
         });
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+    }
+
+    [Fact(DisplayName = "Create Account: Can Create Account With Duplicate Keys")]
+    public async Task CanCreateAccountWithDuplicateKeysAsync()
+    {
+        var initialBalance = (ulong)Generator.Integer(10, 200);
+        var (publicKey, privateKey) = Generator.KeyPair();
+        var list = Enumerable.Range(0, 5).Select(_ => new Endorsement(publicKey)).ToArray();
+        var requiredCount = (uint)(list.Length - 1);
+        var client = _network.NewClient();
+        var createResult = await client.CreateAccountAsync(new CreateAccountParams
+        {
+            InitialBalance = initialBalance,
+            Endorsement = new Endorsement(requiredCount, list)
+        });
+        Assert.Equal(ResponseCode.Success, createResult.Status);
+        var createdAddress = createResult.Address;
+
+        var info = await client.GetAccountInfoAsync(createResult.Address);
+        Assert.Equal(initialBalance, info.Balance);
+        Assert.Equal(KeyType.List, info.Endorsement.Type);
+        Assert.Equal(requiredCount, info.Endorsement.RequiredCount);
+        Assert.Equal(list.Length, info.Endorsement.List.Length);
+        foreach(var key in info.Endorsement.List)
+        {
+            Assert.Equal(list[0], key.PublicKey);
+        }
+
+        var createdBalance = await client.GetAccountBalanceAsync(createdAddress);
+        Assert.Equal(initialBalance, createdBalance);
+
+        await client.TransferAsync(createdAddress, _network.Payer, (long)initialBalance, privateKey);
+
+        var finalBalance = await client.GetAccountBalanceAsync(createdAddress);
+        Assert.Equal(0UL, finalBalance);
+
+        var receipt = await client.DeleteAccountAsync(createResult.Address, _network.Payer, privateKey);
+        Assert.NotNull(receipt);
+        Assert.Equal(ResponseCode.Success, receipt.Status);
     }
 }

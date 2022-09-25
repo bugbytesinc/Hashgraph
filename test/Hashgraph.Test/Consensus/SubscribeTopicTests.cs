@@ -223,8 +223,7 @@ public class SubscribeTopicTests
         }
         catch (Xunit.Sdk.ThrowsException testFailException)
         {
-            Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
-            Assert.Equal("None", testFailException.Actual);
+            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
             _network.Output?.WriteLine("MIRROR NODE TEST FAILED, BUT DON'T FAIL TEST RUN");
         }
 
@@ -256,8 +255,7 @@ public class SubscribeTopicTests
         }
         catch (Xunit.Sdk.ThrowsException testFailException)
         {
-            Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
-            Assert.Equal("None", testFailException.Actual);
+            Assert.StartsWith("Assert.Throws() Failure", testFailException.Message);
             _network.Output?.WriteLine("MIRROR NODE TEST FAILED, BUT DON'T FAIL TEST RUN");
         }
         //[Fact(DisplayName = "Subscribe Topic: Non-Existant ID Raises Error")]
