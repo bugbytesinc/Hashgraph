@@ -35,7 +35,7 @@ public class GetInfoTests
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
-        Assert.Equal(Alias.None, info.Alias);
+        Assert.NotEqual(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
@@ -187,5 +187,77 @@ public class GetInfoTests
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
         Assert.Equal(0, info.StakingInfo.Node);
+    }
+    [Fact(DisplayName = "Get Account Info: Can Get Info for Ed25519 Account")]
+    public async Task CanGetInfoForAccountEd25519Async()
+    {
+        await using var client = _network.NewClient();
+        var initialBalance = (ulong)Generator.Integer(10, 200);
+        var (publicKey, privateKey) = Generator.Ed25519KeyPair();
+        var account = (await client.CreateAccountAsync(new CreateAccountParams
+        {
+            InitialBalance = initialBalance,
+            Endorsement = publicKey
+        })).Address;        
+        var info = await client.GetAccountInfoAsync(account);
+        Assert.NotNull(info.Address);
+        Assert.Equal(account.RealmNum, info.Address.RealmNum);
+        Assert.Equal(account.ShardNum, info.Address.ShardNum);
+        Assert.Equal(account.AccountNum, info.Address.AccountNum);
+        Assert.NotNull(info.ContractId);
+        Assert.False(info.Deleted);
+        Assert.Equal(0, info.ContractNonce);
+        Assert.Equal(new Endorsement(KeyType.Ed25519, publicKey), info.Endorsement);
+        Assert.True(info.Balance > 0);
+        Assert.False(info.ReceiveSignatureRequired);
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.Equal(0, info.AssetCount);
+        Assert.Equal(0, info.AutoAssociationLimit);
+        Assert.Equal(Alias.None, info.Alias);
+        AssertHg.NotEmpty(info.Ledger);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.True(DateTime.MinValue <= info.StakingInfo.PeriodStart);
+        Assert.Equal(0, info.StakingInfo.PendingReward);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.True(0 <= info.StakingInfo.Node);
+    }
+    [Fact(DisplayName = "Get Account Info: Can Get Info for Secp256K1 Account")]
+    public async Task CanGetInfoForAccountSecp256K1Async()
+    {
+        await using var client = _network.NewClient();
+        var initialBalance = (ulong)Generator.Integer(10, 200);
+        var (publicKey, privateKey) = Generator.Secp256k1KeyPair();
+        var account = (await client.CreateAccountAsync(new CreateAccountParams
+        {
+            InitialBalance = initialBalance,
+            Endorsement = publicKey
+        })).Address;
+        var info = await client.GetAccountInfoAsync(account);
+        Assert.NotNull(info.Address);
+        Assert.Equal(account.RealmNum, info.Address.RealmNum);
+        Assert.Equal(account.ShardNum, info.Address.ShardNum);
+        Assert.Equal(account.AccountNum, info.Address.AccountNum);
+        Assert.NotNull(info.ContractId);
+        Assert.False(info.Deleted);
+        Assert.Equal(0, info.ContractNonce);
+        Assert.Equal(new Endorsement(KeyType.ECDSASecp256K1, publicKey), info.Endorsement);
+        Assert.True(info.Balance > 0);
+        Assert.False(info.ReceiveSignatureRequired);
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.Equal(0, info.AssetCount);
+        Assert.Equal(0, info.AutoAssociationLimit);
+        Assert.Equal(Alias.None, info.Alias);
+        AssertHg.NotEmpty(info.Ledger);
+        Assert.NotNull(info.StakingInfo);
+        Assert.False(info.StakingInfo.Declined);
+        Assert.True(DateTime.MinValue <= info.StakingInfo.PeriodStart);
+        Assert.Equal(0, info.StakingInfo.PendingReward);
+        Assert.Equal(0, info.StakingInfo.Proxied);
+        Assert.Equal(Address.None, info.StakingInfo.Proxy);
+        Assert.True(0 <= info.StakingInfo.Node);
     }
 }
