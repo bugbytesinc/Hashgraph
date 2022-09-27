@@ -153,7 +153,7 @@ public class CreateAccountTests
     [Fact(DisplayName = "Create Account: Can Set Staking Node")]
     public async Task CanSetStakingNode()
     {
-        var (publicKey, privateKey) = Generator.KeyPair();        
+        var (publicKey, privateKey) = Generator.KeyPair();
         await using var client = _network.NewClient();
         var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
         {
@@ -274,7 +274,7 @@ public class CreateAccountTests
         Assert.Equal(KeyType.List, info.Endorsement.Type);
         Assert.Equal(requiredCount, info.Endorsement.RequiredCount);
         Assert.Equal(list.Length, info.Endorsement.List.Length);
-        foreach(var key in info.Endorsement.List)
+        foreach (var key in info.Endorsement.List)
         {
             Assert.Equal(list[0], key.PublicKey);
         }
@@ -290,5 +290,43 @@ public class CreateAccountTests
         var receipt = await client.DeleteAccountAsync(createResult.Address, _network.Payer, privateKey);
         Assert.NotNull(receipt);
         Assert.Equal(ResponseCode.Success, receipt.Status);
+    }
+
+    [Fact(DisplayName = "Create Account: Can Create Account With Same Key")]
+    public async Task CanCreateAccountsWithSameKeyAsync()
+    {
+        var initialBalance = (ulong)Generator.Integer(10, 200);
+        var (publicKey, privateKey) = Generator.Secp256k1KeyPair();
+        var client = _network.NewClient();
+        var createResult1 = await client.CreateAccountAsync(new CreateAccountParams
+        {
+            InitialBalance = initialBalance,
+            Endorsement = publicKey
+        });
+        var createResult2 = await client.CreateAccountAsync(new CreateAccountParams
+        {
+            InitialBalance = initialBalance,
+            Endorsement = publicKey
+        });
+        Assert.NotEqual(createResult1.Address, createResult2.Address);
+
+        var info1 = await client.GetAccountInfoAsync(createResult1.Address);
+        var info2 = await client.GetAccountInfoAsync(createResult2.Address);
+        Assert.Equal(info1.Balance, info2.Balance);
+        Assert.Empty(info1.Tokens);
+        Assert.Empty(info2.Tokens);
+        Assert.False(info1.Deleted);
+        Assert.False(info2.Deleted);
+        Assert.Equal(0, info1.ContractNonce);
+        Assert.Equal(0, info2.ContractNonce);
+        Assert.Equal(0, info1.AutoAssociationLimit);
+        Assert.Equal(0, info2.AutoAssociationLimit);
+        Assert.Equal(Alias.None, info1.Alias);
+        Assert.Equal(Alias.None, info2.Alias);
+        Assert.Equal(info1.Alias, info2.Alias);
+        AssertHg.NotEmpty(info1.Ledger);
+        AssertHg.NotEmpty(info2.Ledger);
+        Assert.NotNull(info1.StakingInfo);
+        Assert.NotNull(info2.StakingInfo);
     }
 }
