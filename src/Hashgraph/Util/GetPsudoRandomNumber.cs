@@ -24,7 +24,7 @@ public partial class Client
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
     public async Task<TransactionReceipt> GetPsudoRandomNumberAsync(Action<IContext>? configure = null)
     {
-        return new TransactionReceipt(await ExecuteTransactionAsync(new PrngTransactionBody(), configure, false).ConfigureAwait(false));
+        return new TransactionReceipt(await ExecuteTransactionAsync(new UtilPrngTransactionBody(), configure, false).ConfigureAwait(false));
     }
     /// <summary>
     /// Generates a bounded psudo random number, which can be retrieved via the
@@ -47,7 +47,7 @@ public partial class Client
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
     public async Task<TransactionReceipt> GetPsudoRandomNumberAsync(int maxValue, Action<IContext>? configure = null)
     {
-        return new TransactionReceipt(await ExecuteTransactionAsync(new PrngTransactionBody(maxValue), configure, false).ConfigureAwait(false));
+        return new TransactionReceipt(await ExecuteTransactionAsync(new UtilPrngTransactionBody(maxValue), configure, false).ConfigureAwait(false));
     }
     /// <summary>
     /// Generates an unbounded psudo random number, returning the 
@@ -67,7 +67,7 @@ public partial class Client
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
     public async Task<BytesPsudoRandomNumberRecord> GetPsudoRandomNumberWithRecordAsync(Action<IContext>? configure = null)
     {
-        return new BytesPsudoRandomNumberRecord(await ExecuteTransactionAsync(new PrngTransactionBody(), configure, true).ConfigureAwait(false));
+        return new BytesPsudoRandomNumberRecord(await ExecuteTransactionAsync(new UtilPrngTransactionBody(), configure, true).ConfigureAwait(false));
     }
     /// <summary>
     /// Generates a bounded psudo random number, returning the
@@ -90,6 +90,6 @@ public partial class Client
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
     public async Task<RangedPsudoRandomNumberRecord> GetPsudoRandomNumberWithRecordAsync(int maxValue, Action<IContext>? configure = null)
     {
-        return new RangedPsudoRandomNumberRecord(await ExecuteTransactionAsync(new PrngTransactionBody(maxValue), configure, true).ConfigureAwait(false));
+        return new RangedPsudoRandomNumberRecord(await ExecuteTransactionAsync(new UtilPrngTransactionBody(maxValue), configure, true).ConfigureAwait(false));
     }
 }

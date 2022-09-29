@@ -1,4 +1,5 @@
 ﻿using Proto;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -18,8 +19,9 @@ public sealed record AccountBalances
     /// </summary>
     public ulong Crypto { get; private init; }
     /// <summary>
-    /// Balances of tokens associated with this account.
+    /// [DEPRICATED] Balances of tokens associated with this account.
     /// </summary>
+    [Obsolete("This field is deprecated by HIP-367")]
     public ReadOnlyDictionary<Address, CryptoBalance> Tokens { get; private init; }
     /// <summary>
     /// Internal Constructor from Raw Response
@@ -30,6 +32,7 @@ public sealed record AccountBalances
         Address = balances.AccountID.AsAddress();
         Crypto = balances.Balance;
         var tokens = new Dictionary<Address, CryptoBalance>();
+#pragma warning disable CS0612 // Type or member is obsolete
         foreach (var entry in balances.TokenBalances)
         {
             var account = entry.TokenId.AsAddress();
@@ -49,6 +52,9 @@ public sealed record AccountBalances
                 };
             }
         }
+#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning disable CS0618 // Type or member is obsolete
         Tokens = new ReadOnlyDictionary<Address, CryptoBalance>(tokens);
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

@@ -43,8 +43,9 @@ public sealed record AccountInfo
     /// </summary>
     public ulong Balance { get; private init; }
     /// <summary>
-    /// Balances of tokens and assets associated with this account.
+    /// [DEPRECATED] Balances of tokens and assets associated with this account.
     /// </summary>
+    [Obsolete("This field is deprecated by HIP-367")]
     public ReadOnlyCollection<TokenBalance> Tokens { get; private init; }
     /// <summary>
     /// <code>True</code> if any receipt of funds require
@@ -106,7 +107,11 @@ public sealed record AccountInfo
         Deleted = info.Deleted;
         Endorsement = info.Key.ToEndorsement();
         Balance = info.Balance;
+#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable CS0612 // Type or member is obsolete
         Tokens = info.TokenRelationships.ToBalances();
+#pragma warning restore CS0612 // Type or member is obsolete
+#pragma warning restore CS0618 // Type or member is obsolete
         ReceiveSignatureRequired = info.ReceiverSigRequired;
         AutoRenewPeriod = info.AutoRenewPeriod.ToTimeSpan();
         Expiration = info.ExpirationTime.ToDateTime();

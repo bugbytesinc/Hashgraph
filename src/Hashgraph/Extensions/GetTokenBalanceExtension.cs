@@ -29,6 +29,7 @@ public static class GetTokenBalanceExtension
     /// It is executed prior to submitting the request to the network.
     /// </param>
     /// <returns></returns>
+    [Obsolete("This method is deprecated by HIP-367")]
     public static async Task<ulong> GetAccountTokenBalanceAsync(this Client client, Address address, Address token, Action<IContext>? configure = null)
     {
         var balances = await client.GetAccountBalancesAsync(address, configure).ConfigureAwait(false);
@@ -53,6 +54,7 @@ public static class GetTokenBalanceExtension
     /// It is executed prior to submitting the request to the network.
     /// </param>
     /// <returns></returns>
+    [Obsolete("This method is deprecated by HIP-367")]
     public static async Task<ulong> GetContractTokenBalanceAsync(this Client client, Address contract, Address token, Action<IContext>? configure = null)
     {
         var balances = await client.GetContractBalancesAsync(contract, configure).ConfigureAwait(false);
