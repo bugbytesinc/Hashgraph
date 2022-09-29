@@ -6,16 +6,16 @@ using System.Threading;
 
 namespace Proto;
 
-public sealed partial class PrngTransactionBody : INetworkTransaction
+public sealed partial class UtilPrngTransactionBody : INetworkTransaction
 {
     SchedulableTransactionBody INetworkTransaction.CreateSchedulableTransactionBody()
     {
-        return new SchedulableTransactionBody { Prng = this };
+        return new SchedulableTransactionBody { UtilPrng = this };
     }
 
     TransactionBody INetworkTransaction.CreateTransactionBody()
     {
-        return new TransactionBody { Prng = this };
+        return new TransactionBody { UtilPrng = this };
     }
 
     Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
@@ -31,7 +31,7 @@ public sealed partial class PrngTransactionBody : INetworkTransaction
         }
     }
 
-    internal PrngTransactionBody(int maxValue) : this()
+    internal UtilPrngTransactionBody(int maxValue) : this()
     {
         if (maxValue < 1)
         {
