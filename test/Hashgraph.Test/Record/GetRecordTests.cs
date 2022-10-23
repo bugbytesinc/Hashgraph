@@ -141,7 +141,7 @@ public class GetRecordTests
             Contract = fx.ContractRecord.Contract,
             Gas = 30000,
             FunctionName = "greet"
-        }, ctx => ctx.Memo = "Call Contract");
+        }, ctx => ctx.Memo = ".NET SDK Test: Call Contract");
         var record2 = await fx.Client.GetTransactionRecordAsync(record1.Id);
         var callRecord = Assert.IsType<CallContractRecord>(record2);
         Assert.Equal(record1.Id, callRecord.Id);

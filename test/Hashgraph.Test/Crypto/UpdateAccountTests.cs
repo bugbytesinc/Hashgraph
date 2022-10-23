@@ -80,7 +80,7 @@ public class UpdateAccountTests
     [Fact(DisplayName = "Update Account: Can Update Memo")]
     public async Task CanUpdateMemo()
     {
-        var newMemo = Generator.String(20, 40);
+        var newMemo = Generator.Memo(20, 40);
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
         {
@@ -136,7 +136,7 @@ public class UpdateAccountTests
         //[Fact(DisplayName = "Update Account: Can Update Memo using Alias")]
         async Task CanUpdateMemoUsingAlias()
         {
-            var newMemo = Generator.String(20, 40);
+            var newMemo = Generator.Memo(20, 40);
             await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
             var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
             {
@@ -685,7 +685,7 @@ public class UpdateAccountTests
     [Fact(DisplayName = "Update Account: Can Update Staking Node")]
     public async Task CanUpdateStakingNode()
     {
-        await using var fxAccount = await TestAccount.CreateAsync(_network);        
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
         await fxAccount.Client.UpdateAccountAsync(new UpdateAccountParams
         {
             Address = fxAccount,

@@ -38,7 +38,7 @@ public class EventEmittingContract : IAsyncDisposable
         {
             return await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
-                ctx.Memo = "Event Emit Contract Create: Uploading Contract File " + Generator.Code(10);
+                ctx.Memo = ".NET SDK Test: Uploading Contract File " + Generator.Code(10);
             });
         });
         Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
@@ -56,7 +56,7 @@ public class EventEmittingContract : IAsyncDisposable
         {
             return await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
             {
-                ctx.Memo = "Event Emit Contract Create: Instantiating Event Emit Instance " + Generator.Code(10);
+                ctx.Memo = ".NET SDK Test: Instantiating Event Emit Instance " + Generator.Code(10);
             });
         });
         Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
@@ -70,11 +70,11 @@ public class EventEmittingContract : IAsyncDisposable
         {
             await Client.DeleteFileAsync(FileRecord.File, ctx =>
             {
-                ctx.Memo = "Event Emit Contract Teardown: Delete Contract File (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Delete Contract File (may already be deleted)";
             });
             await Client.DeleteContractAsync(ContractRecord.Contract, Network.Payer, PrivateKey, ctx =>
             {
-                ctx.Memo = "Event Emit Contract Teardown: Delete Contract (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Delete Contract (may already be deleted)";
             });
         }
         catch

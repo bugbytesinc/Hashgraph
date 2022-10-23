@@ -24,12 +24,12 @@ public class CallContractTests
             Contract = fx.ContractRecord.Contract,
             Gas = 30000,
             FunctionName = "greet"
-        }, ctx => ctx.Memo = "Call Contract");
+        }, ctx => ctx.Memo = ".NET SDK Test");
         Assert.NotNull(record);
         Assert.Equal(ResponseCode.Success, record.Status);
         Assert.False(record.Hash.IsEmpty);
         Assert.NotNull(record.Concensus);
-        Assert.Equal("Call Contract", record.Memo);
+        Assert.Equal(".NET SDK Test", record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
@@ -53,12 +53,12 @@ public class CallContractTests
             Contract = fx.ContractRecord.Contract,
             Gas = 30000,
             FunctionName = "get_message"
-        }, ctx => ctx.Memo = "Call Contract");
+        }, ctx => ctx.Memo = ".NET SDK Test");
         Assert.NotNull(record);
         Assert.Equal(ResponseCode.Success, record.Status);
         Assert.False(record.Hash.IsEmpty);
         Assert.NotNull(record.Concensus);
-        Assert.Equal("Call Contract", record.Memo);
+        Assert.Equal(".NET SDK Test", record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
@@ -97,12 +97,12 @@ public class CallContractTests
             Gas = 40000,
             FunctionName = "set_message",
             FunctionArgs = new object[] { newMessage }
-        }, ctx => ctx.Memo = "Call Contract");
+        }, ctx => ctx.Memo = ".NET SDK Test");
         Assert.NotNull(setRecord);
         Assert.Equal(ResponseCode.Success, setRecord.Status);
         Assert.False(setRecord.Hash.IsEmpty);
         Assert.NotNull(setRecord.Concensus);
-        Assert.Equal("Call Contract", setRecord.Memo);
+        Assert.Equal(".NET SDK Test", setRecord.Memo);
         Assert.InRange(setRecord.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(setRecord.CallResult.Error);
         Assert.False(setRecord.CallResult.Bloom.IsEmpty);
@@ -168,12 +168,12 @@ public class CallContractTests
             Contract = fx.ContractRecord.Contract,
             Gas = 30000,
             FunctionName = "get_message"
-        }, ctx => ctx.Memo = "Call Contract");
+        }, ctx => ctx.Memo = ".NET SDK Test");
         Assert.NotNull(getRecord);
         Assert.Equal(ResponseCode.Success, getRecord.Status);
         Assert.False(getRecord.Hash.IsEmpty);
         Assert.NotNull(getRecord.Concensus);
-        Assert.Equal("Call Contract", getRecord.Memo);
+        Assert.Equal(".NET SDK Test", getRecord.Memo);
         Assert.InRange(getRecord.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(getRecord.CallResult.Error);
         Assert.False(getRecord.CallResult.Bloom.IsEmpty);

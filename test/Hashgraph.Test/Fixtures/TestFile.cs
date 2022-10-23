@@ -26,7 +26,7 @@ public class TestFile : IAsyncDisposable
         test.Client = networkCredentials.NewClient();
         test.CreateParams = new CreateFileParams
         {
-            Memo = Generator.Code(20),
+            Memo = Generator.Memo(20),
             Expiration = Generator.TruncateToSeconds(DateTime.UtcNow.AddSeconds(7890000)),
             Endorsements = new Endorsement[] { test.PublicKey },
             Contents = Encoding.Unicode.GetBytes("Hello From .NET" + Generator.Code(50)).Take(48).ToArray(),
@@ -37,7 +37,7 @@ public class TestFile : IAsyncDisposable
         {
             return await test.Client.CreateFileWithRecordAsync(test.CreateParams, ctx =>
             {
-                ctx.Memo = "TestFileInstance Setup: Creating Test File on Network";
+                ctx.Memo = ".NET SDK Test: Creating Test File on Network";
             });
         });
         Assert.Equal(ResponseCode.Success, test.Record.Status);
@@ -52,7 +52,7 @@ public class TestFile : IAsyncDisposable
         {
             await Client.DeleteFileAsync(Record.File, ctx =>
             {
-                ctx.Memo = "TestFileInstance Teardown: Attempting to delete File from Network (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Attempting to delete File from Network (may already be deleted)";
             });
         }
         catch

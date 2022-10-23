@@ -19,7 +19,7 @@ public class ScheduleParamsTests
     {
         var payer = new Address(Generator.Integer(1, 5), Generator.Integer(1, 5), Generator.Integer(1, 5));
         var (adminKey, _) = Generator.KeyPair();
-        var memo = Generator.String(5, 75);
+        var memo = Generator.Memo(16, 75);
         var pendingParam1 = new PendingParams
         {
             PendingPayer = payer,
@@ -50,7 +50,7 @@ public class ScheduleParamsTests
     {
         var payer = new Address(Generator.Integer(1, 5), Generator.Integer(1, 5), Generator.Integer(1, 5));
         var (adminKey, _) = Generator.KeyPair();
-        var memo = Generator.String(5, 75);
+        var memo = Generator.Memo(16, 75);
         var pendingParams1 = new PendingParams
         {
             PendingPayer = payer,
@@ -89,7 +89,7 @@ public class ScheduleParamsTests
         {
             PendingPayer = payer,
             Administrator = adminKey,
-            Memo = Generator.Code(80)
+            Memo = Generator.Memo(80)
         };
         Assert.NotEqual(pendingParams1, pendingParams2);
         Assert.False(pendingParams1 == pendingParams2);

@@ -233,7 +233,7 @@ public class CreateAssetTests
             RenewAccount = fxRenew.Record.Address,
             RenewPeriod = TimeSpan.FromDays(90),
             Signatory = new Signatory(fxTreasury.PrivateKey, fxRenew.PrivateKey),
-            Memo = Generator.Code(20)
+            Memo = Generator.Memo(20)
         };
         var receipt = await client.CreateTokenAsync(createParams);
         Assert.Equal(ResponseCode.Success, receipt.Status);
@@ -292,7 +292,7 @@ public class CreateAssetTests
                 RenewAccount = fxRenew.Record.Address,
                 RenewPeriod = TimeSpan.FromDays(90),
                 Signatory = new Signatory(fxTreasury.PrivateKey, fxRenew.PrivateKey),
-                Memo = Generator.Code(20)
+                Memo = Generator.Memo(20)
             };
             var receipt = await client.CreateTokenAsync(createParams);
             Assert.Equal(ResponseCode.Success, receipt.Status);

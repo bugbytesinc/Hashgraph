@@ -24,7 +24,7 @@ public class TestTopic : IAsyncDisposable
         var fx = new TestTopic();
         fx.Network = networkCredentials;
         fx.Network.Output?.WriteLine("STARTING SETUP: Test Topic Instance");
-        fx.Memo = "Test Topic: " + Generator.Code(20);
+        fx.Memo = Generator.Memo(20);
         (fx.AdminPublicKey, fx.AdminPrivateKey) = Generator.KeyPair();
         (fx.ParticipantPublicKey, fx.ParticipantPrivateKey) = Generator.KeyPair();
         fx.Payer = networkCredentials.Payer;
@@ -44,7 +44,7 @@ public class TestTopic : IAsyncDisposable
         {
             return await fx.Client.CreateTopicWithRecordAsync(fx.Params, ctx =>
             {
-                ctx.Memo = "TestTopic Setup: " + fx.Memo ?? "(null memo)";
+                ctx.Memo = ".NET SDK Test: " + fx.Memo ?? "(null memo)";
             });
         });
         Assert.Equal(ResponseCode.Success, fx.Record.Status);
@@ -59,7 +59,7 @@ public class TestTopic : IAsyncDisposable
         {
             await Client.DeleteTopicAsync(Record.Topic, AdminPrivateKey, ctx =>
             {
-                ctx.Memo = "TestTopicInstance Teardown: Attempting to delete Topic from Network (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Attempting to delete Topic from Network (may already be deleted)";
             });
         }
         catch

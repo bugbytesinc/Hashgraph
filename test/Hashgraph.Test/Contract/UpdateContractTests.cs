@@ -23,7 +23,7 @@ public class UpdateContractTests
         var newExpiration = Generator.TruncatedFutureDate(2400, 4800);
         var newEndorsement = new Endorsement(newPublicKey);
         var updatedSignatory = new Signatory(_network.Signatory, newPrivateKey);
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         fx.Client.Configure(ctx => ctx.Signatory = updatedSignatory);
         var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
         {
@@ -54,7 +54,7 @@ public class UpdateContractTests
         var newEndorsement = new Endorsement(newPublicKey);
         var updatedSignatory = new Signatory(_network.Signatory, newPrivateKey);
         var newRenewPeriod = TimeSpan.FromDays(Generator.Integer(180, 365));
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         fx.Client.Configure(ctx => ctx.Signatory = updatedSignatory);
         var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
@@ -160,7 +160,7 @@ public class UpdateContractTests
     public async Task CanUpdateMemo()
     {
         await using var fx = await GreetingContract.CreateAsync(_network);
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
         {
             Contract = fx.ContractRecord.Contract,
@@ -208,7 +208,7 @@ public class UpdateContractTests
     public async Task CanUpdateMemoNoRecord()
     {
         await using var fx = await GreetingContract.CreateAsync(_network);
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         var receipt = await fx.Client.UpdateContractAsync(new UpdateContractParams
         {
             Contract = fx.ContractRecord.Contract,
@@ -236,7 +236,7 @@ public class UpdateContractTests
             await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Memo = Generator.Code(50)
+                Memo = Generator.Memo(50)
             });
         });
         Assert.Equal(ResponseCode.ModifyingImmutableContract, tex.Status);
@@ -262,7 +262,7 @@ public class UpdateContractTests
             await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Memo = Generator.Code(50)
+                Memo = Generator.Memo(50)
             });
         });
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
@@ -273,7 +273,7 @@ public class UpdateContractTests
         {
             Signatory = new Signatory(_network.PrivateKey, privateKey),
             Contract = fxContract.ContractRecord.Contract,
-            Memo = Generator.Code(50)
+            Memo = Generator.Memo(50)
         });
         Assert.Equal(ResponseCode.Success, record.Status);
     }
@@ -281,7 +281,7 @@ public class UpdateContractTests
     public async Task UpdateWithMissingContractRaisesError()
     {
         await using var fx = await GreetingContract.CreateAsync(_network);
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
             await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
@@ -313,7 +313,7 @@ public class UpdateContractTests
         var invalidContractAddress = fx.Record.File;
         await fx.Client.DeleteFileAsync(invalidContractAddress, fx.CreateParams.Signatory);
 
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
             await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
@@ -329,7 +329,7 @@ public class UpdateContractTests
     public async Task UpdateWithNegativeDurationRaisesError()
     {
         await using var fx = await GreetingContract.CreateAsync(_network);
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         var tex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
             await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
@@ -345,7 +345,7 @@ public class UpdateContractTests
     public async Task UpdateWithInvalidDurationRaisesError()
     {
         await using var fx = await GreetingContract.CreateAsync(_network);
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         var tex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
             await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
@@ -383,7 +383,7 @@ public class UpdateContractTests
     {
         await using var fxContract = await GreetingContract.CreateAsync(_network);
         await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
-        var newMemo = Generator.Code(50);
+        var newMemo = Generator.Memo(50);
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxContract.Client.UpdateContractWithRecordAsync(new UpdateContractParams
@@ -401,7 +401,7 @@ public class UpdateContractTests
     }
     [Fact(DisplayName = "Contract Update: Can Update Staking Node")]
     public async Task CanUpdateStakingNode()
-    {        
+    {
         await using var fx = await GreetingContract.CreateAsync(_network);
         var receipt = await fx.Client.UpdateContractAsync(new UpdateContractParams
         {

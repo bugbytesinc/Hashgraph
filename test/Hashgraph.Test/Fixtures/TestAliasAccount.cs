@@ -29,7 +29,7 @@ public class TestAliasAccount : IAsyncDisposable
         {
             return await fx.Client.TransferWithRecordAsync(fx.Network.Payer, fx.Alias, fx.InitialTransfer, ctx =>
             {
-                ctx.Memo = "Test Account Instance: Creating Test Account on Network";
+                ctx.Memo = ".NET SDK Test: Creating Test Account on Network";
             });
         });
         var createTransactionId = new TxId(fx.TransactionRecord.Id.Address, fx.TransactionRecord.Id.ValidStartSeconds, fx.TransactionRecord.Id.ValidStartNanos, false, 1);
@@ -47,7 +47,7 @@ public class TestAliasAccount : IAsyncDisposable
         {
             await Client.DeleteAccountAsync(CreateRecord.Address, Network.Payer, PrivateKey, ctx =>
               {
-                  ctx.Memo = "Test Alias Account Instance Teardown: Attempting to delete Account from Network (if exists)";
+                  ctx.Memo = ".NET SDK Test: Attempting to delete Account from Network (if exists)";
               });
         }
         catch

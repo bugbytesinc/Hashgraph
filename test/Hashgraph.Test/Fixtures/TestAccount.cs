@@ -24,7 +24,7 @@ public class TestAccount : IAsyncDisposable
         {
             Endorsement = fx.PublicKey,
             InitialBalance = (ulong)Generator.Integer(10, 20),
-            Memo = Generator.String(10, 20),
+            Memo = Generator.Memo(20, 40),
             AutoAssociationLimit = Generator.Integer(5, 10)
         };
         customize?.Invoke(fx);
@@ -32,7 +32,7 @@ public class TestAccount : IAsyncDisposable
         {
             return await fx.Client.CreateAccountWithRecordAsync(fx.CreateParams, ctx =>
              {
-                 ctx.Memo = "Test Account Instance: Creating Test Account on Network";
+                 ctx.Memo = ".NET SDK Test: Creating Test Account on Network";
              });
         });
         Assert.Equal(ResponseCode.Success, fx.Record.Status);
@@ -47,7 +47,7 @@ public class TestAccount : IAsyncDisposable
         {
             await Client.DeleteAccountAsync(Record.Address, Network.Payer, PrivateKey, ctx =>
               {
-                  ctx.Memo = "Test Account Instance Teardown: Attempting to delete Account from Network (if exists)";
+                  ctx.Memo = ".NET SDK Test: Attempting to delete Account from Network (if exists)";
               });
         }
         catch

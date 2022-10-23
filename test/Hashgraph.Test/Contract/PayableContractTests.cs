@@ -24,12 +24,12 @@ public class PayableContractTests
             Contract = fx.ContractRecord.Contract,
             Gas = 30000,
             FunctionName = "get_balance"
-        }, ctx => ctx.Memo = "Call Contract");
+        }, ctx => ctx.Memo = ".NET SDK Test");
         Assert.NotNull(record);
         Assert.Equal(ResponseCode.Success, record.Status);
         Assert.False(record.Hash.IsEmpty);
         Assert.NotNull(record.Concensus);
-        Assert.Equal("Call Contract", record.Memo);
+        Assert.Equal(".NET SDK Test", record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
@@ -148,12 +148,12 @@ public class PayableContractTests
             Gas = 40000,
             FunctionName = "send_to",
             FunctionArgs = new[] { fx2.Record.Address }
-        }, ctx => ctx.Memo = "Call Contract");
+        }, ctx => ctx.Memo = ".NET SDK Test");
         Assert.NotNull(record);
         Assert.Equal(ResponseCode.Success, record.Status);
         Assert.False(record.Hash.IsEmpty);
         Assert.NotNull(record.Concensus);
-        Assert.Equal("Call Contract", record.Memo);
+        Assert.Equal(".NET SDK Test", record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);

@@ -24,7 +24,7 @@ public class TestTopicMessage : IAsyncDisposable
         {
             return await fx.TestTopic.Client.SubmitMessageWithRecordAsync(fx.TestTopic.Record.Topic, fx.Message, fx.TestTopic.ParticipantPrivateKey, ctx =>
             {
-                ctx.Memo = "TestTopicMessage Setup: " + fx.TestTopic.Memo ?? "(null memo)";
+                ctx.Memo = ".NET SDK Test: " + fx.TestTopic.Memo ?? "(null memo)";
             });
         });
         Assert.Equal(ResponseCode.Success, fx.Record.Status);

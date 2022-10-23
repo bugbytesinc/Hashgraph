@@ -116,7 +116,7 @@ public class SignatureTests
         var invoice = new Invoice(new Proto.TransactionBody
         {
             TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
-            Memo = Generator.String(20, 30)
+            Memo = Generator.Memo(20, 30)
         }, 0);
         var signatory = new Signatory(CustomSigner);
         await (signatory as ISignatory).SignAsync(invoice);
@@ -143,7 +143,7 @@ public class SignatureTests
         var invoice = new Invoice(new Proto.TransactionBody
         {
             TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
-            Memo = Generator.String(20, 30)
+            Memo = Generator.Memo(20, 30)
         }, trimLimit);
         var signatory = new Signatory(CustomSigner);
         await (signatory as ISignatory).SignAsync(invoice);
@@ -170,7 +170,7 @@ public class SignatureTests
         var invoice = new Invoice(new Proto.TransactionBody
         {
             TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
-            Memo = Generator.String(20, 30)
+            Memo = Generator.Memo(20, 30)
         }, 0);
         await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
         var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
@@ -203,7 +203,7 @@ public class SignatureTests
         var invoice = new Invoice(new Proto.TransactionBody
         {
             TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
-            Memo = Generator.String(20, 30)
+            Memo = Generator.Memo(20, 30)
         }, prefix.Length + 10);
         await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
         var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
@@ -237,7 +237,7 @@ public class SignatureTests
         var invoice = new Invoice(new Proto.TransactionBody
         {
             TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
-            Memo = Generator.String(20, 30)
+            Memo = Generator.Memo(20, 30)
         }, sigCount - 3);
         await (new Signatory(CustomSigner) as ISignatory).SignAsync(invoice);
         var signedTransaction = invoice.GenerateSignedTransactionFromSignatures();
@@ -267,7 +267,7 @@ public class SignatureTests
         var invoice = new Invoice(new Proto.TransactionBody
         {
             TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
-            Memo = Generator.String(20, 30)
+            Memo = Generator.Memo(20, 30)
         }, 0);
         var signatory = new Signatory(CustomSigner);
         await (signatory as ISignatory).SignAsync(invoice);
@@ -297,7 +297,7 @@ public class SignatureTests
         var invoice = new Invoice(new Proto.TransactionBody
         {
             TransactionID = new Proto.TransactionID(client.CreateNewTxId()),
-            Memo = Generator.String(20, 30)
+            Memo = Generator.Memo(20, 30)
         }, 0);
         var signatory = new Signatory(CustomSigner);
         await (signatory as ISignatory).SignAsync(invoice);
