@@ -76,7 +76,7 @@ public class TestAsset : IAsyncDisposable
         {
             return await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
             {
-                ctx.Memo = ("TestAsset Setup: " + fx.Params.Symbol ?? "(null symbol)").TruncateMemo();
+                ctx.Memo = (".NET SDK Test: " + fx.Params.Symbol ?? "(null symbol)").TruncateMemo();
             });
         });
         Assert.Equal(ResponseCode.Success, fx.Record.Status);
@@ -95,7 +95,7 @@ public class TestAsset : IAsyncDisposable
         {
             await Client.DeleteTokenAsync(Record.Token, AdminPrivateKey, ctx =>
             {
-                ctx.Memo = "TestAssetInstance Teardown: Attempting to delete Asset from Network (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Attempting to delete Asset from Network (may already be deleted)";
             });
         }
         catch

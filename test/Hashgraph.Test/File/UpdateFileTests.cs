@@ -117,7 +117,7 @@ public class UpdateFileTests
     {
         await using var test = await TestFile.CreateAsync(_network);
 
-        var newMemo = Generator.Code(30);
+        var newMemo = Generator.Memo(30);
 
         var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
         {

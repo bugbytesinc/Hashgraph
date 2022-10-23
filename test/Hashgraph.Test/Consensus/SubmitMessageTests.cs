@@ -46,7 +46,7 @@ public class SubmitMessageTests
         {
             fx.Params.Participant = null;
         });
-        var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
+        var message = Encoding.ASCII.GetBytes(Generator.Memo(20, 100));
 
         var receipt = await fx.Client.SubmitMessageAsync(fx.Record.Topic, message);
         Assert.Equal(ResponseCode.Success, receipt.Status);
@@ -69,7 +69,7 @@ public class SubmitMessageTests
     public async Task SubmitMessageWithoutKeyRaisesError()
     {
         await using var fx = await TestTopic.CreateAsync(_network);
-        var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
+        var message = Encoding.ASCII.GetBytes(Generator.Memo(20, 100));
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -83,7 +83,7 @@ public class SubmitMessageTests
     public async Task SubmitMessageWithoutTopicRaisesError()
     {
         await using var fx = await TestTopic.CreateAsync(_network);
-        var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
+        var message = Encoding.ASCII.GetBytes(Generator.Memo(20, 100));
 
         var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
@@ -96,7 +96,7 @@ public class SubmitMessageTests
     public async Task SubmitMessageWithInvalidTopicRaisesError()
     {
         await using var fx = await TestTopic.CreateAsync(_network);
-        var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
+        var message = Encoding.ASCII.GetBytes(Generator.Memo(20, 100));
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -126,7 +126,7 @@ public class SubmitMessageTests
         var receipt = await fx.Client.DeleteTopicAsync(fx.Record.Topic, fx.AdminPrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
+        var message = Encoding.ASCII.GetBytes(Generator.Memo(10, 100));
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {

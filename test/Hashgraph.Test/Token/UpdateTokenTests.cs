@@ -314,7 +314,7 @@ public class UpdateTokenTests
     public async Task CanUpdateMemo()
     {
         await using var fxToken = await TestToken.CreateAsync(_network);
-        var newMemo = Generator.String(30, 50);
+        var newMemo = Generator.Memo(30, 50);
 
         var updateParams = new UpdateTokenParams
         {

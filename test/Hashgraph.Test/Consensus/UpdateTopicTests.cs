@@ -19,7 +19,7 @@ public class UpdateTopicTests
     public async Task UpdateWitnoutTopicRaisesError()
     {
         await using var fx = await TestTopic.CreateAsync(_network);
-        var newMemo = Generator.String(10, 100);
+        var newMemo = Generator.Memo(20, 100);
         var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
             await fx.Client.UpdateTopicAsync(new UpdateTopicParams
@@ -51,7 +51,7 @@ public class UpdateTopicTests
     {
         await using var fx = await TestTopic.CreateAsync(_network);
 
-        var newMemo = Generator.String(10, 100);
+        var newMemo = Generator.Memo(20, 100);
         var receipt = await fx.Client.UpdateTopicAsync(new UpdateTopicParams
         {
             Topic = fx.Record.Topic,
@@ -76,7 +76,7 @@ public class UpdateTopicTests
     {
         await using var fx = await TestTopic.CreateAsync(_network);
 
-        var newMemo = Generator.String(10, 100);
+        var newMemo = Generator.Memo(20, 100);
         var record = await fx.Client.UpdateTopicWithRecordAsync(new UpdateTopicParams
         {
             Topic = fx.Record.Topic,
@@ -184,7 +184,7 @@ public class UpdateTopicTests
             {
                 Topic = fx.Record.Topic,
                 Signatory = fx.AdminPrivateKey,
-                Memo = Generator.String(10, 100)
+                Memo = Generator.Memo(20, 100)
             });
         });
         Assert.Equal(ResponseCode.Unauthorized, tex.Status);
@@ -334,7 +334,7 @@ public class UpdateTopicTests
     public async Task NeedsAdminSignature()
     {
         await using var fx = await TestTopic.CreateAsync(_network);
-        var newMemo = Generator.String(10, 100);
+        var newMemo = Generator.Memo(20, 100);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -353,7 +353,7 @@ public class UpdateTopicTests
     {
         await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
         await using var fxTopic = await TestTopic.CreateAsync(_network);
-        var newMemo = Generator.String(10, 100);
+        var newMemo = Generator.Memo(20, 100);
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxTopic.Client.UpdateTopicAsync(new UpdateTopicParams

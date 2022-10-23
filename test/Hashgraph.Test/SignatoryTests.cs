@@ -35,7 +35,7 @@ public class SignatoriesTests
     {
         var (_, privateKey) = Generator.Secp256k1KeyPair();
         var unencoded = ((ECPrivateKeyParameters)PrivateKeyFactory.CreateKey(privateKey.ToArray())).D.ToByteArray();
-        
+
         var sig1 = new Signatory(KeyType.ECDSASecp256K1, Hex.ToBytes(Hex.FromBytes(unencoded)));
         var sig2 = new Signatory(KeyType.ECDSASecp256K1, Hex.ToBytes(Hex.FromBytes(privateKey)));
         Assert.Equal(sig1, sig2);
@@ -248,7 +248,7 @@ public class SignatoriesTests
     {
         var schedule = new PendingParams
         {
-            Memo = Generator.Code(20)
+            Memo = Generator.Memo(20)
         };
         var signatory = new Signatory(schedule);
         var retrieved = ((ISignatory)signatory).GetSchedule();
@@ -260,7 +260,7 @@ public class SignatoriesTests
         var (_, randomKey) = Generator.KeyPair();
         var schedule = new PendingParams
         {
-            Memo = Generator.Code(20)
+            Memo = Generator.Memo(20)
         };
         var signatory = new Signatory(new Signatory(new Signatory(new Signatory(schedule))), randomKey);
         var retrieved = ((ISignatory)signatory).GetSchedule();
@@ -269,7 +269,7 @@ public class SignatoriesTests
     [Fact(DisplayName = "Signatories: Multiple Schedules Accepted when Identical")]
     public void MultipleSchedulesAcceptedWhenIdentical()
     {
-        var memo = Generator.Code(50);
+        var memo = Generator.Memo(50);
         var (_, randomKey) = Generator.KeyPair();
         var schedule1 = new PendingParams { Memo = memo };
         var schedule2 = new PendingParams { Memo = memo };
@@ -282,8 +282,8 @@ public class SignatoriesTests
     public void MultipleDissimilarSchedulesRaisesAnErrorOnRetrieval()
     {
         var (_, randomKey) = Generator.KeyPair();
-        var schedule1 = new PendingParams { Memo = Generator.Code(50) };
-        var schedule2 = new PendingParams { Memo = Generator.Code(50) };
+        var schedule1 = new PendingParams { Memo = Generator.Memo(50) };
+        var schedule2 = new PendingParams { Memo = Generator.Memo(50) };
         var signatory = new Signatory(new Signatory(new Signatory(new Signatory(schedule1)), schedule2), randomKey);
         var exception = Assert.Throws<InvalidOperationException>(() =>
         {

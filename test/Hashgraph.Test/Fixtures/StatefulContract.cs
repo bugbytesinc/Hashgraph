@@ -37,7 +37,7 @@ public class StatefulContract : IAsyncDisposable
         {
             return await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
-                ctx.Memo = "Stateful Contract Create: Uploading Contract File " + Generator.Code(10);
+                ctx.Memo = ".NET SDK Test: Uploading Contract File " + Generator.Code(10);
             });
         });
         Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
@@ -46,7 +46,7 @@ public class StatefulContract : IAsyncDisposable
             File = fx.FileRecord.File,
             Administrator = fx.PublicKey,
             Signatory = fx.PrivateKey,
-            Memo = "Stateful Contract " + Generator.Code(10),
+            Memo = ".NET SDK Test: " + Generator.Code(10),
             Gas = 150000,
             RenewPeriod = TimeSpan.FromSeconds(7890000),
             Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
@@ -56,7 +56,7 @@ public class StatefulContract : IAsyncDisposable
         {
             return await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
             {
-                ctx.Memo = "Stateful Contract Create: Instantiating Stateful Instance " + Generator.Code(10);
+                ctx.Memo = ".NET SDK Test: Instantiating Stateful Instance " + Generator.Code(10);
             });
         });
         fx.Network.Output?.WriteLine("SETUP COMPLETED: Stateful Contract Instance Created");
@@ -69,11 +69,11 @@ public class StatefulContract : IAsyncDisposable
         {
             await Client.DeleteFileAsync(FileRecord.File, ctx =>
             {
-                ctx.Memo = "Stateful Contract Teardown: Delete Contract File (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Delete Contract File (may already be deleted)";
             });
             await Client.DeleteContractAsync(ContractRecord.Contract, Network.Payer, PrivateKey, ctx =>
             {
-                ctx.Memo = "Stateful Contract Teardown: Delete Contract (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Delete Contract (may already be deleted)";
             });
         }
         catch

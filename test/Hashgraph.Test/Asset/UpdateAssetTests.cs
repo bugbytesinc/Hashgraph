@@ -336,7 +336,7 @@ public class UpdateAssetTests
     public async Task CanUpdateMemo()
     {
         await using var fxAsset = await TestAsset.CreateAsync(_network);
-        var newMemo = Generator.String(30, 50);
+        var newMemo = Generator.Memo(30, 50);
 
         var updateParams = new UpdateTokenParams
         {
@@ -1022,7 +1022,8 @@ public class UpdateAssetTests
     [Fact(DisplayName = "Update Asset: Can Not Change Treasury to Unassociated Account")]
     public async Task CanChangeTreasuryToUnassociatedAccount()
     {
-        await using var fxAccount = await TestAccount.CreateAsync(_network, fx => {
+        await using var fxAccount = await TestAccount.CreateAsync(_network, fx =>
+        {
             fx.CreateParams.AutoAssociationLimit = 0;
         });
         await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>

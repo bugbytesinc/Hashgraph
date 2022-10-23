@@ -38,7 +38,7 @@ public class PayableContract : IAsyncDisposable
         {
             return await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
-                ctx.Memo = "Payable Contract Create: Uploading Contract File " + Generator.Code(10);
+                ctx.Memo = ".NET SDK Test: Uploading Contract File " + Generator.Code(10);
             });
         });
         Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
@@ -50,14 +50,14 @@ public class PayableContract : IAsyncDisposable
             Gas = 300000,
             InitialBalance = 1_000_000,
             RenewPeriod = TimeSpan.FromSeconds(7890000),
-            Memo = "Payable Contract " + Generator.Code(10)
+            Memo = ".NET SDK Test: " + Generator.Code(10)
         };
         customize?.Invoke(fx);
         fx.ContractRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
         {
             return await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
             {
-                ctx.Memo = "Payable Contract Create: Instantiating Payable Instance " + Generator.Code(10);
+                ctx.Memo = ".NET SDK Test: Instantiating Payable Instance " + Generator.Code(10);
             });
         });
         Assert.Equal(ResponseCode.Success, fx.FileRecord.Status);
@@ -71,11 +71,11 @@ public class PayableContract : IAsyncDisposable
         {
             await Client.DeleteFileAsync(FileRecord.File, ctx =>
             {
-                ctx.Memo = "Payable Contract Teardown: Delete Contract File (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Delete Contract File (may already be deleted)";
             });
             await Client.DeleteContractAsync(ContractRecord.Contract, Network.Payer, PrivateKey, ctx =>
             {
-                ctx.Memo = "Payable Contract Teardown: Delete Contract (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Delete Contract (may already be deleted)";
             });
         }
         catch

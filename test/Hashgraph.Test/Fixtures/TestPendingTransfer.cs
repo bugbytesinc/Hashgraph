@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,11 +28,11 @@ public class TestPendingTransfer : IAsyncDisposable
         fx.SendingAccount = await TestAccount.CreateAsync(networkCredentials);
         fx.ReceivingAccount = await TestAccount.CreateAsync(networkCredentials);
         fx.PayingAccount = await TestAccount.CreateAsync(networkCredentials);
-        fx.Memo = Generator.Code(10);
+        fx.Memo = Generator.Memo(20);
         var xferAmount = (long)fx.SendingAccount.CreateParams.InitialBalance / 2;
         fx.TransferParams = new TransferParams
         {
-            CryptoTransfers = new [] {
+            CryptoTransfers = new[] {
                     new CryptoTransfer( fx.SendingAccount, -xferAmount ),
                     new CryptoTransfer( fx.ReceivingAccount, xferAmount )
                 },
@@ -66,7 +65,7 @@ public class TestPendingTransfer : IAsyncDisposable
             {
                 await Client.DeletePendingTransactionAsync(Record.Pending.Id, PrivateKey, ctx =>
                 {
-                    ctx.Memo = "TestPendingTransfer Teardown: Delete Pending TX (may already be deleted)";
+                    ctx.Memo = ".NET SDK Test: Delete Pending TX (may already be deleted)";
                 });
             }
         }

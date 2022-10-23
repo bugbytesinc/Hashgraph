@@ -35,7 +35,7 @@ public class GetInfoTests
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
-        Assert.NotEqual(Alias.None, info.Alias);
+        //Assert.NotEqual(Alias.None, info.Alias);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);

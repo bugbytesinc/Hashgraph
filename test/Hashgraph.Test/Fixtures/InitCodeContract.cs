@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,7 +27,7 @@ public class InitCodeContract : IAsyncDisposable
         (fx.PublicKey, fx.PrivateKey) = Generator.KeyPair();
         fx.Network = networkCredentials;
         fx.TestInstanceId = Generator.Code(10);
-        fx.Memo = "Greeting Contract Create: Instantiating Contract Instance " + fx.TestInstanceId;
+        fx.Memo = ".NET SDK Test: Instantiating Contract Instance " + fx.TestInstanceId;
         fx.Client = networkCredentials.NewClient();
         fx.ContractParams = new CreateContractParams
         {
@@ -37,7 +36,7 @@ public class InitCodeContract : IAsyncDisposable
             Signatory = fx.PrivateKey,
             Gas = 200000,
             RenewPeriod = TimeSpan.FromSeconds(7890000),
-            Memo = "InitCode Contract " + Generator.Code(10)
+            Memo = ".NET SDK Test: " + Generator.Code(10)
         };
         customize?.Invoke(fx);
         fx.ContractRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
@@ -58,7 +57,7 @@ public class InitCodeContract : IAsyncDisposable
         {
             await Client.DeleteContractAsync(ContractRecord.Contract, Network.Payer, PrivateKey, ctx =>
             {
-                ctx.Memo = "InitCode Contract Teardown: Delete Contract (may already be deleted) " + TestInstanceId;
+                ctx.Memo = ".NET SDK Test: Delete Contract (may already be deleted) " + TestInstanceId;
             });
         }
         catch

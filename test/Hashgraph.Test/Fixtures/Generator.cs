@@ -28,6 +28,12 @@ public static class Generator
         return (_random.NextDouble() * (maxValueInclusive - minValueInclusive)) + minValueInclusive;
     }
 
+    public static String Memo(Int32 minLengthInclusive, Int32 maxLengthInclusive = 0)
+    {
+        var length = maxLengthInclusive > 0 ? Integer(minLengthInclusive, maxLengthInclusive) : minLengthInclusive;
+        return length > 15 ? ".NET SDK Test: " + Code(length - 15) : ".NET SDK Test: ".Substring(0, length);
+    }
+
     public static String String(Int32 minLengthInclusive, Int32 maxLengthInclusive)
     {
         return Code(Integer(minLengthInclusive, maxLengthInclusive));

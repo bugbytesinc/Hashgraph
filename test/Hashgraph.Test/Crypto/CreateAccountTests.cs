@@ -118,7 +118,7 @@ public class CreateAccountTests
     public async Task CanSetMemo()
     {
         var (publicKey, privateKey) = Generator.KeyPair();
-        var memo = Generator.Code(20);
+        var memo = Generator.Memo(20);
         await using var client = _network.NewClient();
         var createResult = await client.CreateAccountWithRecordAsync(new CreateAccountParams
         {

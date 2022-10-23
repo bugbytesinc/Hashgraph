@@ -77,7 +77,7 @@ public class TestToken : IAsyncDisposable
         {
             return await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
             {
-                ctx.Memo = ("TestToken Setup: " + fx.Params.Symbol ?? "(null symbol)").TruncateMemo();
+                ctx.Memo = (".NET SDK Test: " + fx.Params.Symbol ?? "(null symbol)").TruncateMemo();
             });
         });
         Assert.Equal(ResponseCode.Success, fx.Record.Status);
@@ -92,7 +92,7 @@ public class TestToken : IAsyncDisposable
         {
             await Client.DeleteTokenAsync(Record.Token, AdminPrivateKey, ctx =>
             {
-                ctx.Memo = "TestTokenInstance Teardown: Attempting to delete Token from Network (may already be deleted)";
+                ctx.Memo = ".NET SDK Test: Attempting to delete Token from Network (may already be deleted)";
             });
         }
         catch
