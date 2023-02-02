@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -18,7 +19,7 @@ public sealed partial class ConsensusUpdateTopicTransactionBody : INetworkTransa
         return new TransactionBody { ConsensusUpdateTopic = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new ConsensusService.ConsensusServiceClient(channel).updateTopicAsync;
     }

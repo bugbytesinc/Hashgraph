@@ -3,7 +3,7 @@
 #pragma warning disable CS8601 
 #pragma warning disable CS8603
 #pragma warning disable IDE1006
-using Grpc.Core;
+using Grpc.Net.Client;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext
 {
     private readonly ContextStack<TContext>? _parent;
     private readonly Dictionary<string, object?> _map;
-    private readonly ConcurrentDictionary<string, Channel> _channels;
+    private readonly ConcurrentDictionary<Uri, GrpcChannel> _channels;
     private int _refCount;
 
     public ContextStack(ContextStack<TContext>? parent)
@@ -37,7 +37,7 @@ internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext
             // only accessible via other contexts
             // so the ref count starts at 0
             _refCount = 0;
-            _channels = new ConcurrentDictionary<string, Channel>();
+            _channels = new ConcurrentDictionary<Uri, GrpcChannel>();
         }
         else
         {
@@ -50,8 +50,8 @@ internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext
         }
     }
     protected abstract bool IsValidPropertyName(string name);
-    protected abstract string GetChannelUrl();
-    protected abstract Channel ConstructNewChannel(string url);
+    protected abstract Uri GetChannelUrl();
+    protected abstract GrpcChannel ConstructNewChannel(Uri uri);
     public void Reset(string name)
     {
         if (IsValidPropertyName(name))
@@ -63,7 +63,7 @@ internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext
             throw new ArgumentOutOfRangeException($"'{name}' is not a valid property to reset.");
         }
     }
-    public Channel GetChannel()
+    public GrpcChannel GetChannel()
     {
         return _channels.GetOrAdd(GetChannelUrl(), ConstructNewChannel);
     }
@@ -71,7 +71,7 @@ internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext
     {
         // Note: there still may be internal stacked references to this
         // object, it does not actually release resources unless it is root.
-        // This all comes down to maintaining a map of urls to open grpc
+        // This all comes down to maintaining a map of uris to open grpc
         // channels.  Opening a chanel is an expensive operation.  The
         // map is shared thru the whole entire tree of child contexts.
         return removeRef();

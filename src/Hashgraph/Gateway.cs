@@ -17,7 +17,7 @@ public sealed record Gateway
     /// <summary>
     /// The URL and port of the public Hedera Network access point.
     /// </summary>
-    public string Url { get; private init; }
+    public Uri Uri { get; private init; }
     /// <summary>
     /// Network Shard Number for Gateway Account
     /// </summary>
@@ -33,17 +33,17 @@ public sealed record Gateway
     /// <summary>
     /// Public Constructor, a <code>Gateway</code> is immutable after creation.
     /// </summary>
-    /// <param name="url">
+    /// <param name="uri">
     /// The URL and port of the public Hedera Network access point.
     /// </param>
     /// <param name="address">
     /// Main Network Node Address
     /// </param>
-    public Gateway(string url, Address address) : this(url, address.ShardNum, address.RealmNum, address.AccountNum) { }
+    public Gateway(Uri uri, Address address) : this(uri, address.ShardNum, address.RealmNum, address.AccountNum) { }
     /// <summary>
     /// Public Constructor, a <code>Gateway</code> is immutable after creation.
     /// </summary>
-    /// <param name="url">
+    /// <param name="uri">
     /// The URL and port of the public Hedera Network access point.
     /// </param>
     /// <param name="shardNum">
@@ -55,7 +55,7 @@ public sealed record Gateway
     /// <param name="accountNum">
     /// Main Network Node Account Number
     /// </param>
-    public Gateway(string url, long shardNum, long realmNum, long accountNum)
+    public Gateway(Uri uri, long shardNum, long realmNum, long accountNum)
     {
         if (shardNum < 0)
         {
@@ -69,11 +69,11 @@ public sealed record Gateway
         {
             throw new ArgumentOutOfRangeException(nameof(accountNum), "Account Number cannot be negative.");
         }
-        if (string.IsNullOrWhiteSpace(url))
+        if (uri is null)
         {
-            throw new ArgumentOutOfRangeException(nameof(url), "URL is required.");
+            throw new ArgumentOutOfRangeException(nameof(uri), "URL is required.");
         }
-        Url = url;
+        Uri = uri;
         ShardNum = shardNum;
         RealmNum = realmNum;
         AccountNum = accountNum;

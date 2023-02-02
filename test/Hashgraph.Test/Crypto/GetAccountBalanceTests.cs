@@ -78,7 +78,7 @@ public class GetAccountBalanceTests
         await using var client = _network.NewClient();
         client.Configure(cfg =>
         {
-            cfg.Gateway = new Gateway($"{_network.NetworkAddress}:{_network.NetworkPort}", 0, 0, 999);
+            cfg.Gateway = new Gateway(new Uri($"http://{_network.NetworkAddress}:{_network.NetworkPort}"), 0, 0, 999);
         });
         var balance = await client.GetAccountBalanceAsync(_network.Payer);
         Assert.True(balance > 0);

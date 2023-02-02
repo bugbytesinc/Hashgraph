@@ -1,4 +1,6 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf;
+using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -18,7 +20,7 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         return new TransactionBody { CryptoUpdateAccount = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new CryptoService.CryptoServiceClient(channel).updateAccountAsync;
     }
@@ -54,7 +56,9 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
             updateParameters.Alias is null &&
             updateParameters.ProxyAccount is null &&
             updateParameters.StakedNode is null &&
-            updateParameters.DeclineStakeReward is null)
+            updateParameters.DeclineStakeReward is null &&
+            updateParameters.AutoRenewAccount is null &&
+            updateParameters.UpdateMoniker is null)
         {
             throw new ArgumentException("The Account Updates contains no update properties, it is blank.", nameof(updateParameters));
         }
@@ -70,6 +74,10 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         if (updateParameters.AutoRenewPeriod.HasValue)
         {
             AutoRenewPeriod = new Duration(updateParameters.AutoRenewPeriod.Value);
+        }
+        if (updateParameters.AutoRenewAccount is not null)
+        {
+            AutoRenewAccount = new AccountID(updateParameters.AutoRenewAccount);
         }
         if (updateParameters.Expiration.HasValue)
         {
@@ -107,6 +115,24 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         if (updateParameters.DeclineStakeReward is not null)
         {
             DeclineReward = updateParameters.DeclineStakeReward.Value;
+        }
+        if (updateParameters.UpdateMoniker is not null)
+        {
+            var bytes = ByteString.CopyFrom(updateParameters.UpdateMoniker.Moniker.Bytes.Span);
+            switch (updateParameters.UpdateMoniker.Action)
+            {
+                case UpdateMonikerAction.AddAsDefault:
+                case UpdateMonikerAction.Add:
+                    Add = new VirtualAddress
+                    {
+                        Address = bytes,
+                        IsDefault = updateParameters.UpdateMoniker.Action == UpdateMonikerAction.AddAsDefault
+                    };
+                    break;
+                case UpdateMonikerAction.Remove:
+                    Remove = bytes;
+                    break;
+            }
         }
     }
 }

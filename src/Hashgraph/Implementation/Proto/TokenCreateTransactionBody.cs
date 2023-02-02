@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS8604
 using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -20,7 +21,7 @@ public sealed partial class TokenCreateTransactionBody : INetworkTransaction
         return new TransactionBody { TokenCreation = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new TokenService.TokenServiceClient(channel).createTokenAsync;
     }

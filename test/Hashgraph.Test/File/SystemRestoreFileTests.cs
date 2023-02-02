@@ -49,6 +49,8 @@ public class SystemRestoreFileTests
         // NOT IMPLEMENTED YET
         Assert.Empty(info.Ledger.ToArray());
         // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "System Restore File: Can Restore File using Signatory")]
     public async Task CanRestoreAFileUsingSignatory()
@@ -85,6 +87,8 @@ public class SystemRestoreFileTests
         // NOT IMPLEMENTED YET
         Assert.Empty(info.Ledger.ToArray());
         // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "System Restore File: Can Restore File and get Record")]
     public async Task CanRestoreAFileWithRecord()
@@ -128,6 +132,8 @@ public class SystemRestoreFileTests
         // NOT IMPLEMENTED YET
         Assert.Empty(info.Ledger.ToArray());
         // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "System Restore File: Can Restore File and get Record using Signatory")]
     public async Task CanRestoreAFileWithRecordUsingSignatory()
@@ -171,6 +177,8 @@ public class SystemRestoreFileTests
         // NOT IMPLEMENTED YET
         Assert.Empty(info.Ledger.ToArray());
         // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "System Restore File: Can Not Schedule Restore.")]
     public async Task CanNotScheduleRestore()

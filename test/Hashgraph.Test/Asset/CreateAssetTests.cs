@@ -374,7 +374,9 @@ public class CreateAssetTests
         Assert.Equal(fxContract.ContractRecord.Contract, info.Treasury);
 
         var treasury = await fxAsset.Client.GetContractBalancesAsync(fxContract.ContractRecord.Contract);
+#pragma warning disable CS0618 // Type or member is obsolete
         var balance = treasury.Tokens.GetValueOrDefault(fxAsset.Record.Token);
+#pragma warning restore CS0618 // Type or member is obsolete
         Assert.Equal((ulong)fxAsset.Metadata.Length, balance.Balance);
     }
     [Fact(DisplayName = "Create Asset: Null Administrator Key is Allowed")]

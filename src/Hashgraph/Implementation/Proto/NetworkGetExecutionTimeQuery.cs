@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -15,7 +16,7 @@ public sealed partial class NetworkGetExecutionTimeQuery : INetworkQuery
         return new Query { NetworkGetExecutionTime = this };
     }
 
-    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new NetworkService.NetworkServiceClient(channel).getExecutionTimeAsync;
     }

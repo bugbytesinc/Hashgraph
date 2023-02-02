@@ -793,4 +793,79 @@ public class TransferTests
         // Don't forget fees.
         Assert.True(aliasEndingBalance < aliasStartingBalance - (ulong)transferAmount);
     }
+    //[Fact(DisplayName = "Transfer: Can Send to New Moniker Account")]
+    //public async Task CanTransferCryptoToNewMonikerAccount()
+    //{
+    //    await using var fxAccount = await TestAliasAccount.CreateAsync(_network, fx => {
+    //        (fx.PublicKey, fx.PrivateKey) = Generator.Secp256k1KeyPair();
+    //        fx.Alias = fx.PublicKey;
+    //        fx.
+    //    });
+    //    var startingBalance = await fxAccount.Client.GetAccountBalanceAsync(fxAccount.Alias);
+
+    //    var transferAmount = (long)Generator.Integer(10, 100);
+
+    //    var receipt = await fxAccount.Client.TransferAsync(_network.Payer, fxAccount.Alias, transferAmount);
+
+    //    var endingBalance = await fxAccount.Client.GetAccountBalanceAsync(fxAccount.Alias);
+    //    Assert.Equal(startingBalance + (ulong)transferAmount, endingBalance);
+    //}
+    //[Fact(DisplayName = "Transfer: Can Send From Alias Account")]
+    //public async Task CanSendFromAliasAccount()
+    //{
+    //    await using var fxAccount = await TestAccount.CreateAsync(_network);
+    //    await using var fxAlias = await TestAliasAccount.CreateAsync(_network);
+
+    //    var aliasStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    var transferAmount = (aliasStartingBalance) / 2 + 1;
+
+    //    var accountStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+    //    var receipt = await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, fxAlias.PrivateKey);
+    //    var accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+    //    Assert.Equal(accountStartingBalance + (ulong)transferAmount, accountEndingBalance);
+
+    //    var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    Assert.Equal(aliasStartingBalance - (ulong)transferAmount, aliasEndingBalance);
+    //}
+    //[Fact(DisplayName = "Transfer: Can Not Use Alias as Payer")]
+    //public async Task CanNotUseAliasAsPayer()
+    //{
+    //    await using var fxAccount = await TestAccount.CreateAsync(_network);
+    //    await using var fxAlias = await TestAliasAccount.CreateAsync(_network, fx => fx.InitialTransfer = 5_00_000_000);
+
+    //    var aliasStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    var transferAmount = (aliasStartingBalance) / 2 + 1;
+
+    //    var accountStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+
+    //    var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+    //    {
+    //        await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx =>
+    //        {
+    //            ctx.Payer = fxAlias.Alias;
+    //            ctx.Signatory = fxAlias.PrivateKey;
+    //        });
+    //    });
+    //    Assert.StartsWith("Transaction Failed Pre-Check: PayerAccountNotFound", pex.Message);
+    //    Assert.Equal(ResponseCode.PayerAccountNotFound, pex.Status);
+
+    //    var accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+    //    var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    Assert.Equal(accountStartingBalance, (ulong)accountEndingBalance);
+    //    Assert.Equal(aliasStartingBalance, (ulong)aliasEndingBalance);
+
+    //    var receipt = await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx =>
+    //    {
+    //        ctx.Payer = fxAlias.CreateRecord.Address;
+    //        ctx.Signatory = fxAlias.PrivateKey;
+    //    });
+
+    //    accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+    //    aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    Assert.Equal(accountStartingBalance + (ulong)transferAmount, accountEndingBalance);
+    //    // Don't forget fees.
+    //    Assert.True(aliasEndingBalance < aliasStartingBalance - (ulong)transferAmount);
+    //}
+
+
 }

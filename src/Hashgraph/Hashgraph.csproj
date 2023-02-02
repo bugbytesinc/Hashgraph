@@ -1,45 +1,50 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Hashgraph</RootNamespace>
-    <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>BugBytes, Inc.</Authors>
-    <Company>BugBytes, Inc.</Company>
-    <Description>.NET Client Library for Hedera Hashgraph</Description>
-    <Copyright>Copyright 2022 BugBytes, Inc. All Rights Reserved.</Copyright>
-    <PackageLicenseFile></PackageLicenseFile>
-    <PackageProjectUrl>https://bugbytesinc.github.io/Hashgraph/</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/bugbytesinc/Hashgraph.git</RepositoryUrl>
-    <PackageTags>Hedera Hashgraph Protobuf</PackageTags>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <RepositoryType>GitHub</RepositoryType>
-    <PackageIconUrl>https://raw.githubusercontent.com/bugbytesinc/Hashgraph/main/logo.png</PackageIconUrl>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<RootNamespace>Hashgraph</RootNamespace>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<Authors>BugBytes, Inc.</Authors>
+		<Company>BugBytes, Inc.</Company>
+		<Description>.NET Client Library for Hedera Hashgraph</Description>
+		<Copyright>Copyright 2022 BugBytes, Inc. All Rights Reserved.</Copyright>
+		<PackageLicenseFile></PackageLicenseFile>
+		<PackageProjectUrl>https://bugbytesinc.github.io/Hashgraph/</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/bugbytesinc/Hashgraph.git</RepositoryUrl>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PackageTags>Hedera Hashgraph Protobuf</PackageTags>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<RepositoryType>GitHub</RepositoryType>
+		<PackageIconUrl>https://raw.githubusercontent.com/bugbytesinc/Hashgraph/main/logo.png</PackageIconUrl>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BouncyCastle.NetCoreSdk" Version="1.9.3.1" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.10.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Google.Protobuf" Version="3.20.0" />
-    <PackageReference Include="Grpc.Core" Version="2.45.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.45.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>  
+	<ItemGroup>
+		<PackageReference Include="BouncyCastle.NetCoreSdk" Version="1.9.7" />
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Google.Protobuf" Version="3.21.12" />
+		<PackageReference Include="Grpc.Net.Client" Version="2.51.0" />
+		<PackageReference Include="Grpc.Tools" Version="2.51.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Protobuf Include="..\..\reference\hedera-protobufs\services\*.proto" GrpcServices="Client">
-      <Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </Protobuf>
-    <Protobuf Include="..\..\reference\hedera-mirror\proto\ConsensusService-Mirror.proto" GrpcServices="Client">
-      <Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </Protobuf>
-  </ItemGroup>
+	<ItemGroup>
+		<Protobuf Include="..\..\reference\hedera-protobufs\services\*.proto" GrpcServices="Client">
+			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		</Protobuf>
+		<Protobuf Include="..\..\reference\hedera-mirror\proto\ConsensusService-Mirror.proto" GrpcServices="Client">
+			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		</Protobuf>
+	</ItemGroup>
 
 </Project>

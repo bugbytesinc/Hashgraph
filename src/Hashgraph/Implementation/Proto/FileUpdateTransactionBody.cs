@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -19,7 +20,7 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         return new TransactionBody { FileUpdate = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new FileService.FileServiceClient(channel).updateFileAsync;
     }
@@ -44,7 +45,10 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         }
         if (updateParameters.Endorsements is null &&
             updateParameters.Contents is null &&
-            updateParameters.Memo is null)
+            updateParameters.Memo is null &&
+            updateParameters.Expiration is null &&
+            updateParameters.AutoRenewPeriod is null &&
+            updateParameters.AutoRenewAccount is null)
         {
             throw new ArgumentException(nameof(updateParameters), "The File Update parameters contain no update properties, it is blank.");
         }
@@ -60,6 +64,18 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         if (!(updateParameters.Memo is null))
         {
             Memo = updateParameters.Memo;
+        }
+        if (updateParameters.Expiration.HasValue)
+        {
+            ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
+        }
+        if (updateParameters.AutoRenewPeriod.HasValue)
+        {
+            AutoRenewPeriod = new Duration(updateParameters.AutoRenewPeriod.Value);
+        }
+        if (updateParameters.AutoRenewAccount is not null)
+        {
+            AutoRenewAccount = new AccountID(updateParameters.AutoRenewAccount);
         }
     }
 }

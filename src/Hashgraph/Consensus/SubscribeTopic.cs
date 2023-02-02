@@ -55,7 +55,7 @@ public partial class MirrorClient
             }
         }
         await using var context = CreateChildContext(configure);
-        if (context.Url is null)
+        if (context.Uri is null)
         {
             throw new InvalidOperationException("The Mirror Node Urul has not been configured. Please check that 'Url' is set in the Mirror context.");
         }

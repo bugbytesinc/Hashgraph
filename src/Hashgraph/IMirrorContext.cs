@@ -15,7 +15,7 @@ namespace Hashgraph;
 /// object for configuration details and update as necessary.  
 /// Typically, the bare minimum that must be configured in a 
 /// context in order to access the mirror network is the URL
-/// of a mirror node server <see cref="IMirrorContext.Url"/>.
+/// of a mirror node server <see cref="IMirrorContext.Uri"/>.
 /// The other default values are typically suitable for most 
 /// interactions with the mirror network.
 /// </remarks>
@@ -25,7 +25,7 @@ public interface IMirrorContext
     /// gRPC Address identifying a mirror node for
     /// access to the Hedera Mirror Network.
     /// </summary>
-    string Url { get; set; }
+    Uri Uri { get; set; }
     /// <summary>
     /// Called by the library just before the serialized protobuf 
     /// is sent to the Mirror Node.  This is the only exposure 

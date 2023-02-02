@@ -486,7 +486,7 @@ public enum ResponseCode
     /// </summary>
     [Description("INVALID_TOPIC_ID")] InvalidTopicId = 150,
     /// <summary>
-    /// A provided admin key was invalid.
+    /// A provided admin key was invalid. Verify the bytes for an Ed25519 public key are exactly 32 bytes; and the bytes for a compressed ECDSA(secp256k1) key are exactly 33 bytes, with the first byte either 0x02 or 0x03..
     /// </summary>
     [Description("INVALID_ADMIN_KEY")] InvalidAdminKey = 155,
     /// <summary>
@@ -936,52 +936,52 @@ public enum ResponseCode
     /// The provided pause key was invalid
     /// </summary>
     [Description("INVALID_PAUSE_KEY")] InvalidPauseKey = 267,
-    /// <summary> 
+    /// <summary>
     /// The update file in a freeze transaction body must exist.
     /// </summary>
     [Description("FREEZE_UPDATE_FILE_DOES_NOT_EXIST")] FreezeUpdateFileDoesNotExist = 268,
-    /// <summary> 
+    /// <summary>
     /// The hash of the update file in a freeze transaction body must match the in-memory hash.
     /// </summary>
     [Description("FREEZE_UPDATE_FILE_HASH_DOES_NOT_MATCH")] FreezeUpdateFileHashDoesNotMatch = 269,
-    /// <summary> 
+    /// <summary>
     /// A FREEZE_UPGRADE transaction was handled with no previous update prepared.
     /// </summary>
     [Description("NO_UPGRADE_HAS_BEEN_PREPARED")] NoUpgradeHasBeenPrepared = 270,
-    /// <summary> 
+    /// <summary>
     /// A FREEZE_ABORT transaction was handled with no scheduled freeze.
     /// </summary>
     [Description("NO_FREEZE_IS_SCHEDULED")] NoFreezeIsScheduled = 271,
-    /// <summary> 
+    /// <summary>
     /// The update file hash when handling a FREEZE_UPGRADE transaction differs from the file
     /// hash at the time of handling the PREPARE_UPGRADE transaction.
     /// </summary>
     [Description("UPDATE_FILE_HASH_CHANGED_SINCE_PREPARE_UPGRADE")] UpdateFileHashChangedSincePrepareUpgrade = 272,
-    /// <summary> 
+    /// <summary>
     /// The given freeze start time was in the (consensus) past.
     /// </summary>
     [Description("FREEZE_START_TIME_MUST_BE_FUTURE")] FreezeStartTimeMustBeFuture = 273,
-    /// <summary> 
+    /// <summary>
     /// The prepared update file cannot be updated or appended until either the upgrade has
     /// been completed, or a FREEZE_ABORT has been handled.
     /// </summary>
     [Description("PREPARED_UPDATE_FILE_IS_IMMUTABLE")] PreparedUpdateFileIsImmutable = 274,
-    /// <summary> 
+    /// <summary>
     /// Once a freeze is scheduled, it must be aborted before any other type of freeze can
     /// can be performed.
     /// </summary>
     [Description("FREEZE_ALREADY_SCHEDULED")] FreezeAlreadyScheduled = 275,
-    /// <summary> 
+    /// <summary>
     /// If an NMT upgrade has been prepared, the following operation must be a FREEZE_UPGRADE.
     /// (To issue a FREEZE_ONLY, submit a FREEZE_ABORT first.)
     /// </summary>
     [Description("FREEZE_UPGRADE_IN_PROGRESS")] FreezeUpgradeInProgress = 276,
-    /// <summary> 
+    /// <summary>
     /// If an NMT upgrade has been prepared, the subsequent FREEZE_UPGRADE transaction must 
     /// confirm the id of the file to be used in the upgrade.
     /// </summary>
     [Description("UPDATE_FILE_ID_DOES_NOT_MATCH_PREPARED")] UpdateFileIdDoesNotMatchPrepared = 277,
-    /// <summary> 
+    /// <summary>
     /// If an NMT upgrade has been prepared, the subsequent FREEZE_UPGRADE transaction must 
     /// confirm the hash of the file to be used in the upgrade.
     /// </summary>
@@ -1176,5 +1176,42 @@ public enum ResponseCode
     /// <summary>
     /// Native staking, while implemented, has not yet enabled by the council.
     /// </summary>
-    [Description("INVALID_STAKING_ID")] STAKING_NOT_ENABLED = 323,
+    [Description("STAKING_NOT_ENABLED")] StakingNotEnabled = 323,
+    /// <summary>
+    /// The range provided in UtilPrng transaction is negative.
+    /// </summary>
+    [Description("INVALID_PRNG_RANGE")] InvalidPrngRange = 324,
+    /// <summary>
+    /// The maximum number of entities allowed in the current price regime have been created.
+    /// </summary>
+    [Description("MAX_ENTITIES_IN_PRICE_REGIME_HAVE_BEEN_CREATED")] MaxEntitiesInPriceRegimeHaveBeenCreated = 325,
+    /// <summary>
+    /// The full prefix signature for precompile is not valid
+    /// </summary>
+    [Description("INVALID_FULL_PREFIX_SIGNATURE_FOR_PRECOMPILE")] InvalidFullPrefixSignatureForPrecompile = 326,
+    /// <summary>
+    /// The combined balances of a contract and its auto-renew account (if any) did not cover
+    /// the rent charged for net new storage used in a transaction.
+    /// </summary>
+    [Description("INSUFFICIENT_BALANCES_FOR_STORAGE_RENT")] InsufficientBalancesForStorageRent = 327,
+    /// <summary>
+    /// A contract transaction tried to use more than the allowed number of child records, via
+    /// either system contract records or internal contract creations.
+    /// </summary>
+    [Description("MAX_CHILD_RECORDS_EXCEEDED")] MaxChildRecordsExceeded = 328,
+    /// <summary>
+    /// The combined balances of a contract and its auto-renew account (if any) or balance of an account did not cover
+    /// the auto-renewal fees in a transaction.
+    /// </summary>
+    [Description("INSUFFICIENT_BALANCES_FOR_RENEWAL_FEES")] InsufficientBalancesForRenewalFees = 329,
+    /// <summary>
+    /// A transaction's protobuf message includes unknown fields; could mean that a client 
+    /// expects not-yet-released functionality to be available.
+    /// </summary>
+    [Description("TRANSACTION_HAS_UNKNOWN_FIELDS")] TransactionHasUnknownFields = 330,
+    /// <summary>
+    /// The account cannot be modified. Account's key is not set
+    /// </summary>
+    [Description("ACCOUNT_IS_IMMUTABLE")] AccountIsImmutable = 331,
+
 }

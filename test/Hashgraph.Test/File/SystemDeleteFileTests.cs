@@ -41,6 +41,8 @@ public class SystemDeleteFileTests
         // NOT IMPLEMENTED YET
         Assert.Empty(info.Ledger.ToArray());
         // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "System Delete File: Can Delete File using Signatory")]
     public async Task CanDeleteAFileUsingSignatory()
@@ -69,6 +71,8 @@ public class SystemDeleteFileTests
         // NOT IMPLEMENTED YET
         Assert.Empty(info.Ledger.ToArray());
         // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "System Delete File: Can Delete File and get Record")]
     public async Task CanDeleteAFileWithRecord()
@@ -104,6 +108,8 @@ public class SystemDeleteFileTests
         // NOT IMPLEMENTED YET
         Assert.Empty(info.Ledger.ToArray());
         // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "System Delete File: Can Delete File and get Record using Signatory")]
     public async Task CanDeleteAFileWithRecordUsingSignatory()
@@ -139,6 +145,8 @@ public class SystemDeleteFileTests
         // NOT IMPLEMENTED YET
         Assert.Empty(info.Ledger.ToArray());
         // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "System Delete File: Can Not Schedule Delete.")]
     public async Task CanNotScheduleDelete()

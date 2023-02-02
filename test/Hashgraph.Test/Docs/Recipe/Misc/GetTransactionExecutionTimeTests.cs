@@ -14,18 +14,18 @@ public class GetTransactionExecutionTimeTests
     // Code Example:  Docs / Recipe / Misc / Get Transaction Execution Time
     static async Task Main(string[] args)
     {                                                 // For Example:
-        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
+        var gatewayUri = new Uri(args[0]);            //   http://2.testnet.hedera.com:50211
         var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
         var payerAccountNo = long.Parse(args[2]);     //   20 (account 0.0.20)
         var payerPrivateKey = Hex.ToBytes(args[3]);   //   302e0201... (Ed25519 private in hex)
         var txAccountNum = long.Parse(args[4]);       //   Transaction Account Payer Num
         var txStartingSeconds = long.Parse(args[5]);  //   Transaction Starting Seconds (Epoch)
-        var txStartingNanos = int.Parse(args[6]);      //   Transaction Starting Nanoseconds
+        var txStartingNanos = int.Parse(args[6]);     //   Transaction Starting Nanoseconds
         try
         {
             await using var client = new Client(ctx =>
             {
-                ctx.Gateway = new Gateway(gatewayUrl, 0, 0, gatewayAccountNo);
+                ctx.Gateway = new Gateway(gatewayUri, 0, 0, gatewayAccountNo);
                 ctx.Payer = new Address(0, 0, payerAccountNo);
                 ctx.Signatory = new Signatory(payerPrivateKey);
             });
@@ -59,14 +59,14 @@ public class GetTransactionExecutionTimeTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         using (new ConsoleRedirector(_network.Output))
         {
-            var arg0 = _network.Gateway.Url;
+            var arg0 = _network.Gateway.Uri;
             var arg1 = _network.Gateway.AccountNum.ToString();
             var arg2 = _network.Payer.AccountNum.ToString();
             var arg3 = Hex.FromBytes(_network.PrivateKey);
             var arg4 = fxAccount.Record.Id.Address.AccountNum.ToString();
             var arg5 = fxAccount.Record.Id.ValidStartSeconds.ToString();
             var arg6 = fxAccount.Record.Id.ValidStartNanos.ToString();
-            await Main(new string[] { arg0, arg1, arg2, arg3, arg4, arg5, arg6 });
+            await Main(new string[] { arg0.ToString(), arg1, arg2, arg3, arg4, arg5, arg6 });
         }
     }
 }

@@ -32,6 +32,8 @@ public class DeleteFileTests
         Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
         Assert.True(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "Delete File: Can Delete with Record (no extra Signatory)")]
     public async Task CanDeleteAFileWithRecordNoSignatoryAsync()
@@ -50,6 +52,8 @@ public class DeleteFileTests
         Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
         Assert.True(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "Delete File: Cannot Delete and Imutable File")]
     public async Task CanNotDeleteAnImutableFileAsync()
@@ -74,6 +78,8 @@ public class DeleteFileTests
         Assert.Empty(info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
+        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "Delete File: Can Not Schedule a Delete File")]
     public async Task CanNotScheduleADeleteFile()

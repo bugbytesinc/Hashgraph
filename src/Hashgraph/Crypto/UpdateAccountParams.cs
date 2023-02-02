@@ -63,6 +63,13 @@ public sealed class UpdateAccountParams
     /// </summary>
     public TimeSpan? AutoRenewPeriod { get; set; }
     /// <summary>
+    /// If not null, updates the auto-renew account for this
+    /// account to a new payer.  Setting value to <code>None</code> 
+    /// will remove the existing auto renew account value from
+    /// this account.
+    /// </summary>
+    public Address? AutoRenewAccount { get; set; }
+    /// <summary>
     /// If not null, a new description of the account.
     /// </summary>
     public string? Memo { get; set; }
@@ -112,4 +119,11 @@ public sealed class UpdateAccountParams
     /// earned staking rewards.
     /// </summary>
     public bool? DeclineStakeReward { get; set; }
+    /// <summary>
+    /// If set, applies the desired action on the list
+    /// of moniker virtual address for this account.
+    /// Address can be added or removed, one at a time
+    /// using the crypto account update transaction.
+    /// </summary>
+    public UpdateMonikerParams? UpdateMoniker { get; set; }
 }

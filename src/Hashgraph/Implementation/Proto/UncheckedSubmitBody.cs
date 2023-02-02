@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -19,7 +20,7 @@ public sealed partial class UncheckedSubmitBody : INetworkTransaction
         return new TransactionBody { UncheckedSubmit = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new NetworkService.NetworkServiceClient(channel).uncheckedSubmitAsync;
     }

@@ -40,6 +40,15 @@ public sealed record FileInfo
     /// </summary>
     public ReadOnlyMemory<byte> Ledger { get; private init; }
     /// <summary>
+    /// If an auto-renew account is in use, the added 
+    /// lifetime of each auto-renewal.
+    /// </summary>
+    public TimeSpan AutoRenewPeriod { get; private init; }
+    /// <summary>
+    /// If specified, pays the fees for renewing this file.
+    /// </summary>
+    public Address AutoRenewAccount { get; private init; }
+    /// <summary>
     /// Intenral Constructor from Raw Response
     /// </summary>
     internal FileInfo(Response response)
@@ -50,6 +59,8 @@ public sealed record FileInfo
         Size = info.Size;
         Expiration = info.ExpirationTime.ToDateTime();
         Endorsements = info.Keys?.ToEndorsements() ?? Array.Empty<Endorsement>();
+        AutoRenewPeriod = info.AutoRenewPeriod is null ? TimeSpan.Zero : info.AutoRenewPeriod.ToTimeSpan();
+        AutoRenewAccount = info.AutoRenewAccount.AsAddress();
         Deleted = info.Deleted;
         Ledger = info.LedgerId.Memory;
     }

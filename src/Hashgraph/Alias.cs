@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Hashgraph;
 
@@ -147,7 +148,7 @@ public sealed record Alias
 }
 internal static class AliasExtensions
 {
-    internal static bool IsNullOrNone(this Alias? alias)
+    internal static bool IsNullOrNone([NotNullWhen(false)] this Alias? alias)
     {
         return alias is null || alias == Alias.None;
     }

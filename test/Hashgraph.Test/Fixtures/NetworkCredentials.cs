@@ -31,7 +31,7 @@ public class NetworkCredentials
     public ReadOnlyMemory<byte> PublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
     public Address Payer { get { return new Address(AccountShard, AccountRealm, AccountNumber); } }
     public Signatory Signatory { get { return new Signatory(PrivateKey); } }
-    public Gateway Gateway { get { return new Gateway($"{NetworkAddress}:{NetworkPort}", ServerShard, ServerRealm, ServerNumber); } }
+    public Gateway Gateway { get { return new Gateway(new Uri($"http://{NetworkAddress}:{NetworkPort}"), ServerShard, ServerRealm, ServerNumber); } }
     public ITestOutputHelper Output { get; set; }
     public NetworkCredentials()
     {
@@ -46,12 +46,12 @@ public class NetworkCredentials
             ctx.Payer = Payer;
             ctx.Signatory = Signatory;
             ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
-                ctx.RetryDelay = TimeSpan.FromMilliseconds(100); // Use this setting for a while to see if we can trim a few ms off of each test
-                ctx.OnSendingRequest = OutputSendingRequest;
+            ctx.RetryDelay = TimeSpan.FromMilliseconds(100); // Use this setting for a while to see if we can trim a few ms off of each test
+            ctx.OnSendingRequest = OutputSendingRequest;
             ctx.OnResponseReceived = OutputReceivResponse;
             ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
-                ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
-            });
+            ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
+        });
     }
     public Client NewClient()
     {
@@ -61,7 +61,7 @@ public class NetworkCredentials
     {
         return new MirrorClient(ctx =>
         {
-            ctx.Url = $"{MirrorAddress}:{MirrorPort}";
+            ctx.Uri = new Uri($"http://{MirrorAddress}:{MirrorPort}");
             ctx.OnSendingRequest = OutputSendingRequest;
         });
     }

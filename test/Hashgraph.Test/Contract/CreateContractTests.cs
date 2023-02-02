@@ -295,12 +295,12 @@ public class CreateContractTests
         Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
     }
 
-    [Fact(DisplayName = "NETWORK V0.27.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
+    [Fact(DisplayName = "NETWORK V0.35.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
     public async Task CanCreateTokenTransferContractWithMaxAutoAssociationsDefect()
     {
-        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanCreateTokenTransferContractWithMaxAutoAssociations));
-        Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
-        Assert.Equal("0", testFailException.Actual);
+        var testFailException = (await Assert.ThrowsAsync<PrecheckException>(CanCreateTokenTransferContractWithMaxAutoAssociations));
+        Assert.Equal(ResponseCode.NotSupported, testFailException.Status);
+        Assert.StartsWith("Transaction Failed Pre-Check", testFailException.Message);
 
         //[Fact(DisplayName = "Create Contract: Can Create Token Transfer Contract With Max Auto Associations")]
         async Task CanCreateTokenTransferContractWithMaxAutoAssociations()

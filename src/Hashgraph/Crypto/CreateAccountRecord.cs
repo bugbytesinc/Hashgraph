@@ -17,10 +17,16 @@ public sealed record CreateAccountRecord : TransactionRecord
     /// </remarks>
     public Address Address { get; internal init; }
     /// <summary>
+    /// The new default EVM address of the account created 
+    /// by this transaction.
+    /// </summary>
+    public Moniker Moniker { get; internal init; }
+    /// <summary>
     /// Internal Constructor of the record.
     /// </summary>
     internal CreateAccountRecord(NetworkResult result) : base(result)
     {
         Address = result.Receipt.AccountID.AsAddress();
+        Moniker = result.Record!.EvmAddress.AsMoniker(Address);
     }
 }

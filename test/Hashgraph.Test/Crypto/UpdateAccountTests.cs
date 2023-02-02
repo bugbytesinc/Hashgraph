@@ -227,6 +227,7 @@ public class UpdateAccountTests
 
         var originalInfo = await client.GetAccountInfoAsync(createResult.Address);
         Assert.Equal(originalValue, originalInfo.AutoRenewPeriod);
+        Assert.Equal(Address.None, originalInfo.AutoRenewAccount);
 
         var newValue = originalValue.Add(TimeSpan.FromDays(Generator.Integer(10, 20)));
 
@@ -244,6 +245,7 @@ public class UpdateAccountTests
 
         var updatedInfo = await client.GetAccountInfoAsync(createResult.Address);
         Assert.Equal(originalValue, updatedInfo.AutoRenewPeriod);
+        Assert.Equal(Address.None, updatedInfo.AutoRenewAccount);
     }
     [Fact(DisplayName = "NETWORK V0.22.5 DEFECT: Update Account: Can Update Alias Test Fails")]
     public async Task CanUpdateAliasDefect()
@@ -259,6 +261,7 @@ public class UpdateAccountTests
 
             var originalInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(Alias.None, originalInfo.Alias);
+            Assert.Empty(originalInfo.Monikers);
 
             var updateResult = await fx.Client.UpdateAccountAsync(new UpdateAccountParams
             {
@@ -270,6 +273,7 @@ public class UpdateAccountTests
 
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(new Alias(publicKey), updatedInfo.Alias);
+            Assert.Empty(updatedInfo.Monikers);
         }
     }
     [Fact(DisplayName = "NETWORK V0.22.5 DEFECT: Update Account: Can Not Update Alias wihtout Signature Test Fails")]
@@ -286,6 +290,7 @@ public class UpdateAccountTests
 
             var originalInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(Alias.None, originalInfo.Alias);
+            Assert.Empty(originalInfo.Monikers);
 
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
@@ -300,6 +305,7 @@ public class UpdateAccountTests
 
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(new Alias(fx.PublicKey), updatedInfo.Alias);
+            Assert.Empty(updatedInfo.Monikers);
         }
     }
 
@@ -336,6 +342,7 @@ public class UpdateAccountTests
 
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.Record.Address);
             Assert.Equal(new Alias(publicKey1), updatedInfo.Alias);
+            Assert.Empty(updatedInfo.Monikers);
         }
     }
     [Fact(DisplayName = "NETWORK V0.22.5 DEFECT: Update Account: Can not Update Alias That was Created with PayToAlias Test Fails")]
@@ -352,6 +359,7 @@ public class UpdateAccountTests
 
             var originalInfo = await fx.Client.GetAccountInfoAsync(fx.CreateRecord.Address);
             Assert.Equal(fx.Alias, originalInfo.Alias);
+            Assert.Empty(originalInfo.Monikers);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -367,6 +375,7 @@ public class UpdateAccountTests
 
             var updatedInfo = await fx.Client.GetAccountInfoAsync(fx.CreateRecord.Address);
             Assert.Equal(fx.Alias, updatedInfo.Alias);
+            Assert.Empty(updatedInfo.Monikers);
         }
     }
     [Fact(DisplayName = "NETWORK V0.14.0 UNSUPPORTED: Update Account: Update with Insufficient Funds Returns Required Fee Fails")]
@@ -627,11 +636,13 @@ public class UpdateAccountTests
         Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
         Assert.Equal(fxTempate.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(fxTempate.CreateParams.Memo, info.Memo);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);

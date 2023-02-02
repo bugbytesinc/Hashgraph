@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Proto;
 using System;
 using System.Threading;
@@ -8,7 +9,7 @@ namespace Hashgraph.Implementation;
 internal interface INetworkQuery
 {
     Query CreateEnvelope();
-    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> InstantiateNetworkRequestMethod(Channel channel);
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> InstantiateNetworkRequestMethod(GrpcChannel channel);
     void SetHeader(QueryHeader header);
     void CheckResponse(TransactionID transactionId, Response response)
     {

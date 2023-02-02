@@ -42,6 +42,7 @@ public class AccountMultisigTests
         Assert.Equal(endorsement, info.Endorsement);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);

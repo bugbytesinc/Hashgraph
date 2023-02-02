@@ -32,10 +32,12 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.NotEqual(Alias.None, info.Alias);
+        Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
@@ -58,11 +60,13 @@ public class GetInfoTests
         Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
         Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(fxAccount.CreateParams.Memo, info.Memo);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
@@ -83,13 +87,16 @@ public class GetInfoTests
         Assert.Equal(0, infoFromAddress.ContractNonce);
         Assert.Equal(fxAccount.PublicKey, infoFromAddress.Endorsement);
         Assert.True(infoFromAddress.Balance > 0);
+        Assert.Equal(Address.None, infoFromAddress.AutoRenewAccount);
         Assert.False(infoFromAddress.ReceiveSignatureRequired);
         Assert.True(infoFromAddress.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, infoFromAddress.AutoRenewAccount);
         Assert.True(infoFromAddress.Expiration > DateTime.MinValue);
         Assert.Equal("auto-created account", infoFromAddress.Memo);
         Assert.Equal(0, infoFromAddress.AssetCount);
         Assert.Equal(0, infoFromAddress.AutoAssociationLimit);
         Assert.Equal(fxAccount.Alias, infoFromAddress.Alias);
+        Assert.Empty(infoFromAddress.Monikers);
         AssertHg.NotEmpty(infoFromAddress.Ledger);
         Assert.NotNull(infoFromAddress.StakingInfo);
         Assert.False(infoFromAddress.StakingInfo.Declined);
@@ -108,11 +115,13 @@ public class GetInfoTests
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
         Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, infoFromAlias.AutoRenewAccount);
         Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal(fxAccount.Alias, infoFromAlias.Alias);
+        Assert.Empty(infoFromAlias.Monikers);
         AssertHg.Equal(infoFromAddress.Ledger, infoFromAlias.Ledger);
         Assert.NotNull(infoFromAlias.StakingInfo);
         Assert.False(infoFromAlias.StakingInfo.Declined);
@@ -138,9 +147,11 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(Alias.None, info.Alias);
+        Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
@@ -175,10 +186,12 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(fxAsset.Metadata.Length, info.AssetCount);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
@@ -198,7 +211,7 @@ public class GetInfoTests
         {
             InitialBalance = initialBalance,
             Endorsement = publicKey
-        })).Address;        
+        })).Address;
         var info = await client.GetAccountInfoAsync(account);
         Assert.NotNull(info.Address);
         Assert.Equal(account.RealmNum, info.Address.RealmNum);
@@ -211,10 +224,12 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
@@ -247,10 +262,12 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, info.AutoRenewAccount);
         Assert.True(info.Expiration > DateTime.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);

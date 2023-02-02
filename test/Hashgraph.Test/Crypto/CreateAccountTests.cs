@@ -324,6 +324,8 @@ public class CreateAccountTests
         Assert.Equal(Alias.None, info1.Alias);
         Assert.Equal(Alias.None, info2.Alias);
         Assert.Equal(info1.Alias, info2.Alias);
+        Assert.Empty(info2.Monikers);
+        Assert.Empty(info1.Monikers);
         AssertHg.NotEmpty(info1.Ledger);
         AssertHg.NotEmpty(info2.Ledger);
         Assert.NotNull(info1.StakingInfo);

@@ -78,66 +78,74 @@ public class EventEmittingContractTests
         Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
         Assert.Equal(0, result.FunctionArgs.Size);
     }
-    [Fact(DisplayName = "Event Emitting Contract: Can Call Contract that Sends Funds, Emitting Event")]
-    public async Task CanCallContractMethodSendingFunds()
+    [Fact(DisplayName = "NETWORK V0.35.0 DEFECT: Event Emitting Contract: Can Call Contract that Sends Funds, Emitting Event")]
+    public async Task CanCallContractMethodSendingFundsDefect()
     {
-        await using var fx = await EventEmittingContract.CreateAsync(_network);
-        await using var fx2 = await TestAccount.CreateAsync(_network);
+        // EVM in 0.35.0 has issues correctly identifying some hedera acocunts
+        var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCallContractMethodSendingFunds));
+        Assert.Equal(ResponseCode.InvalidSolidityAddress, testFailException.Status);
 
-        var infoBefore = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
-        var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+        //[Fact(DisplayName = "Event Emitting Contract: Can Call Contract that Sends Funds, Emitting Event")]
+        async Task CanCallContractMethodSendingFunds()
         {
-            Contract = fx.ContractRecord.Contract,
-            Gas = 40000,
-            FunctionName = "send_to",
-            FunctionArgs = new[] { fx2.Record.Address }
-        });
-        Assert.NotNull(record);
-        Assert.Equal(ResponseCode.Success, record.Status);
-        Assert.False(record.Hash.IsEmpty);
-        Assert.NotNull(record.Concensus);
-        Assert.Empty(record.Memo);
-        Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
-        Assert.Empty(record.CallResult.Error);
-        Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.GasUsed, 0UL, 300_000UL);
-        // NETWORK DEFECT: NOT IMPLEMENED
-        Assert.Equal(0, record.CallResult.GasLimit);
-        Assert.Equal(0, record.CallResult.PayableAmount);
-        Assert.Equal(Address.None, record.CallResult.MessageSender);
-        Assert.Single(record.CallResult.Events);
-        /**
-         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
-         * 
-         *  Assert.Empty(record.CallResult.StateChanges);
-         */
-        Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
+            await using var fx = await EventEmittingContract.CreateAsync(_network);
+            await using var fx2 = await TestAccount.CreateAsync(_network);
 
-        // Now check the emitted Event
-        var result = record.CallResult.Events[0];
-        Assert.Equal(fx.ContractRecord.Contract, result.Contract);
-        Assert.False(result.Bloom.IsEmpty);
-        Assert.Single(result.Topic);
-        Assert.Equal("9277a4302be4a765ae8585e09a9306bd55da10e20e59ed4f611a04ba606fece8", Hex.FromBytes(result.Topic[0]));
+            var infoBefore = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
+            var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = 40000,
+                FunctionName = "send_to",
+                FunctionArgs = new[] { fx2.Record.Address }
+            });
+            Assert.NotNull(record);
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Empty(record.CallResult.Error);
+            Assert.False(record.CallResult.Bloom.IsEmpty);
+            Assert.InRange(record.CallResult.GasUsed, 0UL, 300_000UL);
+            // NETWORK DEFECT: NOT IMPLEMENED
+            Assert.Equal(0, record.CallResult.GasLimit);
+            Assert.Equal(0, record.CallResult.PayableAmount);
+            Assert.Equal(Address.None, record.CallResult.MessageSender);
+            Assert.Single(record.CallResult.Events);
+            /**
+             * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+             * 
+             *  Assert.Empty(record.CallResult.StateChanges);
+             */
+            Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
 
-        /**
-         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
-         * 
-         *  Assert.Empty(record.CallResult.StateChanges);
-         */
-        Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
+            // Now check the emitted Event
+            var result = record.CallResult.Events[0];
+            Assert.Equal(fx.ContractRecord.Contract, result.Contract);
+            Assert.False(result.Bloom.IsEmpty);
+            Assert.Single(result.Topic);
+            Assert.Equal("9277a4302be4a765ae8585e09a9306bd55da10e20e59ed4f611a04ba606fece8", Hex.FromBytes(result.Topic[0]));
 
-        var (address, amount) = result.Data.As<Address, long>();
-        Assert.Equal(fx2.Record.Address, address);
-        Assert.Equal(fx.ContractParams.InitialBalance, amount);
+            /**
+             * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+             * 
+             *  Assert.Empty(record.CallResult.StateChanges);
+             */
+            Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
 
-        // Alternate Way
-        var objects = result.Data.GetAll(typeof(Address), typeof(long));
-        Assert.Equal(fx2.Record.Address, objects[0]);
-        Assert.Equal(fx.ContractParams.InitialBalance, objects[1]);
+            var (address, amount) = result.Data.As<Address, long>();
+            Assert.Equal(fx2.Record.Address, address);
+            Assert.Equal(fx.ContractParams.InitialBalance, amount);
 
-        var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
-        Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
+            // Alternate Way
+            var objects = result.Data.GetAll(typeof(Address), typeof(long));
+            Assert.Equal(fx2.Record.Address, objects[0]);
+            Assert.Equal(fx.ContractParams.InitialBalance, objects[1]);
+
+            var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
+        }
     }
 
     [Fact(DisplayName = "Event Emitting Contract: Attempts to Misplace Hbars Fails")]

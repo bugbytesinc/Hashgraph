@@ -89,7 +89,7 @@ public sealed record ContractCallResult
          * 
          *        StateChanges = result.StateChanges.Select(s => new ContractStateChange(s)).ToList().AsReadOnly();
          */
-        EncodedAddress = result.EvmAddress is null || result.EvmAddress.IsEmpty ? Moniker.None : new Moniker(result.EvmAddress.Memory);
+        EncodedAddress = result.EvmAddress.AsMoniker(result.ContractID.AsAddress());
         FunctionArgs = new EncodedParams(result.FunctionParameters.Memory);
     }
 }

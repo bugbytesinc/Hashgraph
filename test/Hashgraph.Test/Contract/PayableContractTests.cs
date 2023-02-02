@@ -89,89 +89,105 @@ public class PayableContractTests
         var info = await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract);
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
     }
-    [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds")]
-    public async Task CanCallContractMethodSendingFunds()
+    [Fact(DisplayName = "NETWORK V0.35.0 DEFECT: Payable Contract: Can Call Contract that Sends Funds")]
+    public async Task CanCallContractMethodSendingFundsDefect()
     {
-        await using var fx = await PayableContract.CreateAsync(_network);
-        await using var fx2 = await TestAccount.CreateAsync(_network);
+        // EVM in 0.35.0 has issues correctly identifying some hedera acocunts
+        var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanCallContractMethodSendingFunds));
+        Assert.Equal(ResponseCode.InvalidSolidityAddress, testFailException.Status);
 
-        var infoBefore = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
-        var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+        //[Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds")]
+        async Task CanCallContractMethodSendingFunds()
         {
-            Contract = fx.ContractRecord.Contract,
-            Gas = 40000,
-            FunctionName = "send_to",
-            FunctionArgs = new[] { fx2.Record.Address }
-        });
-        Assert.NotNull(record);
-        Assert.Equal(ResponseCode.Success, record.Status);
-        Assert.False(record.Hash.IsEmpty);
-        Assert.NotNull(record.Concensus);
-        Assert.Empty(record.Memo);
-        Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
-        Assert.Empty(record.CallResult.Error);
-        Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);
-        // NETWORK DEFECT: NOT IMPLEMENED
-        Assert.Equal(0, record.CallResult.GasLimit);
-        Assert.Empty(record.CallResult.Events);
-        /**
-         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
-         * 
-         *  Assert.Empty(record.CallResult.StateChanges);
-         */
-        Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
+            await using var fx = await PayableContract.CreateAsync(_network);
+            await using var fx2 = await TestAccount.CreateAsync(_network);
 
-        var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
-        Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
+            var infoBefore = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
+            var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = 40000,
+                FunctionName = "send_to",
+                FunctionArgs = new[] { fx2.Record.Address }
+            });
+            Assert.NotNull(record);
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.Empty(record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Empty(record.CallResult.Error);
+            Assert.False(record.CallResult.Bloom.IsEmpty);
+            Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);
+            // NETWORK DEFECT: NOT IMPLEMENED
+            Assert.Equal(0, record.CallResult.GasLimit);
+            Assert.Empty(record.CallResult.Events);
+            /**
+             * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+             * 
+             *  Assert.Empty(record.CallResult.StateChanges);
+             */
+            Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
+
+            var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
+            Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
+        }
     }
 
-    [Fact(DisplayName = "Payable Contract: Can Send Funds to External Payable Default Function")]
+    [Fact(DisplayName = "NETWORK V0.35.0 DEFECT: Payable Contract: Can Send Funds to External Payable Default Function")]
     public async Task CanSendFundsToPayableContractWithExternalPayable()
     {
-        await using var fx = await PayableContract.CreateAsync(_network);
+        // EVM in 0.35.0 has issues correctly identifying some hedera acocunts
+        var testFailException = (await Assert.ThrowsAsync<TransactionException>(CanSendFundsToPayableContractWithExternalPayable));
+        Assert.Equal(ResponseCode.InvalidSolidityAddress, testFailException.Status);
 
-        var extraFunds = Generator.Integer(500, 1000);
-        var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+        //[Fact(DisplayName = "Payable Contract: Can Send Funds to External Payable Default Function")]
+        async Task CanSendFundsToPayableContractWithExternalPayable()
         {
-            Contract = fx.ContractRecord.Contract,
-            Gas = 30000,
-            PayableAmount = extraFunds
-        });
-        Assert.Equal(ResponseCode.Success, record.Status);
+            await using var fx = await PayableContract.CreateAsync(_network);
 
-        await using var fx2 = await TestAccount.CreateAsync(_network);
-        var infoBefore = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
-        record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
-        {
-            Contract = fx.ContractRecord.Contract,
-            Gas = 40000,
-            FunctionName = "send_to",
-            FunctionArgs = new[] { fx2.Record.Address }
-        }, ctx => ctx.Memo = ".NET SDK Test");
-        Assert.NotNull(record);
-        Assert.Equal(ResponseCode.Success, record.Status);
-        Assert.False(record.Hash.IsEmpty);
-        Assert.NotNull(record.Concensus);
-        Assert.Equal(".NET SDK Test", record.Memo);
-        Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
-        Assert.Empty(record.CallResult.Error);
-        Assert.False(record.CallResult.Bloom.IsEmpty);
-        Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);
-        // NETWORK DEFECT: NOT IMPLEMENED
-        Assert.Equal(0, record.CallResult.GasLimit);
-        Assert.Equal(0, record.CallResult.PayableAmount);
-        Assert.Equal(Address.None, record.CallResult.MessageSender);
-        Assert.Empty(record.CallResult.Events);
-        /**
-         * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
-         * 
-         *  Assert.Empty(record.CallResult.StateChanges);
-         */
-        Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
+            var extraFunds = Generator.Integer(500, 1000);
+            var record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = 30000,
+                PayableAmount = extraFunds
+            });
+            Assert.Equal(ResponseCode.Success, record.Status);
 
-        var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
-        Assert.Equal((ulong)(fx.ContractParams.InitialBalance + extraFunds), infoAfter.Balance - infoBefore.Balance);
+            await using var fx2 = await TestAccount.CreateAsync(_network);
+            var infoBefore = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
+            record = await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            {
+                Contract = fx.ContractRecord.Contract,
+                Gas = 40000,
+                FunctionName = "send_to",
+                FunctionArgs = new[] { fx2.Record.Address }
+            }, ctx => ctx.Memo = ".NET SDK Test");
+            Assert.NotNull(record);
+            Assert.Equal(ResponseCode.Success, record.Status);
+            Assert.False(record.Hash.IsEmpty);
+            Assert.NotNull(record.Concensus);
+            Assert.Equal(".NET SDK Test", record.Memo);
+            Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+            Assert.Empty(record.CallResult.Error);
+            Assert.False(record.CallResult.Bloom.IsEmpty);
+            Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);
+            // NETWORK DEFECT: NOT IMPLEMENED
+            Assert.Equal(0, record.CallResult.GasLimit);
+            Assert.Equal(0, record.CallResult.PayableAmount);
+            Assert.Equal(Address.None, record.CallResult.MessageSender);
+            Assert.Empty(record.CallResult.Events);
+            /**
+             * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
+             * 
+             *  Assert.Empty(record.CallResult.StateChanges);
+             */
+            Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
+
+            var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
+            Assert.Equal((ulong)(fx.ContractParams.InitialBalance + extraFunds), infoAfter.Balance - infoBefore.Balance);
+        }
     }
     [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds to Deleted Account Raises Error")]
     public async Task SendFundsToDeletedAccountRaisesError()

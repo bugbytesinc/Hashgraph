@@ -1,7 +1,8 @@
 ﻿using Google.Protobuf;
-using Grpc.Core;
+using Grpc.Net.Client;
 using System;
 using System.Linq;
+using System.Net.Http;
 
 namespace Hashgraph.Implementation;
 
@@ -13,7 +14,7 @@ namespace Hashgraph.Implementation;
 /// </summary>
 internal class MirrorContextStack : ContextStack<GossipContextStack>, IMirrorContext
 {
-    public string Url { get => get<string>(nameof(Url)); set => set(nameof(Url), value); }
+    public Uri Uri { get => get<Uri>(nameof(Uri)); set => set(nameof(Uri), value); }
     public Action<IMessage>? OnSendingRequest { get => get<Action<IMessage>>(nameof(OnSendingRequest)); set => set(nameof(OnSendingRequest), value); }
 
     public MirrorContextStack(MirrorContextStack? parent) : base(parent) { }
@@ -21,26 +22,34 @@ internal class MirrorContextStack : ContextStack<GossipContextStack>, IMirrorCon
     {
         switch (name)
         {
-            case nameof(Url):
+            case nameof(Uri):
             case nameof(OnSendingRequest):
                 return true;
             default:
                 return false;
         }
     }
-    protected override string GetChannelUrl()
+    protected override Uri GetChannelUrl()
     {
-        var url = Url;
-        if (string.IsNullOrWhiteSpace(url))
+        var uri = Uri;
+        if (uri is null)
         {
             throw new InvalidOperationException("The Mirror Node Url has not been configured.");
         }
-        return url;
+        return uri;
     }
-    protected override Channel ConstructNewChannel(string url)
+    protected override GrpcChannel ConstructNewChannel(Uri uri)
     {
-        var options = new[] { new ChannelOption("grpc.keepalive_permit_without_calls", 1) };
-        return new Channel(url, ChannelCredentials.Insecure, options);
+        var options = new GrpcChannelOptions()
+        {
+            HttpHandler = new SocketsHttpHandler
+            {
+                KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
+                KeepAlivePingDelay = TimeSpan.FromSeconds(60),
+                KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
+            }
+        };
+        return GrpcChannel.ForAddress(uri, options);
     }
 
     public Action<IMessage> InstantiateOnSendingRequestHandler()

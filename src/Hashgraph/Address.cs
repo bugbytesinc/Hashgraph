@@ -201,8 +201,8 @@ internal enum AddressType
     /// </summary>
     Alias,
     /// <summary>
-    /// EIP-1014 Hedera VM contract form of address,
-    /// used only as an alternate way to address
+    /// EOA 20-byte, EIP-1014 Hedera VM contract form 
+    /// of address, used as an alternate way to address
     /// contract instances created via the 
     /// solidity CREATE2 function.
     /// </summary>

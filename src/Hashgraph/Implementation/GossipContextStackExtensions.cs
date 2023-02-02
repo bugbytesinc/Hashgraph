@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph.Implementation;
 using Proto;
 using System;
@@ -70,7 +71,7 @@ internal static class GossipContextStackExtensions
             }
         };
     }
-    internal static Task<TResponse> ExecuteSignedRequestWithRetryImplementationAsync<TRequest, TResponse>(this GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
+    internal static Task<TResponse> ExecuteSignedRequestWithRetryImplementationAsync<TRequest, TResponse>(this GossipContextStack context, TRequest request, Func<GrpcChannel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, ResponseCodeEnum> getResponseCode) where TRequest : IMessage where TResponse : IMessage
     {
         var trackTimeDrift = context.AdjustForLocalClockDrift && context.Transaction is null;
         var startingInstant = trackTimeDrift ? Epoch.UniqueClockNanos() : 0;
@@ -89,7 +90,7 @@ internal static class GossipContextStackExtensions
                 code == ResponseCodeEnum.InvalidTransactionStart;
         }
     }
-    internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(this GossipContextStack context, TRequest request, Func<Channel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
+    internal static async Task<TResponse> ExecuteNetworkRequestWithRetryAsync<TRequest, TResponse>(this GossipContextStack context, TRequest request, Func<GrpcChannel, Func<TRequest, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TResponse>>> instantiateRequestMethod, Func<TResponse, bool> shouldRetryRequest) where TRequest : IMessage where TResponse : IMessage
     {
         try
         {
@@ -114,9 +115,9 @@ internal static class GossipContextStackExtensions
                 catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable || rpcex.StatusCode == StatusCode.Unknown)
                 {
                     var channel = context.GetChannel();
-                    var message = channel.State == ChannelState.Connecting ?
-                        $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
-                        $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
+                    var message = channel.State == ConnectivityState.Connecting ?
+                        $"Unable to communicate with network node {channel.Target}, it may be down or not reachable." :
+                        $"Unable to communicate with network node {channel.Target}: {rpcex.Status}";
                     callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
 
                     if (request is Transaction transaction)
@@ -186,9 +187,9 @@ internal static class GossipContextStackExtensions
                         catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable)
                         {
                             var channel = context.GetChannel();
-                            var message = channel.State == ChannelState.Connecting ?
-                                $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
-                                $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
+                            var message = channel.State == ConnectivityState.Connecting ?
+                                $"Unable to communicate with network node {channel.Target}, it may be down or not reachable." :
+                                $"Unable to communicate with network node {channel.Target}: {rpcex.Status}";
                             callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
                         }
                         await Task.Delay(retryDelay * (retryCount + 1)).ConfigureAwait(false);
@@ -209,9 +210,9 @@ internal static class GossipContextStackExtensions
                     catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable && retryCount < maxRetries - 1)
                     {
                         var channel = context.GetChannel();
-                        var message = channel.State == ChannelState.Connecting ?
-                            $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
-                            $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
+                        var message = channel.State == ConnectivityState.Connecting ?
+                            $"Unable to communicate with network node {channel.Target}, it may be down or not reachable." :
+                            $"Unable to communicate with network node {channel.Target}: {rpcex.Status}";
                         callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
                     }
                     retryCount++;
@@ -221,17 +222,17 @@ internal static class GossipContextStackExtensions
         catch (RpcException rpcex) when (request is Query query)
         {
             var channel = context.GetChannel();
-            var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ChannelState.Connecting ?
-                $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable, or accepted payment and terminated the connection before returning Query results." :
-                $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}, it may have accepted payment and terminated the connection before returning Query results.";
+            var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ConnectivityState.Connecting ?
+                $"Unable to communicate with network node {channel.Target}, it may be down or not reachable, or accepted payment and terminated the connection before returning Query results." :
+                $"Unable to communicate with network node {channel.Target}: {rpcex.Status}, it may have accepted payment and terminated the connection before returning Query results.";
             throw new PrecheckException(message, TxId.None, ResponseCode.RpcError, 0, rpcex);
         }
         catch (RpcException rpcex)
         {
             var channel = context.GetChannel();
-            var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ChannelState.Connecting ?
-                $"Unable to communicate with network node {channel.ResolvedTarget}, it may be down or not reachable." :
-                $"Unable to communicate with network node {channel.ResolvedTarget}: {rpcex.Status}";
+            var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ConnectivityState.Connecting ?
+                $"Unable to communicate with network node {channel.Target}, it may be down or not reachable." :
+                $"Unable to communicate with network node {channel.Target}: {rpcex.Status}";
             throw new PrecheckException(message, TxId.None, ResponseCode.RpcError, 0, rpcex);
         }
     }

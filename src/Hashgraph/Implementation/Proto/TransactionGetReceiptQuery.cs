@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph.Implementation;
 using System;
 using System.Threading;
@@ -12,7 +13,7 @@ public sealed partial class TransactionGetReceiptQuery : INetworkQuery
         return new Query { TransactionGetReceipt = this };
     }
 
-    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new CryptoService.CryptoServiceClient(channel).getTransactionReceiptsAsync;
     }
