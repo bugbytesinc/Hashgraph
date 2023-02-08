@@ -637,7 +637,7 @@ public class UpdateAccountTests
         Assert.Equal(fxTempate.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
         Assert.Equal(Address.None, info.AutoRenewAccount);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(fxTempate.CreateParams.Memo, info.Memo);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
@@ -646,7 +646,7 @@ public class UpdateAccountTests
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);

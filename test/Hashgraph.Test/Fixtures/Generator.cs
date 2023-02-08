@@ -58,15 +58,15 @@ public static class Generator
         return result;
     }
 
-    public static DateTime TruncatedFutureDate(Int32 minHoursAhead, Int32 maxHoursAhead)
+    public static ConsensusTimeStamp TruncatedFutureDate(Int32 minHoursAhead, Int32 maxHoursAhead)
     {
         var date = DateTime.UtcNow.AddHours(Double(minHoursAhead, maxHoursAhead));
-        return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, DateTimeKind.Utc);
+        return new ConsensusTimeStamp(new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, DateTimeKind.Utc));
     }
 
-    public static DateTime TruncateToSeconds(DateTime date)
+    public static ConsensusTimeStamp TruncateToSeconds(DateTime date)
     {
-        return new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, DateTimeKind.Utc);
+        return new ConsensusTimeStamp(new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, DateTimeKind.Utc));
     }
 
     public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) KeyPair()

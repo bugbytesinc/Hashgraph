@@ -88,7 +88,7 @@ public class UpdateContractTests
         await using var fx = await GreetingContract.CreateAsync(_network);
 
         var oldExpiration = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Expiration;
-        var newExpiration = oldExpiration.AddMonths(12);
+        var newExpiration = new ConsensusTimeStamp(oldExpiration.Seconds + 365 * 24 * 60 * 60);
         var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
         {
             Contract = fx.ContractRecord.Contract,

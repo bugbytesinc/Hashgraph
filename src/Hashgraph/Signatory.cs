@@ -79,7 +79,7 @@ public sealed class Signatory : ISignatory, IEquatable<Signatory>
     /// </param>
     public Signatory(ReadOnlyMemory<byte> privateKey)
     {
-        var (type, data) = DerEncodingUtil.ParsePrivateKeyFromDerBytes(privateKey);
+        var (type, data) = MultiKeyEncodingUtil.ParsePrivateKeyFromDerOrRawBytes(privateKey);
         _data = data;
         switch (type)
         {

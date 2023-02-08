@@ -79,7 +79,7 @@ public sealed class UpdateTokenParams
     /// <summary>
     /// If specified, changes to expiration new date, fees will be charged as appropriate.
     /// </summary>
-    public DateTime? Expiration { get; set; }
+    public ConsensusTimeStamp? Expiration { get; set; }
     /// <summary>
     /// If specified, update the interval of the topic and auto-renewal period. 
     /// If the associated renewal account does not have sufficient funds to 

@@ -1,12 +1,11 @@
-﻿using Hashgraph.Implementation;
-using System;
+﻿using Hashgraph;
 
 namespace Proto;
 
 public sealed partial class TimestampSeconds
 {
-    internal DateTime ToDateTime()
+    internal ConsensusTimeStamp ToConsensusTimeStamp()
     {
-        return Epoch.ToDate(Seconds, 0);
+        return new ConsensusTimeStamp(Seconds);
     }
 }

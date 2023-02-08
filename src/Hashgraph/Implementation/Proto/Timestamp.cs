@@ -1,16 +1,17 @@
-﻿using Hashgraph.Implementation;
-using System;
+﻿using Hashgraph;
 
 namespace Proto;
 
 public sealed partial class Timestamp
 {
-    internal Timestamp(DateTime dateTime) : this()
+    internal Timestamp(ConsensusTimeStamp consensusTimeStamp) : this()
     {
-        (Seconds, Nanos) = Epoch.FromDate(dateTime);
+        var seconds = decimal.Truncate(consensusTimeStamp.Seconds);
+        Seconds = (long)seconds;
+        Nanos = (int)decimal.Multiply(decimal.Subtract(consensusTimeStamp.Seconds, seconds), 1000000000m);
     }
-    internal DateTime ToDateTime()
+    internal ConsensusTimeStamp ToConsensusTimeStamp()
     {
-        return Epoch.ToDate(Seconds, Nanos);
+        return new ConsensusTimeStamp(Seconds, Nanos);
     }
 }

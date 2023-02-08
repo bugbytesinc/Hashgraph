@@ -46,7 +46,7 @@ public sealed record PendingParams
     /// time to 30 minutes after the consensus creation time
     /// of the pending transaction.
     /// </remarks>
-    public DateTime? Expiration { get; init; }
+    public ConsensusTimeStamp? Expiration { get; init; }
     /// <summary>
     /// If set to <code>true</code>, the network will delay the
     /// attempt to execute the pending transaction until the

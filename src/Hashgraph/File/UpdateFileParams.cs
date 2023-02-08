@@ -17,7 +17,7 @@ public sealed class UpdateFileParams
     /// if it is equal to or before the current expiration date value
     /// for this file.
     /// </summary>
-    public DateTime? Expiration { get; set; }
+    public ConsensusTimeStamp? Expiration { get; set; }
 
     /// <summary>
     /// If an auto-renew account is in use, 

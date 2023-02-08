@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -46,7 +45,7 @@ public class CreateAccountTests
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
@@ -247,7 +246,7 @@ public class CreateAccountTests
             //Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
             //Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
             //Assert.Equal(fxAccount.CreateParams.AutoRenewPeriod.TotalSeconds, info.AutoRenewPeriod.TotalSeconds);
-            //Assert.True(info.Expiration > DateTime.MinValue);
+            //Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         });
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);

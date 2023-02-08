@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
+﻿using Hashgraph.Test.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,7 +26,7 @@ public class ContractInfoTests
         Assert.Equal(fx.ContractRecord.Contract, info.Address);  // Assume for now they are equal
         Assert.NotNull(info.SmartContractId);
         Assert.Equal(fx.ContractParams.Administrator, info.Administrator);
-        Assert.InRange(info.Expiration, DateTime.UtcNow, DateTime.MaxValue);
+        Assert.InRange(info.Expiration, ConsensusTimeStamp.Now, ConsensusTimeStamp.MaxValue);
         Assert.Equal(fx.ContractParams.RenewPeriod, info.RenewPeriod);
         Assert.InRange(info.Size, 0, fx.FileParams.Contents.Length);
         Assert.Equal(fx.ContractParams.Memo, info.Memo);

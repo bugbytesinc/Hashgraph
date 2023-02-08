@@ -27,7 +27,7 @@ public sealed record AssetInfo
     /// <summary>
     /// The Consensus Timestamp for when this asset was created (minted).
     /// </summary>
-    public DateTime Created { get; private init; }
+    public ConsensusTimeStamp Created { get; private init; }
     /// <summary>
     /// The metadata associated with this asset, limited to 100 bytes.
     /// </summary>
@@ -72,7 +72,7 @@ public sealed record AssetInfo
     {
         Asset = info.NftID.AsAsset();
         Owner = info.AccountID.AsAddress();
-        Created = info.CreationTime.ToDateTime();
+        Created = info.CreationTime.ToConsensusTimeStamp();
         Metadata = info.Metadata.Memory;
         Ledger = info.LedgerId.Memory;
         Agent = info.SpenderId.AsAddress();

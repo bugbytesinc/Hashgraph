@@ -38,7 +38,7 @@ public sealed partial class FreezeTransactionBody : INetworkTransaction
         FreezeType = freezeType;
     }
 
-    internal FreezeTransactionBody(DateTime consensusTime, FreezeType freezeType) : this()
+    internal FreezeTransactionBody(ConsensusTimeStamp consensusTime, FreezeType freezeType) : this()
     {
         StartTime = new Timestamp(consensusTime);
         FreezeType = freezeType;

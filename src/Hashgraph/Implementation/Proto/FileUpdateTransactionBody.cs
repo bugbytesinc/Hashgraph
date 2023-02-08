@@ -50,10 +50,10 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
             updateParameters.AutoRenewPeriod is null &&
             updateParameters.AutoRenewAccount is null)
         {
-            throw new ArgumentException(nameof(updateParameters), "The File Update parameters contain no update properties, it is blank.");
+            throw new ArgumentException("The File Update parameters contain no update properties, it is blank.", nameof(updateParameters));
         }
         FileID = new FileID(updateParameters.File);
-        if (!(updateParameters.Endorsements is null))
+        if (updateParameters.Endorsements is not null)
         {
             Keys = new KeyList(updateParameters.Endorsements);
         }
@@ -61,7 +61,7 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         {
             Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
         }
-        if (!(updateParameters.Memo is null))
+        if (updateParameters.Memo is not null)
         {
             Memo = updateParameters.Memo;
         }

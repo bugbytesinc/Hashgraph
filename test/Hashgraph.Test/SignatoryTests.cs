@@ -2,6 +2,7 @@
 using Hashgraph.Test.Fixtures;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using Proto;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -290,5 +291,155 @@ public class SignatoriesTests
             ((ISignatory)signatory).GetSchedule();
         });
         Assert.Equal("Found Multiple Pending Signatories, do not know which one to choose.", exception.Message);
+    }
+
+    [Fact(DisplayName = "Signatories: Can Parse Ed25519 From Der Encoding")]
+    public async Task CanParseEd25519FromDerEncoding()
+    {
+        var body = new TransactionBody
+        {
+            TransactionID = new TransactionID(),
+            NodeAccountID = new AccountID(),
+            TransactionFee = 5_00_000_000,
+            TransactionValidDuration = new Proto.Duration { Seconds = 180 },
+            Memo = "External Test",
+            CryptoTransfer = new CryptoTransferTransactionBody()
+        };
+        var derPrivateKey = Hex.ToBytes("302e020100300506032b657004220420a89f2eecc02118bc7f6205b11315e0e0a185a4170fa88f28990b5db93154055a");
+
+        var signatory = new Signatory(derPrivateKey);
+        var invoice = new Invoice(body, int.MaxValue);
+        await ((ISignatory)signatory).SignAsync(invoice);
+
+        var sigPair = invoice.TryGenerateMapFromCollectedSignatures().SigPair[0];
+        Assert.NotNull(sigPair);
+        Assert.Equal(SignaturePair.SignatureOneofCase.Ed25519, sigPair.SignatureCase);
+        Assert.Equal("b9732ad628cb6c28da0c52a3123af7f2725e7a4df53c36a7fc357334ff6dba37", Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
+    }
+
+    [Fact(DisplayName = "Signatories: Can Not Parse Ed25519 Raw 32 bit key")]
+    public void CanNotParseEd25519Raw32BitKey()
+    {
+        var derPrivateKey = Hex.ToBytes("302e020100300506032b657004220420a89f2eecc02118bc7f6205b11315e0e0a185a4170fa88f28990b5db93154055a");
+        var rawPrivateKey = derPrivateKey[^32..];
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            new Signatory(rawPrivateKey);
+        });
+        Assert.StartsWith("The private key byte length of 32 is ambiguous, unable to determine which type of key this refers to.", exception.Message);
+    }
+
+    [Fact(DisplayName = "Signatories: Can Explicitly Parse Ed25519 Raw 32 bit key")]
+    public async Task CanExplicitlyParseEd25519Raw32BitKey()
+    {
+        var body = new TransactionBody
+        {
+            TransactionID = new TransactionID(),
+            NodeAccountID = new AccountID(),
+            TransactionFee = 5_00_000_000,
+            TransactionValidDuration = new Proto.Duration { Seconds = 180 },
+            Memo = "External Test",
+            CryptoTransfer = new CryptoTransferTransactionBody()
+        };
+
+        var derPrivateKey = Hex.ToBytes("302e020100300506032b657004220420a89f2eecc02118bc7f6205b11315e0e0a185a4170fa88f28990b5db93154055a");
+        var rawPrivateKey = derPrivateKey[^32..];
+
+        var signatory = new Signatory(KeyType.Ed25519, rawPrivateKey);
+        var invoice = new Invoice(body, int.MaxValue);
+        await ((ISignatory)signatory).SignAsync(invoice);
+
+        var sigPair = invoice.TryGenerateMapFromCollectedSignatures().SigPair[0];
+        Assert.NotNull(sigPair);
+        Assert.Equal(SignaturePair.SignatureOneofCase.Ed25519, sigPair.SignatureCase);
+        Assert.Equal("b9732ad628cb6c28da0c52a3123af7f2725e7a4df53c36a7fc357334ff6dba37", Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
+    }
+
+    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Extended Der Encoding")]
+    public async Task CanParseSecp256K1FromExtendedDerEncoding()
+    {
+        var body = new TransactionBody
+        {
+            TransactionID = new TransactionID(),
+            NodeAccountID = new AccountID(),
+            TransactionFee = 5_00_000_000,
+            TransactionValidDuration = new Proto.Duration { Seconds = 180 },
+            Memo = "External Test",
+            CryptoTransfer = new CryptoTransferTransactionBody()
+        };
+        var (derPublicKey, derPrivateKey) = Generator.Secp256k1KeyPair();
+
+        var signatory = new Signatory(derPrivateKey);
+        var compressed = (PublicKeyFactory.CreateKey(derPublicKey.ToArray()) as ECPublicKeyParameters).Q.GetEncoded(true);
+        var invoice = new Invoice(body, int.MaxValue);
+        await ((ISignatory)signatory).SignAsync(invoice);
+
+        var sigPair = invoice.TryGenerateMapFromCollectedSignatures().SigPair[0];
+        Assert.NotNull(sigPair);
+        Assert.Equal(SignaturePair.SignatureOneofCase.ECDSASecp256K1, sigPair.SignatureCase);
+        Assert.Equal(Hex.FromBytes(compressed), Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
+    }
+
+    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Compacted Der Encoding")]
+    public async Task CanParseSecp256K1FromCompactedDerEncoding()
+    {
+        var body = new TransactionBody
+        {
+            TransactionID = new TransactionID(),
+            NodeAccountID = new AccountID(),
+            TransactionFee = 5_00_000_000,
+            TransactionValidDuration = new Proto.Duration { Seconds = 180 },
+            Memo = "External Test",
+            CryptoTransfer = new CryptoTransferTransactionBody()
+        };
+
+        var derPrivateKey = Hex.ToBytes("3030020100300706052b8104000a042204200ea81572b0fd122cc9cb90cc57506a2723a2fe1fd7e69c0f26b3c6b6917c60c3");
+        var compressed = Hex.ToBytes("02cd51c7f285ffc6c158a4aa866eb6827a61cbe178288df850f26283103a23cc1e");
+
+        var signatory = new Signatory(derPrivateKey);
+        var invoice = new Invoice(body, int.MaxValue);
+        await ((ISignatory)signatory).SignAsync(invoice);
+
+        var sigPair = invoice.TryGenerateMapFromCollectedSignatures().SigPair[0];
+        Assert.NotNull(sigPair);
+        Assert.Equal(SignaturePair.SignatureOneofCase.ECDSASecp256K1, sigPair.SignatureCase);
+        Assert.Equal(Hex.FromBytes(compressed), Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
+    }
+
+    [Fact(DisplayName = "Signatories: Can Not Parse Secp256K1 Raw 32 bit key")]
+    public void CanNotParseSecp256K1Raw32BitKey()
+    {
+        var derPrivateKey = Hex.ToBytes("aa55060f559d5454f596c4b5676e61840add416a49fddab7b7676f8e6899f3e7");
+        var rawPrivateKey = derPrivateKey[^32..];
+        var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            new Signatory(rawPrivateKey);
+        });
+        Assert.StartsWith("The private key byte length of 32 is ambiguous, unable to determine which type of key this refers to.", exception.Message);
+    }
+
+    [Fact(DisplayName = "Signatories: Can Explicitly Parse Secp256K1 Raw 32 bit key")]
+    public async Task CanExplicitlyParseSecp256K1Raw32BitKey()
+    {
+        var body = new TransactionBody
+        {
+            TransactionID = new TransactionID(),
+            NodeAccountID = new AccountID(),
+            TransactionFee = 5_00_000_000,
+            TransactionValidDuration = new Proto.Duration { Seconds = 180 },
+            Memo = "External Test",
+            CryptoTransfer = new CryptoTransferTransactionBody()
+        };
+
+        var rawPrivateKey = Hex.ToBytes("7696d163713ef671481340aa17c825738753fd67b81f9f7e42e4a95c59431cb7");
+
+        var signatory = new Signatory(KeyType.ECDSASecp256K1, rawPrivateKey);
+        var invoice = new Invoice(body, int.MaxValue);
+        await ((ISignatory)signatory).SignAsync(invoice);
+
+        var sigPair = invoice.TryGenerateMapFromCollectedSignatures().SigPair[0];
+        Assert.NotNull(sigPair);
+        Assert.Equal(SignaturePair.SignatureOneofCase.ECDSASecp256K1, sigPair.SignatureCase);
+        Assert.Equal("032ac21b3fb74a014c3473c51153c590c75fbd969b4b007830bccc7a99c489ab88", Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
     }
 }

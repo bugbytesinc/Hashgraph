@@ -26,11 +26,11 @@ public sealed record TopicInfo
     /// </summary>
     public ulong SequenceNumber { get; private init; }
     /// <summary>
-    /// The Time after which this topic will no longer accept
+    /// The Consensus Time after which this topic will no longer accept
     /// messages.  The topic will automatically be deleted after
     /// the system defined grace period beyond the expiration time.
     /// </summary>
-    public DateTime Expiration { get; private init; }
+    public ConsensusTimeStamp Expiration { get; private init; }
     /// <summary>
     /// An endorsement, when specified, can be used to 
     /// authorize a modification or deletion of this topic, including
@@ -73,7 +73,7 @@ public sealed record TopicInfo
         Memo = info.Memo;
         RunningHash = info.RunningHash.ToArray();
         SequenceNumber = info.SequenceNumber;
-        Expiration = info.ExpirationTime.ToDateTime();
+        Expiration = info.ExpirationTime.ToConsensusTimeStamp();
         Administrator = info.AdminKey?.ToEndorsement();
         Participant = info.SubmitKey?.ToEndorsement();
         AutoRenewPeriod = info.AutoRenewPeriod.ToTimeSpan();

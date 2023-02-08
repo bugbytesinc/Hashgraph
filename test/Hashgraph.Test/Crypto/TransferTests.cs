@@ -318,9 +318,9 @@ public class TransferTests
         var receipt = await fx.Client.TransferAsync(_network.Payer, fx.Record.Address, transferAmount);
         Assert.NotNull(receipt.CurrentExchangeRate);
         // Well, testnet doesn't actually have good data here
-        Assert.InRange(receipt.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(receipt.CurrentExchangeRate.Expiration, ConsensusTimeStamp.MinValue, ConsensusTimeStamp.MaxValue);
         Assert.NotNull(receipt.NextExchangeRate);
-        Assert.InRange(receipt.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(receipt.NextExchangeRate.Expiration, ConsensusTimeStamp.MinValue, ConsensusTimeStamp.MaxValue);
     }
     [Fact(DisplayName = "Transfer: Receipt Contains Exchange Information")]
     public async Task TransferRecordContainsExchangeInformation()
@@ -330,9 +330,9 @@ public class TransferTests
         var record = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, transferAmount);
         Assert.NotNull(record.CurrentExchangeRate);
         // Well, testnet doesn't actually have good data here
-        Assert.InRange(record.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(record.CurrentExchangeRate.Expiration, ConsensusTimeStamp.MinValue, DateTime.MaxValue);
         Assert.NotNull(record.NextExchangeRate);
-        Assert.InRange(record.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(record.NextExchangeRate.Expiration, ConsensusTimeStamp.MinValue, DateTime.MaxValue);
     }
     [Fact(DisplayName = "Transfer: Transfer to a Topic Raises Error.")]
     public async Task TransferToATopicRaisesError()
@@ -566,7 +566,7 @@ public class TransferTests
         Assert.Equal(new Endorsement(fxPayer.PublicKey), info.Endorsements[0]);
         Assert.Null(info.Administrator);
         Assert.Empty(info.Memo);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.True(record.Concensus <= info.Executed);
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
@@ -621,7 +621,7 @@ public class TransferTests
         Assert.Equal(new Endorsement(fxSender.PublicKey), info.Endorsements[0]);
         Assert.Null(info.Administrator);
         Assert.Empty(info.Memo);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Null(info.Executed);
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);

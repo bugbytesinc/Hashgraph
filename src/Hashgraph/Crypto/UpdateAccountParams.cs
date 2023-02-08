@@ -53,7 +53,7 @@ public sealed class UpdateAccountParams
     /// if it is equal to or before the current expiration date value
     /// for this account.
     /// </summary>
-    public DateTime? Expiration { get; set; }
+    public ConsensusTimeStamp? Expiration { get; set; }
     /// <summary>
     /// Incremental period for auto-renewal of the account. If
     /// account does not have sufficient funds to renew at the

@@ -69,7 +69,7 @@ public sealed record AccountInfo
     /// The account expiration time, at which it will attempt
     /// to renew if sufficient funds remain in the account.
     /// </summary>
-    public DateTime Expiration { get; private init; }
+    public ConsensusTimeStamp Expiration { get; private init; }
     /// <summary>
     /// List of virtual addresss (keys) associated with this 
     /// account as seen by the hedera virtual machine (ECDSA types),
@@ -127,7 +127,7 @@ public sealed record AccountInfo
         ReceiveSignatureRequired = info.ReceiverSigRequired;
         AutoRenewPeriod = info.AutoRenewPeriod.ToTimeSpan();
         AutoRenewAccount = info.AutoRenewAccount.AsAddress();
-        Expiration = info.ExpirationTime.ToDateTime();
+        Expiration = info.ExpirationTime.ToConsensusTimeStamp();
         Memo = info.Memo;
         AssetCount = info.OwnedNfts;
         AutoAssociationLimit = info.MaxAutomaticTokenAssociations;

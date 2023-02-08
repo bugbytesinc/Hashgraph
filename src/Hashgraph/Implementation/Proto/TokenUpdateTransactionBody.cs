@@ -82,7 +82,7 @@ public sealed partial class TokenUpdateTransactionBody : INetworkTransaction
         }
         if (updateParameters.Expiration.HasValue)
         {
-            if (updateParameters.Expiration.Value < DateTime.UtcNow)
+            if (updateParameters.Expiration.Value < ConsensusTimeStamp.Now)
             {
                 throw new ArgumentOutOfRangeException(nameof(updateParameters.Expiration), "The new expiration can not be set to the past.");
             }

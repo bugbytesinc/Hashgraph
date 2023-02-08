@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -40,7 +39,7 @@ public class DeletePendingTransactionTests
         Assert.Equal(new Endorsement(fx.PayingAccount.PublicKey), info.Endorsements[0]);
         Assert.Equal(new Endorsement(fx.PublicKey), info.Administrator);
         Assert.Equal(fx.Memo, info.Memo);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Null(info.Executed);
         Assert.Equal(record.Concensus, info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
@@ -65,7 +64,7 @@ public class DeletePendingTransactionTests
         Assert.Equal(new Endorsement(fx.PayingAccount.PublicKey), info.Endorsements[0]);
         Assert.Equal(new Endorsement(fx.PublicKey), info.Administrator);
         Assert.Equal(fx.Memo, info.Memo);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Null(info.Executed);
         Assert.False(info.PendingTransactionBody.IsEmpty);
     }

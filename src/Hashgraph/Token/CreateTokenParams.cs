@@ -108,7 +108,7 @@ public sealed class CreateTokenParams
     /// <summary>
     /// Original expiration date for the token, fees will be charged as appropriate.
     /// </summary>
-    public DateTime Expiration { get; set; }
+    public ConsensusTimeStamp Expiration { get; set; }
     /// <summary>
     /// Interval of the topic and auto-renewal period. If
     /// the associated renewal account does not have sufficient funds to 

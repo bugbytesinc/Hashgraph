@@ -24,7 +24,7 @@ public sealed record FileInfo
     /// The file expiration date at which it will be removed from 
     /// the network.  The date can be extended thru updates.
     /// </summary>
-    public DateTime Expiration { get; private init; }
+    public ConsensusTimeStamp Expiration { get; private init; }
     /// <summary>
     /// A descriptor of the all the keys required to sign transactions 
     /// editing and otherwise manipulating the contents of this file.
@@ -57,7 +57,7 @@ public sealed record FileInfo
         File = info.FileID.AsAddress();
         Memo = info.Memo;
         Size = info.Size;
-        Expiration = info.ExpirationTime.ToDateTime();
+        Expiration = info.ExpirationTime.ToConsensusTimeStamp();
         Endorsements = info.Keys?.ToEndorsements() ?? Array.Empty<Endorsement>();
         AutoRenewPeriod = info.AutoRenewPeriod is null ? TimeSpan.Zero : info.AutoRenewPeriod.ToTimeSpan();
         AutoRenewAccount = info.AutoRenewAccount.AsAddress();

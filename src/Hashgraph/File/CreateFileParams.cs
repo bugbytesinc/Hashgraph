@@ -11,7 +11,7 @@ public sealed class CreateFileParams
     /// <summary>
     /// Original expiration date for the file, fees will be charged as appropriate.
     /// </summary>
-    public DateTime Expiration { get; set; }
+    public ConsensusTimeStamp Expiration { get; set; }
     /// <summary>
     /// A descriptor of the keys required to sign transactions editing and 
     /// otherwise manipulating the contents of this file.  Only one key

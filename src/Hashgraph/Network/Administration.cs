@@ -33,7 +33,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TransactionReceipt> SuspendNetworkAsync(DateTime consensusTime, Action<IContext>? configure = null)
+    public async Task<TransactionReceipt> SuspendNetworkAsync(ConsensusTimeStamp consensusTime, Action<IContext>? configure = null)
     {
         return new TransactionReceipt(await ExecuteTransactionAsync(new FreezeTransactionBody(consensusTime, FreezeType.FreezeOnly), configure, false).ConfigureAwait(false));
     }
@@ -99,7 +99,7 @@ public partial class Client
     /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
     /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TransactionReceipt> ScheduleNetworkUpgradeAsync(DateTime consensusTime, Action<IContext>? configure = null)
+    public async Task<TransactionReceipt> ScheduleNetworkUpgradeAsync(ConsensusTimeStamp consensusTime, Action<IContext>? configure = null)
     {
         return new TransactionReceipt(await ExecuteTransactionAsync(new FreezeTransactionBody(consensusTime, FreezeType.FreezeUpgrade), configure, false).ConfigureAwait(false));
     }

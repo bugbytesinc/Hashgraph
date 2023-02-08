@@ -1,5 +1,4 @@
 ﻿using Proto;
-using System;
 
 namespace Hashgraph;
 
@@ -19,7 +18,7 @@ public sealed record StakingInfo
     /// earned or the staking configuration for this entity 
     /// was updated, whichever is later.
     /// </summary>
-    public DateTime PeriodStart { get; private init; }
+    public ConsensusTimeStamp PeriodStart { get; private init; }
     /// <summary>
     /// The pending amount of tinybars that will be received
     /// at the next reward payout.
@@ -52,7 +51,7 @@ public sealed record StakingInfo
         if (info is null)
         {
             Declined = false;
-            PeriodStart = DateTime.MinValue;
+            PeriodStart = ConsensusTimeStamp.MinValue;
             PendingReward = 0;
             Proxied = 0;
             Proxy = Address.None;
@@ -61,7 +60,7 @@ public sealed record StakingInfo
         else
         {
             Declined = info.DeclineReward;
-            PeriodStart = info.StakePeriodStart?.ToDateTime() ?? DateTime.MinValue;
+            PeriodStart = info.StakePeriodStart?.ToConsensusTimeStamp() ?? ConsensusTimeStamp.MinValue;
             PendingReward = info.PendingReward;
             Proxied = info.StakedToMe;
             Proxy = info.StakedAccountId.AsAddress();

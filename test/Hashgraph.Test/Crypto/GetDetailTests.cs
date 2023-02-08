@@ -49,7 +49,7 @@ public class GetDetailTests
             Assert.True(detail.Balance > 0);
             Assert.False(detail.ReceiveSignatureRequired);
             Assert.True(detail.AutoRenewPeriod.TotalSeconds > 0);
-            Assert.True(detail.Expiration > DateTime.MinValue);
+            Assert.True(detail.Expiration > ConsensusTimeStamp.MinValue);
             Assert.Equal(0, detail.AssetCount);
             Assert.Equal(0, detail.AutoAssociationLimit);
             Assert.Equal(Alias.None, detail.Alias);
@@ -89,7 +89,7 @@ public class GetDetailTests
             Assert.Equal(fxAccount.CreateParams.InitialBalance, detail.Balance);
             Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, detail.ReceiveSignatureRequired);
             Assert.True(detail.AutoRenewPeriod.TotalSeconds > 0);
-            Assert.True(detail.Expiration > DateTime.MinValue);
+            Assert.True(detail.Expiration > ConsensusTimeStamp.MinValue);
             Assert.Equal(fxAccount.CreateParams.Memo, detail.Memo);
             Assert.Equal(0, detail.AssetCount);
             Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, detail.AutoAssociationLimit);
@@ -130,7 +130,7 @@ public class GetDetailTests
             Assert.True(detailFromAddress.Balance > 0);
             Assert.False(detailFromAddress.ReceiveSignatureRequired);
             Assert.True(detailFromAddress.AutoRenewPeriod.TotalSeconds > 0);
-            Assert.True(detailFromAddress.Expiration > DateTime.MinValue);
+            Assert.True(detailFromAddress.Expiration > ConsensusTimeStamp.MinValue);
             Assert.Equal("auto-created account", detailFromAddress.Memo);
             Assert.Equal(0, detailFromAddress.AssetCount);
             Assert.Equal(0, detailFromAddress.AutoAssociationLimit);
@@ -149,7 +149,7 @@ public class GetDetailTests
             Assert.True(detailFromAlias.Balance > 0);
             Assert.False(detailFromAlias.ReceiveSignatureRequired);
             Assert.True(detailFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-            Assert.True(detailFromAlias.Expiration > DateTime.MinValue);
+            Assert.True(detailFromAlias.Expiration > ConsensusTimeStamp.MinValue);
             Assert.Equal("auto-created account", detailFromAlias.Memo);
             Assert.Equal(0, detailFromAlias.AssetCount);
             Assert.Equal(0, detailFromAlias.AutoAssociationLimit);
@@ -193,7 +193,7 @@ public class GetDetailTests
             Assert.True(detail.Balance > 0);
             Assert.False(detail.ReceiveSignatureRequired);
             Assert.True(detail.AutoRenewPeriod.TotalSeconds > 0);
-            Assert.True(detail.Expiration > DateTime.MinValue);
+            Assert.True(detail.Expiration > ConsensusTimeStamp.MinValue);
             Assert.Equal(0, detail.AssetCount);
             Assert.Equal(Alias.None, detail.Alias);
             AssertHg.NotEmpty(detail.Ledger);
@@ -243,7 +243,7 @@ public class GetDetailTests
             Assert.True(detail.Balance > 0);
             Assert.False(detail.ReceiveSignatureRequired);
             Assert.True(detail.AutoRenewPeriod.TotalSeconds > 0);
-            Assert.True(detail.Expiration > DateTime.MinValue);
+            Assert.True(detail.Expiration > ConsensusTimeStamp.MinValue);
             Assert.Equal(fxAsset.Metadata.Length, detail.AssetCount);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.AutoAssociationLimit, detail.AutoAssociationLimit);
             Assert.Equal(Alias.None, detail.Alias);

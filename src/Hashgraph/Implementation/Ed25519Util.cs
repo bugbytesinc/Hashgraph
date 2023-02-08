@@ -49,7 +49,7 @@ internal static class Ed25519Util
         AsymmetricKeyParameter asymmetricKeyParameter;
         try
         {
-            // Check to see if we have a raw key.
+            // Check to see if we have a raw key.   
             if (publicKey.Length == Ed25519.PublicKeySize)
             {
                 return new Ed25519PublicKeyParameters(publicKey.ToArray(), 0);

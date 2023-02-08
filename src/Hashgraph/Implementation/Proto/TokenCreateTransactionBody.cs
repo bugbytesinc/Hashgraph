@@ -72,7 +72,7 @@ public sealed partial class TokenCreateTransactionBody : INetworkTransaction
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Treasury), "The treasury must be specified.");
         }
-        if (createParameters.Expiration < DateTime.UtcNow)
+        if (createParameters.Expiration < ConsensusTimeStamp.Now)
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Expiration), "The expiration time must be in the future.");
         }
@@ -176,7 +176,7 @@ public sealed partial class TokenCreateTransactionBody : INetworkTransaction
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Treasury), "The treasury must be specified.");
         }
-        if (createParameters.Expiration < DateTime.UtcNow)
+        if (createParameters.Expiration < ConsensusTimeStamp.Now)
         {
             throw new ArgumentOutOfRangeException(nameof(createParameters.Expiration), "The expiration time must be in the future.");
         }

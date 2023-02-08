@@ -15,7 +15,7 @@ public sealed record TopicMessage
     /// <summary>
     /// The consensus timestamp.
     /// </summary>
-    public DateTime Concensus { get; internal init; }
+    public ConsensusTimeStamp Concensus { get; internal init; }
     /// <summary>
     /// The content of the message.
     /// </summary>

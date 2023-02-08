@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -46,7 +45,7 @@ public class AccountMultisigTests
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);

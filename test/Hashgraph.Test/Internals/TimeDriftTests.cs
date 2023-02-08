@@ -25,10 +25,10 @@ public class TimeDriftTests
         var startInstant = Epoch.UniqueClockNanos();
         var info = await client.GetAccountInfoAsync(account, ctx =>
         {
-            ctx.Transaction = new Proto.TransactionID
+            ctx.Transaction = new TransactionID
             {
-                AccountID = new Proto.AccountID(_network.Payer),
-                TransactionValidStart = new Proto.Timestamp(DateTime.UtcNow.AddSeconds(6))
+                AccountID = new AccountID(_network.Payer),
+                TransactionValidStart = new Timestamp(new ConsensusTimeStamp(DateTime.UtcNow.AddSeconds(6)))
             }.AsTxId();
         });
         var duration = Epoch.UniqueClockNanos() - startInstant;

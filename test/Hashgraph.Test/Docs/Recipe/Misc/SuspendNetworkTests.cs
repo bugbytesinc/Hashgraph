@@ -25,7 +25,7 @@ public class SuspendNetworkTests
                 ctx.Payer = new Address(0, 0, payerAccountNo);
                 ctx.Signatory = new Signatory(payerPrivateKey);
             });
-            var receipt = await client.SuspendNetworkAsync(DateTime.UtcNow.AddSeconds(60));
+            var receipt = await client.SuspendNetworkAsync(new ConsensusTimeStamp(DateTime.UtcNow.AddSeconds(60)));
             Console.WriteLine($"Status: {receipt.Status}");
         }
         catch (Exception ex)

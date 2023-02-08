@@ -10,7 +10,7 @@ public sealed partial class FeeSchedule
     {
         return new Hashgraph.Extensions.FeeSchedule
         {
-            Expires = ExpiryTime.ToDateTime(),
+            Expires = ExpiryTime.ToConsensusTimeStamp(),
             Data = TransactionFeeSchedule.ToDictionary(
                 fee => fee.HederaFunctionality.ToString(),
                 fee => fee.Fees?.Select(item => JsonFormatter.Default.Format(item)).ToArray() ?? Array.Empty<string>())

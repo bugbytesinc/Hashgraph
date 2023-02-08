@@ -1,13 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
-using Org.BouncyCastle.Asn1.Sec;
-using Org.BouncyCastle.Asn1.X9;
-using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Digests;
-using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Security;
-using System;
-using System.Threading;
+﻿using Hashgraph.Test.Fixtures;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,7 +27,8 @@ public class CreateAccountByMonikerTests
 
         var client = _network.NewClient();
 
-        var receipt = await client.CreateAccountAsync(new CreateAccountParams { 
+        var receipt = await client.CreateAccountAsync(new CreateAccountParams
+        {
             Endorsement = endorsement,
             InitialBalance = initialPayment
         });
@@ -98,14 +90,14 @@ public class CreateAccountByMonikerTests
         //Assert.False(infoFromAccount.ReceiveSignatureRequired);
         //Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
         //Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
-        //Assert.True(infoFromAccount.Expiration > DateTime.MinValue);
+        //Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
         //Assert.Equal(0, infoFromAccount.AssetCount);
         //Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         //Assert.Equal("auto-created account", infoFromAccount.Memo);
         //AssertHg.NotEmpty(infoFromAccount.Ledger);
         //Assert.NotNull(infoFromAccount.StakingInfo);
         //Assert.False(infoFromAccount.StakingInfo.Declined);
-        //Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        //Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
         //Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
         //Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
         //Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -122,14 +114,14 @@ public class CreateAccountByMonikerTests
         //Assert.False(infoFromAlias.ReceiveSignatureRequired);
         //Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
         //Assert.Equal(Address.None, infoFromAlias.AutoRenewAccount);
-        //Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+        //Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
         //Assert.Equal(0, infoFromAlias.AssetCount);
         //Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         //Assert.Equal("auto-created account", infoFromAlias.Memo);
         //AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
         //Assert.NotNull(infoFromAlias.StakingInfo);
         //Assert.False(infoFromAlias.StakingInfo.Declined);
-        //Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+        //Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAlias.StakingInfo.PeriodStart);
         //Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
         //Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
         //Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
@@ -227,14 +219,14 @@ public class CreateAccountByMonikerTests
     //    //Assert.False(infoFromAccount.ReceiveSignatureRequired);
     //    //Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
     //    //Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
-    //    //Assert.True(infoFromAccount.Expiration > DateTime.MinValue);
+    //    //Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
     //    //Assert.Equal(0, infoFromAccount.AssetCount);
     //    //Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
     //    //Assert.Equal("auto-created account", infoFromAccount.Memo);
     //    //AssertHg.NotEmpty(infoFromAccount.Ledger);
     //    //Assert.NotNull(infoFromAccount.StakingInfo);
     //    //Assert.False(infoFromAccount.StakingInfo.Declined);
-    //    //Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+    //    //Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
     //    //Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
     //    //Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
     //    //Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -251,14 +243,14 @@ public class CreateAccountByMonikerTests
     //    //Assert.False(infoFromAlias.ReceiveSignatureRequired);
     //    //Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
     //    //Assert.Equal(Address.None, infoFromAlias.AutoRenewAccount);
-    //    //Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+    //    //Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
     //    //Assert.Equal(0, infoFromAlias.AssetCount);
     //    //Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
     //    //Assert.Equal("auto-created account", infoFromAlias.Memo);
     //    //AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
     //    //Assert.NotNull(infoFromAlias.StakingInfo);
     //    //Assert.False(infoFromAlias.StakingInfo.Declined);
-    //    //Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+    //    //Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAlias.StakingInfo.PeriodStart);
     //    //Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
     //    //Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
     //    //Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
@@ -319,14 +311,14 @@ public class CreateAccountByMonikerTests
     //    Assert.True(infoFromAccount.Balance > 0);
     //    Assert.False(infoFromAccount.ReceiveSignatureRequired);
     //    Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
-    //    Assert.True(infoFromAccount.Expiration > DateTime.MinValue);
+    //    Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
     //    Assert.Equal(0, infoFromAccount.AssetCount);
     //    Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
     //    Assert.Equal("auto-created account", infoFromAccount.Memo);
     //    AssertHg.NotEmpty(infoFromAccount.Ledger);
     //    Assert.NotNull(infoFromAccount.StakingInfo);
     //    Assert.False(infoFromAccount.StakingInfo.Declined);
-    //    Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+    //    Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
     //    Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
     //    Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
     //    Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -342,14 +334,14 @@ public class CreateAccountByMonikerTests
     //    Assert.True(infoFromAlias.Balance > 0);
     //    Assert.False(infoFromAlias.ReceiveSignatureRequired);
     //    Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-    //    Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+    //    Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
     //    Assert.Equal(0, infoFromAlias.AssetCount);
     //    Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
     //    Assert.Equal("auto-created account", infoFromAlias.Memo);
     //    AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
     //    Assert.NotNull(infoFromAccount.StakingInfo);
     //    Assert.False(infoFromAccount.StakingInfo.Declined);
-    //    Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+    //    Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
     //    Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
     //    Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
     //    Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -414,14 +406,14 @@ public class CreateAccountByMonikerTests
     //    Assert.True(infoFromAccount.Balance > 0);
     //    Assert.False(infoFromAccount.ReceiveSignatureRequired);
     //    Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
-    //    Assert.True(infoFromAccount.Expiration > DateTime.MinValue);
+    //    Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
     //    Assert.Equal(0, infoFromAccount.AssetCount);
     //    Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
     //    Assert.Equal("auto-created account", infoFromAccount.Memo);
     //    AssertHg.NotEmpty(infoFromAccount.Ledger);
     //    Assert.NotNull(infoFromAccount.StakingInfo);
     //    Assert.False(infoFromAccount.StakingInfo.Declined);
-    //    Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+    //    Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
     //    Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
     //    Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
     //    Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -437,14 +429,14 @@ public class CreateAccountByMonikerTests
     //    Assert.True(infoFromAlias.Balance > 0);
     //    Assert.False(infoFromAlias.ReceiveSignatureRequired);
     //    Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-    //    Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+    //    Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
     //    Assert.Equal(0, infoFromAlias.AssetCount);
     //    Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
     //    Assert.Equal("auto-created account", infoFromAlias.Memo);
     //    AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
     //    Assert.NotNull(infoFromAlias.StakingInfo);
     //    Assert.False(infoFromAlias.StakingInfo.Declined);
-    //    Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+    //    Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAlias.StakingInfo.PeriodStart);
     //    Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
     //    Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
     //    Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);

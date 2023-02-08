@@ -36,5 +36,5 @@ public sealed record ExchangeRate
     /// The date and time at which this exchange 
     /// rate value is set to expire.
     /// </summary>
-    public DateTime Expiration { get; internal init; }
+    public ConsensusTimeStamp Expiration { get; internal init; }
 }

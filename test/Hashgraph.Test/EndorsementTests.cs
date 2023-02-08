@@ -2,6 +2,7 @@
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using Xunit;
 
 namespace Hashgraph.Tests;
@@ -439,5 +440,79 @@ public class EndorsementsTests
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
         Assert.Equal(contract, endorsement.Contract);
+    }
+
+    [Fact(DisplayName = "Endorsements: Can Parse Ed25519 Der Encoded")]
+    public void CanParseEd25519DerEncoded()
+    {
+        var publicKey = Hex.ToBytes("302a300506032b65700321001dd944db2def347f51ef46ab7bafba05e139ed3cadfa9786ce6ab034284d500d");        
+
+        var endorsement = new Endorsement(publicKey);
+        Assert.Equal(KeyType.Ed25519, endorsement.Type);
+        Assert.Empty(endorsement.List);
+        Assert.Equal(0U, endorsement.RequiredCount);
+        Assert.Equal(publicKey.ToArray(), endorsement.PublicKey.ToArray());
+    }
+
+    [Fact(DisplayName = "Endorsements: Can Parse Ed25519 From Der Encoding")]
+    public void CanParseEd25519FromDerEncoding()
+    {
+        var derPublicKey = Hex.ToBytes("302a300506032b65700321001dd944db2def347f51ef46ab7bafba05e139ed3cadfa9786ce6ab034284d500d");        
+
+        var endorsement = new Endorsement(derPublicKey);
+        Assert.Equal(KeyType.Ed25519, endorsement.Type);
+        Assert.Empty(endorsement.List);
+        Assert.Equal(0U, endorsement.RequiredCount);
+        Assert.Equal(derPublicKey.ToArray(), endorsement.PublicKey.ToArray());
+    }
+    [Fact(DisplayName = "Endorsements: Can Parse Ed25519 Raw 32 bit key")]
+    public void CanParseEd25519Raw32BitKey()
+    {
+        var derPublicKey = Hex.ToBytes("302a300506032b65700321001dd944db2def347f51ef46ab7bafba05e139ed3cadfa9786ce6ab034284d500d");
+        var rawPublicKey = derPublicKey[^32..];
+
+        var endorsement = new Endorsement(rawPublicKey);
+        Assert.Equal(KeyType.Ed25519, endorsement.Type);
+        Assert.Empty(endorsement.List);
+        Assert.Equal(0U, endorsement.RequiredCount);
+        Assert.Equal(derPublicKey.ToArray(), endorsement.PublicKey.ToArray());
+    }
+
+    [Fact(DisplayName = "Endorsements: Can Parse Secp256K1 From Extended Der Encoding")]
+    public void CanParseSecp256K1FromExtendedDerEncoding()
+    {
+        var (derPublicKey, _) = Generator.Secp256k1KeyPair();        
+
+        var endorsement = new Endorsement(derPublicKey);
+        Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
+        Assert.Empty(endorsement.List);
+        Assert.Equal(0U, endorsement.RequiredCount);
+        Assert.Equal(derPublicKey.ToArray(), endorsement.PublicKey.ToArray());
+    }
+
+    [Fact(DisplayName = "Endorsements: Can Parse Secp256K1 From Compacted Der Encoding")]
+    public void CanParseSecp256K1FromCompactedDerEncoding()
+    {
+        var derPublicKey = Hex.ToBytes("302d300706052b8104000a03220002ffd5a91eb6e55f584718a7da0bc168cddf9dd3dec2a968e574181a8fd9ab95ae");
+        var longFormKey = Hex.ToBytes("308201333081ec06072a8648ce3d02013081e0020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f3044042000000000000000000000000000000000000000000000000000000000000000000420000000000000000000000000000000000000000000000000000000000000000704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036414102010103420004ffd5a91eb6e55f584718a7da0bc168cddf9dd3dec2a968e574181a8fd9ab95aee07205037c7be54a4b818c79eeec0a44e502a12abf2641e06554d643b7fb4516");
+
+        var endorsement = new Endorsement(derPublicKey);
+        Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
+        Assert.Empty(endorsement.List);
+        Assert.Equal(0U, endorsement.RequiredCount);
+        Assert.Equal(longFormKey.ToArray(), endorsement.PublicKey.ToArray());
+    }
+
+    [Fact(DisplayName = "Endorsements: Can Parse Secp256K1 From Raw Form")]
+    public void CanParseSecp256K1FromRawForm()
+    {
+        var derPublicKey = Hex.ToBytes("02ffd5a91eb6e55f584718a7da0bc168cddf9dd3dec2a968e574181a8fd9ab95ae");
+        var longFormKey = Hex.ToBytes("308201333081ec06072a8648ce3d02013081e0020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f3044042000000000000000000000000000000000000000000000000000000000000000000420000000000000000000000000000000000000000000000000000000000000000704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036414102010103420004ffd5a91eb6e55f584718a7da0bc168cddf9dd3dec2a968e574181a8fd9ab95aee07205037c7be54a4b818c79eeec0a44e502a12abf2641e06554d643b7fb4516");
+
+        var endorsement = new Endorsement(derPublicKey);
+        Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
+        Assert.Empty(endorsement.List);
+        Assert.Equal(0U, endorsement.RequiredCount);
+        Assert.Equal(longFormKey.ToArray(), endorsement.PublicKey.ToArray());
     }
 }
