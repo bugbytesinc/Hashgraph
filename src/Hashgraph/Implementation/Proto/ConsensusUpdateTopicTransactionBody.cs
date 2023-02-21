@@ -45,6 +45,7 @@ public sealed partial class ConsensusUpdateTopicTransactionBody : INetworkTransa
         if (updateParameters.Memo is null &&
             updateParameters.Administrator is null &&
             updateParameters.Participant is null &&
+            updateParameters.Expiration is null &&
             updateParameters.RenewPeriod is null &&
             updateParameters.RenewAccount is null)
         {
@@ -61,6 +62,10 @@ public sealed partial class ConsensusUpdateTopicTransactionBody : INetworkTransa
         if (!(updateParameters.Participant is null))
         {
             SubmitKey = new Key(updateParameters.Participant);
+        }
+        if (updateParameters.Expiration.HasValue)
+        {
+            ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
         }
         if (updateParameters.RenewPeriod.HasValue)
         {

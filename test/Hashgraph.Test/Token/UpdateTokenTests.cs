@@ -1203,4 +1203,51 @@ public class UpdateTokenTests
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
         Assert.Empty(info.Royalties);
     }
+    [Fact(DisplayName = "Create Topic: Can Renew Imutable Topic")]
+    public async Task CanRenewImutableTopic()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 10_00_000_000);
+
+        await using var client = fxAccount.Client.Clone(ctx => {
+            ctx.Payer = fxAccount;
+            ctx.Signatory = fxAccount;
+        });
+
+        var receipt = await client.CreateTopicAsync(new CreateTopicParams
+        {
+            Memo = "TEST",
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        var info = await fxAccount.Client.GetTopicInfoAsync(receipt.Topic);
+        Assert.Equal("TEST", info.Memo);
+        Assert.NotEmpty(info.RunningHash.ToArray());
+        Assert.Equal(0UL, info.SequenceNumber);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
+        Assert.Null(info.Administrator);
+        Assert.Null(info.Participant);
+        Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+        Assert.Null(info.RenewAccount);
+        AssertHg.NotEmpty(info.Ledger);
+
+        var newExpiration = info.Expiration.AddMinutes(60 * 24 * 30);        
+        var renew = await client.UpdateTopicAsync(new UpdateTopicParams()
+        {
+            Topic = receipt.Topic,
+            Expiration = newExpiration
+        });
+        Assert.Equal(ResponseCode.Success, renew.Status);
+
+        info = await fxAccount.Client.GetTopicInfoAsync(receipt.Topic);
+        Assert.Equal("TEST", info.Memo);
+        Assert.NotEmpty(info.RunningHash.ToArray());
+        Assert.Equal(0UL, info.SequenceNumber);
+        Assert.Equal(newExpiration, info.Expiration);
+        Assert.Null(info.Administrator);
+        Assert.Null(info.Participant);
+        Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+        Assert.Null(info.RenewAccount);
+        AssertHg.NotEmpty(info.Ledger);
+
+    }
 }

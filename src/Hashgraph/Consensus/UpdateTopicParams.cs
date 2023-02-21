@@ -44,6 +44,14 @@ public sealed class UpdateTopicParams
     /// </summary>
     public Endorsement? Participant { get; set; }
     /// <summary>
+    /// The new expiration date for this topic, it will be ignored
+    /// if it is equal to or before the current expiration date value
+    /// for this topic.  This allows non-administrator accounts to
+    /// extend the lifetime of this topic when no auto renew 
+    /// account has been specified.
+    /// </summary>
+    public ConsensusTimeStamp? Expiration { get; set; }
+    /// <summary>
     /// Incremental period for auto-renewal of the topic account. If
     /// the associated account does not have sufficient funds to 
     /// renew at the expiration time, it will be renewed for a period 
