@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Test.Fixtures;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,15 +16,14 @@ public class CreateAccountByMonikerTests
         _network.Output = output;
     }
 
-    [Fact(DisplayName = "Create Account By Moniker: Can Create Account Having Moniker By Regular Means")]
-    public async Task CanCreateAccountHavingMonikerByRegularMeans()
+    [Fact(DisplayName = "Create Account By Moniker: Can Not Create Account Having Moniker By Regular Means")]
+    public async Task CanNotCreateAccountHavingMonikerByRegularMeans()
     {
         var initialPayment = 1_000_000ul;
-        //var (publicKey, privateKey) = Generator.Secp256k1KeyPair();
-        var privateKey = Hex.ToBytes("3082024b0201003081ec06072a8648ce3d02013081e0020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f3044042000000000000000000000000000000000000000000000000000000000000000000420000000000000000000000000000000000000000000000000000000000000000704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036414102010104820155308201510201010420ac2fd3460bd0d2c6b4d275b7fa37616fe315df4478db51cffcd8e58e41d9ac9da081e33081e0020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f3044042000000000000000000000000000000000000000000000000000000000000000000420000000000000000000000000000000000000000000000000000000000000000704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141020101a14403420004b0d1e10c403e22aa3debeab84f1b5765390dcc08255b49ce98126dcd957317f8575f5d458fc55633753d91a823bc550362b4f033e3629a18d094d21e9aa27fd4");
-        var publicKey = Hex.ToBytes("308201333081ec06072a8648ce3d02013081e0020101302c06072a8648ce3d0101022100fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f3044042000000000000000000000000000000000000000000000000000000000000000000420000000000000000000000000000000000000000000000000000000000000000704410479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8022100fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd036414102010103420004b0d1e10c403e22aa3debeab84f1b5765390dcc08255b49ce98126dcd957317f8575f5d458fc55633753d91a823bc550362b4f033e3629a18d094d21e9aa27fd4");
+        var (publicKey, privateKey) = Generator.Secp256k1KeyPair();
         var endorsement = new Endorsement(publicKey);
         var moniker = new Moniker(endorsement);
+        var alias = new Alias(endorsement);
 
         var client = _network.NewClient();
 
@@ -34,23 +34,130 @@ public class CreateAccountByMonikerTests
         });
         Assert.NotNull(receipt);
         Assert.Equal(ResponseCode.Success, receipt.Status);
-        _network.Output.WriteLine("PRIVATE");
-        _network.Output.WriteLine(Hex.FromBytes(privateKey));
-        _network.Output.WriteLine("PUBLIC");
-        _network.Output.WriteLine(Hex.FromBytes(publicKey));
-        _network.Output.WriteLine("ADDRESS");
-        _network.Output.WriteLine(receipt.Address.ToString());
-        _network.Output.WriteLine("MONIKER");
-        _network.Output.WriteLine(moniker.ToString());
 
         var xferReceipt1 = await client.TransferAsync(receipt.Address, _network.Payer, 1, new Signatory(privateKey));
         Assert.NotNull(xferReceipt1);
         Assert.Equal(ResponseCode.Success, xferReceipt1.Status);
 
-        var xferReceipt2 = await client.TransferAsync(moniker, _network.Payer, 1, new Signatory(privateKey));
-        Assert.NotNull(xferReceipt2);
-        Assert.Equal(ResponseCode.Success, xferReceipt2.Status);
+        var balance = await client.GetAccountBalanceAsync(receipt.Address);
+        Assert.Equal(initialPayment - 1, balance);
 
+        var tex = await Assert.ThrowsAsync<TransactionException>(async () => {
+            await client.TransferAsync(alias, _network.Payer, 1, new Signatory(privateKey));
+        });
+        Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
+        Assert.StartsWith("Unable to execute transfers, status: InvalidAccountId", tex.Message);
+
+        balance = await client.GetAccountBalanceAsync(receipt.Address);
+        Assert.Equal(initialPayment - 1, balance);
+
+        tex = await Assert.ThrowsAsync<TransactionException>(async () => {
+            await client.TransferAsync(moniker, _network.Payer, 1, new Signatory(privateKey));
+        });
+        Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
+        Assert.StartsWith("Unable to execute transfers, status: InvalidAccountId", tex.Message);
+
+        balance = await client.GetAccountBalanceAsync(receipt.Address);
+        Assert.Equal(initialPayment - 1, balance);
+
+        var infoFromAccount = await client.GetAccountInfoAsync(receipt.Address);
+        Assert.Equal(receipt.Address, infoFromAccount.Address);
+        Assert.Empty(infoFromAccount.Monikers);
+        Assert.NotNull(infoFromAccount.ContractId);
+        Assert.False(infoFromAccount.Deleted);
+        Assert.Equal(0, infoFromAccount.ContractNonce);
+        Assert.Equal(new Endorsement(publicKey), infoFromAccount.Endorsement);
+        Assert.True(infoFromAccount.Balance > 0);
+        Assert.False(infoFromAccount.ReceiveSignatureRequired);
+        Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
+        Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
+        Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
+        Assert.Equal(0, infoFromAccount.AssetCount);
+        Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
+        Assert.Empty(infoFromAccount.Memo);
+        AssertHg.NotEmpty(infoFromAccount.Ledger);
+        Assert.NotNull(infoFromAccount.StakingInfo);
+        Assert.False(infoFromAccount.StakingInfo.Declined);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
+        Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
+        Assert.Equal(0, infoFromAccount.StakingInfo.Node);
+
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () => {
+            await client.GetAccountInfoAsync(alias);
+        });
+        Assert.Equal(ResponseCode.InvalidAccountId, pex.Status);
+        Assert.StartsWith("Transaction Failed Pre-Check: InvalidAccountId", pex.Message);
+
+        pex = await Assert.ThrowsAsync<PrecheckException>(async () => {
+            await client.GetAccountInfoAsync(moniker);
+        });
+        Assert.Equal(ResponseCode.InvalidAccountId, pex.Status);
+        Assert.StartsWith("Transaction Failed Pre-Check: InvalidAccountId", pex.Message);
+    }
+
+    [Fact(DisplayName = "Create Account By Moniker: Can Claim Hollow Account Created With Moniker via Create Account")]
+    public async Task CanClaimHollowAccountCreatedWithMonikerViaCreateAccount()
+    {
+        var initialPayment = 1_000_000ul;
+        var (publicKey, privateKey) = Generator.Secp256k1KeyPair();
+        var endorsement = new Endorsement(publicKey);
+        var moniker = new Moniker(endorsement);
+
+        var client = _network.NewClient();
+
+        var receipt = await client.TransferAsync(_network.Payer, moniker, (long)initialPayment);
+        Assert.NotNull(receipt);
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        var allReceipts = await client.GetAllReceiptsAsync(receipt.Id);
+        var createReceipt = allReceipts[1] as CreateAccountReceipt;
+        Assert.NotNull(createReceipt);
+        Assert.NotNull(createReceipt.Address);
+        Assert.Equal(_network.ServerRealm, createReceipt.Address.RealmNum);
+        Assert.Equal(_network.ServerShard, createReceipt.Address.ShardNum);
+        Assert.True(createReceipt.Address.AccountNum > 0);
+        Assert.Equal(1, createReceipt.Id.Nonce);
+
+        var instantiateReceipt = await client.CreateAccountAsync(new CreateAccountParams
+        {
+            Endorsement = endorsement,
+            Moniker = moniker,
+        });
+        Assert.NotNull(instantiateReceipt);
+        Assert.Equal(ResponseCode.Success, instantiateReceipt.Status);
+
+
+        //var instntiateReceipt = await client.CreateAccountAsync(new CreateAccountParams
+        //{
+        //    Endorsement = endorsement,
+        //    InitialBalance = initialPayment
+        //});
+        //Assert.NotNull(instntiateReceipt);
+        //Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        //var xferReceipt1 = await client.TransferAsync(createReceipt.Address, _network.Payer, 1, ctx => {
+        //    ctx.Payer = createReceipt.Address;
+        //    ctx.Signatory = new Signatory(privateKey);
+        //});
+        //Assert.NotNull(xferReceipt1);
+        //Assert.Equal(ResponseCode.Success, xferReceipt1.Status);
+
+
+        //var xferReceipt1 = await client.TransferAsync(receipt.Address, _network.Payer, 1, new Signatory(privateKey));
+        //Assert.NotNull(xferReceipt1);
+        //Assert.Equal(ResponseCode.Success, xferReceipt1.Status);
+
+        //var balance = await client.GetAccountBalanceAsync(receipt.Address);
+        //Assert.Equal(initialPayment - 1, balance);
+
+        //var xferReceipt2 = await client.TransferAsync(moniker, _network.Payer, 1, new Signatory(privateKey));
+        //Assert.NotNull(xferReceipt2);
+        //Assert.Equal(ResponseCode.Success, xferReceipt2.Status);
+
+        //balance = await client.GetAccountBalanceAsync(receipt.Address);
+        //Assert.Equal(initialPayment - 2, balance);
 
         //var xferReceipt2 = await client.TransferAsync(_network.Payer, moniker, 1);
         //Assert.NotNull(xferReceipt2);
@@ -127,6 +234,7 @@ public class CreateAccountByMonikerTests
         //Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
         //Assert.Equal(0, infoFromAlias.StakingInfo.Node);
     }
+
 
     //[Fact(DisplayName = "Create Account By Moniker: Can Create Account")]
     //public async Task CanCreateAccountAsync()

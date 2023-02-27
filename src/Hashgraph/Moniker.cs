@@ -206,6 +206,19 @@ public sealed record Moniker
     {
         return new Address(moniker);
     }
+    /// <summary>
+    /// Computes the EVM Hash Address from an endorsment containing
+    /// a ECDSASecp256K1 public key.
+    /// </summary>
+    /// <param name="endorsement">
+    /// The endorsement, must be of type ECDSASecp256K1
+    /// </param>
+    /// <returns>
+    /// The bytes representing the equivalent EVM Address.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// If the endorsement is not of type ECDSASecp256K1
+    /// </exception>
     private static ReadOnlyMemory<byte> evmAddressFromEndorsement(Endorsement endorsement)
     {
         if (endorsement.Type == KeyType.ECDSASecp256K1)

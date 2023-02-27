@@ -796,7 +796,8 @@ public class TransferTests
     //[Fact(DisplayName = "Transfer: Can Send to New Moniker Account")]
     //public async Task CanTransferCryptoToNewMonikerAccount()
     //{
-    //    await using var fxAccount = await TestAliasAccount.CreateAsync(_network, fx => {
+    //    await using var fxAccount = await TestAliasAccount.CreateAsync(_network, fx =>
+    //    {
     //        (fx.PublicKey, fx.PrivateKey) = Generator.Secp256k1KeyPair();
     //        fx.Alias = fx.PublicKey;
     //        fx.

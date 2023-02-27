@@ -27,7 +27,7 @@ public sealed partial class AccountID
             // EXPECTED CODE: EvmAddress = ByteString.CopyFrom(moniker.Bytes.Span);
             // Code that works:
             Alias = ByteString.CopyFrom(moniker.Bytes.Span);
-            // END DEFECT
+            // END DEFECT            
         }
         else if (account.AddressType == AddressType.ShardRealmNum)
         {
