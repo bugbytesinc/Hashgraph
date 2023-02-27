@@ -56,7 +56,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createReceipt.Address);
         Assert.Equal(createReceipt.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
-        Assert.Empty(infoFromAccount.Monikers);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAccount.Monikers);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
         Assert.Equal(0, infoFromAccount.ContractNonce);
@@ -80,7 +81,8 @@ public class CreateAccountByAliasTests
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createReceipt.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
-        Assert.Empty(infoFromAlias.Monikers);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAlias.Monikers);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
         Assert.Equal(0, infoFromAlias.ContractNonce);
@@ -149,7 +151,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createReceipt.Address);
         Assert.Equal(createReceipt.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
-        Assert.Empty(infoFromAccount.Monikers);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAccount.Monikers);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
         Assert.Equal(0, infoFromAccount.ContractNonce);
@@ -173,7 +176,8 @@ public class CreateAccountByAliasTests
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createReceipt.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
-        Assert.Empty(infoFromAlias.Monikers);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAlias.Monikers);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
         Assert.Equal(0, infoFromAlias.ContractNonce);
@@ -181,7 +185,8 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
         Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.Equal(Address.None, infoFromAlias.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAlias.AutoRenewAccount);
         Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
@@ -248,7 +253,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createRecord.Address);
         Assert.Equal(createRecord.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
-        Assert.Empty(infoFromAccount.Monikers);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAccount.Monikers);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
         Assert.Equal(0, infoFromAccount.ContractNonce);
@@ -256,7 +262,8 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
         Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
         Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAccount.AssetCount);
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
@@ -273,7 +280,8 @@ public class CreateAccountByAliasTests
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createRecord.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
-        Assert.Empty(infoFromAlias.Monikers);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAlias.Monikers);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
         Assert.Equal(0, infoFromAlias.ContractNonce);
@@ -281,7 +289,8 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
         Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
         Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);

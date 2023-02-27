@@ -46,9 +46,10 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         if (updateParameters.Endorsements is null &&
             updateParameters.Contents is null &&
             updateParameters.Memo is null &&
-            updateParameters.Expiration is null &&
-            updateParameters.AutoRenewPeriod is null &&
-            updateParameters.AutoRenewAccount is null)
+            updateParameters.Expiration is null)// &&
+                                                // v0.34.0 Churn
+                                                //updateParameters.AutoRenewPeriod is null &&
+                                                //updateParameters.AutoRenewAccount is null)
         {
             throw new ArgumentException("The File Update parameters contain no update properties, it is blank.", nameof(updateParameters));
         }
@@ -69,13 +70,14 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         {
             ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
         }
-        if (updateParameters.AutoRenewPeriod.HasValue)
-        {
-            AutoRenewPeriod = new Duration(updateParameters.AutoRenewPeriod.Value);
-        }
-        if (updateParameters.AutoRenewAccount is not null)
-        {
-            AutoRenewAccount = new AccountID(updateParameters.AutoRenewAccount);
-        }
+        // v0.34.0 Churn
+        //if (updateParameters.AutoRenewPeriod.HasValue)
+        //{
+        //    AutoRenewPeriod = new Duration(updateParameters.AutoRenewPeriod.Value);
+        //}
+        //if (updateParameters.AutoRenewAccount is not null)
+        //{
+        //    AutoRenewAccount = new AccountID(updateParameters.AutoRenewAccount);
+        //}
     }
 }

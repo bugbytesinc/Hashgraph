@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
@@ -56,9 +55,11 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
             updateParameters.Alias is null &&
             updateParameters.ProxyAccount is null &&
             updateParameters.StakedNode is null &&
-            updateParameters.DeclineStakeReward is null &&
-            updateParameters.AutoRenewAccount is null)// &&
-            // HIP-583 Churn  updateParameters.UpdateMoniker is null)
+            updateParameters.DeclineStakeReward is null)// &&
+                                                        // v0.34.0 Churn
+                                                        //updateParameters.AutoRenewAccount is null)// &&
+                                                        // HIP-583 Churn
+                                                        //updateParameters.UpdateMoniker is null)
         {
             throw new ArgumentException("The Account Updates contains no update properties, it is blank.", nameof(updateParameters));
         }
@@ -75,10 +76,11 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         {
             AutoRenewPeriod = new Duration(updateParameters.AutoRenewPeriod.Value);
         }
-        if (updateParameters.AutoRenewAccount is not null)
-        {
-            AutoRenewAccount = new AccountID(updateParameters.AutoRenewAccount);
-        }
+        // v0.34.0 Churn
+        //if (updateParameters.AutoRenewAccount is not null)
+        //{
+        //    AutoRenewAccount = new AccountID(updateParameters.AutoRenewAccount);
+        //}
         if (updateParameters.Expiration.HasValue)
         {
             ExpirationTime = new Timestamp(updateParameters.Expiration.Value);

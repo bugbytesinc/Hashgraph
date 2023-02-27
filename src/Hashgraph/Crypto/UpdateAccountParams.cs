@@ -62,13 +62,14 @@ public sealed class UpdateAccountParams
     /// account will be deleted.
     /// </summary>
     public TimeSpan? AutoRenewPeriod { get; set; }
-    /// <summary>
-    /// If not null, updates the auto-renew account for this
-    /// account to a new payer.  Setting value to <code>None</code> 
-    /// will remove the existing auto renew account value from
-    /// this account.
-    /// </summary>
-    public Address? AutoRenewAccount { get; set; }
+    // v0.34.0 Churn
+    ///// <summary>
+    ///// If not null, updates the auto-renew account for this
+    ///// account to a new payer.  Setting value to <code>None</code> 
+    ///// will remove the existing auto renew account value from
+    ///// this account.
+    ///// </summary>
+    //public Address? AutoRenewAccount { get; set; }
     /// <summary>
     /// If not null, a new description of the account.
     /// </summary>

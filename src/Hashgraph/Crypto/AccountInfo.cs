@@ -60,11 +60,12 @@ public sealed record AccountInfo
     /// account will be deleted.
     /// </summary>
     public TimeSpan AutoRenewPeriod { get; private init; }
-    /// <summary>
-    /// If specified, pays the fees for renewing this account.
-    /// If not specified, this account pays renew fees.
-    /// </summary>
-    public Address AutoRenewAccount { get; private init; }
+    // v0.34.0 Churn
+    ///// <summary>
+    ///// If specified, pays the fees for renewing this account.
+    ///// If not specified, this account pays renew fees.
+    ///// </summary>
+    //public Address AutoRenewAccount { get; private init; }
     /// <summary>
     /// The account expiration time, at which it will attempt
     /// to renew if sufficient funds remain in the account.
@@ -127,7 +128,8 @@ public sealed record AccountInfo
 #pragma warning restore CS0618 // Type or member is obsolete
         ReceiveSignatureRequired = info.ReceiverSigRequired;
         AutoRenewPeriod = info.AutoRenewPeriod.ToTimeSpan();
-        AutoRenewAccount = info.AutoRenewAccount.AsAddress();
+        // v0.34.0 Churn
+        //AutoRenewAccount = info.AutoRenewAccount.AsAddress();
         Expiration = info.ExpirationTime.ToConsensusTimeStamp();
         Memo = info.Memo;
         AssetCount = info.OwnedNfts;

@@ -71,7 +71,8 @@ public class CreateAccountByMonikerTests
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
         Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
         Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAccount.AssetCount);
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);

@@ -18,19 +18,19 @@ public sealed class UpdateFileParams
     /// for this file.
     /// </summary>
     public ConsensusTimeStamp? Expiration { get; set; }
-
-    /// <summary>
-    /// If an auto-renew account is in use, 
-    /// the lifetime to be added by each auto-renewal.
-    /// </summary>
-    public TimeSpan? AutoRenewPeriod { get; set; }
-    /// <summary>
-    /// If not null, updates the auto-renew account for this
-    /// file to a new payer.  Setting value to <code>None</code> 
-    /// will remove the existing auto renew account value from
-    /// this file.
-    /// </summary>
-    public Address? AutoRenewAccount { get; set; }
+    // v0.34.0 Churn
+    ///// <summary>
+    ///// If an auto-renew account is in use, 
+    ///// the lifetime to be added by each auto-renewal.
+    ///// </summary>
+    //public TimeSpan? AutoRenewPeriod { get; set; }
+    ///// <summary>
+    ///// If not null, updates the auto-renew account for this
+    ///// file to a new payer.  Setting value to <code>None</code> 
+    ///// will remove the existing auto renew account value from
+    ///// this file.
+    ///// </summary>
+    //public Address? AutoRenewAccount { get; set; }
     /// <summary>
     /// If not null, a new description of the file.
     /// </summary>

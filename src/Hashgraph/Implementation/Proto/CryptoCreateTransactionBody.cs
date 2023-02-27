@@ -66,7 +66,8 @@ public sealed partial class CryptoCreateTransactionBody : INetworkTransaction
         InitialBalance = createParameters.InitialBalance;
         ReceiverSigRequired = createParameters.RequireReceiveSignature;
         AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod);
-        AutoRenewAccount = createParameters.AutoRenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.AutoRenewAccount);
+        // v0.34.0 Churn
+        //AutoRenewAccount = createParameters.AutoRenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.AutoRenewAccount);
         Alias = createParameters.Alias.IsNullOrNone() ? ByteString.Empty : new Key(createParameters.Alias.Endorsement).ToByteString();
         // HIP-583 Churn
         //EvmAddress = createParameters.Moniker.IsNullOrNone() ? ByteString.Empty : ByteString.CopyFrom(createParameters.Moniker.Bytes.Span);

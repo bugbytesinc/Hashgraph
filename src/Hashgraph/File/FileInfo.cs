@@ -59,8 +59,9 @@ public sealed record FileInfo
         Size = info.Size;
         Expiration = info.ExpirationTime.ToConsensusTimeStamp();
         Endorsements = info.Keys?.ToEndorsements() ?? Array.Empty<Endorsement>();
-        AutoRenewPeriod = info.AutoRenewPeriod is null ? TimeSpan.Zero : info.AutoRenewPeriod.ToTimeSpan();
-        AutoRenewAccount = info.AutoRenewAccount.AsAddress();
+        // v0.34.0 Churn
+        //AutoRenewPeriod = info.AutoRenewPeriod is null ? TimeSpan.Zero : info.AutoRenewPeriod.ToTimeSpan();
+        //AutoRenewAccount = info.AutoRenewAccount.AsAddress();
         Deleted = info.Deleted;
         Ledger = info.LedgerId.Memory;
     }

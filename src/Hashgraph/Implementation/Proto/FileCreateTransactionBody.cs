@@ -46,8 +46,9 @@ public sealed partial class FileCreateTransactionBody : INetworkTransaction
         ExpirationTime = new Timestamp(createParameters.Expiration);
         Keys = new KeyList(createParameters.Endorsements);
         Contents = ByteString.CopyFrom(createParameters.Contents.ToArray());
-        AutoRenewAccount = createParameters.AutoRenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.AutoRenewAccount);
-        AutoRenewPeriod = createParameters.AutoRenewPeriod.Ticks > 0 ? new Duration(createParameters.AutoRenewPeriod) : null;
+        // v0.34.0 Churn
+        //AutoRenewAccount = createParameters.AutoRenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.AutoRenewAccount);
+        //AutoRenewPeriod = createParameters.AutoRenewPeriod.Ticks > 0 ? new Duration(createParameters.AutoRenewPeriod) : null;
         Memo = createParameters.Memo ?? "";
     }
 }
