@@ -68,7 +68,8 @@ public sealed partial class CryptoCreateTransactionBody : INetworkTransaction
         AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod);
         AutoRenewAccount = createParameters.AutoRenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.AutoRenewAccount);
         Alias = createParameters.Alias.IsNullOrNone() ? ByteString.Empty : new Key(createParameters.Alias.Endorsement).ToByteString();
-        EvmAddress = createParameters.Moniker.IsNullOrNone() ? ByteString.Empty : ByteString.CopyFrom(createParameters.Moniker.Bytes.Span);
+        // HIP-583 Churn
+        //EvmAddress = createParameters.Moniker.IsNullOrNone() ? ByteString.Empty : ByteString.CopyFrom(createParameters.Moniker.Bytes.Span);
         DeclineReward = createParameters.DeclineStakeReward;
         Memo = createParameters.Memo ?? string.Empty;
         MaxAutomaticTokenAssociations = createParameters.AutoAssociationLimit;

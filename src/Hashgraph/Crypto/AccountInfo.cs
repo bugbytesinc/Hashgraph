@@ -70,13 +70,14 @@ public sealed record AccountInfo
     /// to renew if sufficient funds remain in the account.
     /// </summary>
     public ConsensusTimeStamp Expiration { get; private init; }
-    /// <summary>
-    /// List of virtual addresss (keys) associated with this 
-    /// account as seen by the hedera virtual machine (ECDSA types),
-    /// The value of the dictionary is a flag indicating the
-    /// address should be considered the 'default'.
-    /// </summary>
-    public ReadOnlyDictionary<Moniker, bool> Monikers { get; private init; }
+    // HIP-583 Churn
+    ///// <summary>
+    ///// List of virtual addresss (keys) associated with this 
+    ///// account as seen by the hedera virtual machine (ECDSA types),
+    ///// The value of the dictionary is a flag indicating the
+    ///// address should be considered the 'default'.
+    ///// </summary>
+    //public ReadOnlyDictionary<Moniker, bool> Monikers { get; private init; }
     /// <summary>
     /// A short description associated with the account.
     /// </summary>
@@ -132,7 +133,8 @@ public sealed record AccountInfo
         AssetCount = info.OwnedNfts;
         AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
         Alias = info.Alias.ToAlias(info.AccountID.ShardNum, info.AccountID.RealmNum);
-        Monikers = info.VirtualAddresses.ToMonikers(Address);
+        // HIP-583 Churn
+        //Monikers = info.VirtualAddresses.ToMonikers(Address);
         Ledger = info.LedgerId.Memory;
         StakingInfo = new StakingInfo(info.StakingInfo);
     }

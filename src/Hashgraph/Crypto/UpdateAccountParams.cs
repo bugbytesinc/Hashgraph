@@ -119,11 +119,12 @@ public sealed class UpdateAccountParams
     /// earned staking rewards.
     /// </summary>
     public bool? DeclineStakeReward { get; set; }
-    /// <summary>
-    /// If set, applies the desired action on the list
-    /// of moniker virtual address for this account.
-    /// Address can be added or removed, one at a time
-    /// using the crypto account update transaction.
-    /// </summary>
-    public UpdateMonikerParams? UpdateMoniker { get; set; }
+    // HIP-583 Churn
+    ///// <summary>
+    ///// If set, applies the desired action on the list
+    ///// of moniker virtual address for this account.
+    ///// Address can be added or removed, one at a time
+    ///// using the crypto account update transaction.
+    ///// </summary>
+    //public UpdateMonikerParams? UpdateMoniker { get; set; }
 }

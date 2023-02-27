@@ -57,8 +57,8 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
             updateParameters.ProxyAccount is null &&
             updateParameters.StakedNode is null &&
             updateParameters.DeclineStakeReward is null &&
-            updateParameters.AutoRenewAccount is null &&
-            updateParameters.UpdateMoniker is null)
+            updateParameters.AutoRenewAccount is null)// &&
+            // HIP-583 Churn  updateParameters.UpdateMoniker is null)
         {
             throw new ArgumentException("The Account Updates contains no update properties, it is blank.", nameof(updateParameters));
         }
@@ -116,23 +116,24 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         {
             DeclineReward = updateParameters.DeclineStakeReward.Value;
         }
-        if (updateParameters.UpdateMoniker is not null)
-        {
-            var bytes = ByteString.CopyFrom(updateParameters.UpdateMoniker.Moniker.Bytes.Span);
-            switch (updateParameters.UpdateMoniker.Action)
-            {
-                case UpdateMonikerAction.AddAsDefault:
-                case UpdateMonikerAction.Add:
-                    Add = new VirtualAddress
-                    {
-                        Address = bytes,
-                        IsDefault = updateParameters.UpdateMoniker.Action == UpdateMonikerAction.AddAsDefault
-                    };
-                    break;
-                case UpdateMonikerAction.Remove:
-                    Remove = bytes;
-                    break;
-            }
-        }
+        // HIP-583 Churn
+        //if (updateParameters.UpdateMoniker is not null)
+        //{
+        //    var bytes = ByteString.CopyFrom(updateParameters.UpdateMoniker.Moniker.Bytes.Span);
+        //    switch (updateParameters.UpdateMoniker.Action)
+        //    {
+        //        case UpdateMonikerAction.AddAsDefault:
+        //        case UpdateMonikerAction.Add:
+        //            Add = new VirtualAddress
+        //            {
+        //                Address = bytes,
+        //                IsDefault = updateParameters.UpdateMoniker.Action == UpdateMonikerAction.AddAsDefault
+        //            };
+        //            break;
+        //        case UpdateMonikerAction.Remove:
+        //            Remove = bytes;
+        //            break;
+        //    }
+        //}
     }
 }

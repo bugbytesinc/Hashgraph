@@ -49,7 +49,8 @@ internal static class AccountIDExtensions
         return accountId?.AccountCase switch
         {
             AccountID.AccountOneofCase.AccountNum => new Address(accountId.ShardNum, accountId.RealmNum, accountId.AccountNum),
-            AccountID.AccountOneofCase.EvmAddress => new Address(new Moniker(accountId.ShardNum, accountId.RealmNum, accountId.EvmAddress.Memory)),
+            // HIP-583 Churn
+            //AccountID.AccountOneofCase.EvmAddress => new Address(new Moniker(accountId.ShardNum, accountId.RealmNum, accountId.EvmAddress.Memory)),
             AccountID.AccountOneofCase.Alias => new Address(new Alias(accountId.ShardNum, accountId.RealmNum, Key.Parser.ParseFrom(accountId.Alias.Memory.Span).ToEndorsement())),
             _ => Address.None
         };
