@@ -39,15 +39,16 @@ public sealed record FileInfo
     /// account information was retrieved from.
     /// </summary>
     public ReadOnlyMemory<byte> Ledger { get; private init; }
-    /// <summary>
-    /// If an auto-renew account is in use, the added 
-    /// lifetime of each auto-renewal.
-    /// </summary>
-    public TimeSpan AutoRenewPeriod { get; private init; }
-    /// <summary>
-    /// If specified, pays the fees for renewing this file.
-    /// </summary>
-    public Address AutoRenewAccount { get; private init; }
+    // v0.34.0 Churn
+    ///// <summary>
+    ///// If an auto-renew account is in use, the added 
+    ///// lifetime of each auto-renewal.
+    ///// </summary>
+    //public TimeSpan AutoRenewPeriod { get; private init; }
+    ///// <summary>
+    ///// If specified, pays the fees for renewing this file.
+    ///// </summary>
+    //public Address AutoRenewAccount { get; private init; }
     /// <summary>
     /// Intenral Constructor from Raw Response
     /// </summary>

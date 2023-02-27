@@ -1,4 +1,5 @@
 ﻿using Hashgraph.Test.Fixtures;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -37,8 +38,9 @@ public class UpdateFileTests
         Assert.Equal(new Endorsement[] { newPublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Update: Can Update File Key to Empty")]
     public async Task CanUpdateFileKeyToEmpty()
@@ -48,7 +50,7 @@ public class UpdateFileTests
         var updateRecord = await test.Client.UpdateFileWithRecordAsync(new UpdateFileParams
         {
             File = test.Record.File,
-            Endorsements = new Endorsement[0],
+            Endorsements = Array.Empty<Endorsement>(),
             Signatory = test.PrivateKey
         });
         Assert.Equal(ResponseCode.Success, updateRecord.Status);
@@ -61,8 +63,9 @@ public class UpdateFileTests
         Assert.Empty(info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Update: Can Not Update File Key from Empty")]
     public async Task CanNotUpdateFileKeyFromEmpty()
@@ -73,7 +76,7 @@ public class UpdateFileTests
         var updateRecord = await test.Client.UpdateFileAsync(new UpdateFileParams
         {
             File = test.Record.File,
-            Endorsements = new Endorsement[0],
+            Endorsements = Array.Empty<Endorsement>(),
             Signatory = test.PrivateKey
         });
         Assert.Equal(ResponseCode.Success, updateRecord.Status);
@@ -97,8 +100,9 @@ public class UpdateFileTests
         Assert.Empty(info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Update: Can Replace Contents")]
     public async Task CanUpdateFileContents()
@@ -142,8 +146,9 @@ public class UpdateFileTests
         Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Update: Can Update Memo to Empty")]
     public async Task CanUpdateMemoToEmpty()
@@ -167,8 +172,9 @@ public class UpdateFileTests
         Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Update: Cannot Replace Contents of deleted file")]
     public async Task CanUpdateFileContentsOfDeletedFile()
@@ -212,8 +218,9 @@ public class UpdateFileTests
         Assert.Equal(new Endorsement[] { newPublicKey1, newPublicKey2 }, info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
 
         var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
 
@@ -282,8 +289,9 @@ public class UpdateFileTests
         Assert.Equal(new Endorsement[] { newPublicKey1, newPublicKey2 }, info.Endorsements);
         Assert.True(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
 
     [Fact(DisplayName = "File Update: Can Update File after Rotating Keys using One of Many List")]
@@ -310,8 +318,9 @@ public class UpdateFileTests
         Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
 
         // First Key can change contents.
         var newContents = Encoding.Unicode.GetBytes("Hello Again Hashgraph " + Generator.Code(50));
@@ -363,8 +372,9 @@ public class UpdateFileTests
         Assert.Equal(new Endorsement[] { new Endorsement(1, newPublicKey1, newPublicKey2, newPublicKey3) }, info.Endorsements);
         Assert.True(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
-        Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
-        Assert.Equal(Address.None, info.AutoRenewAccount);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Update: Can Not Schedule Update.")]
     public async Task CanNotScheduleUpdate()
