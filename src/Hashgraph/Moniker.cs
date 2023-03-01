@@ -79,9 +79,33 @@ public sealed record Moniker
         RealmNum = 0;
         Bytes = ReadOnlyMemory<byte>.Empty;
     }
+    /// <summary>
+    /// Constructor from ECDSASecp256K1 Endorsement, converts the public
+    /// key into the appropriate 20-byte public key hash, with shard and
+    /// realm of zero.
+    /// </summary>
+    /// <param name="endorsement">
+    /// An ECDSASecp256K1 public key.  The moniker will automatically 
+    /// convert the public key into the matching 20-byte eth hash.
+    /// </param>
     public Moniker(Endorsement endorsement) : this(0, 0, evmAddressFromEndorsement(endorsement))
     {
     }
+    /// <summary>
+    /// Constructor from ECDSASecp256K1 Endorsement, converts the public
+    /// key into the appropriate 20-byte public key hash, with specified
+    /// shard and realm.
+    /// </summary>
+    /// <param name="shardNum">
+    /// Shard Number
+    /// </param>
+    /// <param name="realmNum">
+    /// Realm Number
+    /// </param>
+    /// <param name="endorsement">
+    /// An ECDSASecp256K1 public key.  The moniker will automatically 
+    /// convert the public key into the matching 20-byte eth hash.
+    /// </param>
     public Moniker(long shardNum, long realmNum, Endorsement endorsement) : this(shardNum, realmNum, evmAddressFromEndorsement(endorsement))
     {
     }

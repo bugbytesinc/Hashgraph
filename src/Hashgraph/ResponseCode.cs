@@ -1213,5 +1213,8 @@ public enum ResponseCode
     /// The account cannot be modified. Account's key is not set
     /// </summary>
     [Description("ACCOUNT_IS_IMMUTABLE")] AccountIsImmutable = 331,
-
+    /// <summary>
+    /// An alias that is assigned to an account or contract cannot be assigned to another account or contract.
+    /// </summary>
+    [Description("ALIAS_ALREADY_ASSIGNED")] AliasAlreadyAssigned = 332,
 }
