@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Collections.Generic;
@@ -47,10 +48,7 @@ public class CreateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -130,10 +128,7 @@ public class CreateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(createParams.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Create Token: Can Create with Alias Treasury")]
     public async Task CanCreateWithAliasTreasuryDefect()
@@ -194,10 +189,7 @@ public class CreateTokenTests
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(createParams.Memo, info.Memo);
-            // NETWORK V0.21.0 UNSUPPORTED vvvv
-            // NOT IMPLEMENTED YET
-            Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 UNSUPPORTED ^^^^
+            AssertHg.Equal(_network.Ledger, info.Ledger);
         }
     }
     [Fact(DisplayName = "Create Token: Zero Circulation Raises Error")]
@@ -478,10 +470,7 @@ public class CreateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -530,10 +519,7 @@ public class CreateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -618,10 +604,7 @@ public class CreateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -817,10 +800,7 @@ public class CreateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -870,10 +850,7 @@ public class CreateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -919,10 +896,7 @@ public class CreateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxToken.Client.GetContractBalancesAsync(fxContract);
         Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, treasury.Crypto);
@@ -1032,10 +1006,7 @@ public class CreateTokenTests
         Assert.Single(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var royalty = info.Royalties[0] as FixedRoyalty;
         Assert.NotNull(royalty);
@@ -1079,10 +1050,7 @@ public class CreateTokenTests
         Assert.Single(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var royalty = info.Royalties[0] as TokenRoyalty;
         Assert.NotNull(royalty);
@@ -1128,10 +1096,7 @@ public class CreateTokenTests
         Assert.Single(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var royalty = info.Royalties[0] as TokenRoyalty;
         Assert.NotNull(royalty);

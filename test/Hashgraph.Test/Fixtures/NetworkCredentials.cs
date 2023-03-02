@@ -16,6 +16,7 @@ public class NetworkCredentials
     private Address _systemDeleteAdminAddress = null;
     private Address _systemUndeleteAdminAddress = null;
     private Address _systemFreezeAdminAddress = null;
+    private ReadOnlyMemory<byte> _ledger = default;
 
     public string NetworkAddress { get { return _configuration["network:address"]; } }
     public int NetworkPort { get { return GetAsInt("network:port"); } }
@@ -33,6 +34,7 @@ public class NetworkCredentials
     public Signatory Signatory { get { return new Signatory(PrivateKey); } }
     public Gateway Gateway { get { return new Gateway(new Uri($"http://{NetworkAddress}:{NetworkPort}"), ServerShard, ServerRealm, ServerNumber); } }
     public ITestOutputHelper Output { get; set; }
+    public ReadOnlyMemory<byte> Ledger => _ledger;
     public NetworkCredentials()
     {
         _configuration = new ConfigurationBuilder()
@@ -52,6 +54,11 @@ public class NetworkCredentials
             ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
             ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
         });
+        Task.Run(async () =>
+        {
+            var info = await _rootClient.GetAccountInfoAsync(Payer);
+            _ledger = info.Ledger;
+        }).Wait();
     }
     public Client NewClient()
     {
@@ -82,18 +89,8 @@ public class NetworkCredentials
             {
                 var signedTransaction = Proto.SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
                 var transactionBody = Proto.TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
-                //if(transactionBody.ScheduleCreate is not null)
-                //{
-                //    var scheduledTransaction = transactionBody.ScheduleCreate.ScheduledTransactionBody;
-                //    Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(scheduledTransaction)}");
-                //    Output.WriteLine($"{DateTime.UtcNow}  ├─ SCH → {JsonFormatter.Default.Format(transactionBody)}");
-                //    Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
-                //}
-                //else
-                //{
                 Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
                 Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
-                //}
             }
             else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.SignedTransactionBytes != null)
             {

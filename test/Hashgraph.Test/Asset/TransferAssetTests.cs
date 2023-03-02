@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;
@@ -47,14 +48,12 @@ public class TransferAssetTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
         Assert.Equal(fxAccount.Record.Address, balances.Address);
         Assert.Equal(fxAccount.CreateParams.InitialBalance, balances.Crypto);
+
         Assert.Single(balances.Tokens);
         Assert.Equal(1ul, balances.Tokens[fxAsset.Record.Token].Balance);
 
@@ -95,10 +94,7 @@ public class TransferAssetTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.CreateRecord.Address);
         Assert.Equal(fxAccount.CreateRecord.Address, balances.Address);
@@ -159,10 +155,7 @@ public class TransferAssetTests
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
         Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -225,10 +218,7 @@ public class TransferAssetTests
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
         Assert.Equal(fxAccount.Record.Address, balances.Address);
@@ -777,10 +767,7 @@ public class TransferAssetTests
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Transfer Assets: Can Schedule Multi-Transfer Asset Coins")]
     public async Task CanScheduleMultiTransferAssetCoins()

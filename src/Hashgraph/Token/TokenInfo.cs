@@ -159,5 +159,6 @@ public sealed record TokenInfo
         RenewAccount = info.AutoRenewAccount?.AsAddress();
         Deleted = info.Deleted;
         Memo = info.Memo;
+        Ledger = info.LedgerId.Memory;
     }
 }

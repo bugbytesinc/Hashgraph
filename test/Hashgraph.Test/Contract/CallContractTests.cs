@@ -31,6 +31,7 @@ public class CallContractTests
         Assert.NotNull(record.Concensus);
         Assert.Equal(".NET SDK Test", record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(fx.ContractRecord.Contract, record.CallResult.Contract);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
         Assert.InRange(record.CallResult.GasUsed, 0UL, 30_000UL);
@@ -104,6 +105,7 @@ public class CallContractTests
         Assert.NotNull(setRecord.Concensus);
         Assert.Equal(".NET SDK Test", setRecord.Memo);
         Assert.InRange(setRecord.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(fx.ContractRecord.Contract, setRecord.CallResult.Contract);
         Assert.Empty(setRecord.CallResult.Error);
         Assert.False(setRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(setRecord.CallResult.GasUsed, 0UL, 50_000UL);
@@ -131,6 +133,7 @@ public class CallContractTests
         Assert.NotNull(getRecord.Concensus);
         Assert.Empty(getRecord.Memo);
         Assert.InRange(getRecord.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(fx.ContractRecord.Contract, getRecord.CallResult.Contract);
         Assert.Empty(getRecord.CallResult.Error);
         Assert.False(getRecord.CallResult.Bloom.IsEmpty);
         Assert.Empty(getRecord.CallResult.Events);
@@ -175,6 +178,7 @@ public class CallContractTests
         Assert.NotNull(getRecord.Concensus);
         Assert.Equal(".NET SDK Test", getRecord.Memo);
         Assert.InRange(getRecord.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(fx.ContractRecord.Contract, getRecord.CallResult.Contract);
         Assert.Empty(getRecord.CallResult.Error);
         Assert.False(getRecord.CallResult.Bloom.IsEmpty);
         Assert.Empty(getRecord.CallResult.Events);

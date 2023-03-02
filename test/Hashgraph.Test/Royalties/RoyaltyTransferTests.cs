@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;

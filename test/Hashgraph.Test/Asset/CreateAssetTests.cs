@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Collections.Generic;
@@ -47,10 +48,7 @@ public class CreateAssetTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -126,10 +124,7 @@ public class CreateAssetTests
             Assert.Empty(info.Royalties);
             Assert.False(info.Deleted);
             Assert.Equal(fxAsset.Params.Memo, info.Memo);
-            // NETWORK V0.21.0 UNSUPPORTED vvvv
-            // NOT IMPLEMENTED YET
-            Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 UNSUPPORTED ^^^^
+            AssertHg.Equal(_network.Ledger, info.Ledger);
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxTreasury.CreateRecord.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -199,10 +194,7 @@ public class CreateAssetTests
         Assert.Single(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var royalty = info.Royalties[0] as FixedRoyalty;
         Assert.NotNull(royalty);
@@ -257,10 +249,7 @@ public class CreateAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(createParams.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Can Create Asset with Alias Treasury")]
     public async Task CanAssociateAssetWithAliasAccountDefect()
@@ -316,10 +305,7 @@ public class CreateAssetTests
             Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
             Assert.False(info.Deleted);
             Assert.Equal(createParams.Memo, info.Memo);
-            // NETWORK V0.21.0 UNSUPPORTED vvvv
-            // NOT IMPLEMENTED YET
-            Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 UNSUPPORTED ^^^^
+            AssertHg.Equal(_network.Ledger, info.Ledger);
         }
     }
     [Fact(DisplayName = "Create Asset: Missing Treasury Address Raises Error")]
@@ -374,9 +360,7 @@ public class CreateAssetTests
         Assert.Equal(fxContract.ContractRecord.Contract, info.Treasury);
 
         var treasury = await fxAsset.Client.GetContractBalancesAsync(fxContract.ContractRecord.Contract);
-#pragma warning disable CS0618 // Type or member is obsolete
         var balance = treasury.Tokens.GetValueOrDefault(fxAsset.Record.Token);
-#pragma warning restore CS0618 // Type or member is obsolete
         Assert.Equal((ulong)fxAsset.Metadata.Length, balance.Balance);
     }
     [Fact(DisplayName = "Create Asset: Null Administrator Key is Allowed")]
@@ -578,10 +562,7 @@ public class CreateAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -629,10 +610,7 @@ public class CreateAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -716,10 +694,7 @@ public class CreateAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -916,10 +891,7 @@ public class CreateAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -968,10 +940,7 @@ public class CreateAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
@@ -1016,10 +985,7 @@ public class CreateAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var treasury = await fxAsset.Client.GetContractBalancesAsync(fxContract);
         Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, treasury.Crypto);

@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;
@@ -84,10 +85,7 @@ public class DeleteAssetTests
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
         Assert.True(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var accountInfo = await fxAsset.Client.GetAccountInfoAsync(fxAccount.Record.Address);
         var asset = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
@@ -333,10 +331,7 @@ public class DeleteAssetTests
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         // Move the Treasury, hmm...don't need treasury key?
         await fxAsset.Client.UpdateTokenAsync(new UpdateTokenParams
@@ -369,10 +364,7 @@ public class DeleteAssetTests
         Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Asset Delete: Can Delete Treasury after Deleting Asset")]
     public async Task CanDeleteTreasuryAfterDeletingAsset()
@@ -382,8 +374,9 @@ public class DeleteAssetTests
 
         var xfers = fx.MintRecord.SerialNumbers.Select(s => new AssetTransfer(new Asset(fx.Record.Token, s), fx.TreasuryAccount, fxBagHolder)).ToArray();
 
-        await fx.Client.TransferAsync(new TransferParams { 
-            AssetTransfers = xfers,            
+        await fx.Client.TransferAsync(new TransferParams
+        {
+            AssetTransfers = xfers,
             Signatory = fx.TreasuryAccount
         });
 

@@ -45,10 +45,7 @@ public class SystemRestoreFileTests
         Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
         Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
         // v0.34.0 Churn
         //Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
         //Assert.Equal(Address.None, info.AutoRenewAccount);
@@ -84,10 +81,7 @@ public class SystemRestoreFileTests
         Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
         Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
         // v0.34.0 Churn
         //Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
         //Assert.Equal(Address.None, info.AutoRenewAccount);
@@ -130,10 +124,7 @@ public class SystemRestoreFileTests
         Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
         Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
         // v0.34.0 Churn
         //Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
         //Assert.Equal(Address.None, info.AutoRenewAccount);
@@ -176,10 +167,7 @@ public class SystemRestoreFileTests
         Assert.Equal(fxFile.CreateParams.Expiration, info.Expiration);
         Assert.Equal(new Endorsement[] { fxFile.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
         // v0.34.0 Churn
         //Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
         //Assert.Equal(Address.None, info.AutoRenewAccount);

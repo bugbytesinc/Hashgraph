@@ -31,6 +31,7 @@ public class EventEmittingContractTests
         Assert.NotNull(record.Concensus);
         Assert.Empty(record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(fx.ContractRecord.Contract, record.CallResult.Contract);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
         Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);

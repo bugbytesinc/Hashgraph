@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,10 +55,7 @@ public class BurnAssetTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
     }
@@ -104,10 +102,7 @@ public class BurnAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
     }
@@ -147,10 +142,7 @@ public class BurnAssetTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
     }
@@ -198,10 +190,7 @@ public class BurnAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
     }
@@ -248,10 +237,7 @@ public class BurnAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
     }
@@ -513,9 +499,6 @@ public class BurnAssetTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
 }

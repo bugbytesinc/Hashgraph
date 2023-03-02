@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;
@@ -76,10 +77,7 @@ public class DeleteTokenTests
         Assert.Empty(info.Royalties);
         Assert.True(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         var accountInfo = await fxToken.Client.GetAccountInfoAsync(fxAccount.Record.Address);
         var token = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
@@ -302,10 +300,7 @@ public class DeleteTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
 
         // Move the Treasury, hmm...don't need treasury key?
         await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
@@ -339,10 +334,7 @@ public class DeleteTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Token Delete: Can Delete Treasury after Deleting Token")]
     public async Task CanDeleteTreasuryAfterDeletingToken()
@@ -350,7 +342,7 @@ public class DeleteTokenTests
         await using var fxBagHolder = await TestAccount.CreateAsync(_network);
         await using var fx = await TestToken.CreateAsync(_network, ctx => ctx.Params.GrantKycEndorsement = null, fxBagHolder);
 
-        await fx.Client.TransferTokensAsync(fx.Record.Token, fx.TreasuryAccount, fxBagHolder, (long) fx.Params.Circulation, fx.TreasuryAccount);
+        await fx.Client.TransferTokensAsync(fx.Record.Token, fx.TreasuryAccount, fxBagHolder, (long)fx.Params.Circulation, fx.TreasuryAccount);
 
         var record = await fx.Client.DeleteTokenAsync(fx.Record.Token, fx.AdminPrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);

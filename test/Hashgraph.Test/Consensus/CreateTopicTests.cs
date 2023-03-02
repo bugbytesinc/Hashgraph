@@ -199,10 +199,7 @@ public class CreateTopicTests
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fxRenew.CreateRecord.Address, info.RenewAccount);
-            // NETWORK V0.21.0 UNSUPPORTED vvvv
-            // NOT IMPLEMENTED YET
-            Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 UNSUPPORTED ^^^^
+            AssertHg.Equal(_network.Ledger, info.Ledger);
         }
     }
     [Fact(DisplayName = "Create Topic: Create Topic with missing signatures raises error.")]

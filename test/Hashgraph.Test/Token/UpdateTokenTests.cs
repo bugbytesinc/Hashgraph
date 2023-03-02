@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Threading.Tasks;
@@ -68,10 +69,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.Equal(fxTemplate.Params.Memo, info.Memo);
         Assert.False(info.Deleted);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Can Update Token and get Record")]
     public async Task CanUpdateTokenAndGetRecord()
@@ -137,10 +135,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxTemplate.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Empty Update Parameters Raises Error")]
     public async Task EmptyUpdateParametersRaisesError()
@@ -470,10 +465,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Updating To Used Symbol Is Allowed")]
     public async Task UpdatingToUsedSymbolIsAllowed()
@@ -510,10 +502,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Updating To Used Name Is Allowed")]
     public async Task UpdatingToUsedNameIsAllowed()
@@ -551,10 +540,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Updating To Empty Treasury Address Raises Error")]
     public async Task UpdatingToEmptyTreasuryRaisesError()
@@ -597,10 +583,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Cannot Make Token Immutable")]
     public async Task CannotMakeTokenImmutable()
@@ -642,10 +625,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Cannot Remove Grant KYC Endorsement")]
     public async Task CannotRemoveGrantKYCEndorsement()
@@ -687,10 +667,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Cannot Remove Suspend Endorsement")]
     public async Task CannotRemoveSuspendEndorsement()
@@ -732,10 +709,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Cannot Remove Confiscate Endorsement")]
     public async Task CannotRemoveConfiscateEndorsement()
@@ -777,10 +751,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Cannot Remove Supply Endorsement")]
     public async Task CannotRemoveSupplyEndorsement()
@@ -822,10 +793,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Cannot Update Imutable Token")]
     public async Task CannotUpdateImutableToken()
@@ -890,11 +858,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
-
+        AssertHg.Equal(_network.Ledger, info.Ledger);
         Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
     }
@@ -941,11 +905,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
-
+        AssertHg.Equal(_network.Ledger, info.Ledger);
         Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
         Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
     }
@@ -1003,10 +963,7 @@ public class UpdateTokenTests
         Assert.Empty(info.Royalties);
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
-        // NETWORK V0.21.0 UNSUPPORTED vvvv
-        // NOT IMPLEMENTED YET
-        Assert.Empty(info.Ledger.ToArray());
-        // NETWORK V0.21.0 UNSUPPORTED ^^^^
+        AssertHg.Equal(_network.Ledger, info.Ledger);
     }
     [Fact(DisplayName = "Update Token: Can Not Change Treasury to Unassociated Account")]
     public async Task CanChangeTreasuryToUnassociatedAccount()
@@ -1208,7 +1165,8 @@ public class UpdateTokenTests
     {
         await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 10_00_000_000);
 
-        await using var client = fxAccount.Client.Clone(ctx => {
+        await using var client = fxAccount.Client.Clone(ctx =>
+        {
             ctx.Payer = fxAccount;
             ctx.Signatory = fxAccount;
         });
@@ -1230,7 +1188,7 @@ public class UpdateTokenTests
         Assert.Null(info.RenewAccount);
         AssertHg.NotEmpty(info.Ledger);
 
-        var newExpiration = info.Expiration.AddMinutes(60 * 24 * 30);        
+        var newExpiration = info.Expiration.AddMinutes(60 * 24 * 30);
         var renew = await client.UpdateTopicAsync(new UpdateTopicParams()
         {
             Topic = receipt.Topic,

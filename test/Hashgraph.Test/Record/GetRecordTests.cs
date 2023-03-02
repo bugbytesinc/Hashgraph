@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
 using Proto;
@@ -195,7 +196,7 @@ public class GetRecordTests
          * 
          *  Assert.Empty(fx.ContractRecord.CallResult.StateChanges);
          */
-        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract }).Slice(12)), fx.ContractRecord.CallResult.EncodedAddress);
+        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract })[12..]), fx.ContractRecord.CallResult.EncodedAddress);
         Assert.Equal(fx.ContractRecord.CallResult.Result.Size, createRecord.CallResult.Result.Size);
         Assert.Equal(fx.ContractRecord.CallResult.FunctionArgs.Size, createRecord.CallResult.FunctionArgs.Size);
     }

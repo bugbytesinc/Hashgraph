@@ -49,10 +49,6 @@ internal static class Epoch
         int nanos = (int)((timespan.Ticks - (seconds * TimeSpan.TicksPerSecond)) * NanosPerTick);
         return (seconds, nanos);
     }
-    internal static DateTime ToDate(long seconds, int nanos)
-    {
-        return EPOCH.AddTicks(seconds * TimeSpan.TicksPerSecond + nanos / NanosPerTick);
-    }
     internal static void AddToClockDrift(long additionalDrift)
     {
         Interlocked.Add(ref _localClockDrift, additionalDrift);

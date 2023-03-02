@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -302,7 +303,8 @@ public static class AssertHg
     {
         var expectedBytes = expected.ToArray();
         var actualBytes = actual.ToArray();
-        if (!Enumerable.SequenceEqual(expectedBytes, actualBytes)) {
+        if (!Enumerable.SequenceEqual(expectedBytes, actualBytes))
+        {
             throw new Xunit.Sdk.EqualException(expectedBytes, actualBytes);
         }
     }

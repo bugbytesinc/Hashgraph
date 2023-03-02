@@ -31,6 +31,7 @@ public class PayableContractTests
         Assert.NotNull(record.Concensus);
         Assert.Equal(".NET SDK Test", record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(fx.ContractRecord.Contract, record.CallResult.Contract);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
         Assert.InRange(record.CallResult.GasUsed, 0UL, 30_000UL);

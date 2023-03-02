@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Test.Fixtures;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
