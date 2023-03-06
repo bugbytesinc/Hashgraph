@@ -59,6 +59,94 @@ public class BurnAssetTests
 
         Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
     }
+    [Fact(DisplayName = "Burn Assets: Can Burn Single Asset")]
+    public async Task CanBurnSingleAssetAsync()
+    {
+        await using var fxAsset = await TestAsset.CreateAsync(_network);
+        Assert.NotNull(fxAsset.Record);
+        Assert.NotNull(fxAsset.Record.Token);
+        Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
+
+        var expectedCirculation = (ulong)(fxAsset.Metadata.Length - 1);
+
+        var receipt = await fxAsset.Client.BurnAssetAsync(new Asset(fxAsset.Record.Token, 1), ctx =>
+        {
+            ctx.Signatory = new Signatory(ctx.Signatory, fxAsset.SupplyPrivateKey);
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+        Assert.Equal(expectedCirculation, receipt.Circulation);
+
+        var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
+        Assert.Equal(fxAsset.Record.Token, info.Token);
+        Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+        Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+        Assert.Equal(expectedCirculation, info.Circulation);
+        Assert.Equal(0ul, info.Decimals);
+        Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+        Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+        Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+        Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+        Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
+        Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
+        Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+        Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+        Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+        Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+
+        Assert.Empty(info.Royalties);
+        Assert.False(info.Deleted);
+        Assert.Equal(fxAsset.Params.Memo, info.Memo);
+        AssertHg.Equal(_network.Ledger, info.Ledger);
+
+        Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+    }
+    [Fact(DisplayName = "Burn Assets: Can Burn Asset Coins with Supply Key in Context")]
+    public async Task CanBurnAssetsAsyncWithSupplyKeyInContext()
+    {
+        await using var fxAsset = await TestAsset.CreateAsync(_network);
+        Assert.NotNull(fxAsset.Record);
+        Assert.NotNull(fxAsset.Record.Token);
+        Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
+
+        var amountToDestory = fxAsset.Metadata.Length / 3 + 1;
+        var expectedCirculation = (ulong)(fxAsset.Metadata.Length - amountToDestory);
+        var serialNumbers = Enumerable.Range(1, amountToDestory).Select(i => (long)i);
+
+        var receipt = await fxAsset.Client.BurnAssetsAsync(fxAsset.Record.Token, serialNumbers, ctx =>
+        {
+            ctx.Signatory = new Signatory(ctx.Signatory, fxAsset.SupplyPrivateKey);
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+        Assert.Equal(expectedCirculation, receipt.Circulation);
+
+        var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
+        Assert.Equal(fxAsset.Record.Token, info.Token);
+        Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+        Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+        Assert.Equal(expectedCirculation, info.Circulation);
+        Assert.Equal(0ul, info.Decimals);
+        Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+        Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+        Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+        Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+        Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
+        Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
+        Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+        Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+        Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+        Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+
+        Assert.Empty(info.Royalties);
+        Assert.False(info.Deleted);
+        Assert.Equal(fxAsset.Params.Memo, info.Memo);
+        AssertHg.Equal(_network.Ledger, info.Ledger);
+
+        Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+    }
     [Fact(DisplayName = "Burn Assets: Can Burn Asset Coins and get Record")]
     public async Task CanBurnAssetsAsyncAndGetRecord()
     {
@@ -208,6 +296,54 @@ public class BurnAssetTests
         var serialNumbers = Enumerable.Range(1, amountToDestory).Select(i => (long)i);
 
         var record = await fxAsset.Client.BurnAssetsWithRecordAsync(fxAsset, serialNumbers, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxAsset.SupplyPrivateKey));
+        Assert.Equal(ResponseCode.Success, record.Status);
+        Assert.False(record.Hash.IsEmpty);
+        Assert.NotNull(record.Concensus);
+        Assert.NotNull(record.CurrentExchangeRate);
+        Assert.NotNull(record.NextExchangeRate);
+        Assert.NotEmpty(record.Hash.ToArray());
+        Assert.Empty(record.Memo);
+        Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(_network.Payer, record.Id.Address);
+        Assert.Equal(expectedCirculation, record.Circulation);
+
+        var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
+        Assert.Equal(fxAsset.Record.Token, info.Token);
+        Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+        Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+        Assert.Equal(expectedCirculation, info.Circulation);
+        Assert.Equal(0U, info.Decimals);
+        Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+        Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+        Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+        Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
+        Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+        Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+        Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+        Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
+        Assert.False(info.Deleted);
+        Assert.Equal(fxAsset.Params.Memo, info.Memo);
+        AssertHg.Equal(_network.Ledger, info.Ledger);
+
+        Assert.Equal(expectedCirculation, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+    }
+    [Fact(DisplayName = "Burn Assets: Can Burn Single Asset and get Record Without Extra Signatory")]
+    public async Task CanBurnSingleAssetAndGetRecordWithoutExtraSignatory()
+    {
+        await using var fxAsset = await TestAsset.CreateAsync(_network);
+        Assert.NotNull(fxAsset.Record);
+        Assert.NotNull(fxAsset.Record.Token);
+        Assert.True(fxAsset.Record.Token.AccountNum > 0);
+        Assert.Equal(ResponseCode.Success, fxAsset.Record.Status);
+
+        var expectedCirculation = (ulong)(fxAsset.Metadata.Length - 1);
+
+        var record = await fxAsset.Client.BurnAssetWithRecordAsync(new Asset(fxAsset.Record.Token, 1), ctx =>
+        {
+            ctx.Signatory = new Signatory(ctx.Signatory, fxAsset.SupplyPrivateKey);
+        });
         Assert.Equal(ResponseCode.Success, record.Status);
         Assert.False(record.Hash.IsEmpty);
         Assert.NotNull(record.Concensus);

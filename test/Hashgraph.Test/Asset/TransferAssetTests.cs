@@ -63,6 +63,54 @@ public class TransferAssetTests
         Assert.Single(balances.Tokens);
         Assert.Equal((ulong)(fxAsset.Metadata.Length - 1), balances.Tokens[fxAsset.Record.Token].Balance);
     }
+    [Fact(DisplayName = "Transfer Assets: Can Transfer Single Asset")]
+    public async Task CanTransferSingleAsset()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
+
+        var asset = new Asset(fxAsset.Record.Token, 1);
+        var receipt = await fxAsset.Client.TransferAssetAsync(asset, fxAsset.TreasuryAccount.Record.Address, fxAccount.Record.Address, ctx =>
+        {
+            ctx.Signatory = new Signatory(ctx.Signatory, fxAsset.TreasuryAccount.PrivateKey);
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
+        Assert.Equal(fxAsset.Record.Token, info.Token);
+        Assert.Equal(TokenType.Asset, info.Type);
+        Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+        Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+        Assert.Equal((ulong)fxAsset.Metadata.Length, info.Circulation);
+        Assert.Equal(0UL, info.Decimals);
+        Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+        Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+        Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+        Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+        Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+        Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+        Assert.Equal(fxAsset.Params.RoyaltiesEndorsement, info.RoyaltiesEndorsement);
+        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+        Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
+        Assert.Empty(info.Royalties);
+        Assert.False(info.Deleted);
+        Assert.Equal(fxAsset.Params.Memo, info.Memo);
+        AssertHg.Equal(_network.Ledger, info.Ledger);
+
+        var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
+        Assert.Equal(fxAccount.Record.Address, balances.Address);
+        Assert.Equal(fxAccount.CreateParams.InitialBalance, balances.Crypto);
+
+        Assert.Single(balances.Tokens);
+        Assert.Equal(1ul, balances.Tokens[fxAsset.Record.Token].Balance);
+
+        balances = await fxAccount.Client.GetAccountBalancesAsync(fxAsset.TreasuryAccount.Record.Address);
+        Assert.Equal(fxAsset.TreasuryAccount.Record.Address, balances.Address);
+        Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
+        Assert.Single(balances.Tokens);
+        Assert.Equal((ulong)(fxAsset.Metadata.Length - 1), balances.Tokens[fxAsset.Record.Token].Balance);
+    }
     [Fact(DisplayName = "Transfer Assets: Can Transfer Asset Coins to Alias Account")]
     public async Task CanTransferAssetsToAliasAccount()
     {
@@ -117,6 +165,72 @@ public class TransferAssetTests
         var asset = new Asset(fxAsset.Record.Token, 1);
 
         var record = await fxAsset.Client.TransferAssetWithRecordAsync(asset, fxAsset.TreasuryAccount.Record.Address, fxAccount.Record.Address, fxAsset.TreasuryAccount.PrivateKey);
+        Assert.Equal(ResponseCode.Success, record.Status);
+        Assert.False(record.Hash.IsEmpty);
+        Assert.NotNull(record.Concensus);
+        Assert.NotNull(record.CurrentExchangeRate);
+        Assert.NotNull(record.NextExchangeRate);
+        Assert.NotEmpty(record.Hash.ToArray());
+        Assert.Empty(record.Memo);
+        Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(_network.Payer, record.Id.Address);
+        Assert.Empty(record.TokenTransfers);
+        Assert.Single(record.AssetTransfers);
+        Assert.Empty(record.Royalties);
+        Assert.Empty(record.Associations);
+
+        var xfer = record.AssetTransfers.First(x => x.To == fxAccount.Record.Address);
+        Assert.NotNull(xfer);
+        Assert.Equal(fxAsset.Record.Token, xfer.Asset);
+        Assert.Equal(1, xfer.Asset.SerialNum);
+
+        var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
+        Assert.Equal(fxAsset.Record.Token, info.Token);
+        Assert.Equal(TokenType.Asset, info.Type);
+        Assert.Equal(fxAsset.Params.Symbol, info.Symbol);
+        Assert.Equal(fxAsset.TreasuryAccount.Record.Address, info.Treasury);
+        Assert.Equal((ulong)fxAsset.Metadata.Length, info.Circulation);
+        Assert.Equal(0U, info.Decimals);
+        Assert.Equal(fxAsset.Params.Ceiling, info.Ceiling);
+        Assert.Equal(fxAsset.Params.Administrator, info.Administrator);
+        Assert.Equal(fxAsset.Params.GrantKycEndorsement, info.GrantKycEndorsement);
+        Assert.Equal(fxAsset.Params.SuspendEndorsement, info.SuspendEndorsement);
+        Assert.Equal(fxAsset.Params.PauseEndorsement, info.PauseEndorsement);
+        Assert.Equal(fxAsset.Params.ConfiscateEndorsement, info.ConfiscateEndorsement);
+        Assert.Equal(fxAsset.Params.SupplyEndorsement, info.SupplyEndorsement);
+        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
+        Assert.Equal(TokenKycStatus.NotApplicable, info.KycStatus);
+        Assert.False(info.Deleted);
+        Assert.Equal(fxAsset.Params.Memo, info.Memo);
+        AssertHg.Equal(_network.Ledger, info.Ledger);
+
+        var balances = await fxAccount.Client.GetAccountBalancesAsync(fxAccount.Record.Address);
+        Assert.Equal(fxAccount.Record.Address, balances.Address);
+        Assert.Equal(fxAccount.CreateParams.InitialBalance, balances.Crypto);
+        Assert.Single(balances.Tokens);
+        Assert.Equal(1UL, balances.Tokens[fxAsset.Record.Token]);
+
+        balances = await fxAccount.Client.GetAccountBalancesAsync(fxAsset.TreasuryAccount.Record.Address);
+        Assert.Equal(fxAsset.TreasuryAccount.Record.Address, balances.Address);
+        Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, balances.Crypto);
+        Assert.Single(balances.Tokens);
+        Assert.Equal((ulong)fxAsset.Metadata.Length - 1, balances.Tokens[fxAsset.Record.Token]);
+        Assert.Equal((ulong)fxAsset.Metadata.Length - 1, balances.Tokens[fxAsset.Record.Token].Balance);
+        Assert.Equal(0U, balances.Tokens[fxAsset.Record.Token].Decimals);
+    }
+    [Fact(DisplayName = "Transfer Assets: Can Transfer Asset and Get Record with Signatory In Context")]
+    public async Task CanTransferAssetAndGetRecordWithSignatoryInContext()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
+
+        var asset = new Asset(fxAsset.Record.Token, 1);
+
+        var record = await fxAsset.Client.TransferAssetWithRecordAsync(asset, fxAsset.TreasuryAccount.Record.Address, fxAccount.Record.Address, ctx =>
+        {
+            ctx.Signatory = new Signatory(ctx.Signatory, fxAsset.TreasuryAccount.PrivateKey);
+        });
         Assert.Equal(ResponseCode.Success, record.Status);
         Assert.False(record.Hash.IsEmpty);
         Assert.NotNull(record.Concensus);

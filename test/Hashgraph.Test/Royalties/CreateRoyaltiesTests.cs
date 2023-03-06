@@ -126,6 +126,24 @@ public class CreateRoyaltiesTests
         Assert.Equal(fixedRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Fixed));
         Assert.Equal(fractionalRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Token));
     }
+    [Fact(DisplayName = "Royalties: Can Add Fixed and Fractional Royalties to Token Definition with Signatory In Context")]
+    public async Task CanAddFixedAndFractionalRoyaltiesToTokenDefinitionWithSignatoryInContext()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
+        await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
+
+        var fixedRoyalty = new FixedRoyalty(fxAccount, comToken, 100);
+        var fractionalRoyalty = new TokenRoyalty(fxAccount, 1, 2, 1, 100);
+        var receipt = await fxToken.Client.UpdateRoyaltiesAsync(fxToken, new IRoyalty[] { fixedRoyalty, fractionalRoyalty }, ctx => ctx.Signatory = new Signatory(ctx.Signatory, fxToken.RoyaltiesPrivateKey));
+        Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+        var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+        Assert.Equal(2, info.Royalties.Count);
+
+        Assert.Equal(fixedRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Fixed));
+        Assert.Equal(fractionalRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Token));
+    }
     [Fact(DisplayName = "Royalties: Can Create Asset with Fixed Royalty")]
     public async Task CanCreateAssetWithFixedRoyalty()
     {

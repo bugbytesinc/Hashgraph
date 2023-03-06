@@ -1111,7 +1111,42 @@ public class UpdateTokenTests
         Assert.Equal(Address.None, royalty.Token);
         Assert.Equal(1, royalty.Amount);
     }
+    [Fact(DisplayName = "Update Token: Can Update Token Fixed Royalty And Get Record with Signatory in Context")]
+    public async Task CanUpdateTokenFixedRoyaltyAndGetRecordWithSignatoryInContext()
+    {
+        await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+        {
+            fx.Params.Royalties = new FixedRoyalty[]
+            {
+                    new FixedRoyalty(fx.TreasuryAccount, Address.None, 10)
+            };
+        });
 
+        var royalties = new FixedRoyalty[]
+        {
+               new FixedRoyalty(fxToken.TreasuryAccount, Address.None, 1)
+        };
+
+        var record = await fxToken.Client.UpdateRoyaltiesWithRecordAsync(fxToken, royalties, ctx => ctx.Signatory = new Signatory(ctx.Signatory, fxToken.RoyaltiesPrivateKey));
+        Assert.Equal(ResponseCode.Success, record.Status);
+        Assert.False(record.Hash.IsEmpty);
+        Assert.NotNull(record.Concensus);
+        Assert.NotNull(record.CurrentExchangeRate);
+        Assert.NotNull(record.NextExchangeRate);
+        Assert.NotEmpty(record.Hash.ToArray());
+        Assert.Empty(record.Memo);
+        Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(_network.Payer, record.Id.Address);
+
+        var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+        Assert.Single(info.Royalties);
+
+        var royalty = info.Royalties[0] as FixedRoyalty;
+        Assert.NotNull(royalty);
+        Assert.Equal(fxToken.TreasuryAccount.Record.Address, royalty.Account);
+        Assert.Equal(Address.None, royalty.Token);
+        Assert.Equal(1, royalty.Amount);
+    }
     [Fact(DisplayName = "Update Token: Can Update Token Fractional Royalty")]
     public async Task CanUpdateTokenFractionalRoyalty()
     {
