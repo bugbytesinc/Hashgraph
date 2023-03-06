@@ -35,16 +35,16 @@ public class CreateAccountByAliasTests
         var createReceipt = allReceipts[1] as CreateAccountReceipt;
         Assert.NotNull(createReceipt);
         Assert.NotNull(createReceipt.Address);
-        Assert.Equal(_network.ServerRealm, createReceipt.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createReceipt.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createReceipt.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createReceipt.Address.ShardNum);
         Assert.True(createReceipt.Address.AccountNum > 0);
         Assert.Equal(1, createReceipt.Id.Nonce);
 
         var createReceiptByTx = await client.GetReceiptAsync(createReceipt.Id) as CreateAccountReceipt;
         Assert.NotNull(createReceiptByTx);
         Assert.NotNull(createReceiptByTx.Address);
-        Assert.Equal(_network.ServerRealm, createReceiptByTx.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createReceiptByTx.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createReceiptByTx.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createReceiptByTx.Address.ShardNum);
         Assert.Equal(createReceipt.Address, createReceiptByTx.Address);
         Assert.Equal(createReceipt.Id, createReceiptByTx.Id);
 
@@ -130,16 +130,16 @@ public class CreateAccountByAliasTests
         var createReceipt = allReceipts[1] as CreateAccountReceipt;
         Assert.NotNull(createReceipt);
         Assert.NotNull(createReceipt.Address);
-        Assert.Equal(_network.ServerRealm, createReceipt.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createReceipt.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createReceipt.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createReceipt.Address.ShardNum);
         Assert.True(createReceipt.Address.AccountNum > 0);
         Assert.Equal(1, createReceipt.Id.Nonce);
 
         var createReceiptByTx = await client.GetReceiptAsync(createReceipt.Id) as CreateAccountReceipt;
         Assert.NotNull(createReceiptByTx);
         Assert.NotNull(createReceiptByTx.Address);
-        Assert.Equal(_network.ServerRealm, createReceiptByTx.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createReceiptByTx.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createReceiptByTx.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createReceiptByTx.Address.ShardNum);
         Assert.Equal(createReceipt.Address, createReceiptByTx.Address);
         Assert.Equal(createReceipt.Id, createReceiptByTx.Id);
 
@@ -221,8 +221,8 @@ public class CreateAccountByAliasTests
         var createRecord = allRecords[1] as CreateAccountRecord;
         Assert.NotNull(createRecord);
         Assert.NotNull(createRecord.Address);
-        Assert.Equal(_network.ServerRealm, createRecord.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createRecord.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createRecord.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createRecord.Address.ShardNum);
         Assert.True(createRecord.Address.AccountNum > 0);
         Assert.Equal(1, createRecord.Id.Nonce);
         // NETWORK V0.21.0 UNSUPPORTED vvvv
@@ -234,8 +234,8 @@ public class CreateAccountByAliasTests
         var createRecordByTx = await client.GetTransactionRecordAsync(createRecord.Id) as CreateAccountRecord;
         Assert.NotNull(createRecordByTx);
         Assert.NotNull(createRecordByTx.Address);
-        Assert.Equal(_network.ServerRealm, createRecordByTx.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createRecordByTx.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createRecordByTx.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createRecordByTx.Address.ShardNum);
         Assert.Equal(createRecord.Address, createRecordByTx.Address);
         Assert.Equal(createRecord.Id, createRecordByTx.Id);
         Assert.Equal(Moniker.None, createRecordByTx.Moniker);

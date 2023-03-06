@@ -4,8 +4,6 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using Xunit;
 
 namespace Hashgraph.Tests;
@@ -26,77 +24,6 @@ public class NetworkPrerequsiteTests
         Assert.NotNull(_networkCredentials);
     }
 
-    [Fact(DisplayName = "Test Prerequisites: Network Address Exists and Resolves to IP Address")]
-    public void NetworkAddressExists()
-    {
-        Assert.NotNull(_networkCredentials.NetworkAddress);
-        var ip = Dns.GetHostAddresses(_networkCredentials.NetworkAddress);
-        Assert.True(ip.Length > 0, "Unable to resolve Network Address to live IP Address");
-    }
-
-    [Fact(DisplayName = "Test Prerequisites: Network Port Exists")]
-    public void NetworkPortExists()
-    {
-        Assert.True(_networkCredentials.NetworkPort > 0, "Network Port Number should be greater than zero.");
-    }
-
-    [Fact(DisplayName = "Test Prerequisites: Test Network is Reachable on Configured Port")]
-    public void NetworkIsReachable()
-    {
-        using var client = new TcpClient();
-        client.Connect(_networkCredentials.NetworkAddress, _networkCredentials.NetworkPort);
-    }
-
-    [Fact(DisplayName = "Test Prerequisites: Mirror Address Exists and Resolves to IP Address")]
-    public void MirrorkAddressExists()
-    {
-        Assert.NotNull(_networkCredentials.MirrorAddress);
-        var ip = Dns.GetHostAddresses(_networkCredentials.MirrorAddress);
-        Assert.True(ip.Length > 0, "Unable to resolve Mirror Address to live IP Address");
-    }
-
-    [Fact(DisplayName = "Test Prerequisites: Mirror Port Exists")]
-    public void MirrorPortExists()
-    {
-        Assert.True(_networkCredentials.MirrorPort > 0, "Mirror Port Number should be greater than zero.");
-    }
-
-    [Fact(DisplayName = "Test Prerequisites: Mirror Node is Reachable on Configured Port")]
-    public void MirrorIsReachable()
-    {
-        using var client = new TcpClient();
-        client.Connect(_networkCredentials.MirrorAddress, _networkCredentials.MirrorPort);
-    }
-    [Fact(DisplayName = "Test Prerequisites: Server Realm is Non-Negative")]
-    public void ServerRealmIsNonNegative()
-    {
-        Assert.True(_networkCredentials.ServerRealm >= 0, "Server Node Realm should be greater than or equal to zero.");
-    }
-    [Fact(DisplayName = "Test Prerequisites: Server Shard is Non-Negative")]
-    public void ServerShardIsNonNegative()
-    {
-        Assert.True(_networkCredentials.ServerShard >= 0, "Server Node Shard should be greater than or equal to zero.");
-    }
-    [Fact(DisplayName = "Test Prerequisites: Server Account Number is Non-Negative")]
-    public void ServerAccountNumberIsNonNegative()
-    {
-        Assert.True(_networkCredentials.ServerNumber >= 0, "Server Node Account Number should be greater than or equal to zero.");
-    }
-    [Fact(DisplayName = "Test Prerequisites: Test Account Realm is Non-Negative")]
-    public void AccountRealmIsNonNegative()
-    {
-        Assert.True(_networkCredentials.AccountRealm >= 0, "Test Account Realm should be greater than or equal to zero.");
-    }
-    [Fact(DisplayName = "Test Prerequisites: Test Account Shard is Non-Negative")]
-    public void AccountShardIsNonNegative()
-    {
-        Assert.True(_networkCredentials.AccountShard >= 0, "Test Account Shard should be greater than or equal to zero.");
-    }
-    [Fact(DisplayName = "Test Prerequisites: Test Account Account Number is Non-Negative")]
-    public void AccountAccountNumberIsNonNegative()
-    {
-        Assert.True(_networkCredentials.AccountNumber >= 0, "Test Account Number should be greater than or equal to zero.");
-    }
     [Fact(DisplayName = "Test Prerequisites: Test Account Private Key is not Empty")]
     public void AccountAccountPrivateKeyIsNotEmpty()
     {
@@ -106,14 +33,6 @@ public class NetworkPrerequsiteTests
     public void AccountAccountPublicKeyIsNotEmpty()
     {
         Assert.False(_networkCredentials.PublicKey.IsEmpty);
-    }
-    [Fact(DisplayName = "Test Prerequisites: Test Account Public and Private Keys Match")]
-    public void PublicAndPrivateKeysMatch()
-    {
-        var privateKey = Ed25519Util.PrivateParamsFromDerOrRaw(_networkCredentials.PrivateKey);
-        var generatedPublicKey = privateKey.GeneratePublicKey();
-        var publicKey = Ed25519Util.PublicParamsFromDerOrRaw(_networkCredentials.PublicKey);
-        Assert.Equal(generatedPublicKey.GetEncoded(), publicKey.GetEncoded());
     }
     [Fact(DisplayName = "Test Prerequisites: Can Generate Key Pair from Bouncy Castle")]
     public void CanGenerateKeyPairFromBouncyCastle()

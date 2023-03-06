@@ -84,7 +84,7 @@ public class GetContractBalanceTests
         await using var client = _network.NewClient();
         client.Configure(cfg =>
         {
-            cfg.Gateway = new Gateway(new Uri($"http://{_network.NetworkAddress}:{_network.NetworkPort}"), 0, 0, 999);
+            cfg.Gateway = new Gateway(cfg.Gateway.Uri, 0, 0, 999);
         });
         var balance = await client.GetContractBalanceAsync(fx.ContractRecord.Contract);
         Assert.Equal(0ul, balance);

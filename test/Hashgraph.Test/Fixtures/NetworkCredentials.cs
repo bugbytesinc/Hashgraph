@@ -1,7 +1,12 @@
 ﻿using Google.Protobuf;
+using Hashgraph.Implementation;
+using Hashgraph.Mirror;
 using Microsoft.Extensions.Configuration;
+using Org.BouncyCastle.Crypto.Parameters;
 using Proto;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -10,30 +15,27 @@ namespace Hashgraph.Test.Fixtures;
 
 public class NetworkCredentials
 {
-    private readonly IConfiguration _configuration;
-    private readonly Client _rootClient = null;
+    private IConfiguration _configuration;
+    private Client _rootClient;
+    private MirrorRestClient _mirrorClient;
+    private Gateway _gateway;
+    private ReadOnlyMemory<byte> _privateKey;
+    private Signatory _signatory;
     private Address _systemAccountAddress = null;
     private Address _systemDeleteAdminAddress = null;
     private Address _systemUndeleteAdminAddress = null;
     private Address _systemFreezeAdminAddress = null;
     private ReadOnlyMemory<byte> _ledger = default;
+    private Mirror.AccountInfo _rootPayer = default;
+    private string _mirrorGrpcUrl = default;
 
-    public string NetworkAddress { get { return _configuration["network:address"]; } }
-    public int NetworkPort { get { return GetAsInt("network:port"); } }
-    public long ServerShard { get { return GetAsInt("server:shard"); } }
-    public long ServerRealm { get { return GetAsInt("server:realm"); } }
-    public long ServerNumber { get { return GetAsInt("server:number"); } }
-    public long AccountShard { get { return GetAsInt("account:shard"); } }
-    public long AccountRealm { get { return GetAsInt("account:realm"); } }
-    public long AccountNumber { get { return GetAsInt("account:number"); } }
-    public string MirrorAddress { get { return _configuration["mirror:address"]; } }
-    public int MirrorPort { get { return GetAsInt("mirror:port"); } }
-    public ReadOnlyMemory<byte> PrivateKey { get { return Hex.ToBytes(_configuration["account:privateKey"]); } }
-    public ReadOnlyMemory<byte> PublicKey { get { return Hex.ToBytes(_configuration["account:publicKey"]); } }
-    public Address Payer { get { return new Address(AccountShard, AccountRealm, AccountNumber); } }
-    public Signatory Signatory { get { return new Signatory(PrivateKey); } }
-    public Gateway Gateway { get { return new Gateway(new Uri($"http://{NetworkAddress}:{NetworkPort}"), ServerShard, ServerRealm, ServerNumber); } }
     public ITestOutputHelper Output { get; set; }
+
+    public Gateway Gateway => _gateway;
+    public Address Payer => _rootPayer.Account;
+    public ReadOnlyMemory<byte> PrivateKey => _privateKey;
+    public ReadOnlyMemory<byte> PublicKey => _rootPayer.Endorsement.PublicKey;
+    public Signatory Signatory => _signatory;
     public ReadOnlyMemory<byte> Ledger => _ledger;
     public NetworkCredentials()
     {
@@ -42,24 +44,45 @@ public class NetworkCredentials
             .AddEnvironmentVariables()
             .AddUserSecrets<NetworkCredentials>(true)
             .Build();
-        _rootClient = new Client(ctx =>
+        var mirrorRestUrl = _configuration["mirrorRestUrl"];
+        if (string.IsNullOrWhiteSpace(mirrorRestUrl))
         {
-            ctx.Gateway = Gateway;
-            ctx.Payer = Payer;
-            ctx.Signatory = Signatory;
-            ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
-            ctx.RetryDelay = TimeSpan.FromMilliseconds(100); // Use this setting for a while to see if we can trim a few ms off of each test
-            ctx.OnSendingRequest = OutputSendingRequest;
-            ctx.OnResponseReceived = OutputReceivResponse;
-            ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
-            ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
-        });
+            throw new Exception("Mirror REST URL is missing from configuration [mirrorRestUrl]");
+        }
+        _mirrorGrpcUrl = _configuration["mirrorGrpcUrl"];
+        if (string.IsNullOrWhiteSpace(_mirrorGrpcUrl))
+        {
+            throw new Exception("Mirror GRPC URL is missing from configuration [mirrorGrpcUrl]");
+        }
+        var payerPrivateKey = _configuration["payerPrivateKey"];
+        if (string.IsNullOrWhiteSpace(payerPrivateKey))
+        {
+            throw new Exception("Payer Account Private Key is missing from configuration [payerPrivateKey]");
+        }
         Task.Run(async () =>
         {
-            var info = await _rootClient.GetAccountInfoAsync(Payer);
+            _mirrorClient = new MirrorRestClient(mirrorRestUrl);
+            _gateway = await PickGatewayAsync();
+            _privateKey = Hex.ToBytes(payerPrivateKey);
+            _signatory = new Signatory(_privateKey);
+            _rootPayer = await LookupPayerAsync();
+            _rootClient = new Client(ctx =>
+            {
+                ctx.Gateway = _gateway;
+                ctx.Payer = _rootPayer.Account;
+                ctx.Signatory = Signatory;
+                ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
+                ctx.RetryDelay = TimeSpan.FromMilliseconds(100); // Use this setting for a while to see if we can trim a few ms off of each test
+                ctx.OnSendingRequest = OutputSendingRequest;
+                ctx.OnResponseReceived = OutputReceivResponse;
+                ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
+                ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
+            });
+            var info = await _rootClient.GetAccountInfoAsync(_rootPayer.Account);
             _ledger = info.Ledger;
         }).Wait();
     }
+
     public Client NewClient()
     {
         return _rootClient.Clone();
@@ -68,18 +91,9 @@ public class NetworkCredentials
     {
         return new MirrorClient(ctx =>
         {
-            ctx.Uri = new Uri($"http://{MirrorAddress}:{MirrorPort}");
+            ctx.Uri = new Uri(_mirrorGrpcUrl);
             ctx.OnSendingRequest = OutputSendingRequest;
         });
-    }
-    private int GetAsInt(string key)
-    {
-        var valueAsString = _configuration[key];
-        if (int.TryParse(valueAsString, out int value))
-        {
-            return value;
-        }
-        throw new InvalidProgramException($"Unable to convert configuration '{key}' of '{valueAsString}' into an integer value.");
     }
     private void OutputSendingRequest(IMessage message)
     {
@@ -121,7 +135,7 @@ public class NetworkCredentials
     {
         Output?.WriteLine($"{DateTime.UtcNow}  RX:({tryNo:00})  {JsonFormatter.Default.Format(message)}");
     }
-    private bool TryGetQueryTransaction(Query query, out Transaction payment)
+    private bool TryGetQueryTransaction(Query query, out Proto.Transaction payment)
     {
         payment = null;
         switch (query.QueryCase)
@@ -240,6 +254,49 @@ public class NetworkCredentials
         }
         return address;
     }
+
+    private async Task<Gateway> PickGatewayAsync()
+    {
+        try
+        {
+            var list = await GetGosspNodeListAsync();
+            var node = list[new Random().Next(0, list.Count)];
+            var endpoints = node.Endpoints.Where(e => e.Port == 50211).ToArray();
+            var endpoint = endpoints[new Random().Next(0, endpoints.Length)];
+            return new Gateway(new($"http://{endpoint.Address}:{endpoint.Port}"), node.Account);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Unable to find a target gossip node.", ex);
+        }
+
+        async Task<List<GossipNode>> GetGosspNodeListAsync()
+        {
+            var list = new List<GossipNode>();
+            await foreach (var node in _mirrorClient.GetGossipNodesAsync())
+            {
+                list.Add(node);
+            }
+            return list;
+        }
+    }
+
+    private async Task<Mirror.AccountInfo> LookupPayerAsync()
+    {
+        var (keyType, keyParams) = MultiKeyEncodingUtil.ParsePrivateKeyFromDerOrRawBytes(_privateKey);
+        var endorsement = keyType switch
+        {
+            KeyType.Ed25519 => new Endorsement(KeyType.Ed25519, ((Ed25519PrivateKeyParameters)keyParams).GeneratePublicKey().GetEncoded()),
+            KeyType.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, EcdsaSecp256k1Util.domain.G.Multiply(((ECPrivateKeyParameters)keyParams).D).GetEncoded(true)),
+            _ => throw new Exception("Invalid private key type.")
+        };
+        await foreach (var account in _mirrorClient.GetAccountsFromEndorsementAsync(endorsement))
+        {
+            return account;
+        }
+        throw new Exception("Unable to find payer account from key.");
+    }
+
 
     [CollectionDefinition(nameof(NetworkCredentials))]
     public class FixtureCollection : ICollectionFixture<NetworkCredentials>

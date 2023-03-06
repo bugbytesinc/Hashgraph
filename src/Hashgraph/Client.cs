@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("Hashgraph.Test")]
+[assembly: InternalsVisibleTo("Hashgraph.Mirror")]
 
 namespace Hashgraph;
 

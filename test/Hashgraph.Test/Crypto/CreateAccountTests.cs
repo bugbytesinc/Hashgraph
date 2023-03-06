@@ -29,8 +29,8 @@ public class CreateAccountTests
         });
         Assert.NotNull(createResult);
         Assert.NotNull(createResult.Address);
-        Assert.Equal(_network.ServerRealm, createResult.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createResult.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createResult.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createResult.Address.ShardNum);
         Assert.True(createResult.Address.AccountNum > 0);
 
         var info = await client.GetAccountInfoAsync(createResult.Address);

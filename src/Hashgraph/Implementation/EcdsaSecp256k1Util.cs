@@ -24,7 +24,7 @@ internal static class EcdsaSecp256k1Util
     {
         AsymmetricKeyParameter asymmetricKeyParameter;
         try
-        {            
+        {
             if (privateKey.Length > 30 && privateKey.Length < 34)
             {
                 return new ECPrivateKeyParameters(new BigInteger(privateKey.ToArray()), domain);
