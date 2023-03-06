@@ -3,14 +3,9 @@
 #  buildConfiguration:             Build Configuration Type, for example 'Release'
 #  Build.ArtifactStagingDirectory: Directory to stage artifact assembly.
 #  nugetConnection:                Nuget Publishing Service Connection Name.
-#  test:network:address:           Test Network DNS name, for example 'testnet.hedera.com'
-#  test:network:port:              Test Network port number
-#  test:server:number:             Network Node Address Number receiving Network Requests (assumes Realm = 0, Shard = 0)
-#  test:mirror:address:            Mirror Node DNS name, for example 'testnet.mirrornode.hedera.com'
-#  test:mirror:port:               Mirror Node port number
-#  test:account:number:            Address number of the account making requests (assumes Realm = 0, Shard = 0)
-#  test:account:publicKey:         Public Key of test account making requests of the network, encoded in Hex (last 32 bytes)
-#  test:account:privateKey:        Private Key of test account making requests of the network, encoded in Hex
+#  mirrorRestUrl:                  Address of the target network's Mirror Node REST API
+#  mirrorGrpcUrl:                  Address of the target network's Mirror Node GRPC Endpoint
+#  payerPrivateKey:                Private Key of test account making requests of the network, DER encoded in Hex
 
 jobs:
   - job: primary
@@ -43,14 +38,9 @@ jobs:
         arguments: '--configuration $(buildConfiguration) --no-build --verbosity detailed'
         publishTestResults: true
       env:
-        'network:address': $(test:network:address)
-        'network:port': $(test:network:port)
-        'server:number': $(test:server:number)
-        'account:number': $(test:account:number)
-        'account:publicKey': $(test:account:publicKey)
-        'account:privateKey': $(test:account:privateKey)
-        'mirror:address': $(test:mirror:address)
-        'mirror:port': $(test:mirror:port)
+        'mirrorRestUrl': $(mirrorRestUrl)
+        'mirrorGrpcUrl': $(mirrorGrpcUrl)
+        'payerPrivateKey': $(payerPrivateKey)
 
     - task: DotNetCoreCLI@2
       displayName: Create NuGet Packages  
