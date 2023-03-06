@@ -83,8 +83,8 @@ jobs:
     - name: Integration Tests
       run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
       env:
-        'mirrorRestUrl': ${{ secrets.MIRROR_REST_URL }}
-        'mirrorGrpcUrl': ${{ secrets.MIRROR_GRPC_URL }}
+        'mirrorRestUrl': ${{ vars.MIRROR_REST_URL }}
+        'mirrorGrpcUrl': ${{ vars.MIRROR_GRPC_URL }}
         'payerPrivateKey': ${{ secrets.PAYER_PRIVATE_KEY }}
 
     - name: Upload Test Results
@@ -122,8 +122,8 @@ jobs:
     - name: Integration Tests
       run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
       env:
-        'mirrorRestUrl': ${{ secrets.MIRROR_REST_URL }}
-        'mirrorGrpcUrl': ${{ secrets.MIRROR_GRPC_URL }}
+        'mirrorRestUrl': ${{ vars.MIRROR_REST_URL }}
+        'mirrorGrpcUrl': ${{ vars.MIRROR_GRPC_URL }}
         'payerPrivateKey': ${{ secrets.PAYER_PRIVATE_KEY }}
 
     - name: Upload Test Results
