@@ -11,6 +11,10 @@ namespace Hashgraph;
 public sealed record ContractCallResult
 {
     /// <summary>
+    /// ID of the contract that was called.
+    /// </summary>
+    public Address Contract { get; private init; }
+    /// <summary>
     /// The values returned from the contract call.
     /// </summary>
     public EncodedParams Result { get; private init; }
@@ -76,6 +80,7 @@ public sealed record ContractCallResult
     /// </summary>
     internal ContractCallResult(ContractFunctionResult result)
     {
+        Contract = result.ContractID.AsAddress();
         Result = new EncodedParams(result.ContractCallResult.Memory);
         Error = result.ErrorMessage;
         Bloom = result.Bloom.ToArray();
@@ -89,7 +94,7 @@ public sealed record ContractCallResult
          * 
          *        StateChanges = result.StateChanges.Select(s => new ContractStateChange(s)).ToList().AsReadOnly();
          */
-        EncodedAddress = result.EvmAddress is null || result.EvmAddress.IsEmpty ? Moniker.None : new Moniker(result.EvmAddress.Memory);
+        EncodedAddress = result.EvmAddress.AsMoniker(result.ContractID.AsAddress());
         FunctionArgs = new EncodedParams(result.FunctionParameters.Memory);
     }
 }

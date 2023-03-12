@@ -30,7 +30,7 @@ public sealed class UpdateContractParams
     /// it can not be mistakenly used.  When properly implemented by
     /// the network, this property will be made public again.
     /// </remarks>
-    internal DateTime? Expiration { get; set; }
+    internal ConsensusTimeStamp? Expiration { get; set; }
     /// <summary>
     /// Replace this Contract's current administrative key signing rquirements 
     /// with new signing requirements.</summary>

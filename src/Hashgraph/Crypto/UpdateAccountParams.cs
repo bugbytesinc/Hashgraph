@@ -53,7 +53,7 @@ public sealed class UpdateAccountParams
     /// if it is equal to or before the current expiration date value
     /// for this account.
     /// </summary>
-    public DateTime? Expiration { get; set; }
+    public ConsensusTimeStamp? Expiration { get; set; }
     /// <summary>
     /// Incremental period for auto-renewal of the account. If
     /// account does not have sufficient funds to renew at the
@@ -62,6 +62,14 @@ public sealed class UpdateAccountParams
     /// account will be deleted.
     /// </summary>
     public TimeSpan? AutoRenewPeriod { get; set; }
+    // v0.34.0 Churn
+    ///// <summary>
+    ///// If not null, updates the auto-renew account for this
+    ///// account to a new payer.  Setting value to <code>None</code> 
+    ///// will remove the existing auto renew account value from
+    ///// this account.
+    ///// </summary>
+    //public Address? AutoRenewAccount { get; set; }
     /// <summary>
     /// If not null, a new description of the account.
     /// </summary>
@@ -112,4 +120,12 @@ public sealed class UpdateAccountParams
     /// earned staking rewards.
     /// </summary>
     public bool? DeclineStakeReward { get; set; }
+    // HIP-583 Churn
+    ///// <summary>
+    ///// If set, applies the desired action on the list
+    ///// of moniker virtual address for this account.
+    ///// Address can be added or removed, one at a time
+    ///// using the crypto account update transaction.
+    ///// </summary>
+    //public UpdateMonikerParams? UpdateMoniker { get; set; }
 }

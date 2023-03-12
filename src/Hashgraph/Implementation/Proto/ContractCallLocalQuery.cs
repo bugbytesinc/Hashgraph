@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -16,7 +17,7 @@ public sealed partial class ContractCallLocalQuery : INetworkQuery
         return new Query { ContractCallLocal = this };
     }
 
-    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Query, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<Response>> INetworkQuery.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new SmartContractService.SmartContractServiceClient(channel).contractCallLocalMethodAsync;
     }

@@ -64,7 +64,7 @@ public class UpdateTopicTests
         Assert.Equal(newMemo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -94,7 +94,7 @@ public class UpdateTopicTests
         Assert.Equal(newMemo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -117,7 +117,7 @@ public class UpdateTopicTests
         Assert.Empty(info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -158,7 +158,7 @@ public class UpdateTopicTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Null(info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -208,7 +208,7 @@ public class UpdateTopicTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(newPublic), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -231,7 +231,7 @@ public class UpdateTopicTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Null(info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -273,7 +273,7 @@ public class UpdateTopicTests
         Assert.Equal(fxTopic.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fxTopic.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -323,7 +323,7 @@ public class UpdateTopicTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);

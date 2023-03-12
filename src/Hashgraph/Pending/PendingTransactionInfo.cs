@@ -44,17 +44,17 @@ public sealed record PendingTransactionInfo : PendingTransaction
     /// and be removed from the network if not signed by 
     /// all necessary parties and executed.
     /// </summary>
-    public DateTime Expiration { get; private init; }
+    public ConsensusTimeStamp Expiration { get; private init; }
     /// <summary>
     /// If not null, the consensus time at which this pending
     /// transaction was completed and executed by the network.
     /// </summary>
-    public DateTime? Executed { get; private init; }
+    public ConsensusTimeStamp? Executed { get; private init; }
     /// <summary>
     /// If not null, the consensus time when this pending
     /// transaction was canceled using the administrative key.
     /// </summary>
-    public DateTime? Deleted { get; private init; }
+    public ConsensusTimeStamp? Deleted { get; private init; }
     /// <summary>
     /// The body bytes of the pending transaction, serialized
     /// into the binary protobuf message format 
@@ -86,9 +86,9 @@ public sealed record PendingTransactionInfo : PendingTransaction
         Endorsements = info.Signers.ToEndorsements();
         Administrator = info.AdminKey?.ToEndorsement();
         Memo = info.Memo;
-        Expiration = info.ExpirationTime.ToDateTime();
-        Executed = info.ExecutionTime?.ToDateTime();
-        Deleted = info.DeletionTime?.ToDateTime();
+        Expiration = info.ExpirationTime.ToConsensusTimeStamp();
+        Executed = info.ExecutionTime?.ToConsensusTimeStamp();
+        Deleted = info.DeletionTime?.ToConsensusTimeStamp();
         PendingTransactionBody = info.ScheduledTransactionBody.ToByteArray();
         Ledger = info.LedgerId.Memory;
         DelayExecution = info.WaitForExpiry;

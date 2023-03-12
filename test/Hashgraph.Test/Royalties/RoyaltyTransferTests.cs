@@ -1,4 +1,5 @@
-﻿using Hashgraph.Extensions;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Extensions;
 using Hashgraph.Test.Fixtures;
 using System;
 using System.Linq;
@@ -1861,5 +1862,55 @@ public class RoyaltyTransferTests
         await AssertHg.CryptoBalanceAsync(fxBenefactor2, 0);
         await AssertHg.CryptoBalanceAsync(fxBenefactor3, 0);
         await AssertHg.CryptoBalanceAsync(fxBenefactor4, 0);
+    }
+    [Fact(DisplayName = "Royalty Transfers: Can Assess Asset Royalty in Crypto")]
+    public async Task CanAssessAssetRoyaltyInCrypto()
+    {
+
+        await using var fxReceiver = await TestAccount.CreateAsync(_network, ctx =>
+        {
+            ctx.CreateParams.AutoAssociationLimit = 10;
+            ctx.CreateParams.InitialBalance = 10_00_000_000;
+        });
+        await using var fxSender = await TestAccount.CreateAsync(_network, ctx =>
+        {
+            ctx.CreateParams.AutoAssociationLimit = 0;
+            ctx.CreateParams.InitialBalance = 10_00_000_000;
+        });
+        await using var fxCollector = await TestAccount.CreateAsync(_network, ctx =>
+        {
+            ctx.CreateParams.AutoAssociationLimit = 0;
+            ctx.CreateParams.InitialBalance = 0;
+        });
+        await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
+        {
+            fx.Params.GrantKycEndorsement = null;
+            fx.Params.Royalties = new AssetRoyalty[]
+            {
+                    new AssetRoyalty(fxCollector, 1, 10, 1_00_000_000, Address.None)
+            };
+        }, fxSender);
+
+        await AssertHg.AssetBalanceAsync(fxAsset, fxReceiver, 0);
+        await AssertHg.AssetBalanceAsync(fxAsset, fxSender, 0);
+        await AssertHg.CryptoBalanceAsync(fxReceiver, 10_00_000_000);
+        await AssertHg.CryptoBalanceAsync(fxSender, 10_00_000_000);
+        await AssertHg.CryptoBalanceAsync(fxCollector, 0);
+
+        await fxAsset.TreasuryAccount.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxSender, fxAsset.TreasuryAccount.PrivateKey);
+
+        await AssertHg.AssetBalanceAsync(fxAsset, fxReceiver, 0);
+        await AssertHg.AssetBalanceAsync(fxAsset, fxSender, 1);
+        await AssertHg.CryptoBalanceAsync(fxReceiver, 10_00_000_000);
+        await AssertHg.CryptoBalanceAsync(fxSender, 10_00_000_000);
+        await AssertHg.CryptoBalanceAsync(fxCollector, 0);
+
+        await fxAsset.TreasuryAccount.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxSender, fxReceiver, new Signatory(fxSender.PrivateKey, fxReceiver.PrivateKey));
+
+        await AssertHg.AssetBalanceAsync(fxAsset, fxReceiver, 1);
+        await AssertHg.AssetBalanceAsync(fxAsset, fxSender, 0);
+        await AssertHg.CryptoBalanceAsync(fxReceiver, 9_00_000_000);
+        await AssertHg.CryptoBalanceAsync(fxSender, 10_00_000_000);
+        await AssertHg.CryptoBalanceAsync(fxCollector, 1_00_000_000);
     }
 }

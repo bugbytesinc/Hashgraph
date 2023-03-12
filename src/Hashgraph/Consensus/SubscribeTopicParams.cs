@@ -1,5 +1,4 @@
 ﻿#pragma warning disable CS8618
-using System;
 using System.Threading;
 using System.Threading.Channels;
 
@@ -16,12 +15,12 @@ public class SubscribeTopicParams
     /// after this time. If not set, messages occurring from the
     /// current time forward are returned.
     /// </summary>
-    public DateTime? Starting { get; set; } = null;
+    public ConsensusTimeStamp? Starting { get; set; } = null;
     /// <summary>
     /// Optional, filter for messages which reached consensus before 
     /// this time. If not set, it will stream indefinitely.
     /// </summary>
-    public DateTime? Ending { get; set; } = null;
+    public ConsensusTimeStamp? Ending { get; set; } = null;
     /// <summary>
     /// Optional, the maximum number of topic messages to return before
     /// completing the call, if set to 0 it will stream messages 

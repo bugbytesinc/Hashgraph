@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.352
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hashgraph", "src\Hashgraph\Hashgraph.csproj", "{4411B193-F0CC-418F-B759-7A288791D3D0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hashgraph.Test", "test\Hashgraph.Test\Hashgraph.Test.csproj", "{B15808B7-09DE-4048-9573-A682946FBA5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hashgraph.Mirror", "src\Hashgraph.Mirror\Hashgraph.Mirror.csproj", "{810336C7-FD1B-46D7-9B5E-953E8C4ED39A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +23,10 @@ Global
 		{B15808B7-09DE-4048-9573-A682946FBA5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B15808B7-09DE-4048-9573-A682946FBA5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B15808B7-09DE-4048-9573-A682946FBA5D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D363030E-C62B-43C5-BA06-3A198D88C05F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D363030E-C62B-43C5-BA06-3A198D88C05F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D363030E-C62B-43C5-BA06-3A198D88C05F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D363030E-C62B-43C5-BA06-3A198D88C05F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{810336C7-FD1B-46D7-9B5E-953E8C4ED39A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{810336C7-FD1B-46D7-9B5E-953E8C4ED39A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{810336C7-FD1B-46D7-9B5E-953E8C4ED39A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{810336C7-FD1B-46D7-9B5E-953E8C4ED39A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

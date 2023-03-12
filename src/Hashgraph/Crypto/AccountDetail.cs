@@ -64,7 +64,7 @@ public sealed record AccountDetail
     /// The account expiration time, at which it will attempt
     /// to renew if sufficient funds remain in the account.
     /// </summary>
-    public DateTime Expiration { get; private init; }
+    public ConsensusTimeStamp Expiration { get; private init; }
     /// <summary>
     /// A short description associated with the account.
     /// </summary>
@@ -121,7 +121,7 @@ public sealed record AccountDetail
         Tokens = info.TokenRelationships.ToBalances();
         ReceiveSignatureRequired = info.ReceiverSigRequired;
         AutoRenewPeriod = info.AutoRenewPeriod.ToTimeSpan();
-        Expiration = info.ExpirationTime.ToDateTime();
+        Expiration = info.ExpirationTime.ToConsensusTimeStamp();
         Memo = info.Memo;
         AssetCount = info.OwnedNfts;
         AutoAssociationLimit = info.MaxAutomaticTokenAssociations;

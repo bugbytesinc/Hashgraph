@@ -27,7 +27,7 @@ public class NetworkAdministrationTests
             return;
         }
         await using var client = _network.NewClient();
-        var receipt = await client.SuspendNetworkAsync(DateTime.UtcNow.AddSeconds(20), ctx => ctx.Payer = systemAddress);
+        var receipt = await client.SuspendNetworkAsync(new ConsensusTimeStamp(DateTime.UtcNow.AddSeconds(20)), ctx => ctx.Payer = systemAddress);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
         receipt = await client.AbortNetworkUpgrade(ctx => ctx.Payer = systemAddress);

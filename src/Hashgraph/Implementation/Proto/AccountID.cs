@@ -18,12 +18,23 @@ public sealed partial class AccountID
             RealmNum = alias.RealmNum;
             Alias = new Key(alias.Endorsement).ToByteString();
         }
-        else if(account.AddressType == AddressType.ShardRealmNum)
+        else if (account.TryGetMoniker(out var moniker))
+        {
+            ShardNum = moniker.ShardNum;
+            RealmNum = moniker.RealmNum;
+            // BEGIN NETWORK DEFECT: Should we not be using EvmAddress instead?
+            // See https://github.com/hashgraph/hedera-services/issues/4606
+            // EXPECTED CODE: EvmAddress = ByteString.CopyFrom(moniker.Bytes.Span);
+            // Code that works:
+            Alias = ByteString.CopyFrom(moniker.Bytes.Span);
+            // END DEFECT            
+        }
+        else if (account.AddressType == AddressType.ShardRealmNum)
         {
             ShardNum = account.ShardNum;
             RealmNum = account.RealmNum;
             AccountNum = account.AccountNum;
-        } 
+        }
         else
         {
             throw new ArgumentOutOfRangeException(nameof(account), "Crypto Account Address does not appear to be a valid <shard>.<realm>.<num> or alias.");
@@ -35,15 +46,13 @@ internal static class AccountIDExtensions
 {
     internal static Address AsAddress(this AccountID? accountId)
     {
-        if (accountId is null)
+        return accountId?.AccountCase switch
         {
-            return Address.None;
-        }
-        if (accountId.AccountCase == AccountID.AccountOneofCase.Alias)
-        {
-            var publicKey = Key.Parser.ParseFrom(accountId.Alias.Memory.Span);            
-            return new Address(new Alias(accountId.ShardNum, accountId.RealmNum, publicKey.ToEndorsement()));
-        }
-        return new Address(accountId.ShardNum, accountId.RealmNum, accountId.AccountNum);
+            AccountID.AccountOneofCase.AccountNum => new Address(accountId.ShardNum, accountId.RealmNum, accountId.AccountNum),
+            // HIP-583 Churn
+            //AccountID.AccountOneofCase.EvmAddress => new Address(new Moniker(accountId.ShardNum, accountId.RealmNum, accountId.EvmAddress.Memory)),
+            AccountID.AccountOneofCase.Alias => new Address(new Alias(accountId.ShardNum, accountId.RealmNum, Key.Parser.ParseFrom(accountId.Alias.Memory.Span).ToEndorsement())),
+            _ => Address.None
+        };
     }
 }

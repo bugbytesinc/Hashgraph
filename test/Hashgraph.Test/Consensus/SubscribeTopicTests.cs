@@ -71,7 +71,7 @@ public class SubscribeTopicTests
             Assert.NotEqual(receipt.RunningHash.ToArray(), info.RunningHash);
             Assert.Equal(3UL, receipt.RunningHashVersion);
             Assert.Equal(1UL, info.SequenceNumber);
-            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);

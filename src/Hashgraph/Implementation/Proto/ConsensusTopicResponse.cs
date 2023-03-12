@@ -7,7 +7,7 @@ public sealed partial class ConsensusTopicResponse
         return new Hashgraph.TopicMessage
         {
             Topic = topic,
-            Concensus = ConsensusTimestamp.ToDateTime(),
+            Concensus = ConsensusTimestamp.ToConsensusTimeStamp(),
             Messsage = Message.Memory,
             RunningHash = RunningHash.Memory,
             SequenceNumber = SequenceNumber,

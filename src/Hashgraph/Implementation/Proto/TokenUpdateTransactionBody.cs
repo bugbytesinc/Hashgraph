@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -18,7 +19,7 @@ public sealed partial class TokenUpdateTransactionBody : INetworkTransaction
         return new TransactionBody { TokenUpdate = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new TokenService.TokenServiceClient(channel).updateTokenAsync;
     }
@@ -81,7 +82,7 @@ public sealed partial class TokenUpdateTransactionBody : INetworkTransaction
         }
         if (updateParameters.Expiration.HasValue)
         {
-            if (updateParameters.Expiration.Value < DateTime.UtcNow)
+            if (updateParameters.Expiration.Value < ConsensusTimeStamp.Now)
             {
                 throw new ArgumentOutOfRangeException(nameof(updateParameters.Expiration), "The new expiration can not be set to the past.");
             }

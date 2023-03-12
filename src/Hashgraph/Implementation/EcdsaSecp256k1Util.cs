@@ -17,8 +17,8 @@ namespace Hashgraph.Implementation;
 /// </summary>
 internal static class EcdsaSecp256k1Util
 {
-    private static X9ECParameters curve = SecNamedCurves.GetByName("secp256k1");
-    private static ECDomainParameters domain = new ECDomainParameters(curve.Curve, curve.G, curve.N, curve.H);
+    internal static X9ECParameters curve = SecNamedCurves.GetByName("secp256k1");
+    internal static ECDomainParameters domain = new ECDomainParameters(curve.Curve, curve.G, curve.N, curve.H);
 
     internal static ECPrivateKeyParameters PrivateParamsFromDerOrRaw(ReadOnlyMemory<byte> privateKey)
     {

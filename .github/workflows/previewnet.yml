@@ -1,13 +1,8 @@
 #  Required secrets managed by GitHub.
 #
-#  ACCOUNT_NUMBER:       The Hedera Test Account Address Number (assumes Shard = 0, Realm = 0)
-#  ACCOUNT_PUBLIC_KEY:   Public Key for the root payer account, encoded in Hex
-#  ACCOUNT_PRIVATE_KEY:  Private Key for the root payer account, encoded in Hex
-#  MIRROR_ADDRESS:       Mirror Node DNS name, for example 'previewnet.mirrornode.hedera.com'
-#  MIRROR_PORT:          Mirror Node port number
-#  NETWORK_ADDRESS:      Test Network DNS name, for example 'previewnet.hedera.com'
-#  NETWORK_PORT:         Test Network port number
-#  SERVER_NUMBER:        Network Node Address Number receiving Network Requests (assumes Shard = 0, Realm = 0)
+#  MIRROR_REST_URL:      REST API Endpoint for the target network's Mirror node (ie https://previewnet.mirrornode.hedera.com)
+#  MIRROR_GRPC_URL:      GRPC Endpoint for the target network's Mirror node (ie http://hcs.previewnet.mirrornode.hedera.com:5600)
+#  PAYER_PRIVATE_KEY:    Private Key for the root payer account, DER encoded in Hex
 
 name: 'PREVIEWNET Build & Test'
 
@@ -49,14 +44,9 @@ jobs:
     - name: Integration Tests
       run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
       env:
-        'account:number': ${{ secrets.ACCOUNT_NUMBER }}
-        'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
-        'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
-        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
-        'mirror:port': ${{ secrets.MIRROR_PORT }}
-        'network:address': ${{ secrets.NETWORK_ADDRESS }}
-        'network:port': ${{ secrets.NETWORK_PORT }}
-        'server:number': ${{ secrets.SERVER_NUMBER }}
+        'mirrorRestUrl': ${{ vars.MIRROR_REST_URL }}
+        'mirrorGrpcUrl': ${{ vars.MIRROR_GRPC_URL }}
+        'payerPrivateKey': ${{ secrets.PAYER_PRIVATE_KEY }}
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v2
@@ -93,14 +83,9 @@ jobs:
     - name: Integration Tests
       run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
       env:
-        'account:number': ${{ secrets.ACCOUNT_NUMBER }}
-        'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
-        'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
-        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
-        'mirror:port': ${{ secrets.MIRROR_PORT }}
-        'network:address': ${{ secrets.NETWORK_ADDRESS }}
-        'network:port': ${{ secrets.NETWORK_PORT }}
-        'server:number': ${{ secrets.SERVER_NUMBER }}
+        'mirrorRestUrl': ${{ vars.MIRROR_REST_URL }}
+        'mirrorGrpcUrl': ${{ vars.MIRROR_GRPC_URL }}
+        'payerPrivateKey': ${{ secrets.PAYER_PRIVATE_KEY }}
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v2
@@ -137,14 +122,9 @@ jobs:
     - name: Integration Tests
       run: dotnet test --logger trx --results-directory test-results --configuration ${{ env.BUILD_CONFIGURATION }} --no-build --verbosity normal
       env:
-        'account:number': ${{ secrets.ACCOUNT_NUMBER }}
-        'account:publicKey': ${{ secrets.ACCOUNT_PUBLIC_KEY }}
-        'account:privateKey': ${{ secrets.ACCOUNT_PRIVATE_KEY }}
-        'mirror:address': ${{ secrets.MIRROR_ADDRESS }}
-        'mirror:port': ${{ secrets.MIRROR_PORT }}
-        'network:address': ${{ secrets.NETWORK_ADDRESS }}
-        'network:port': ${{ secrets.NETWORK_PORT }}
-        'server:number': ${{ secrets.SERVER_NUMBER }}
+        'mirrorRestUrl': ${{ vars.MIRROR_REST_URL }}
+        'mirrorGrpcUrl': ${{ vars.MIRROR_GRPC_URL }}
+        'payerPrivateKey': ${{ secrets.PAYER_PRIVATE_KEY }}
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v2

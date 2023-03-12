@@ -318,9 +318,9 @@ public class TransferTests
         var receipt = await fx.Client.TransferAsync(_network.Payer, fx.Record.Address, transferAmount);
         Assert.NotNull(receipt.CurrentExchangeRate);
         // Well, testnet doesn't actually have good data here
-        Assert.InRange(receipt.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(receipt.CurrentExchangeRate.Expiration, ConsensusTimeStamp.MinValue, ConsensusTimeStamp.MaxValue);
         Assert.NotNull(receipt.NextExchangeRate);
-        Assert.InRange(receipt.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(receipt.NextExchangeRate.Expiration, ConsensusTimeStamp.MinValue, ConsensusTimeStamp.MaxValue);
     }
     [Fact(DisplayName = "Transfer: Receipt Contains Exchange Information")]
     public async Task TransferRecordContainsExchangeInformation()
@@ -330,9 +330,9 @@ public class TransferTests
         var record = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, transferAmount);
         Assert.NotNull(record.CurrentExchangeRate);
         // Well, testnet doesn't actually have good data here
-        Assert.InRange(record.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(record.CurrentExchangeRate.Expiration, ConsensusTimeStamp.MinValue, DateTime.MaxValue);
         Assert.NotNull(record.NextExchangeRate);
-        Assert.InRange(record.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(record.NextExchangeRate.Expiration, ConsensusTimeStamp.MinValue, DateTime.MaxValue);
     }
     [Fact(DisplayName = "Transfer: Transfer to a Topic Raises Error.")]
     public async Task TransferToATopicRaisesError()
@@ -566,7 +566,7 @@ public class TransferTests
         Assert.Equal(new Endorsement(fxPayer.PublicKey), info.Endorsements[0]);
         Assert.Null(info.Administrator);
         Assert.Empty(info.Memo);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.True(record.Concensus <= info.Executed);
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
@@ -621,7 +621,7 @@ public class TransferTests
         Assert.Equal(new Endorsement(fxSender.PublicKey), info.Endorsements[0]);
         Assert.Null(info.Administrator);
         Assert.Empty(info.Memo);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Null(info.Executed);
         Assert.Null(info.Deleted);
         Assert.False(info.PendingTransactionBody.IsEmpty);
@@ -793,4 +793,80 @@ public class TransferTests
         // Don't forget fees.
         Assert.True(aliasEndingBalance < aliasStartingBalance - (ulong)transferAmount);
     }
+    //[Fact(DisplayName = "Transfer: Can Send to New Moniker Account")]
+    //public async Task CanTransferCryptoToNewMonikerAccount()
+    //{
+    //    await using var fxAccount = await TestAliasAccount.CreateAsync(_network, fx =>
+    //    {
+    //        (fx.PublicKey, fx.PrivateKey) = Generator.Secp256k1KeyPair();
+    //        fx.Alias = fx.PublicKey;
+    //        fx.
+    //    });
+    //    var startingBalance = await fxAccount.Client.GetAccountBalanceAsync(fxAccount.Alias);
+
+    //    var transferAmount = (long)Generator.Integer(10, 100);
+
+    //    var receipt = await fxAccount.Client.TransferAsync(_network.Payer, fxAccount.Alias, transferAmount);
+
+    //    var endingBalance = await fxAccount.Client.GetAccountBalanceAsync(fxAccount.Alias);
+    //    Assert.Equal(startingBalance + (ulong)transferAmount, endingBalance);
+    //}
+    //[Fact(DisplayName = "Transfer: Can Send From Alias Account")]
+    //public async Task CanSendFromAliasAccount()
+    //{
+    //    await using var fxAccount = await TestAccount.CreateAsync(_network);
+    //    await using var fxAlias = await TestAliasAccount.CreateAsync(_network);
+
+    //    var aliasStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    var transferAmount = (aliasStartingBalance) / 2 + 1;
+
+    //    var accountStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+    //    var receipt = await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, fxAlias.PrivateKey);
+    //    var accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+    //    Assert.Equal(accountStartingBalance + (ulong)transferAmount, accountEndingBalance);
+
+    //    var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    Assert.Equal(aliasStartingBalance - (ulong)transferAmount, aliasEndingBalance);
+    //}
+    //[Fact(DisplayName = "Transfer: Can Not Use Alias as Payer")]
+    //public async Task CanNotUseAliasAsPayer()
+    //{
+    //    await using var fxAccount = await TestAccount.CreateAsync(_network);
+    //    await using var fxAlias = await TestAliasAccount.CreateAsync(_network, fx => fx.InitialTransfer = 5_00_000_000);
+
+    //    var aliasStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    var transferAmount = (aliasStartingBalance) / 2 + 1;
+
+    //    var accountStartingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+
+    //    var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+    //    {
+    //        await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx =>
+    //        {
+    //            ctx.Payer = fxAlias.Alias;
+    //            ctx.Signatory = fxAlias.PrivateKey;
+    //        });
+    //    });
+    //    Assert.StartsWith("Transaction Failed Pre-Check: PayerAccountNotFound", pex.Message);
+    //    Assert.Equal(ResponseCode.PayerAccountNotFound, pex.Status);
+
+    //    var accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+    //    var aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    Assert.Equal(accountStartingBalance, (ulong)accountEndingBalance);
+    //    Assert.Equal(aliasStartingBalance, (ulong)aliasEndingBalance);
+
+    //    var receipt = await fxAlias.Client.TransferAsync(fxAlias.Alias, fxAccount.Record.Address, (long)transferAmount, ctx =>
+    //    {
+    //        ctx.Payer = fxAlias.CreateRecord.Address;
+    //        ctx.Signatory = fxAlias.PrivateKey;
+    //    });
+
+    //    accountEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAccount);
+    //    aliasEndingBalance = await fxAlias.Client.GetAccountBalanceAsync(fxAlias.Alias);
+    //    Assert.Equal(accountStartingBalance + (ulong)transferAmount, accountEndingBalance);
+    //    // Don't forget fees.
+    //    Assert.True(aliasEndingBalance < aliasStartingBalance - (ulong)transferAmount);
+    //}
+
+
 }

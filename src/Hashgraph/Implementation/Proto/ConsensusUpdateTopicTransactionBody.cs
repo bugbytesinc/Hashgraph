@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -18,7 +19,7 @@ public sealed partial class ConsensusUpdateTopicTransactionBody : INetworkTransa
         return new TransactionBody { ConsensusUpdateTopic = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new ConsensusService.ConsensusServiceClient(channel).updateTopicAsync;
     }
@@ -33,7 +34,8 @@ public sealed partial class ConsensusUpdateTopicTransactionBody : INetworkTransa
 
     internal ConsensusUpdateTopicTransactionBody(UpdateTopicParams updateParameters) : this()
     {
-        TopicID = new TopicID(updateParameters.Topic); if (updateParameters is null)
+        TopicID = new TopicID(updateParameters.Topic); 
+        if (updateParameters is null)
         {
             throw new ArgumentNullException(nameof(updateParameters), "Topic Update Parameters argument is missing. Please check that it is not null.");
         }
@@ -44,6 +46,7 @@ public sealed partial class ConsensusUpdateTopicTransactionBody : INetworkTransa
         if (updateParameters.Memo is null &&
             updateParameters.Administrator is null &&
             updateParameters.Participant is null &&
+            updateParameters.Expiration is null &&
             updateParameters.RenewPeriod is null &&
             updateParameters.RenewAccount is null)
         {
@@ -60,6 +63,10 @@ public sealed partial class ConsensusUpdateTopicTransactionBody : INetworkTransa
         if (!(updateParameters.Participant is null))
         {
             SubmitKey = new Key(updateParameters.Participant);
+        }
+        if (updateParameters.Expiration.HasValue)
+        {
+            ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
         }
         if (updateParameters.RenewPeriod.HasValue)
         {

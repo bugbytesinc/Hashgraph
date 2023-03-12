@@ -88,7 +88,7 @@ public class UpdateContractTests
         await using var fx = await GreetingContract.CreateAsync(_network);
 
         var oldExpiration = (await fx.Client.GetContractInfoAsync(fx.ContractRecord.Contract)).Expiration;
-        var newExpiration = oldExpiration.AddMonths(12);
+        var newExpiration = new ConsensusTimeStamp(oldExpiration.Seconds + 365 * 24 * 60 * 60);
         var record = await fx.Client.UpdateContractWithRecordAsync(new UpdateContractParams
         {
             Contract = fx.ContractRecord.Contract,
@@ -176,12 +176,12 @@ public class UpdateContractTests
         Assert.Equal(newMemo, info.Memo);
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
     }
-    [Fact(DisplayName = "NETWORK V0.27.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
+    [Fact(DisplayName = "NETWORK V0.35.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
     public async Task CanUpdateAutoAssociationLimitDefect()
     {
-        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanUpdateAutoAssociationLimit));
-        Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
-        Assert.Equal("0", testFailException.Actual);
+        var testFailException = (await Assert.ThrowsAsync<PrecheckException>(CanUpdateAutoAssociationLimit));
+        Assert.Equal(ResponseCode.NotSupported, testFailException.Status);
+        Assert.StartsWith("Transaction Failed Pre-Check", testFailException.Message);
 
         //[Fact(DisplayName = "Contract Update: Can Update Auto Association Limit")]
         async Task CanUpdateAutoAssociationLimit()

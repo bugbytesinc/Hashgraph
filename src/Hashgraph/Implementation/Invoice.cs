@@ -27,6 +27,15 @@ internal sealed class Invoice : IInvoice
         _prefixTrimLimit = prefixTrimLimit;
         _signatures = new Dictionary<ByteString, SignaturePair>();
     }
+    internal Invoice(ReadOnlyMemory<byte> transactionBodyBytes, int prefixTrimLimit)
+    {
+        var transactionBody = TransactionBody.Parser.ParseFrom(transactionBodyBytes.Span);
+        _txId = transactionBody.TransactionID.AsTxId();
+        _memo = transactionBody.Memo;
+        _txBytes = transactionBodyBytes;
+        _prefixTrimLimit = prefixTrimLimit;
+        _signatures = new Dictionary<ByteString, SignaturePair>();
+    }
     void IInvoice.AddSignature(KeyType type, ReadOnlyMemory<byte> publicPrefix, ReadOnlyMemory<byte> signature)
     {
         var key = ByteString.CopyFrom(publicPrefix.Span);

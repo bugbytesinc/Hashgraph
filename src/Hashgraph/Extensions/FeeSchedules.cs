@@ -1,5 +1,4 @@
 ﻿#pragma warning disable CS8618 
-using System;
 using System.Collections.Generic;
 
 namespace Hashgraph.Extensions;
@@ -45,5 +44,5 @@ public sealed record FeeSchedule
     /// <summary>
     /// The Time at which this fee schedule expires.
     /// </summary>
-    public DateTime Expires { get; internal init; }
+    public ConsensusTimeStamp Expires { get; internal init; }
 }

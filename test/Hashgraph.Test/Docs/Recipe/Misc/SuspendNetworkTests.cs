@@ -13,7 +13,7 @@ public class SuspendNetworkTests
     // Code Example:  Docs / Recipe / Misc / Suspend Network
     static async Task Main(string[] args)
     {                                                 // For Example:
-        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
+        var gatewayUrl = new Uri(args[0]);            //   http://2.testnet.hedera.com:50211
         var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
         var payerAccountNo = long.Parse(args[2]);     //   20 (account 0.0.20)
         var payerPrivateKey = Hex.ToBytes(args[3]);   //   302e0201... (Ed25519 private in hex)
@@ -25,7 +25,7 @@ public class SuspendNetworkTests
                 ctx.Payer = new Address(0, 0, payerAccountNo);
                 ctx.Signatory = new Signatory(payerPrivateKey);
             });
-            var receipt = await client.SuspendNetworkAsync(DateTime.UtcNow.AddSeconds(60));
+            var receipt = await client.SuspendNetworkAsync(new ConsensusTimeStamp(DateTime.UtcNow.AddSeconds(60)));
             Console.WriteLine($"Status: {receipt.Status}");
         }
         catch (Exception ex)
@@ -49,11 +49,11 @@ public class SuspendNetworkTests
         await fxAccount.Client.DeleteAccountAsync(fxAccount, _network.Payer, fxAccount.PrivateKey);
         using (new ConsoleRedirector(_network.Output))
         {
-            var arg0 = _network.Gateway.Url;
+            var arg0 = _network.Gateway.Uri;
             var arg1 = _network.Gateway.AccountNum.ToString();
             var arg2 = fxAccount.Record.Address.AccountNum.ToString();
             var arg3 = Hex.FromBytes(fxAccount.PrivateKey);
-            await Main(new string[] { arg0, arg1, arg2, arg3 });
+            await Main(new string[] { arg0.ToString(), arg1, arg2, arg3 });
         }
     }
 }

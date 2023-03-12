@@ -101,7 +101,7 @@ public sealed record TokenInfo
     /// Expiration date for the token.  Will renew as determined by the
     /// renew period and balance of auto renew account.
     /// </summary>
-    public DateTime Expiration { get; private init; }
+    public ConsensusTimeStamp Expiration { get; private init; }
     /// <summary>
     /// Interval of the topic and auto-renewal period. If
     /// the associated renewal account does not have sufficient funds to 
@@ -154,10 +154,11 @@ public sealed record TokenInfo
         TradableStatus = (TokenTradableStatus)info.DefaultFreezeStatus;
         PauseStatus = (TokenTradableStatus)info.PauseStatus;
         KycStatus = (TokenKycStatus)info.DefaultKycStatus;
-        Expiration = info.Expiry.ToDateTime();
+        Expiration = info.Expiry.ToConsensusTimeStamp();
         RenewPeriod = info.AutoRenewPeriod?.ToTimeSpan();
         RenewAccount = info.AutoRenewAccount?.AsAddress();
         Deleted = info.Deleted;
         Memo = info.Memo;
+        Ledger = info.LedgerId.Memory;
     }
 }

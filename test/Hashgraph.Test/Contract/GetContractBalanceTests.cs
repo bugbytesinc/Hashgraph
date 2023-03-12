@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Test.Fixtures;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -83,7 +84,7 @@ public class GetContractBalanceTests
         await using var client = _network.NewClient();
         client.Configure(cfg =>
         {
-            cfg.Gateway = new Gateway($"{_network.NetworkAddress}:{_network.NetworkPort}", 0, 0, 999);
+            cfg.Gateway = new Gateway(cfg.Gateway.Uri, 0, 0, 999);
         });
         var balance = await client.GetContractBalanceAsync(fx.ContractRecord.Contract);
         Assert.Equal(0ul, balance);

@@ -1,5 +1,4 @@
 ﻿using Hashgraph.Test.Fixtures;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -31,8 +30,8 @@ public class AccountMultisigTests
         });
         Assert.NotNull(createResult);
         Assert.NotNull(createResult.Address);
-        Assert.Equal(_network.ServerRealm, createResult.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createResult.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createResult.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createResult.Address.ShardNum);
         Assert.True(createResult.Address.AccountNum > 0);
         var info = await client.GetAccountInfoAsync(createResult.Address);
         Assert.Equal(initialBalance, info.Balance);
@@ -42,10 +41,12 @@ public class AccountMultisigTests
         Assert.Equal(endorsement, info.Endorsement);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);

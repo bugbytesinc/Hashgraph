@@ -31,6 +31,7 @@ public class EventEmittingContractTests
         Assert.NotNull(record.Concensus);
         Assert.Empty(record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(fx.ContractRecord.Contract, record.CallResult.Contract);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
         Assert.InRange(record.CallResult.GasUsed, 0UL, 40_000UL);
@@ -79,7 +80,7 @@ public class EventEmittingContractTests
         Assert.Equal(0, result.FunctionArgs.Size);
     }
     [Fact(DisplayName = "Event Emitting Contract: Can Call Contract that Sends Funds, Emitting Event")]
-    public async Task CanCallContractMethodSendingFunds()
+    async Task CanCallContractMethodSendingFunds()
     {
         await using var fx = await EventEmittingContract.CreateAsync(_network);
         await using var fx2 = await TestAccount.CreateAsync(_network);
@@ -139,7 +140,6 @@ public class EventEmittingContractTests
         var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
     }
-
     [Fact(DisplayName = "Event Emitting Contract: Attempts to Misplace Hbars Fails")]
     public async Task AttemptToSendHbarsToDeletedAccountFails()
     {

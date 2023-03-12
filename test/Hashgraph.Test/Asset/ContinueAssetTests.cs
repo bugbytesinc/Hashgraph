@@ -1,4 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Test.Fixtures;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -35,6 +36,26 @@ public class ContinueAssetTests
 
         await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Tradable);
     }
+    [Fact(DisplayName = "Continue Assets: Can Reume Asset Coin Trading Without Extra Signatory")]
+    public async Task CanReumeAssetCoinTradingWithoutExtraSignatory()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
+        {
+            fx.Params.GrantKycEndorsement = null;
+        }, fxAccount);
+        await fxAsset.Client.PauseTokenAsync(fxAsset.Record.Token, ctx => ctx.Signatory = new Signatory(ctx.Signatory, fxAsset.PausePrivateKey));
+
+        await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Suspended);
+
+        await fxAsset.Client.ContinueTokenAsync(fxAsset.Record.Token, ctx => ctx.Signatory = new Signatory(ctx.Signatory, fxAsset.PausePrivateKey));
+
+        await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Tradable);
+
+        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Tradable);
+    }
     [Fact(DisplayName = "Continue Assets: Can Continue Asset Coin Trading and get Record")]
     public async Task CanReumeAssetCoinTradingAndGetRecord()
     {
@@ -50,6 +71,37 @@ public class ContinueAssetTests
         await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Suspended);
 
         var record = await fxAsset.Client.ContinueTokenWithRecordAsync(fxAsset.Record.Token, fxAsset.PausePrivateKey);
+        Assert.Equal(ResponseCode.Success, record.Status);
+        Assert.False(record.Hash.IsEmpty);
+        Assert.NotNull(record.Concensus);
+        Assert.NotNull(record.CurrentExchangeRate);
+        Assert.NotNull(record.NextExchangeRate);
+        Assert.NotEmpty(record.Hash.ToArray());
+        Assert.Empty(record.Memo);
+        Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(_network.Payer, record.Id.Address);
+
+        await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Tradable);
+
+        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Tradable);
+    }
+    [Fact(DisplayName = "Continue Assets: Can Continue Asset Coin Trading and get Record Without Signatory")]
+    public async Task CanReumeAssetCoinTradingAndGetRecordWithoutSignatory()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var fxAsset = await TestAsset.CreateAsync(_network, fx =>
+        {
+            fx.Params.GrantKycEndorsement = null;
+        }, fxAccount);
+        await fxAsset.Client.PauseTokenAsync(fxAsset.Record.Token, fxAsset.PausePrivateKey);
+        var circulation = fxAsset.Metadata.Length;
+        var xferAmount = circulation / 3;
+
+        await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Suspended);
+
+        var record = await fxAsset.Client.ContinueTokenWithRecordAsync(fxAsset.Record.Token, ctx => ctx.Signatory = new Signatory(ctx.Signatory, fxAsset.PausePrivateKey));
         Assert.Equal(ResponseCode.Success, record.Status);
         Assert.False(record.Hash.IsEmpty);
         Assert.NotNull(record.Concensus);

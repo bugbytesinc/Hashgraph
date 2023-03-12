@@ -32,7 +32,7 @@ public class SubmitMessageTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(1UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -58,7 +58,7 @@ public class SubmitMessageTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(1UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Null(info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -244,7 +244,7 @@ public class SubmitMessageTests
         Assert.Equal(fxTopic.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(1UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fxTopic.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fxTopic.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);

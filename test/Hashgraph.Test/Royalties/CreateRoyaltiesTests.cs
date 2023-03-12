@@ -1,8 +1,12 @@
 ﻿using Hashgraph.Test.Fixtures;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using Newtonsoft.Json.Linq;
+using Proto;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Hashgraph.Test.Token;
 
@@ -122,6 +126,24 @@ public class CreateRoyaltiesTests
         Assert.Equal(fixedRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Fixed));
         Assert.Equal(fractionalRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Token));
     }
+    [Fact(DisplayName = "Royalties: Can Add Fixed and Fractional Royalties to Token Definition with Signatory In Context")]
+    public async Task CanAddFixedAndFractionalRoyaltiesToTokenDefinitionWithSignatoryInContext()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        await using var comToken = await TestToken.CreateAsync(_network, null, fxAccount);
+        await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
+
+        var fixedRoyalty = new FixedRoyalty(fxAccount, comToken, 100);
+        var fractionalRoyalty = new TokenRoyalty(fxAccount, 1, 2, 1, 100);
+        var receipt = await fxToken.Client.UpdateRoyaltiesAsync(fxToken, new IRoyalty[] { fixedRoyalty, fractionalRoyalty }, ctx => ctx.Signatory = new Signatory(ctx.Signatory, fxToken.RoyaltiesPrivateKey));
+        Assert.Equal(ResponseCode.Success, fxToken.Record.Status);
+
+        var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+        Assert.Equal(2, info.Royalties.Count);
+
+        Assert.Equal(fixedRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Fixed));
+        Assert.Equal(fractionalRoyalty, info.Royalties.First(f => f.RoyaltyType == RoyaltyType.Token));
+    }
     [Fact(DisplayName = "Royalties: Can Create Asset with Fixed Royalty")]
     public async Task CanCreateAssetWithFixedRoyalty()
     {
@@ -229,5 +251,66 @@ public class CreateRoyaltiesTests
 
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
         Assert.Empty(info.Royalties);
+    }
+    [Fact(DisplayName = "Royalties: Dissasociating as Fee Receiver Prevents Transfers")]
+    public async Task DissasociatingAsFeeReceiverPreventsTransfers()
+    {
+        await using var fxReceiver = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.AutoAssociationLimit = 0);
+        await using var fxAccount1 = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.AutoAssociationLimit = 0);
+        await using var fxAccount2 = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.AutoAssociationLimit = 0);
+        await using var comToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxReceiver, fxAccount1, fxAccount2);
+        await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+        {
+            fx.Params.Royalties = new FixedRoyalty[]
+            {
+                    new FixedRoyalty(fxReceiver, comToken, 100)
+            };
+            fx.Params.GrantKycEndorsement = null;
+        }, fxReceiver, fxAccount1, fxAccount2);
+        long xferAmount = (long)fxToken.Params.Circulation;
+        await fxToken.TreasuryAccount.Client.TransferTokensAsync(comToken, comToken.TreasuryAccount, fxAccount1, 200, comToken.TreasuryAccount.PrivateKey);
+        await fxToken.TreasuryAccount.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, xferAmount, fxToken.TreasuryAccount.PrivateKey);
+        var receipt = await fxReceiver.Client.DissociateTokenAsync(comToken, fxReceiver, fxReceiver.PrivateKey);
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        {
+            await fxToken.TreasuryAccount.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, xferAmount, fxAccount1);
+        });
+        Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
+        await AssertHg.TokenBalanceAsync(comToken, fxAccount1, 200);
+        await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, (ulong)xferAmount);
+
+    }
+
+    [Fact(DisplayName = "Royalties: Deleting Fee Receiver Prevents Transfers")]
+    public async Task DeletingFeeReceiverPreventsTransfers()
+    {
+        await using var fxReceiver = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.AutoAssociationLimit = 0);
+        await using var fxAccount1 = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.AutoAssociationLimit = 0);
+        await using var fxAccount2 = await TestAccount.CreateAsync(_network, ctx => ctx.CreateParams.AutoAssociationLimit = 0);
+        await using var comToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxReceiver, fxAccount1, fxAccount2);
+        await using var fxToken = await TestToken.CreateAsync(_network, fx =>
+        {
+            fx.Params.Royalties = new FixedRoyalty[]
+            {
+                    new FixedRoyalty(fxReceiver, comToken, 100)
+            };
+            fx.Params.GrantKycEndorsement = null;
+        }, fxReceiver, fxAccount1, fxAccount2);
+        long xferAmount = (long)fxToken.Params.Circulation;
+        await fxToken.TreasuryAccount.Client.TransferTokensAsync(comToken, comToken.TreasuryAccount, fxAccount1, 200, comToken.TreasuryAccount.PrivateKey);
+        await fxToken.TreasuryAccount.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, xferAmount, fxToken.TreasuryAccount.PrivateKey);
+
+        var receipt = await fxReceiver.Client.DeleteAccountAsync(fxReceiver, comToken.TreasuryAccount, fxReceiver);
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        {
+            await fxToken.TreasuryAccount.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, xferAmount, fxAccount1);
+        });
+        Assert.Equal(ResponseCode.AccountDeleted, tex.Status);
+        await AssertHg.TokenBalanceAsync(comToken, fxAccount1, 200);
+        await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, (ulong)xferAmount);
     }
 }

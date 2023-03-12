@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Hashgraph.Implementation;
+using Org.BouncyCastle.Crypto.Digests;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Hashgraph;
 
@@ -75,6 +78,36 @@ public sealed record Moniker
         ShardNum = 0;
         RealmNum = 0;
         Bytes = ReadOnlyMemory<byte>.Empty;
+    }
+    /// <summary>
+    /// Constructor from ECDSASecp256K1 Endorsement, converts the public
+    /// key into the appropriate 20-byte public key hash, with shard and
+    /// realm of zero.
+    /// </summary>
+    /// <param name="endorsement">
+    /// An ECDSASecp256K1 public key.  The moniker will automatically 
+    /// convert the public key into the matching 20-byte eth hash.
+    /// </param>
+    public Moniker(Endorsement endorsement) : this(0, 0, evmAddressFromEndorsement(endorsement))
+    {
+    }
+    /// <summary>
+    /// Constructor from ECDSASecp256K1 Endorsement, converts the public
+    /// key into the appropriate 20-byte public key hash, with specified
+    /// shard and realm.
+    /// </summary>
+    /// <param name="shardNum">
+    /// Shard Number
+    /// </param>
+    /// <param name="realmNum">
+    /// Realm Number
+    /// </param>
+    /// <param name="endorsement">
+    /// An ECDSASecp256K1 public key.  The moniker will automatically 
+    /// convert the public key into the matching 20-byte eth hash.
+    /// </param>
+    public Moniker(long shardNum, long realmNum, Endorsement endorsement) : this(shardNum, realmNum, evmAddressFromEndorsement(endorsement))
+    {
     }
     /// <summary>
     /// Public Constructor, takes an array of bytes  as the 
@@ -174,7 +207,6 @@ public sealed record Moniker
             return "None";
         }
         return $"{ShardNum}.{RealmNum}.{Hex.FromBytes(Bytes)}";
-
     }
     /// <summary>
     /// Implicit operator for converting a byte array into a encoded address. 
@@ -197,5 +229,39 @@ public sealed record Moniker
     public static implicit operator Address(Moniker moniker)
     {
         return new Address(moniker);
+    }
+    /// <summary>
+    /// Computes the EVM Hash Address from an endorsment containing
+    /// a ECDSASecp256K1 public key.
+    /// </summary>
+    /// <param name="endorsement">
+    /// The endorsement, must be of type ECDSASecp256K1
+    /// </param>
+    /// <returns>
+    /// The bytes representing the equivalent EVM Address.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// If the endorsement is not of type ECDSASecp256K1
+    /// </exception>
+    private static ReadOnlyMemory<byte> evmAddressFromEndorsement(Endorsement endorsement)
+    {
+        if (endorsement.Type == KeyType.ECDSASecp256K1)
+        {
+            var publicKey = EcdsaSecp256k1Util.PublicParamsFromDerOrRaw(endorsement.PublicKey).Q.GetEncoded(false);
+            var digest = new KeccakDigest(256);
+            digest.BlockUpdate(publicKey, 1, publicKey.Length - 1);
+            var hash = new byte[digest.GetDigestSize()];
+            digest.DoFinal(hash, 0);
+            return hash.AsMemory()[^20..];
+        }
+        throw new ArgumentException("Can only compute a Moniker address from an Endorsment of type ECDSASecp256K1.");
+    }
+}
+
+internal static class MonikerExtensions
+{
+    internal static bool IsNullOrNone([NotNullWhen(false)] this Moniker? moniker)
+    {
+        return moniker is null || moniker == Moniker.None;
     }
 }

@@ -1,5 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
-using System;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Test.Fixtures;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,16 +35,16 @@ public class CreateAccountByAliasTests
         var createReceipt = allReceipts[1] as CreateAccountReceipt;
         Assert.NotNull(createReceipt);
         Assert.NotNull(createReceipt.Address);
-        Assert.Equal(_network.ServerRealm, createReceipt.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createReceipt.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createReceipt.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createReceipt.Address.ShardNum);
         Assert.True(createReceipt.Address.AccountNum > 0);
         Assert.Equal(1, createReceipt.Id.Nonce);
 
         var createReceiptByTx = await client.GetReceiptAsync(createReceipt.Id) as CreateAccountReceipt;
         Assert.NotNull(createReceiptByTx);
         Assert.NotNull(createReceiptByTx.Address);
-        Assert.Equal(_network.ServerRealm, createReceiptByTx.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createReceiptByTx.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createReceiptByTx.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createReceiptByTx.Address.ShardNum);
         Assert.Equal(createReceipt.Address, createReceiptByTx.Address);
         Assert.Equal(createReceipt.Id, createReceiptByTx.Id);
 
@@ -57,6 +57,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createReceipt.Address);
         Assert.Equal(createReceipt.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAccount.Monikers);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
         Assert.Equal(0, infoFromAccount.ContractNonce);
@@ -64,14 +66,14 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
         Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(infoFromAccount.Expiration > DateTime.MinValue);
+        Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAccount.AssetCount);
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
         AssertHg.NotEmpty(infoFromAccount.Ledger);
         Assert.NotNull(infoFromAccount.StakingInfo);
         Assert.False(infoFromAccount.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
         Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -80,6 +82,8 @@ public class CreateAccountByAliasTests
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createReceipt.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAlias.Monikers);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
         Assert.Equal(0, infoFromAlias.ContractNonce);
@@ -87,14 +91,14 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
         Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+        Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
         AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
         Assert.NotNull(infoFromAlias.StakingInfo);
         Assert.False(infoFromAlias.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAlias.StakingInfo.PeriodStart);
         Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
@@ -126,16 +130,16 @@ public class CreateAccountByAliasTests
         var createReceipt = allReceipts[1] as CreateAccountReceipt;
         Assert.NotNull(createReceipt);
         Assert.NotNull(createReceipt.Address);
-        Assert.Equal(_network.ServerRealm, createReceipt.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createReceipt.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createReceipt.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createReceipt.Address.ShardNum);
         Assert.True(createReceipt.Address.AccountNum > 0);
         Assert.Equal(1, createReceipt.Id.Nonce);
 
         var createReceiptByTx = await client.GetReceiptAsync(createReceipt.Id) as CreateAccountReceipt;
         Assert.NotNull(createReceiptByTx);
         Assert.NotNull(createReceiptByTx.Address);
-        Assert.Equal(_network.ServerRealm, createReceiptByTx.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createReceiptByTx.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createReceiptByTx.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createReceiptByTx.Address.ShardNum);
         Assert.Equal(createReceipt.Address, createReceiptByTx.Address);
         Assert.Equal(createReceipt.Id, createReceiptByTx.Id);
 
@@ -148,6 +152,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createReceipt.Address);
         Assert.Equal(createReceipt.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAccount.Monikers);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
         Assert.Equal(0, infoFromAccount.ContractNonce);
@@ -155,14 +161,14 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
         Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(infoFromAccount.Expiration > DateTime.MinValue);
+        Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAccount.AssetCount);
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
         AssertHg.NotEmpty(infoFromAccount.Ledger);
         Assert.NotNull(infoFromAccount.StakingInfo);
         Assert.False(infoFromAccount.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
         Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -171,6 +177,8 @@ public class CreateAccountByAliasTests
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createReceipt.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAlias.Monikers);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
         Assert.Equal(0, infoFromAlias.ContractNonce);
@@ -178,14 +186,16 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
         Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAlias.AutoRenewAccount);
+        Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
         AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
         Assert.NotNull(infoFromAccount.StakingInfo);
         Assert.False(infoFromAccount.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
         Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -211,8 +221,8 @@ public class CreateAccountByAliasTests
         var createRecord = allRecords[1] as CreateAccountRecord;
         Assert.NotNull(createRecord);
         Assert.NotNull(createRecord.Address);
-        Assert.Equal(_network.ServerRealm, createRecord.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createRecord.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createRecord.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createRecord.Address.ShardNum);
         Assert.True(createRecord.Address.AccountNum > 0);
         Assert.Equal(1, createRecord.Id.Nonce);
         // NETWORK V0.21.0 UNSUPPORTED vvvv
@@ -224,10 +234,11 @@ public class CreateAccountByAliasTests
         var createRecordByTx = await client.GetTransactionRecordAsync(createRecord.Id) as CreateAccountRecord;
         Assert.NotNull(createRecordByTx);
         Assert.NotNull(createRecordByTx.Address);
-        Assert.Equal(_network.ServerRealm, createRecordByTx.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createRecordByTx.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createRecordByTx.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createRecordByTx.Address.ShardNum);
         Assert.Equal(createRecord.Address, createRecordByTx.Address);
         Assert.Equal(createRecord.Id, createRecordByTx.Id);
+        Assert.Equal(Moniker.None, createRecordByTx.Moniker);
         // NETWORK V0.21.0 UNSUPPORTED vvvv
         // NOT IMPLEMENTED YET
         //Assert.Equal(allRecords[0].Concensus, createRecordByTx.ParentTransactionConcensus);
@@ -243,6 +254,8 @@ public class CreateAccountByAliasTests
         var infoFromAccount = await client.GetAccountInfoAsync(createRecord.Address);
         Assert.Equal(createRecord.Address, infoFromAccount.Address);
         Assert.Equal(alias, infoFromAccount.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAccount.Monikers);
         Assert.NotNull(infoFromAccount.ContractId);
         Assert.False(infoFromAccount.Deleted);
         Assert.Equal(0, infoFromAccount.ContractNonce);
@@ -250,14 +263,16 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAccount.Balance > 0);
         Assert.False(infoFromAccount.ReceiveSignatureRequired);
         Assert.True(infoFromAccount.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(infoFromAccount.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
+        Assert.True(infoFromAccount.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAccount.AssetCount);
         Assert.Equal(0, infoFromAccount.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAccount.Memo);
         AssertHg.NotEmpty(infoFromAccount.Ledger);
         Assert.NotNull(infoFromAccount.StakingInfo);
         Assert.False(infoFromAccount.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, infoFromAccount.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAccount.StakingInfo.PeriodStart);
         Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
@@ -266,6 +281,8 @@ public class CreateAccountByAliasTests
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createRecord.Address, infoFromAlias.Address);
         Assert.Equal(alias, infoFromAlias.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAlias.Monikers);
         Assert.NotNull(infoFromAlias.ContractId);
         Assert.False(infoFromAlias.Deleted);
         Assert.Equal(0, infoFromAlias.ContractNonce);
@@ -273,14 +290,16 @@ public class CreateAccountByAliasTests
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
         Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAccount.AutoRenewAccount);
+        Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
         AssertHg.Equal(infoFromAccount.Ledger, infoFromAlias.Ledger);
         Assert.NotNull(infoFromAlias.StakingInfo);
         Assert.False(infoFromAlias.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAlias.StakingInfo.PeriodStart);
         Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);

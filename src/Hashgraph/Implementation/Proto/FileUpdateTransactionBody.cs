@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -19,7 +20,7 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         return new TransactionBody { FileUpdate = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new FileService.FileServiceClient(channel).updateFileAsync;
     }
@@ -44,12 +45,16 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         }
         if (updateParameters.Endorsements is null &&
             updateParameters.Contents is null &&
-            updateParameters.Memo is null)
+            updateParameters.Memo is null &&
+            updateParameters.Expiration is null)// &&
+                                                // v0.34.0 Churn
+                                                //updateParameters.AutoRenewPeriod is null &&
+                                                //updateParameters.AutoRenewAccount is null)
         {
-            throw new ArgumentException(nameof(updateParameters), "The File Update parameters contain no update properties, it is blank.");
+            throw new ArgumentException("The File Update parameters contain no update properties, it is blank.", nameof(updateParameters));
         }
         FileID = new FileID(updateParameters.File);
-        if (!(updateParameters.Endorsements is null))
+        if (updateParameters.Endorsements is not null)
         {
             Keys = new KeyList(updateParameters.Endorsements);
         }
@@ -57,9 +62,22 @@ public sealed partial class FileUpdateTransactionBody : INetworkTransaction
         {
             Contents = ByteString.CopyFrom(updateParameters.Contents.Value.ToArray());
         }
-        if (!(updateParameters.Memo is null))
+        if (updateParameters.Memo is not null)
         {
             Memo = updateParameters.Memo;
         }
+        if (updateParameters.Expiration.HasValue)
+        {
+            ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
+        }
+        // v0.34.0 Churn
+        //if (updateParameters.AutoRenewPeriod.HasValue)
+        //{
+        //    AutoRenewPeriod = new Duration(updateParameters.AutoRenewPeriod.Value);
+        //}
+        //if (updateParameters.AutoRenewAccount is not null)
+        //{
+        //    AutoRenewAccount = new AccountID(updateParameters.AutoRenewAccount);
+        //}
     }
 }

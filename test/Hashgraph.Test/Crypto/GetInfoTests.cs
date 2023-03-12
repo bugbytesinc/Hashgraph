@@ -32,14 +32,18 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
-        //Assert.NotEqual(Alias.None, info.Alias);
+        Assert.NotEqual(Alias.None, info.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.True(DateTime.MinValue <= info.StakingInfo.PeriodStart);
+        Assert.True(ConsensusTimeStamp.MinValue <= info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
@@ -58,15 +62,19 @@ public class GetInfoTests
         Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
         Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(fxAccount.CreateParams.Memo, info.Memo);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
@@ -83,17 +91,23 @@ public class GetInfoTests
         Assert.Equal(0, infoFromAddress.ContractNonce);
         Assert.Equal(fxAccount.PublicKey, infoFromAddress.Endorsement);
         Assert.True(infoFromAddress.Balance > 0);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAddress.AutoRenewAccount);
         Assert.False(infoFromAddress.ReceiveSignatureRequired);
         Assert.True(infoFromAddress.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(infoFromAddress.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAddress.AutoRenewAccount);
+        Assert.True(infoFromAddress.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal("auto-created account", infoFromAddress.Memo);
         Assert.Equal(0, infoFromAddress.AssetCount);
         Assert.Equal(0, infoFromAddress.AutoAssociationLimit);
         Assert.Equal(fxAccount.Alias, infoFromAddress.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAddress.Monikers);
         AssertHg.NotEmpty(infoFromAddress.Ledger);
         Assert.NotNull(infoFromAddress.StakingInfo);
         Assert.False(infoFromAddress.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, infoFromAddress.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAddress.StakingInfo.PeriodStart);
         Assert.Equal(0, infoFromAddress.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAddress.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAddress.StakingInfo.Proxy);
@@ -108,15 +122,19 @@ public class GetInfoTests
         Assert.True(infoFromAlias.Balance > 0);
         Assert.False(infoFromAlias.ReceiveSignatureRequired);
         Assert.True(infoFromAlias.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(infoFromAlias.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, infoFromAlias.AutoRenewAccount);
+        Assert.True(infoFromAlias.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal("auto-created account", infoFromAlias.Memo);
         Assert.Equal(0, infoFromAlias.AssetCount);
         Assert.Equal(0, infoFromAlias.AutoAssociationLimit);
         Assert.Equal(fxAccount.Alias, infoFromAlias.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(infoFromAlias.Monikers);
         AssertHg.Equal(infoFromAddress.Ledger, infoFromAlias.Ledger);
         Assert.NotNull(infoFromAlias.StakingInfo);
         Assert.False(infoFromAlias.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, infoFromAlias.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, infoFromAlias.StakingInfo.PeriodStart);
         Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
@@ -138,13 +156,17 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(Alias.None, info.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.True(info.StakingInfo.Proxied > -1);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
@@ -175,14 +197,18 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(fxAsset.Metadata.Length, info.AssetCount);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
@@ -198,7 +224,7 @@ public class GetInfoTests
         {
             InitialBalance = initialBalance,
             Endorsement = publicKey
-        })).Address;        
+        })).Address;
         var info = await client.GetAccountInfoAsync(account);
         Assert.NotNull(info.Address);
         Assert.Equal(account.RealmNum, info.Address.RealmNum);
@@ -211,14 +237,18 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.True(DateTime.MinValue <= info.StakingInfo.PeriodStart);
+        Assert.True(ConsensusTimeStamp.MinValue <= info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
@@ -247,14 +277,18 @@ public class GetInfoTests
         Assert.True(info.Balance > 0);
         Assert.False(info.ReceiveSignatureRequired);
         Assert.True(info.AutoRenewPeriod.TotalSeconds > 0);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        // v0.34.0 Churn
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(0, info.AssetCount);
         Assert.Equal(0, info.AutoAssociationLimit);
         Assert.Equal(Alias.None, info.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(info.Monikers);
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.True(DateTime.MinValue <= info.StakingInfo.PeriodStart);
+        Assert.True(ConsensusTimeStamp.MinValue <= info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);

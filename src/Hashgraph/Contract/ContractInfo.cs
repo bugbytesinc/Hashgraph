@@ -32,10 +32,10 @@ public sealed record ContractInfo
     /// </summary>
     public Endorsement? Administrator { get; private init; }
     /// <summary>
-    /// The time at which this instance of the contract is
+    /// The consensus time at which this instance of the contract is
     /// (and associated account) is set to expire.
     /// </summary>
-    public DateTime Expiration { get; private init; }
+    public ConsensusTimeStamp Expiration { get; private init; }
     /// <summary>
     /// Incremental period for auto-renewal of the contract and account. If
     /// account does not have sufficient funds to renew at the
@@ -100,7 +100,7 @@ public sealed record ContractInfo
         Address = info.AccountID.AsAddress();
         SmartContractId = info.ContractAccountID;
         Administrator = info.AdminKey?.ToEndorsement();
-        Expiration = info.ExpirationTime.ToDateTime();
+        Expiration = info.ExpirationTime.ToConsensusTimeStamp();
         RenewPeriod = info.AutoRenewPeriod.ToTimeSpan();
         RenewAccount = info.AutoRenewAccountId?.AsAddress();
         Size = info.Storage;

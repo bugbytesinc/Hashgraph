@@ -8,7 +8,7 @@ public sealed partial class ExchangeRate
         {
             HBarEquivalent = HbarEquiv,
             USDCentEquivalent = CentEquiv,
-            Expiration = ExpirationTime.ToDateTime()
+            Expiration = ExpirationTime.ToConsensusTimeStamp()
         };
     }
 }

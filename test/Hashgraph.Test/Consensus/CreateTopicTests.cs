@@ -28,7 +28,7 @@ public class CreateTopicTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -52,7 +52,7 @@ public class CreateTopicTests
         Assert.Equal("Receipt Version", info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Null(info.Administrator);
         Assert.Null(info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -84,7 +84,7 @@ public class CreateTopicTests
         Assert.Empty(info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -116,7 +116,7 @@ public class CreateTopicTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Null(info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -134,7 +134,7 @@ public class CreateTopicTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Null(info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -166,7 +166,7 @@ public class CreateTopicTests
         Assert.Equal(fx.Memo, info.Memo);
         Assert.NotEmpty(info.RunningHash.ToArray());
         Assert.Equal(0UL, info.SequenceNumber);
-        Assert.True(info.Expiration > DateTime.MinValue);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
         Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
         Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
@@ -194,15 +194,12 @@ public class CreateTopicTests
             Assert.Equal(fx.Memo, info.Memo);
             Assert.NotEmpty(info.RunningHash.ToArray());
             Assert.Equal(0UL, info.SequenceNumber);
-            Assert.True(info.Expiration > DateTime.MinValue);
+            Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
             Assert.Equal(new Endorsement(fx.AdminPublicKey), info.Administrator);
             Assert.Equal(new Endorsement(fx.ParticipantPublicKey), info.Participant);
             Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
             Assert.Equal(fxRenew.CreateRecord.Address, info.RenewAccount);
-            // NETWORK V0.21.0 UNSUPPORTED vvvv
-            // NOT IMPLEMENTED YET
-            Assert.Empty(info.Ledger.ToArray());
-            // NETWORK V0.21.0 UNSUPPORTED ^^^^
+            AssertHg.Equal(_network.Ledger, info.Ledger);
         }
     }
     [Fact(DisplayName = "Create Topic: Create Topic with missing signatures raises error.")]
@@ -237,5 +234,37 @@ public class CreateTopicTests
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
+    }
+    [Fact(DisplayName = "Create Topic: Can Create Minimal Topic with Renew Account")]
+    public async Task CanCreateMinimalTopicWithRenewAccount()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 10_00_000_000);
+        var (newPublicKey, newPrivateKey) = Generator.KeyPair();
+
+        await using var client = fxAccount.Client.Clone(ctx =>
+        {
+            ctx.Payer = fxAccount;
+            ctx.Signatory = fxAccount;
+        });
+
+        var receipt = await client.CreateTopicAsync(new CreateTopicParams
+        {
+            RenewAccount = fxAccount,
+            Memo = "TEST",
+            Administrator = newPublicKey,
+            Signatory = newPrivateKey
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        var info = await fxAccount.Client.GetTopicInfoAsync(receipt.Topic);
+        Assert.Equal("TEST", info.Memo);
+        Assert.NotEmpty(info.RunningHash.ToArray());
+        Assert.Equal(0UL, info.SequenceNumber);
+        Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
+        Assert.Equal(new Endorsement(newPublicKey), info.Administrator);
+        Assert.Null(info.Participant);
+        Assert.True(info.AutoRenewPeriod > TimeSpan.MinValue);
+        Assert.Equal(fxAccount.Record.Address, info.RenewAccount);
+        AssertHg.NotEmpty(info.Ledger);
     }
 }

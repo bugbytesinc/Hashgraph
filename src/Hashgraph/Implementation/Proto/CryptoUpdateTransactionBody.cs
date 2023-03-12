@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -18,7 +19,7 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         return new TransactionBody { CryptoUpdateAccount = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new CryptoService.CryptoServiceClient(channel).updateAccountAsync;
     }
@@ -54,7 +55,11 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
             updateParameters.Alias is null &&
             updateParameters.ProxyAccount is null &&
             updateParameters.StakedNode is null &&
-            updateParameters.DeclineStakeReward is null)
+            updateParameters.DeclineStakeReward is null)// &&
+                                                        // v0.34.0 Churn
+                                                        //updateParameters.AutoRenewAccount is null)// &&
+                                                        // HIP-583 Churn
+                                                        //updateParameters.UpdateMoniker is null)
         {
             throw new ArgumentException("The Account Updates contains no update properties, it is blank.", nameof(updateParameters));
         }
@@ -71,6 +76,11 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         {
             AutoRenewPeriod = new Duration(updateParameters.AutoRenewPeriod.Value);
         }
+        // v0.34.0 Churn
+        //if (updateParameters.AutoRenewAccount is not null)
+        //{
+        //    AutoRenewAccount = new AccountID(updateParameters.AutoRenewAccount);
+        //}
         if (updateParameters.Expiration.HasValue)
         {
             ExpirationTime = new Timestamp(updateParameters.Expiration.Value);
@@ -108,5 +118,24 @@ public sealed partial class CryptoUpdateTransactionBody : INetworkTransaction
         {
             DeclineReward = updateParameters.DeclineStakeReward.Value;
         }
+        // HIP-583 Churn
+        //if (updateParameters.UpdateMoniker is not null)
+        //{
+        //    var bytes = ByteString.CopyFrom(updateParameters.UpdateMoniker.Moniker.Bytes.Span);
+        //    switch (updateParameters.UpdateMoniker.Action)
+        //    {
+        //        case UpdateMonikerAction.AddAsDefault:
+        //        case UpdateMonikerAction.Add:
+        //            Add = new VirtualAddress
+        //            {
+        //                Address = bytes,
+        //                IsDefault = updateParameters.UpdateMoniker.Action == UpdateMonikerAction.AddAsDefault
+        //            };
+        //            break;
+        //        case UpdateMonikerAction.Remove:
+        //            Remove = bytes;
+        //            break;
+        //    }
+        //}
     }
 }

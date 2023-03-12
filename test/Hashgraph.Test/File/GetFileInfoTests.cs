@@ -29,6 +29,9 @@ public class GetFileInfoTests
         Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Info: Can Get Imutable File Info")]
     public async Task CanGetImutableFileInfo()
@@ -47,6 +50,9 @@ public class GetFileInfoTests
         Assert.Empty(info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Info: Can Get Empty File Info")]
     public async Task CanGetEmptyFileInfo()
@@ -65,6 +71,9 @@ public class GetFileInfoTests
         Assert.Equal(new Endorsement[] { test.PublicKey }, info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
     [Fact(DisplayName = "File Info: Can Get Imutable Empty File Info")]
     public async Task CanGetImutableEmptyFileInfo()
@@ -84,5 +93,8 @@ public class GetFileInfoTests
         Assert.Empty(info.Endorsements);
         Assert.False(info.Deleted);
         AssertHg.NotEmpty(info.Ledger);
+        // v0.34.0 Churn
+        //Assert.Equal(0, info.AutoRenewPeriod.TotalSeconds);
+        //Assert.Equal(Address.None, info.AutoRenewAccount);
     }
 }

@@ -10,8 +10,8 @@ public class ContextStackTests
     [Fact(DisplayName = "Context: Can Set and Reset Gateway Property")]
     public async Task CanSetAndUnsetGateway()
     {
-        var gateway1 = new Gateway("Gateway1", 0, 0, Generator.Integer(3, 100));
-        var gateway2 = new Gateway("Gateway2", 0, 0, Generator.Integer(3, 100));
+        var gateway1 = new Gateway(new Uri("http://Gateway1"), 0, 0, Generator.Integer(3, 100));
+        var gateway2 = new Gateway(new Uri("http://Gateway2"), 0, 0, Generator.Integer(3, 100));
         await using var client1 = new Client(context =>
         {
             Assert.Null(context.Gateway);

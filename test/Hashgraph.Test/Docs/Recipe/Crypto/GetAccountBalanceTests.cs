@@ -13,7 +13,7 @@ public class GetAccountBalanceTests
     // Code Example:  Docs / Recipe / Get Account Balance
     static async Task Main(string[] args)
     {                                                 // For Example:
-        var gatewayUrl = args[0];                     //   2.testnet.hedera.com:50211
+        var gatewayUrl = new Uri(args[0]);            //   http://2.testnet.hedera.com:50211
         var gatewayAccountNo = long.Parse(args[1]);   //   5 (gateway node 0.0.5)
         var queryAccountNo = long.Parse(args[2]);     //   2300 (account 0.0.2300)
         try
@@ -45,10 +45,10 @@ public class GetAccountBalanceTests
     {
         using (new ConsoleRedirector(_network.Output))
         {
-            var arg0 = _network.Gateway.Url;
+            var arg0 = _network.Gateway.Uri;
             var arg1 = _network.Gateway.AccountNum.ToString();
             var arg2 = _network.Payer.AccountNum.ToString();
-            await Main(new string[] { arg0, arg1, arg2 });
+            await Main(new string[] { arg0.ToString(), arg1, arg2 });
         }
     }
 }

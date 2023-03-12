@@ -1,5 +1,5 @@
 ﻿using Google.Protobuf;
-using Grpc.Core;
+using Grpc.Net.Client;
 using System;
 
 namespace Hashgraph.Implementation;
@@ -49,17 +49,17 @@ internal class GossipContextStack : ContextStack<GossipContextStack>, IContext
                 return false;
         }
     }
-    protected override string GetChannelUrl()
+    protected override Uri GetChannelUrl()
     {
-        var url = Gateway?.Url;
-        if (string.IsNullOrWhiteSpace(url))
+        var uri = Gateway?.Uri;
+        if (uri is null)
         {
             throw new InvalidOperationException("The Network Gateway Node has not been configured.");
         }
-        return url;
+        return uri;
     }
-    protected override Channel ConstructNewChannel(string url)
+    protected override GrpcChannel ConstructNewChannel(Uri uri)
     {
-        return new Channel(url, ChannelCredentials.Insecure);
+        return GrpcChannel.ForAddress(uri);
     }
 }

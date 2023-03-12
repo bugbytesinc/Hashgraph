@@ -105,7 +105,7 @@ public sealed class Endorsement : IEquatable<Endorsement>
     /// </exception>
     public Endorsement(ReadOnlyMemory<byte> publicKey)
     {
-        (Type, _data) = DerEncodingUtil.ParsePublicKeyFromDerBytes(publicKey);
+        (Type, _data) = MultiKeyEncodingUtil.ParsePublicKeyFromDerOrRawBytes(publicKey);
     }
     /// <summary>
     /// Create a M of M requied list of endorsements.  All listed endorsements

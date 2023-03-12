@@ -20,7 +20,7 @@ public record TransactionRecord : TransactionReceipt
     /// <summary>
     /// The consensus timestamp.
     /// </summary>
-    public DateTime? Concensus { get; internal init; }
+    public ConsensusTimeStamp? Concensus { get; internal init; }
     /// <summary>
     /// The memo that was submitted with the transaction request.
     /// </summary>
@@ -64,7 +64,7 @@ public record TransactionRecord : TransactionReceipt
     /// of the parent transaction to this transaction, otherwise null.
     /// transaction 
     /// </summary>
-    public DateTime? ParentTransactionConcensus { get; internal init; }
+    public ConsensusTimeStamp? ParentTransactionConcensus { get; internal init; }
     /// <summary>
     /// A List of account staking rewards paid  as a result of this transaction.
     /// </summary>
@@ -77,7 +77,7 @@ public record TransactionRecord : TransactionReceipt
         var record = result.Record!;
         var (tokenTransfers, assetTransfers) = record.TokenTransferLists.AsTokenAndAssetTransferLists();
         Hash = record.TransactionHash.Memory;
-        Concensus = record.ConsensusTimestamp?.ToDateTime();
+        Concensus = record.ConsensusTimestamp?.ToConsensusTimeStamp();
         Memo = record.Memo;
         Fee = record.TransactionFee;
         Transfers = record.TransferList?.ToTransfers() ?? new ReadOnlyDictionary<Address, long>(new Dictionary<Address, long>());
@@ -85,14 +85,14 @@ public record TransactionRecord : TransactionReceipt
         AssetTransfers = assetTransfers;
         Royalties = record.AssessedCustomFees.AsRoyaltyTransferList();
         Associations = record.AutomaticTokenAssociations.AsAssociationList();
-        ParentTransactionConcensus = record.ParentConsensusTimestamp?.ToDateTime();
+        ParentTransactionConcensus = record.ParentConsensusTimestamp?.ToConsensusTimeStamp();
         StakingRewards = record.PaidStakingRewards.AsStakingRewards();
     }
 }
 
 internal static class TransactionRecordExtensions
 {
-    private static ReadOnlyCollection<TransactionRecord> EMPTY_RESULT = new List<TransactionRecord>().AsReadOnly();
+    private static readonly ReadOnlyCollection<TransactionRecord> EMPTY_RESULT = new List<TransactionRecord>().AsReadOnly();
     internal static ReadOnlyCollection<TransactionRecord> Create(Proto.TransactionRecord? rootRecord, RepeatedField<Proto.TransactionRecord>? childrenRecords, RepeatedField<Proto.TransactionRecord>? failedRecords)
     {
         var count = (rootRecord != null ? 1 : 0) + (childrenRecords != null ? childrenRecords.Count : 0) + (failedRecords != null ? failedRecords.Count : 0);

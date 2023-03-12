@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -19,7 +20,7 @@ public sealed partial class FreezeTransactionBody : INetworkTransaction
         return new TransactionBody { Freeze = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new FreezeService.FreezeServiceClient(channel).freezeAsync;
     }
@@ -37,7 +38,7 @@ public sealed partial class FreezeTransactionBody : INetworkTransaction
         FreezeType = freezeType;
     }
 
-    internal FreezeTransactionBody(DateTime consensusTime, FreezeType freezeType) : this()
+    internal FreezeTransactionBody(ConsensusTimeStamp consensusTime, FreezeType freezeType) : this()
     {
         StartTime = new Timestamp(consensusTime);
         FreezeType = freezeType;

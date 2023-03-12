@@ -1,5 +1,5 @@
-﻿using Hashgraph.Test.Fixtures;
-using System;
+﻿#pragma warning disable CS0618 // Type or member is obsolete
+using Hashgraph.Test.Fixtures;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -29,8 +29,8 @@ public class CreateAccountTests
         });
         Assert.NotNull(createResult);
         Assert.NotNull(createResult.Address);
-        Assert.Equal(_network.ServerRealm, createResult.Address.RealmNum);
-        Assert.Equal(_network.ServerShard, createResult.Address.ShardNum);
+        Assert.Equal(_network.Gateway.RealmNum, createResult.Address.RealmNum);
+        Assert.Equal(_network.Gateway.ShardNum, createResult.Address.ShardNum);
         Assert.True(createResult.Address.AccountNum > 0);
 
         var info = await client.GetAccountInfoAsync(createResult.Address);
@@ -46,7 +46,7 @@ public class CreateAccountTests
         AssertHg.NotEmpty(info.Ledger);
         Assert.NotNull(info.StakingInfo);
         Assert.False(info.StakingInfo.Declined);
-        Assert.Equal(DateTime.MinValue, info.StakingInfo.PeriodStart);
+        Assert.Equal(ConsensusTimeStamp.MinValue, info.StakingInfo.PeriodStart);
         Assert.Equal(0, info.StakingInfo.PendingReward);
         Assert.Equal(0, info.StakingInfo.Proxied);
         Assert.Equal(Address.None, info.StakingInfo.Proxy);
@@ -247,7 +247,7 @@ public class CreateAccountTests
             //Assert.Equal(fxAccount.CreateParams.InitialBalance, info.Balance);
             //Assert.Equal(fxAccount.CreateParams.RequireReceiveSignature, info.ReceiveSignatureRequired);
             //Assert.Equal(fxAccount.CreateParams.AutoRenewPeriod.TotalSeconds, info.AutoRenewPeriod.TotalSeconds);
-            //Assert.True(info.Expiration > DateTime.MinValue);
+            //Assert.True(info.Expiration > ConsensusTimeStamp.MinValue);
         });
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
@@ -324,6 +324,9 @@ public class CreateAccountTests
         Assert.Equal(Alias.None, info1.Alias);
         Assert.Equal(Alias.None, info2.Alias);
         Assert.Equal(info1.Alias, info2.Alias);
+        // HIP-583 Churn
+        //Assert.Empty(info2.Monikers);
+        //Assert.Empty(info1.Monikers);
         AssertHg.NotEmpty(info1.Ledger);
         AssertHg.NotEmpty(info2.Ledger);
         Assert.NotNull(info1.StakingInfo);

@@ -150,7 +150,7 @@ public class CreateContractTests
         Assert.NotNull(fxContract.ContractRecord.Concensus);
         Assert.NotNull(fxContract.ContractRecord.Memo);
         Assert.InRange(fxContract.ContractRecord.Fee, 0UL, ulong.MaxValue);
-
+        Assert.Equal(fxContract.ContractRecord.Contract, fxContract.ContractRecord.CallResult.Contract);
         Assert.Empty(fxContract.ContractRecord.CallResult.Error);
         Assert.False(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(fxContract.ContractRecord.CallResult.GasUsed, 0UL, (ulong)fxContract.ContractParams.Gas);
@@ -163,7 +163,7 @@ public class CreateContractTests
          * 
          *  Assert.Empty(fxContract.ContractRecord.CallResult.StateChanges);
          */
-        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fxContract.ContractRecord.Contract }).Slice(12)), fxContract.ContractRecord.CallResult.EncodedAddress);
+        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fxContract.ContractRecord.Contract })[12..]), fxContract.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fxContract.ContractRecord.CallResult.Result.Size);
         Assert.False(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
     }
@@ -181,7 +181,7 @@ public class CreateContractTests
         Assert.NotNull(fxContract.ContractRecord.Concensus);
         Assert.NotNull(fxContract.ContractRecord.Memo);
         Assert.InRange(fxContract.ContractRecord.Fee, 0UL, ulong.MaxValue);
-
+        Assert.Equal(fxContract.ContractRecord.Contract, fxContract.ContractRecord.CallResult.Contract);
         Assert.Empty(fxContract.ContractRecord.CallResult.Error);
         Assert.False(fxContract.ContractRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(fxContract.ContractRecord.CallResult.GasUsed, 0UL, (ulong)fxContract.ContractParams.Gas);
@@ -194,7 +194,7 @@ public class CreateContractTests
          * 
          *  Assert.Empty(fxContract.ContractRecord.CallResult.StateChanges);
          */
-        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fxContract.ContractRecord.Contract }).Slice(12)), fxContract.ContractRecord.CallResult.EncodedAddress);
+        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fxContract.ContractRecord.Contract })[12..]), fxContract.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fxContract.ContractRecord.CallResult.Result.Size);
         Assert.False(fxContract.ContractRecord.CallResult.Result.Data.IsEmpty);
     }
@@ -218,7 +218,7 @@ public class CreateContractTests
         Assert.NotNull(fx.ContractRecord.Concensus);
         Assert.NotNull(fx.ContractRecord.Memo);
         Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
-
+        Assert.Equal(fx.ContractRecord.Contract, fx.ContractRecord.CallResult.Contract);
         Assert.Empty(fx.ContractRecord.CallResult.Error);
         Assert.False(fx.ContractRecord.CallResult.Bloom.IsEmpty);
         Assert.InRange(fx.ContractRecord.CallResult.GasUsed, 0UL, (ulong)fx.ContractParams.Gas);
@@ -231,7 +231,7 @@ public class CreateContractTests
          * 
          *  Assert.Empty(fx.ContractRecord.CallResult.StateChanges);
          */
-        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract }).Slice(12)), fx.ContractRecord.CallResult.EncodedAddress);
+        Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract })[12..]), fx.ContractRecord.CallResult.EncodedAddress);
         Assert.NotEqual(0, fx.ContractRecord.CallResult.Result.Size);
         Assert.False(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
         // NETWORK DEFECT: NOT IMPLEMENED
@@ -295,12 +295,12 @@ public class CreateContractTests
         Assert.InRange(fx.ContractRecord.Fee, 0UL, ulong.MaxValue);
     }
 
-    [Fact(DisplayName = "NETWORK V0.27.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
+    [Fact(DisplayName = "NETWORK V0.35.0 DEFECT: Contract Update: Can Update Auto Association Limit Fails")]
     public async Task CanCreateTokenTransferContractWithMaxAutoAssociationsDefect()
     {
-        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanCreateTokenTransferContractWithMaxAutoAssociations));
-        Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
-        Assert.Equal("0", testFailException.Actual);
+        var testFailException = (await Assert.ThrowsAsync<PrecheckException>(CanCreateTokenTransferContractWithMaxAutoAssociations));
+        Assert.Equal(ResponseCode.NotSupported, testFailException.Status);
+        Assert.StartsWith("Transaction Failed Pre-Check", testFailException.Message);
 
         //[Fact(DisplayName = "Create Contract: Can Create Token Transfer Contract With Max Auto Associations")]
         async Task CanCreateTokenTransferContractWithMaxAutoAssociations()
@@ -318,7 +318,7 @@ public class CreateContractTests
     }
     [Fact(DisplayName = "Create Contract: Can Set Staking Node")]
     public async Task CanCreateTokenTransferContractWithMaxAutoAssociations()
-    {        
+    {
         await using var fxContract = await TransferTokenContract.CreateAsync(_network, fx =>
         {
             fx.ContractParams.StakedNode = 3;

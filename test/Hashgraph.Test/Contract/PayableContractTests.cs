@@ -31,6 +31,7 @@ public class PayableContractTests
         Assert.NotNull(record.Concensus);
         Assert.Equal(".NET SDK Test", record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
+        Assert.Equal(fx.ContractRecord.Contract, record.CallResult.Contract);
         Assert.Empty(record.CallResult.Error);
         Assert.False(record.CallResult.Bloom.IsEmpty);
         Assert.InRange(record.CallResult.GasUsed, 0UL, 30_000UL);
@@ -90,7 +91,7 @@ public class PayableContractTests
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, info.Balance);
     }
     [Fact(DisplayName = "Payable Contract: Can Call Contract that Sends Funds")]
-    public async Task CanCallContractMethodSendingFunds()
+    async Task CanCallContractMethodSendingFunds()
     {
         await using var fx = await PayableContract.CreateAsync(_network);
         await using var fx2 = await TestAccount.CreateAsync(_network);
@@ -125,9 +126,8 @@ public class PayableContractTests
         var infoAfter = await fx2.Client.GetAccountInfoAsync(fx2.Record.Address);
         Assert.Equal((ulong)fx.ContractParams.InitialBalance, infoAfter.Balance - infoBefore.Balance);
     }
-
     [Fact(DisplayName = "Payable Contract: Can Send Funds to External Payable Default Function")]
-    public async Task CanSendFundsToPayableContractWithExternalPayable()
+    async Task CanSendFundsToPayableContractWithExternalPayable()
     {
         await using var fx = await PayableContract.CreateAsync(_network);
 

@@ -28,9 +28,9 @@ public class SignPendingTransactionTests
         Assert.Equal(Address.None, receipt.Pending.Id);
         Assert.Equal(pendingFx.Record.Pending.TxId, receipt.Pending.TxId);
         Assert.NotNull(receipt.CurrentExchangeRate);
-        Assert.InRange(receipt.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(receipt.CurrentExchangeRate.Expiration, ConsensusTimeStamp.MinValue, ConsensusTimeStamp.MaxValue);
         Assert.NotNull(receipt.NextExchangeRate);
-        Assert.InRange(receipt.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(receipt.NextExchangeRate.Expiration, ConsensusTimeStamp.MinValue, ConsensusTimeStamp.MaxValue);
     }
     [Fact(DisplayName = "Pending Transaction Sign: Can Sign a Pending Transfer Transaction and get Record")]
     public async Task CanSignAPendingTransferTransactionAndGetRecord()
@@ -45,9 +45,9 @@ public class SignPendingTransactionTests
         Assert.Equal(Address.None, record.Pending.Id);
         Assert.Equal(pendingFx.Record.Pending.TxId, record.Pending.TxId);
         Assert.NotNull(record.CurrentExchangeRate);
-        Assert.InRange(record.CurrentExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(record.CurrentExchangeRate.Expiration, ConsensusTimeStamp.MinValue, ConsensusTimeStamp.MaxValue);
         Assert.NotNull(record.NextExchangeRate);
-        Assert.InRange(record.NextExchangeRate.Expiration, DateTime.MinValue, DateTime.MaxValue);
+        Assert.InRange(record.NextExchangeRate.Expiration, ConsensusTimeStamp.MinValue, ConsensusTimeStamp.MaxValue);
         Assert.False(record.Hash.IsEmpty);
         Assert.NotNull(record.Concensus);
         Assert.Empty(record.Memo);

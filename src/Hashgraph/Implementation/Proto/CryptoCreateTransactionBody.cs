@@ -1,4 +1,6 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf;
+using Grpc.Core;
+using Grpc.Net.Client;
 using Hashgraph;
 using Hashgraph.Implementation;
 using System;
@@ -18,7 +20,7 @@ public sealed partial class CryptoCreateTransactionBody : INetworkTransaction
         return new TransactionBody { CryptoCreateAccount = this };
     }
 
-    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(Channel channel)
+    Func<Transaction, Metadata?, DateTime?, CancellationToken, AsyncUnaryCall<TransactionResponse>> INetworkTransaction.InstantiateNetworkRequestMethod(GrpcChannel channel)
     {
         return new CryptoService.CryptoServiceClient(channel).createAccountAsync;
     }
@@ -64,6 +66,11 @@ public sealed partial class CryptoCreateTransactionBody : INetworkTransaction
         InitialBalance = createParameters.InitialBalance;
         ReceiverSigRequired = createParameters.RequireReceiveSignature;
         AutoRenewPeriod = new Duration(createParameters.AutoRenewPeriod);
+        // v0.34.0 Churn
+        //AutoRenewAccount = createParameters.AutoRenewAccount.IsNullOrNone() ? null : new AccountID(createParameters.AutoRenewAccount);
+        Alias = createParameters.Alias.IsNullOrNone() ? ByteString.Empty : new Key(createParameters.Alias.Endorsement).ToByteString();
+        // HIP-583 Churn
+        //EvmAddress = createParameters.Moniker.IsNullOrNone() ? ByteString.Empty : ByteString.CopyFrom(createParameters.Moniker.Bytes.Span);
         DeclineReward = createParameters.DeclineStakeReward;
         Memo = createParameters.Memo ?? string.Empty;
         MaxAutomaticTokenAssociations = createParameters.AutoAssociationLimit;

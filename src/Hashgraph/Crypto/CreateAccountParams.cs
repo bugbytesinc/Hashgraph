@@ -67,6 +67,25 @@ public sealed class CreateAccountParams
     /// hbars sufficient to cover the renewal charge.
     /// </summary>
     public TimeSpan AutoRenewPeriod { get; set; } = TimeSpan.FromSeconds(7890000);
+    // v0.34.0 Churn
+    ///// <summary>
+    ///// Optional Account that will pay the auto-renewal fees for 
+    ///// this account. If <code>null</code> or <code>None</code>; or
+    ///// if the account has a zero hBar balance at the time of renewal,
+    ///// fees will be deducted from this created account upon renewal.
+    ///// </summary>
+    //public Address? AutoRenewAccount { get; set; } = null;
+    /// <summary>
+    /// Optional Alias value to use to identify this newly created account.
+    /// </summary>
+    public Alias? Alias { get; set; } = null;
+    // HIP-583 Churn
+    ///// <summary>
+    ///// Optional EOA 20-byte address to use to idenfity this newly creaed
+    ///// acocunt.  It is derived from the keccak-256 hash of a 
+    ///// ECDSA_SECP256K1 primitive key.
+    ///// </summary>
+    //public Moniker? Moniker { get; set; } = null;
     /// <summary>
     /// Additional private key, keys or signing callback method 
     /// required to create this account.  Typically matches the

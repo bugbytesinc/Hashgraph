@@ -60,11 +60,25 @@ public sealed record AccountInfo
     /// account will be deleted.
     /// </summary>
     public TimeSpan AutoRenewPeriod { get; private init; }
+    // v0.34.0 Churn
+    ///// <summary>
+    ///// If specified, pays the fees for renewing this account.
+    ///// If not specified, this account pays renew fees.
+    ///// </summary>
+    //public Address AutoRenewAccount { get; private init; }
     /// <summary>
     /// The account expiration time, at which it will attempt
     /// to renew if sufficient funds remain in the account.
     /// </summary>
-    public DateTime Expiration { get; private init; }
+    public ConsensusTimeStamp Expiration { get; private init; }
+    // HIP-583 Churn
+    ///// <summary>
+    ///// List of virtual addresss (keys) associated with this 
+    ///// account as seen by the hedera virtual machine (ECDSA types),
+    ///// The value of the dictionary is a flag indicating the
+    ///// address should be considered the 'default'.
+    ///// </summary>
+    //public ReadOnlyDictionary<Moniker, bool> Monikers { get; private init; }
     /// <summary>
     /// A short description associated with the account.
     /// </summary>
@@ -114,11 +128,15 @@ public sealed record AccountInfo
 #pragma warning restore CS0618 // Type or member is obsolete
         ReceiveSignatureRequired = info.ReceiverSigRequired;
         AutoRenewPeriod = info.AutoRenewPeriod.ToTimeSpan();
-        Expiration = info.ExpirationTime.ToDateTime();
+        // v0.34.0 Churn
+        //AutoRenewAccount = info.AutoRenewAccount.AsAddress();
+        Expiration = info.ExpirationTime.ToConsensusTimeStamp();
         Memo = info.Memo;
         AssetCount = info.OwnedNfts;
         AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
         Alias = info.Alias.ToAlias(info.AccountID.ShardNum, info.AccountID.RealmNum);
+        // HIP-583 Churn
+        //Monikers = info.VirtualAddresses.ToMonikers(Address);
         Ledger = info.LedgerId.Memory;
         StakingInfo = new StakingInfo(info.StakingInfo);
     }
