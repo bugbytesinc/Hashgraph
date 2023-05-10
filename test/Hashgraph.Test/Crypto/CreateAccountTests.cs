@@ -276,7 +276,7 @@ public class CreateAccountTests
         Assert.Equal(list.Length, info.Endorsement.List.Length);
         foreach (var key in info.Endorsement.List)
         {
-            Assert.Equal(list[0], key.PublicKey);
+            Assert.Equal(list[0], key);
         }
 
         var createdBalance = await client.GetAccountBalanceAsync(createdAddress);

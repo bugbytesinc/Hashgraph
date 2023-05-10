@@ -15,7 +15,7 @@ namespace Hashgraph.Test.Fixtures;
 
 public class NetworkCredentials
 {
-    private IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
     private Client _rootClient;
     private MirrorRestClient _mirrorClient;
     private Gateway _gateway;
@@ -26,15 +26,15 @@ public class NetworkCredentials
     private Address _systemUndeleteAdminAddress = null;
     private Address _systemFreezeAdminAddress = null;
     private ReadOnlyMemory<byte> _ledger = default;
-    private Mirror.AccountInfo _rootPayer = default;
-    private string _mirrorGrpcUrl = default;
+    private AccountData _rootPayer = default;
+    private readonly string _mirrorGrpcUrl = default;
 
     public ITestOutputHelper Output { get; set; }
 
     public Gateway Gateway => _gateway;
     public Address Payer => _rootPayer.Account;
     public ReadOnlyMemory<byte> PrivateKey => _privateKey;
-    public ReadOnlyMemory<byte> PublicKey => _rootPayer.Endorsement.PublicKey;
+    public ReadOnlyMemory<byte> PublicKey => _rootPayer.Endorsement.ToBytes();
     public Signatory Signatory => _signatory;
     public ReadOnlyMemory<byte> Ledger => _ledger;
     public NetworkCredentials()
@@ -87,9 +87,9 @@ public class NetworkCredentials
     {
         return _rootClient.Clone();
     }
-    public MirrorClient NewMirror()
+    public MirrorGrpcClient NewMirror()
     {
-        return new MirrorClient(ctx =>
+        return new MirrorGrpcClient(ctx =>
         {
             ctx.Uri = new Uri(_mirrorGrpcUrl);
             ctx.OnSendingRequest = OutputSendingRequest;
@@ -135,7 +135,7 @@ public class NetworkCredentials
     {
         Output?.WriteLine($"{DateTime.UtcNow}  RX:({tryNo:00})  {JsonFormatter.Default.Format(message)}");
     }
-    private bool TryGetQueryTransaction(Query query, out Proto.Transaction payment)
+    private static bool TryGetQueryTransaction(Query query, out Proto.Transaction payment)
     {
         payment = null;
         switch (query.QueryCase)
@@ -198,42 +198,27 @@ public class NetworkCredentials
     }
     public async Task<Address> GetSystemAccountAddress()
     {
-        if (_systemAccountAddress is null)
-        {
-            _systemAccountAddress = await GetSpecialAccount(new Address(0, 0, 50));
-        }
+        _systemAccountAddress ??= await GetSpecialAccount(new Address(0, 0, 50));
         return _systemAccountAddress == Address.None ? null : _systemAccountAddress;
     }
     public async Task<Address> GetGenisisAccountAddress()
     {
-        if (_systemAccountAddress is null)
-        {
-            _systemAccountAddress = await GetSpecialAccount(new Address(0, 0, 2));
-        }
+        _systemAccountAddress ??= await GetSpecialAccount(new Address(0, 0, 2));
         return _systemAccountAddress == Address.None ? null : _systemAccountAddress;
     }
     public async Task<Address> GetSystemDeleteAdminAddress()
     {
-        if (_systemDeleteAdminAddress is null)
-        {
-            _systemDeleteAdminAddress = await GetSpecialAccount(new Address(0, 0, 59));
-        }
+        _systemDeleteAdminAddress ??= await GetSpecialAccount(new Address(0, 0, 59));
         return _systemDeleteAdminAddress == Address.None ? null : _systemDeleteAdminAddress;
     }
     public async Task<Address> GetSystemUndeleteAdminAddress()
     {
-        if (_systemUndeleteAdminAddress is null)
-        {
-            _systemUndeleteAdminAddress = await GetSpecialAccount(new Address(0, 0, 60));
-        }
+        _systemUndeleteAdminAddress ??= await GetSpecialAccount(new Address(0, 0, 60));
         return _systemUndeleteAdminAddress == Address.None ? null : _systemUndeleteAdminAddress;
     }
     public async Task<Address> GetSystemFreezeAdminAddress()
     {
-        if (_systemFreezeAdminAddress is null)
-        {
-            _systemFreezeAdminAddress = await GetSpecialAccount(new Address(0, 0, 58));
-        }
+        _systemFreezeAdminAddress ??= await GetSpecialAccount(new Address(0, 0, 58));
         return _systemFreezeAdminAddress == Address.None ? null : _systemFreezeAdminAddress;
     }
     private async Task<Address> GetSpecialAccount(Address address)
@@ -270,9 +255,9 @@ public class NetworkCredentials
             throw new Exception("Unable to find a target gossip node.", ex);
         }
 
-        async Task<List<GossipNode>> GetGosspNodeListAsync()
+        async Task<List<GossipNodeData>> GetGosspNodeListAsync()
         {
-            var list = new List<GossipNode>();
+            var list = new List<GossipNodeData>();
             await foreach (var node in _mirrorClient.GetGossipNodesAsync())
             {
                 list.Add(node);
@@ -281,13 +266,13 @@ public class NetworkCredentials
         }
     }
 
-    private async Task<Mirror.AccountInfo> LookupPayerAsync()
+    private async Task<AccountData> LookupPayerAsync()
     {
-        var (keyType, keyParams) = MultiKeyEncodingUtil.ParsePrivateKeyFromDerOrRawBytes(_privateKey);
+        var (keyType, keyParams) = KeyUtils.ParsePrivateKey(_privateKey);
         var endorsement = keyType switch
         {
             KeyType.Ed25519 => new Endorsement(KeyType.Ed25519, ((Ed25519PrivateKeyParameters)keyParams).GeneratePublicKey().GetEncoded()),
-            KeyType.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, EcdsaSecp256k1Util.domain.G.Multiply(((ECPrivateKeyParameters)keyParams).D).GetEncoded(true)),
+            KeyType.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, KeyUtils.ToEcdsaSecp256k1PublicKeyParameters((ECPrivateKeyParameters)keyParams)),
             _ => throw new Exception("Invalid private key type.")
         };
         await foreach (var account in _mirrorClient.GetAccountsFromEndorsementAsync(endorsement))

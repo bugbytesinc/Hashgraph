@@ -79,21 +79,15 @@ public sealed class Signatory : ISignatory, IEquatable<Signatory>
     /// </param>
     public Signatory(ReadOnlyMemory<byte> privateKey)
     {
-        var (type, data) = MultiKeyEncodingUtil.ParsePrivateKeyFromDerOrRawBytes(privateKey);
+        var (type, data) = KeyUtils.ParsePrivateKey(privateKey);
         _data = data;
-        switch (type)
+        _type = type switch
         {
-            case KeyType.Ed25519:
-                _type = Type.Ed25519;
-                break;
-            case KeyType.ECDSASecp256K1:
-                _type = Type.ECDSASecp256K1;
-                break;
-            case KeyType.List:
-                throw new ArgumentOutOfRangeException(nameof(type), "Only signatories representing a single key are supported with this constructor, please use the list constructor instead.");
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type), "Not a presently supported Signatory key type, please consider the callback signatory as an alternative.");
-        }
+            KeyType.Ed25519 => Type.Ed25519,
+            KeyType.ECDSASecp256K1 => Type.ECDSASecp256K1,
+            KeyType.List => throw new ArgumentOutOfRangeException(nameof(type), "Only signatories representing a single key are supported with this constructor, please use the list constructor instead."),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), "Not a presently supported Signatory key type, please consider the callback signatory as an alternative."),
+        };
     }
     /// <summary>
     /// Create a signatory that is a combination of a number of other
@@ -148,11 +142,11 @@ public sealed class Signatory : ISignatory, IEquatable<Signatory>
         {
             case KeyType.Ed25519:
                 _type = Type.Ed25519;
-                _data = Ed25519Util.PrivateParamsFromDerOrRaw(privateKey);
+                _data = KeyUtils.ParsePrivateEd25519Key(privateKey);
                 break;
             case KeyType.ECDSASecp256K1:
                 _type = Type.ECDSASecp256K1;
-                _data = EcdsaSecp256k1Util.PrivateParamsFromDerOrRaw(privateKey);
+                _data = KeyUtils.ParsePrivateEcdsaSecp256k1Key(privateKey);
                 break;
             case KeyType.List:
                 throw new ArgumentOutOfRangeException(nameof(type), "Only signatories representing a single key are supported with this constructor, please use the list constructor instead.");
@@ -335,18 +329,14 @@ public sealed class Signatory : ISignatory, IEquatable<Signatory>
     /// </returns>
     public override int GetHashCode()
     {
-        switch (_type)
+        return _type switch
         {
-            case Type.Ed25519:
-                return $"Signatory:{_type}:{((Ed25519PrivateKeyParameters)_data).GetHashCode()}".GetHashCode();
-            case Type.ECDSASecp256K1:
-                return $"Signatory:{_type}:{((ECPrivateKeyParameters)_data).GetHashCode()}".GetHashCode();
-            case Type.Callback:
-                return $"Signatory:{_type}:{_data.GetHashCode()}".GetHashCode();
-            case Type.List:
-                return $"Signatory:{_type}:{string.Join(':', ((Signatory[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode();
-        }
-        return "Signatory:Empty".GetHashCode();
+            Type.Ed25519 => $"Signatory:{_type}:{((Ed25519PrivateKeyParameters)_data).GetHashCode()}".GetHashCode(),
+            Type.ECDSASecp256K1 => $"Signatory:{_type}:{((ECPrivateKeyParameters)_data).GetHashCode()}".GetHashCode(),
+            Type.Callback => $"Signatory:{_type}:{_data.GetHashCode()}".GetHashCode(),
+            Type.List => $"Signatory:{_type}:{string.Join(':', ((Signatory[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode(),
+            _ => "Signatory:Empty".GetHashCode(),
+        };
     }
     /// <summary>
     /// Equals implementation.
@@ -405,10 +395,10 @@ public sealed class Signatory : ISignatory, IEquatable<Signatory>
         switch (_type)
         {
             case Type.Ed25519:
-                Ed25519Util.Sign(invoice, (Ed25519PrivateKeyParameters)_data);
+                KeyUtils.Sign(invoice, (Ed25519PrivateKeyParameters)_data);
                 break;
             case Type.ECDSASecp256K1:
-                EcdsaSecp256k1Util.Sign(invoice, (ECPrivateKeyParameters)_data);
+                KeyUtils.Sign(invoice, (ECPrivateKeyParameters)_data);
                 break;
             case Type.List:
                 foreach (ISignatory signer in (Signatory[])_data)

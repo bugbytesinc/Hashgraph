@@ -16,7 +16,7 @@ namespace Hashgraph.Implementation;
 /// <summary>
 /// Internal Base Implementation of the <see cref="IContext"/> and 
 /// <see cref="IMirrorContext"/> used for configuring
-/// <see cref="Client"/> and <see cref="MirrorClient"/>objects.  Maintains 
+/// <see cref="Client"/> and <see cref="MirrorGrpcClient"/>objects.  Maintains 
 /// a stack of parent objects and coordinates values returned for 
 /// various contexts.  Not intended for public use.
 /// </summary>

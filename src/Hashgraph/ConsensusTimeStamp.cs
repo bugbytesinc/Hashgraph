@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Hashgraph.Converters;
+using System;
+using System.Text.Json.Serialization;
 
 namespace Hashgraph;
 /// <summary>
 /// Represents a consensus timestamp value to the
 /// resolution of nanoseconds.
 /// </summary>
+[JsonConverter(typeof(ConsensusTimeStampConverter))]
 public readonly record struct ConsensusTimeStamp : IComparable<ConsensusTimeStamp>, IComparable
 {
     /// <summary>

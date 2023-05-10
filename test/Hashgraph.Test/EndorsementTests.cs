@@ -232,7 +232,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.Ed25519, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(publicKey1.ToArray(), endorsement.ToBytes().ToArray());
     }
     [Fact(DisplayName = "Endorsements: Default Can Create ECDSA Secp256K1 Type")]
     public void DefaultCanCreateECDSASecp256K1Type()
@@ -243,7 +243,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(publicKey1.ToArray(), endorsement.ToBytes().ToArray());
     }
     [Fact(DisplayName = "Endorsements: Creating Ed25519 Type produces Ed25519 type")]
     public void CanCreateEd25519Type()
@@ -254,7 +254,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.Ed25519, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(publicKey1.ToArray(), endorsement.ToBytes().ToArray());
     }
     [Fact(DisplayName = "Endorsements: Creating ECDSA Secp256K1 Type produces ECDSA Secp256K1 type")]
     public void CanCreateECDSASecp256K1Type()
@@ -265,7 +265,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(publicKey1.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(publicKey1.ToArray(), endorsement.ToBytes().ToArray());
     }
     [Fact(DisplayName = "Endorsements: Creating Contract Type from Bytes Produces Error.")]
     public void CreatingContractTypeFromBytesProducesError()
@@ -289,7 +289,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.Contract, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        AssertHg.Empty(endorsement.PublicKey);
+        AssertHg.Empty(endorsement.ToBytes(KeyFormat.Der));
         Assert.Equal(contract, endorsement.Contract);
     }
     [Fact(DisplayName = "Endorsements: Creating n of m List produces n of m List type")]
@@ -324,52 +324,52 @@ public class EndorsementsTests
         Assert.Equal(KeyType.List, tree.Type);
         Assert.Equal(3U, tree.RequiredCount);
         Assert.Equal(3, tree.List.Length);
-        Assert.Empty(tree.PublicKey.ToArray());
+        Assert.Empty(tree.ToBytes(KeyFormat.Der).ToArray());
 
         Assert.Equal(KeyType.List, tree.List[0].Type);
         Assert.Equal(1U, tree.List[0].RequiredCount);
         Assert.Equal(2, tree.List[0].List.Length);
-        Assert.Empty(tree.List[0].PublicKey.ToArray());
+        Assert.Empty(tree.List[0].ToBytes(KeyFormat.Der).ToArray());
 
         Assert.Equal(KeyType.Ed25519, tree.List[0].List[0].Type);
         Assert.Equal(0U, tree.List[0].List[0].RequiredCount);
         Assert.Empty(tree.List[0].List[0].List);
-        Assert.Equal(publicKey1a.ToArray(), tree.List[0].List[0].PublicKey.ToArray());
+        Assert.Equal(publicKey1a.ToArray(), tree.List[0].List[0].ToBytes().ToArray());
 
         Assert.Equal(KeyType.Ed25519, tree.List[0].List[1].Type);
         Assert.Equal(0U, tree.List[0].List[1].RequiredCount);
         Assert.Empty(tree.List[0].List[1].List);
-        Assert.Equal(publicKey1b.ToArray(), tree.List[0].List[1].PublicKey.ToArray());
+        Assert.Equal(publicKey1b.ToArray(), tree.List[0].List[1].ToBytes().ToArray());
 
         Assert.Equal(KeyType.List, tree.List[1].Type);
         Assert.Equal(1U, tree.List[1].RequiredCount);
         Assert.Equal(2, tree.List[1].List.Length);
-        Assert.Empty(tree.List[1].PublicKey.ToArray());
+        Assert.Empty(tree.List[1].ToBytes(KeyFormat.Der).ToArray());
 
         Assert.Equal(KeyType.Ed25519, tree.List[1].List[0].Type);
         Assert.Equal(0U, tree.List[1].List[0].RequiredCount);
         Assert.Empty(tree.List[1].List[0].List);
-        Assert.Equal(publicKey2a.ToArray(), tree.List[1].List[0].PublicKey.ToArray());
+        Assert.Equal(publicKey2a.ToArray(), tree.List[1].List[0].ToBytes().ToArray());
 
         Assert.Equal(KeyType.Ed25519, tree.List[1].List[1].Type);
         Assert.Equal(0U, tree.List[1].List[1].RequiredCount);
         Assert.Empty(tree.List[1].List[1].List);
-        Assert.Equal(publicKey2b.ToArray(), tree.List[1].List[1].PublicKey.ToArray());
+        Assert.Equal(publicKey2b.ToArray(), tree.List[1].List[1].ToBytes().ToArray());
 
         Assert.Equal(KeyType.List, tree.List[2].Type);
         Assert.Equal(2U, tree.List[2].RequiredCount);
         Assert.Equal(2, tree.List[2].List.Length);
-        Assert.Empty(tree.List[2].PublicKey.ToArray());
+        Assert.Empty(tree.List[2].ToBytes(KeyFormat.Der).ToArray());
 
         Assert.Equal(KeyType.Ed25519, tree.List[2].List[0].Type);
         Assert.Equal(0U, tree.List[2].List[0].RequiredCount);
         Assert.Empty(tree.List[2].List[0].List);
-        Assert.Equal(publicKey3a.ToArray(), tree.List[2].List[0].PublicKey.ToArray());
+        Assert.Equal(publicKey3a.ToArray(), tree.List[2].List[0].ToBytes().ToArray());
 
         Assert.Equal(KeyType.Ed25519, tree.List[2].List[1].Type);
         Assert.Equal(0U, tree.List[2].List[1].RequiredCount);
         Assert.Empty(tree.List[2].List[1].List);
-        Assert.Equal(publicKey3b.ToArray(), tree.List[2].List[1].PublicKey.ToArray());
+        Assert.Equal(publicKey3b.ToArray(), tree.List[2].List[1].ToBytes().ToArray());
     }
     [Fact(DisplayName = "Endorsements: Make List Type from Key type constructor throws error.")]
     public void CreateListTypeFromKeyTypeConstructorThrowsError()
@@ -451,7 +451,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.Ed25519, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(publicKey.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(publicKey.ToArray(), endorsement.ToBytes().ToArray());
     }
 
     [Fact(DisplayName = "Endorsements: Can Parse Ed25519 From Der Encoding")]
@@ -463,7 +463,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.Ed25519, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(derPublicKey.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(derPublicKey.ToArray(), endorsement.ToBytes().ToArray());
     }
     [Fact(DisplayName = "Endorsements: Can Parse Ed25519 Raw 32 bit key")]
     public void CanParseEd25519Raw32BitKey()
@@ -475,7 +475,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.Ed25519, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(derPublicKey.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(derPublicKey.ToArray(), endorsement.ToBytes().ToArray());
     }
 
     [Fact(DisplayName = "Endorsements: Can Parse Secp256K1 From Extended Der Encoding")]
@@ -487,7 +487,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(derPublicKey.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(derPublicKey.ToArray(), endorsement.ToBytes().ToArray());
     }
 
     [Fact(DisplayName = "Endorsements: Can Parse Secp256K1 From Compacted Der Encoding")]
@@ -500,7 +500,7 @@ public class EndorsementsTests
         Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(longFormKey.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(longFormKey.ToArray(), endorsement.ToBytes().ToArray());
     }
 
     [Fact(DisplayName = "Endorsements: Can Parse Secp256K1 From Raw Form")]
@@ -513,6 +513,6 @@ public class EndorsementsTests
         Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
-        Assert.Equal(longFormKey.ToArray(), endorsement.PublicKey.ToArray());
+        Assert.Equal(longFormKey.ToArray(), endorsement.ToBytes().ToArray());
     }
 }

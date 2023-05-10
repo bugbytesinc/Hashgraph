@@ -31,6 +31,18 @@ public class SignatoriesTests
         var sig2 = new Signatory(KeyType.Ed25519, privateKey);
         Assert.Equal(sig1, sig2);
     }
+    [Fact(DisplayName = "Signatories: Implicit and Explicit Ed25519 Signatories Are Same")]
+    public void ImplicitAndExplicitEd25519SignatoriesAreSame()
+    {
+        var (_, privateKey) = Generator.Ed25519KeyPair();
+
+        var sig1 = new Signatory(KeyType.Ed25519, privateKey[^32..]);
+        var sig2 = new Signatory(KeyType.Ed25519, privateKey);
+        var sig3 = new Signatory(privateKey);
+        Assert.Equal(sig1, sig2);
+        Assert.Equal(sig1, sig3);
+        Assert.Equal(sig2, sig3);
+    }
     [Fact(DisplayName = "Signatories: Can Create Explicit ECDSASecp256K1 Signatories Object")]
     public void CanCreateExplicitECDSASecp256K1SignatoriesObject()
     {

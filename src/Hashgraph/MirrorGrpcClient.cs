@@ -18,7 +18,7 @@ namespace Hashgraph;
 /// underlying protobuf communication layer but does provide hooks 
 /// allowing advanced low-level manipulation of messages if necessary.
 /// </remarks>
-public sealed partial class MirrorClient : IAsyncDisposable
+public sealed partial class MirrorGrpcClient : IAsyncDisposable
 {
     /// <summary>
     /// The context (stack) keeps a memory of configuration and preferences 
@@ -44,7 +44,7 @@ public sealed partial class MirrorClient : IAsyncDisposable
     /// Optional configuration method that can set the location of the network node 
     /// accessing the network and how transaction fees shall be paid for.
     /// </param>
-    public MirrorClient(Action<IMirrorContext>? configure = null) : this(configure, null)
+    public MirrorGrpcClient(Action<IMirrorContext>? configure = null) : this(configure, null)
     {
     }
     /// <summary>
@@ -53,22 +53,19 @@ public sealed partial class MirrorClient : IAsyncDisposable
     /// </summary>
     /// <param name="configure">
     /// The optional <see cref="IContext"/> callback method, passed in from public 
-    /// instantiation or a <see cref="MirrorClient.Clone(Action{IMirrorContext})"/> method call.
+    /// instantiation or a <see cref="MirrorGrpcClient.Clone(Action{IMirrorContext})"/> method call.
     /// </param>
     /// <param name="parent">
     /// The parent <see cref="MirrorContextStack"/> if this creation is a result of a 
     /// <see cref="Client.Clone(Action{IContext})"/> method call.
     /// </param>
-    private MirrorClient(Action<IMirrorContext>? configure, MirrorContextStack? parent)
+    private MirrorGrpcClient(Action<IMirrorContext>? configure, MirrorContextStack? parent)
     {
-        if (parent is null)
-        {
-            // Create a Context with System Defaults 
-            // that are unreachable and can't be "Reset".
-            // At the moment, there are no defaults to set
-            // but we still want a "root".
-            parent = new MirrorContextStack(null);
-        }
+        // Create a Context with System Defaults 
+        // that are unreachable and can't be "Reset".
+        // At the moment, there are no defaults to set
+        // but we still want a "root".
+        parent ??= new MirrorContextStack(null);
         _context = new MirrorContextStack(parent);
         configure?.Invoke(_context);
     }
@@ -103,9 +100,9 @@ public sealed partial class MirrorClient : IAsyncDisposable
     /// <returns>
     /// A new instance of a client object.
     /// </returns>
-    public MirrorClient Clone(Action<IMirrorContext>? configure = null)
+    public MirrorGrpcClient Clone(Action<IMirrorContext>? configure = null)
     {
-        return new MirrorClient(configure, _context);
+        return new MirrorGrpcClient(configure, _context);
     }
     /// <summary>
     /// Creates a new child context based on the current context instance.  

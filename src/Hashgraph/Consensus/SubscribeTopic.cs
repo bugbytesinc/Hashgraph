@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Hashgraph;
 
-public partial class MirrorClient
+public partial class MirrorGrpcClient
 {
     /// <summary>
     /// Subscribes to a Topic Stream from a mirror node, placing the

@@ -903,6 +903,7 @@ public class TransferTokenTests
         }, fxAccount);
         await using var fxContract = await TransferTokenContract.CreateAsync(_network);
         await using var client = fxContract.Client.Clone(ctx => ctx.SignaturePrefixTrimLimit = int.MaxValue);
+        await fxTreasuryAccount.Client.TransferAsync(_network.Payer, fxTreasuryAccount, 2_00_000_000);
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
@@ -920,7 +921,10 @@ public class TransferTokenTests
                 fxAccount.Record.Address,
                 xferAmount
             },
-            Signatory = fxToken.TreasuryAccount.PrivateKey
+            //Signatory = fxToken.TreasuryAccount.PrivateKey
+        }, ctx => {
+            ctx.Payer = fxToken.TreasuryAccount;
+            ctx.Signatory = fxToken.TreasuryAccount;
         }); ;
 
         var record = await fxAccount.Client.GetTransactionRecordAsync(receipt.Id) as CallContractRecord;

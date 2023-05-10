@@ -63,20 +63,17 @@ public sealed partial class Client : IAsyncDisposable
     /// </param>
     private Client(Action<IContext>? configure, GossipContextStack? parent)
     {
-        if (parent is null)
+        // Create a Context with System Defaults 
+        // that are unreachable and can't be "Reset".
+        parent ??= new GossipContextStack(null)
         {
-            // Create a Context with System Defaults 
-            // that are unreachable and can't be "Reset".
-            parent = new GossipContextStack(null)
-            {
-                FeeLimit = 2_900_000_000,
-                TransactionDuration = TimeSpan.FromSeconds(120),
-                RetryCount = 5,
-                RetryDelay = TimeSpan.FromMilliseconds(200),
-                SignaturePrefixTrimLimit = 0,
-                AdjustForLocalClockDrift = false
-            };
-        }
+            FeeLimit = 2_900_000_000,
+            TransactionDuration = TimeSpan.FromSeconds(120),
+            RetryCount = 5,
+            RetryDelay = TimeSpan.FromMilliseconds(200),
+            SignaturePrefixTrimLimit = 0,
+            AdjustForLocalClockDrift = false
+        };
         _context = new GossipContextStack(parent);
         configure?.Invoke(_context);
     }

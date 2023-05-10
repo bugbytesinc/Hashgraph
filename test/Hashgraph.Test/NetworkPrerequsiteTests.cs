@@ -50,8 +50,8 @@ public class NetworkPrerequsiteTests
         var pubKey = Hex.FromBytes(publicKeyPrefix.Concat(publicKey.GetEncoded()).ToArray());
         var priKey = Hex.FromBytes(privateKeyPrefix.Concat(privateKey.GetEncoded()).ToArray());
 
-        var checkPrivateKey = Ed25519Util.PrivateParamsFromDerOrRaw(Hex.ToBytes(priKey));
-        var checkPublicKey = Ed25519Util.ToDerBytes(checkPrivateKey.GeneratePublicKey());
+        var checkPrivateKey = KeyUtils.ParsePrivateEd25519Key(Hex.ToBytes(priKey));
+        var checkPublicKey = KeyUtils.EncodeAsDer(checkPrivateKey.GeneratePublicKey());
         var checkPublicHex = Hex.FromBytes(checkPublicKey);
 
         Assert.Equal(pubKey, checkPublicHex);
