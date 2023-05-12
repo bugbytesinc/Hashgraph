@@ -222,7 +222,12 @@ public class NetworkCredentials
         _systemFreezeAdminAddress ??= await GetSpecialAccount(new Address(0, 0, 58));
         return _systemFreezeAdminAddress == Address.None ? null : _systemFreezeAdminAddress;
     }
-
+    public async Task WaitForTransactionInMirror(TxId transactionID)
+    {
+        // Need to add more to _mirrorClient about getting a TX by ID
+        var record = await _rootClient.GetTransactionRecordAsync(transactionID);
+        await WaitForMirrorNodeConsensusTimestamp(record.Concensus.Value);
+    }
     public async Task WaitForMirrorNodeConsensusTimestamp(ConsensusTimeStamp timestamp)
     {
         var count = 0;
