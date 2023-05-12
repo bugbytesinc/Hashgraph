@@ -367,8 +367,8 @@ public class SignatoriesTests
         Assert.Equal("b9732ad628cb6c28da0c52a3123af7f2725e7a4df53c36a7fc357334ff6dba37", Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
     }
 
-    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Extended Der Encoding")]
-    public async Task CanParseSecp256K1FromExtendedDerEncoding()
+    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Der Encoding")]
+    public async Task CanParseSecp256K1FromDerEncoding()
     {
         var body = new TransactionBody
         {
@@ -392,8 +392,8 @@ public class SignatoriesTests
         Assert.Equal(Hex.FromBytes(compressed), Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
     }
 
-    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Compacted Der Encoding")]
-    public async Task CanParseSecp256K1FromCompactedDerEncoding()
+    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Hedera Der Encoding")]
+    public async Task CanParseSecp256K1FromHederaDerEncoding()
     {
         var body = new TransactionBody
         {

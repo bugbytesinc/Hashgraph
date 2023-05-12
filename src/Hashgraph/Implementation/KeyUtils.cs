@@ -17,7 +17,7 @@ internal static class KeyUtils
     private static readonly ReadOnlyMemory<byte> _hederaSecp256k1PublicKeyDerPrefix = Hex.ToBytes("302d300706052b8104000a032200");
     private static readonly ReadOnlyMemory<byte> _hederaSecp256k1PrivateKeyDerPrefix = Hex.ToBytes("3030020100300706052b8104000a04220420");
     private static readonly X9ECParameters _ecdsaSecp256k1curve = SecNamedCurves.GetByName("secp256k1");
-    private static readonly ECDomainParameters _domain = new(_ecdsaSecp256k1curve.Curve, _ecdsaSecp256k1curve.G, _ecdsaSecp256k1curve.N, _ecdsaSecp256k1curve.H);
+    internal static readonly ECDomainParameters EcdsaSecp256k1DomainParams = new(_ecdsaSecp256k1curve.Curve, _ecdsaSecp256k1curve.G, _ecdsaSecp256k1curve.N, _ecdsaSecp256k1curve.H);
 
     internal static (KeyType keyType, AsymmetricKeyParameter publicKeyParam) ParsePrivateKey(ReadOnlyMemory<byte> privateKey)
     {
@@ -30,7 +30,7 @@ internal static class KeyUtils
         {
             try
             {
-                return (KeyType.ECDSASecp256K1, new ECPrivateKeyParameters(new BigInteger(privateKey.ToArray(), 18, 32), _domain));
+                return (KeyType.ECDSASecp256K1, new ECPrivateKeyParameters(new BigInteger(1, privateKey.ToArray(), 18, 32), EcdsaSecp256k1DomainParams));
             }
             catch (Exception ex)
             {
@@ -83,7 +83,7 @@ internal static class KeyUtils
             try
             {
                 var q = _ecdsaSecp256k1curve.Curve.DecodePoint(publicKey.ToArray());
-                return (KeyType.ECDSASecp256K1, new ECPublicKeyParameters(q, _domain));
+                return (KeyType.ECDSASecp256K1, new ECPublicKeyParameters(q, EcdsaSecp256k1DomainParams));
             }
             catch (Exception ex)
             {
@@ -96,7 +96,7 @@ internal static class KeyUtils
             try
             {
                 var q = _ecdsaSecp256k1curve.Curve.DecodePoint(publicKey[14..].ToArray());
-                return (KeyType.ECDSASecp256K1, new ECPublicKeyParameters(q, _domain));
+                return (KeyType.ECDSASecp256K1, new ECPublicKeyParameters(q, EcdsaSecp256k1DomainParams));
             }
             catch (Exception ex)
             {
@@ -216,12 +216,12 @@ internal static class KeyUtils
         {
             if (privateKey.Length > 30 && privateKey.Length < 34)
             {
-                return new ECPrivateKeyParameters(new BigInteger(privateKey.ToArray()), _domain);
+                return new ECPrivateKeyParameters(new BigInteger(1, privateKey.ToArray()), EcdsaSecp256k1DomainParams);
             }
             // This is the "special" hedera encoding.
             if (privateKey.Length == 50 && privateKey.Span.StartsWith(_hederaSecp256k1PrivateKeyDerPrefix.Span))
             {
-                return new ECPrivateKeyParameters(new BigInteger(privateKey.ToArray(), 18, 32), _domain);
+                return new ECPrivateKeyParameters(new BigInteger(1, privateKey.ToArray(), 18, 32), EcdsaSecp256k1DomainParams);
             }
             // Bouncy Castle Recognized DER Encodings
             asymmetricKeyParameter = PrivateKeyFactory.CreateKey(privateKey.ToArray());
@@ -253,13 +253,13 @@ internal static class KeyUtils
             if (publicKey.Length == 33)
             {
                 var q = _ecdsaSecp256k1curve.Curve.DecodePoint(publicKey.ToArray());
-                return new ECPublicKeyParameters(q, _domain);
+                return new ECPublicKeyParameters(q, EcdsaSecp256k1DomainParams);
             }
             // Or is this the "special" hedera encoding.
             if (publicKey.Length == 47 && publicKey.Span.StartsWith(_hederaSecp256k1PublicKeyDerPrefix.Span))
             {
                 var q = _ecdsaSecp256k1curve.Curve.DecodePoint(publicKey[14..].ToArray());
-                return new ECPublicKeyParameters(q, _domain);
+                return new ECPublicKeyParameters(q, EcdsaSecp256k1DomainParams);
             }
             // Bouncy Castle Recognized DER Encodings
             asymmetricKeyParameter = PublicKeyFactory.CreateKey(publicKey.ToArray());
@@ -287,7 +287,7 @@ internal static class KeyUtils
         var publicKey = publicKeyParameters.Q.GetEncoded(true);
         var result = new byte[publicKey.Length + _hederaSecp256k1PublicKeyDerPrefix.Length];
         Array.Copy(_hederaSecp256k1PublicKeyDerPrefix.ToArray(), result, _hederaSecp256k1PublicKeyDerPrefix.Length);
-        Array.Copy(publicKey, 0, result, 0, publicKey.Length);
+        Array.Copy(publicKey, 0, result, _hederaSecp256k1PublicKeyDerPrefix.Length, publicKey.Length);
         return result;
     }
     internal static ReadOnlyMemory<byte> EncodeAsRaw(ECPublicKeyParameters publicKeyParameters)
@@ -306,16 +306,10 @@ internal static class KeyUtils
         var encoded = new byte[64];
         Insert256Int(components[0], 0, encoded);
         Insert256Int(components[1], 32, encoded);
-        var publicKey = _domain.G.Multiply(privateKey.D).GetEncoded(true);
+        var publicKey = EcdsaSecp256k1DomainParams.G.Multiply(privateKey.D).GetEncoded(true);
         var prefix = new ReadOnlyMemory<byte>(publicKey, 0, Math.Min(Math.Max(6, invoice.MinimumDesiredPrefixSize), publicKey.Length));
         invoice.AddSignature(KeyType.ECDSASecp256K1, prefix, encoded);
     }
-
-    internal static byte[] ToEcdsaSecp256k1PublicKeyParameters(ECPrivateKeyParameters privateKey)
-    {
-        return _domain.G.Multiply((privateKey).D).GetEncoded(true);
-    }
-
     private static void Insert256Int(BigInteger component, int offset, byte[] array)
     {
         byte[] bytes = component.ToByteArrayUnsigned();

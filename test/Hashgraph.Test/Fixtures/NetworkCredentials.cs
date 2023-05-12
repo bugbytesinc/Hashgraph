@@ -37,6 +37,7 @@ public class NetworkCredentials
     public ReadOnlyMemory<byte> PublicKey => _rootPayer.Endorsement.ToBytes();
     public Signatory Signatory => _signatory;
     public ReadOnlyMemory<byte> Ledger => _ledger;
+    public MirrorRestClient MirrorRestClient => _mirrorClient;
     public NetworkCredentials()
     {
         _configuration = new ConfigurationBuilder()
@@ -221,6 +222,23 @@ public class NetworkCredentials
         _systemFreezeAdminAddress ??= await GetSpecialAccount(new Address(0, 0, 58));
         return _systemFreezeAdminAddress == Address.None ? null : _systemFreezeAdminAddress;
     }
+
+    public async Task WaitForMirrorNodeConsensusTimestamp(ConsensusTimeStamp timestamp)
+    {
+        var count = 0;
+        var latest = await _mirrorClient.GetLatestTransactionTimestampAsync();
+        while (latest < timestamp)
+        {
+            if (count > 500)
+            {
+                throw new Exception($"The Mirror node appears to be too far out of sync, gave up waiting for {timestamp}");
+            }
+            count++;
+            await Task.Delay(700);
+            latest = await _mirrorClient.GetLatestTransactionTimestampAsync();
+        }
+    }
+
     private async Task<Address> GetSpecialAccount(Address address)
     {
         await using var client = NewClient();
@@ -269,10 +287,11 @@ public class NetworkCredentials
     private async Task<AccountData> LookupPayerAsync()
     {
         var (keyType, keyParams) = KeyUtils.ParsePrivateKey(_privateKey);
+
         var endorsement = keyType switch
         {
             KeyType.Ed25519 => new Endorsement(KeyType.Ed25519, ((Ed25519PrivateKeyParameters)keyParams).GeneratePublicKey().GetEncoded()),
-            KeyType.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, KeyUtils.ToEcdsaSecp256k1PublicKeyParameters((ECPrivateKeyParameters)keyParams)),
+            KeyType.ECDSASecp256K1 => new Endorsement(KeyType.ECDSASecp256K1, ToEcdsaSecp256k1PublicKeyParameters((ECPrivateKeyParameters)keyParams)),
             _ => throw new Exception("Invalid private key type.")
         };
         await foreach (var account in _mirrorClient.GetAccountsFromEndorsementAsync(endorsement))
@@ -280,6 +299,12 @@ public class NetworkCredentials
             return account;
         }
         throw new Exception("Unable to find payer account from key.");
+
+
+        static byte[] ToEcdsaSecp256k1PublicKeyParameters(ECPrivateKeyParameters privateKey)
+        {
+            return privateKey.Parameters.G.Multiply(privateKey.D).GetEncoded(true);
+        }
     }
 
 

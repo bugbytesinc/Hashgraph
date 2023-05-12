@@ -1,5 +1,8 @@
-﻿using Org.BouncyCastle.Crypto.Parameters;
+﻿using Hashgraph.Implementation;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Math.EC.Rfc8032;
+using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.X509;
 using System;
 using System.Security.Cryptography;
@@ -28,6 +31,11 @@ public class Mnenmonic
     /// </summary>
     private readonly ReadOnlyMemory<byte> _ed25519SeedKey = Encoding.UTF8.GetBytes("ed25519 seed");
     /// <summary>
+    /// The root seed key phrase for generating ECDSA Secp256k1 keys
+    /// from a mnenmonic seed phrase.
+    /// </summary>
+    private readonly ReadOnlyMemory<byte> _ecdsaSecp256k1 = Encoding.UTF8.GetBytes("Bitcoin seed");
+    /// <summary>
     /// The master seed value in bytes generated from the
     /// mnemonic words given to the constructor.  (words
     /// are not saved internally)
@@ -52,55 +60,88 @@ public class Mnenmonic
         _seed = derive.GetBytes(64);
     }
     /// <summary>
-    /// Computes the HD Ed25519 key pair for this mnenmonic.
+    /// Computes the HD key pair for this mnenmonic.
     /// </summary>
     /// <param name="path">
     /// The key derivitation path that should be used to
     /// generate the private and public key values.
     /// </param>
     /// <returns>
-    /// DER Encoded Ed25519 public and private key values.
+    /// DER Encoded public and private key values.
     /// </returns>
-    public (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) GenerateEd25519KeyPair(KeyDerivitationPath path)
+    public (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) GenerateKeyPair(KeyDerivitationPath path)
     {
-        var keyDataAndChainCode = new HMACSHA512(_ed25519SeedKey.ToArray()).ComputeHash(_seed.ToArray());
-        foreach (uint index in path.Path.ToArray())
+        if (path.KeyType == KeyType.Ed25519)
         {
-            keyDataAndChainCode = CKDpriv(keyDataAndChainCode, index);
+            var keyDataAndChainCode = new HMACSHA512(_ed25519SeedKey.ToArray()).ComputeHash(_seed.ToArray());
+            foreach (uint index in path.Path.ToArray())
+            {
+                byte[] data = new byte[37];
+                var indexBytes = BitConverter.GetBytes(index);
+                if (BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(indexBytes);
+                }
+                // TODO - Review the spec for any path that is
+                // not fully "hardened" to make sure this is the
+                // correct key value to put here. Presently all
+                // Ed25519 paths in the eccosystem are comletely
+                // "hardened".
+                Array.Copy(keyDataAndChainCode, 0, data, 1, 32);
+                Array.Copy(indexBytes, 0, data, 33, 4);
+                keyDataAndChainCode = new HMACSHA512(keyDataAndChainCode[32..]).ComputeHash(data);
+            }
+            var keyParams = new Ed25519PrivateKeyParameters(keyDataAndChainCode[..32], 0);
+            var publicKey = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyParams.GeneratePublicKey()).GetDerEncoded();
+            var privateKey = new byte[_edd25519PrivateKeyDerPrefix.Length + Ed25519.SecretKeySize];
+            Array.Copy(_edd25519PrivateKeyDerPrefix.ToArray(), privateKey, _edd25519PrivateKeyDerPrefix.Length);
+            Array.Copy(keyParams.GetEncoded(), 0, privateKey, _edd25519PrivateKeyDerPrefix.Length, Ed25519.SecretKeySize);
+            return (publicKey, privateKey);
         }
-        var keyParams = new Ed25519PrivateKeyParameters(keyDataAndChainCode[..32], 0);
-        var publicKey = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(keyParams.GeneratePublicKey()).GetDerEncoded();
-        var privateKey = new byte[_edd25519PrivateKeyDerPrefix.Length + Ed25519.SecretKeySize];
-        Array.Copy(_edd25519PrivateKeyDerPrefix.ToArray(), privateKey, _edd25519PrivateKeyDerPrefix.Length);
-        Array.Copy(keyParams.GetEncoded(), 0, privateKey, _edd25519PrivateKeyDerPrefix.Length, Ed25519.SecretKeySize);
-        return (publicKey, privateKey);
+        else if (path.KeyType == KeyType.ECDSASecp256K1)
+        {
+            var keyDataAndChainCode = new HMACSHA512(_ecdsaSecp256k1.ToArray()).ComputeHash(_seed.ToArray());
+            foreach (uint index in path.Path.ToArray())
+            {
+                keyDataAndChainCode = CKDprivEcdsaSecp256k1(keyDataAndChainCode, index);
+            }
+            var privateKeyParams = new ECPrivateKeyParameters(new BigInteger(1, keyDataAndChainCode[..32]), KeyUtils.EcdsaSecp256k1DomainParams);
+            var publicKeyParams = new ECPublicKeyParameters(privateKeyParams.Parameters.G.Multiply(privateKeyParams.D), privateKeyParams.Parameters);
+            var privateKey = PrivateKeyInfoFactory.CreatePrivateKeyInfo(privateKeyParams).GetDerEncoded();
+            var publicKey = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(publicKeyParams).GetDerEncoded();
+            return (publicKey, privateKey);
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException(nameof(path), $"Key type of {path.KeyType} is not supported.");
+        }
     }
-    /// <summary>
-    /// The Private Child Key Derivitation Function used to 
-    /// navigate the Key Derivitation path.
-    /// </summary>
-    /// <param name="parentKeyDataAndChainCode">
-    /// The parent key (first 32 bytes) and the parent
-    /// chain code (last 32 bytes) representing the current
-    /// step in the derivitation path.
-    /// </param>
-    /// <param name="index">
-    /// The index value of child key and code to generate.
-    /// </param>
-    /// <returns>
-    /// A child key and chain code derived from the parent
-    /// values for the specified index.
-    /// </returns>
-    private static byte[] CKDpriv(byte[] parentKeyDataAndChainCode, uint index)
+    private static byte[] CKDprivEcdsaSecp256k1(byte[] parentKeyDataAndChainCode, uint index)
     {
+        byte[] data = new byte[37];
         var indexBytes = BitConverter.GetBytes(index);
         if (BitConverter.IsLittleEndian)
         {
             Array.Reverse(indexBytes);
         }
-        byte[] data = new byte[37];
-        Array.Copy(parentKeyDataAndChainCode, 0, data, 1, 32);
+        if ((index & 0x80000000) == 0x80000000)
+        {
+            Array.Copy(parentKeyDataAndChainCode, 0, data, 1, 32);
+        }
+        else
+        {
+            var parentPrivateKeyParams = new ECPrivateKeyParameters(new BigInteger(1, parentKeyDataAndChainCode[..32]), KeyUtils.EcdsaSecp256k1DomainParams);
+            var parentPublicKeyParams = new ECPublicKeyParameters(parentPrivateKeyParams.Parameters.G.Multiply(parentPrivateKeyParams.D), parentPrivateKeyParams.Parameters);
+            Array.Copy(parentPublicKeyParams.Q.GetEncoded(true), 0, data, 0, 33);
+        }
         Array.Copy(indexBytes, 0, data, 33, 4);
-        return new HMACSHA512(parentKeyDataAndChainCode[32..]).ComputeHash(data);
+        var digest = new HMACSHA512(parentKeyDataAndChainCode[32..]).ComputeHash(data);
+        var digestLeft = new BigInteger(1, digest[..32]);
+        var keyParam = new BigInteger(1, parentKeyDataAndChainCode[..32]);
+        var keyBytes = digestLeft.Add(keyParam).Mod(KeyUtils.EcdsaSecp256k1DomainParams.N).ToByteArrayUnsigned();
+        var childKeyDataAndChainCode = new byte[64];
+        Array.Copy(keyBytes, 0, childKeyDataAndChainCode, 32 - keyBytes.Length, keyBytes.Length);
+        Array.Copy(digest, 32, childKeyDataAndChainCode, 32, 32);
+        return childKeyDataAndChainCode;
     }
 }

@@ -1,8 +1,9 @@
-﻿using Hashgraph.Implementation;
+﻿using Google.Protobuf;
+using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
+using Org.BouncyCastle.X509;
 using System;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using Xunit;
 
 namespace Hashgraph.Tests;
@@ -445,7 +446,7 @@ public class EndorsementsTests
     [Fact(DisplayName = "Endorsements: Can Parse Ed25519 Der Encoded")]
     public void CanParseEd25519DerEncoded()
     {
-        var publicKey = Hex.ToBytes("302a300506032b65700321001dd944db2def347f51ef46ab7bafba05e139ed3cadfa9786ce6ab034284d500d");        
+        var publicKey = Hex.ToBytes("302a300506032b65700321001dd944db2def347f51ef46ab7bafba05e139ed3cadfa9786ce6ab034284d500d");
 
         var endorsement = new Endorsement(publicKey);
         Assert.Equal(KeyType.Ed25519, endorsement.Type);
@@ -457,7 +458,7 @@ public class EndorsementsTests
     [Fact(DisplayName = "Endorsements: Can Parse Ed25519 From Der Encoding")]
     public void CanParseEd25519FromDerEncoding()
     {
-        var derPublicKey = Hex.ToBytes("302a300506032b65700321001dd944db2def347f51ef46ab7bafba05e139ed3cadfa9786ce6ab034284d500d");        
+        var derPublicKey = Hex.ToBytes("302a300506032b65700321001dd944db2def347f51ef46ab7bafba05e139ed3cadfa9786ce6ab034284d500d");
 
         var endorsement = new Endorsement(derPublicKey);
         Assert.Equal(KeyType.Ed25519, endorsement.Type);
@@ -481,7 +482,7 @@ public class EndorsementsTests
     [Fact(DisplayName = "Endorsements: Can Parse Secp256K1 From Extended Der Encoding")]
     public void CanParseSecp256K1FromExtendedDerEncoding()
     {
-        var (derPublicKey, _) = Generator.Secp256k1KeyPair();        
+        var (derPublicKey, _) = Generator.Secp256k1KeyPair();
 
         var endorsement = new Endorsement(derPublicKey);
         Assert.Equal(KeyType.ECDSASecp256K1, endorsement.Type);
@@ -514,5 +515,72 @@ public class EndorsementsTests
         Assert.Empty(endorsement.List);
         Assert.Equal(0U, endorsement.RequiredCount);
         Assert.Equal(longFormKey.ToArray(), endorsement.ToBytes().ToArray());
+    }
+
+    [Fact(DisplayName = "Endorsements: Can Extract Ed25519 Bytes in Various Formats")]
+    public void CanExtractEd25519BytesInVariousFormats()
+    {
+        var derPublicKey = Hex.ToBytes("302a300506032b6570032100eeed21c291ef1d6860540370e9907ea9a7cb529dba1c0bfaa6dcf644f28aab31");
+        var rawPublicKey = derPublicKey[^32..];
+        var prtPublicKey = (new Proto.Key { Ed25519 = ByteString.CopyFrom(rawPublicKey.ToArray()) }).ToByteString().Memory;
+
+        var endorsement = new Endorsement(rawPublicKey);
+
+        AssertHg.Equal(derPublicKey, endorsement.ToBytes(KeyFormat.Default));
+        AssertHg.Equal(rawPublicKey, endorsement.ToBytes(KeyFormat.Raw));
+        AssertHg.Equal(derPublicKey, endorsement.ToBytes(KeyFormat.Der));
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Protobuf));
+        AssertHg.Equal(derPublicKey, endorsement.ToBytes(KeyFormat.Hedera));
+        AssertHg.Equal(rawPublicKey, endorsement.ToBytes(KeyFormat.Mirror));
+    }
+    [Fact(DisplayName = "Endorsements: Can Extract Secp256K1 Bytes in Various Formats")]
+    public void CanExtractSecp256K1BytesInVariousFormats()
+    {
+        ReadOnlyMemory<byte> rawPublicKey = Hex.ToBytes("026866c9664a95af2e9d8e7109eb8ccbe74eb822d49be1242b1511d775d1826e2a");
+        ReadOnlyMemory<byte> hdrPublicKey = Hex.ToBytes("302d300706052b8104000a032200026866c9664a95af2e9d8e7109eb8ccbe74eb822d49be1242b1511d775d1826e2a");
+        ReadOnlyMemory<byte> derPublicKey = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(KeyUtils.ParsePublicEcdsaSecp256k1Key(rawPublicKey)).GetDerEncoded();
+        ReadOnlyMemory<byte> prtPublicKey = (new Proto.Key { ECDSASecp256K1 = ByteString.CopyFrom(rawPublicKey.ToArray()) }).ToByteString().Memory;
+
+        var endorsement = new Endorsement(KeyType.ECDSASecp256K1, rawPublicKey);
+
+        AssertHg.Equal(derPublicKey, endorsement.ToBytes(KeyFormat.Default));
+        AssertHg.Equal(rawPublicKey, endorsement.ToBytes(KeyFormat.Raw));
+        AssertHg.Equal(derPublicKey, endorsement.ToBytes(KeyFormat.Der));
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Protobuf));
+        AssertHg.Equal(hdrPublicKey, endorsement.ToBytes(KeyFormat.Hedera));
+        AssertHg.Equal(rawPublicKey, endorsement.ToBytes(KeyFormat.Mirror));
+    }
+    [Fact(DisplayName = "Endorsements: Can Extract Contract Bytes in Various Formats")]
+    public void CanExtractContractBytesInVariousFormats()
+    {
+        var contract = new Address(Generator.Integer(0, 5), Generator.Integer(1, 5), Generator.Integer(1001, 1000000));
+
+        ReadOnlyMemory<byte> prtPublicKey = (new Proto.Key { ContractID = new Proto.ContractID(contract) }).ToByteString().Memory;
+
+        var endorsement = new Endorsement(contract);
+
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Default));
+        AssertHg.Equal(ReadOnlyMemory<byte>.Empty, endorsement.ToBytes(KeyFormat.Raw));
+        AssertHg.Equal(ReadOnlyMemory<byte>.Empty, endorsement.ToBytes(KeyFormat.Der));
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Protobuf));
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Hedera));
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Mirror));
+    }
+    [Fact(DisplayName = "Endorsements: Can Extract List Bytes in Various Formats")]
+    public void CanExtractListBytesInVariousFormats()
+    {
+        var (derPublicKey, _) = Generator.Secp256k1KeyPair();
+        var inner = new Endorsement(derPublicKey);
+        var endorsement = new Endorsement(1, inner);
+
+        var contract = new Address(Generator.Integer(0, 5), Generator.Integer(1, 5), Generator.Integer(1001, 1000000));
+        ReadOnlyMemory<byte> prtPublicKey = (new Proto.Key(endorsement)).ToByteString().Memory;  
+
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Default));
+        AssertHg.Equal(ReadOnlyMemory<byte>.Empty, endorsement.ToBytes(KeyFormat.Raw));
+        AssertHg.Equal(ReadOnlyMemory<byte>.Empty, endorsement.ToBytes(KeyFormat.Der));
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Protobuf));
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Hedera));
+        AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Mirror));
     }
 }
