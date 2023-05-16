@@ -62,7 +62,7 @@ public class AccountData
     /// if there are no funds to extends its lifetime.
     /// </summary>
     [JsonPropertyName("expiry_timestamp")]
-    public ConsensusTimeStamp Expires { get; set; }
+    public ConsensusTimeStamp Expiration { get; set; }
     /// <summary>
     /// The public endorsments requied by this account.
     /// </summary>

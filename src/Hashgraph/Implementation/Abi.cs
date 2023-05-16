@@ -120,9 +120,7 @@ internal static class Abi
     }
     private static ReadOnlyMemory<byte> EncodeStringPart(object value)
     {
-#nullable disable
-        return EncodeByteArrayPart(Encoding.UTF8.GetBytes(Convert.ToString(value)));
-#nullable enable
+        return EncodeByteArrayPart(Encoding.UTF8.GetBytes(Convert.ToString(value) ?? string.Empty));
     }
     private static object DecodeStringPart(ReadOnlyMemory<byte> arg)
     {
@@ -333,28 +331,28 @@ internal static class Abi
     }
     private static TypeMapping GetMapping(Type type)
     {
-#nullable disable
-        if (_typeMap.TryGetValue(type, out TypeMapping mapping))
+        if (_typeMap.TryGetValue(type, out TypeMapping? mapping))
         {
             return mapping;
         }
         throw new InvalidOperationException($"Encoding of type {type.Name} is not currently supported.");
-#nullable enable
     }
     private static readonly Dictionary<Type, TypeMapping> _typeMap;
     static Abi()
     {
-        _typeMap = new Dictionary<Type, TypeMapping>();
-        _typeMap.Add(typeof(bool), new TypeMapping("bool", false, 32, EncodeBoolPart, DecodeBoolPart));
-        _typeMap.Add(typeof(int), new TypeMapping("int32", false, 32, EncodeInt32Part, DecodeInt32Part));
-        _typeMap.Add(typeof(long), new TypeMapping("int64", false, 32, EncodeInt64Part, DecodeInt64Part));
-        _typeMap.Add(typeof(uint), new TypeMapping("uint32", false, 32, EncodeUInt32Part, DecodeUInt32Part));
-        _typeMap.Add(typeof(ulong), new TypeMapping("uint64", false, 32, EncodeUInt64Part, DecodeUInt64Part));
-        _typeMap.Add(typeof(string), new TypeMapping("string", true, 32, EncodeStringPart, DecodeStringPart));
-        _typeMap.Add(typeof(byte[]), new TypeMapping("bytes", true, 32, EncodeByteArrayPart, DecodeByteArrayPart));
-        _typeMap.Add(typeof(ReadOnlyMemory<byte>), new TypeMapping("bytes", true, 32, EncodeReadOnlyMemoryPart, DecodeReadOnlyMemoryPart));
-        _typeMap.Add(typeof(Address), new TypeMapping("address", false, 32, EncodeAddressPart, DecodeAddressPart));
-        _typeMap.Add(typeof(Address[]), new TypeMapping("address[]", true, 32, EncodeAddressArrayPart, DecodeAddressArrayPart));
+        _typeMap = new Dictionary<Type, TypeMapping>
+        {
+            { typeof(bool), new TypeMapping("bool", false, 32, EncodeBoolPart, DecodeBoolPart) },
+            { typeof(int), new TypeMapping("int32", false, 32, EncodeInt32Part, DecodeInt32Part) },
+            { typeof(long), new TypeMapping("int64", false, 32, EncodeInt64Part, DecodeInt64Part) },
+            { typeof(uint), new TypeMapping("uint32", false, 32, EncodeUInt32Part, DecodeUInt32Part) },
+            { typeof(ulong), new TypeMapping("uint64", false, 32, EncodeUInt64Part, DecodeUInt64Part) },
+            { typeof(string), new TypeMapping("string", true, 32, EncodeStringPart, DecodeStringPart) },
+            { typeof(byte[]), new TypeMapping("bytes", true, 32, EncodeByteArrayPart, DecodeByteArrayPart) },
+            { typeof(ReadOnlyMemory<byte>), new TypeMapping("bytes", true, 32, EncodeReadOnlyMemoryPart, DecodeReadOnlyMemoryPart) },
+            { typeof(Address), new TypeMapping("address", false, 32, EncodeAddressPart, DecodeAddressPart) },
+            { typeof(Address[]), new TypeMapping("address[]", true, 32, EncodeAddressArrayPart, DecodeAddressArrayPart) }
+        };
     }
     internal class TypeMapping
     {

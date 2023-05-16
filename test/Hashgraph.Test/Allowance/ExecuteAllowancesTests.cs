@@ -359,4 +359,34 @@ public class ExecuteAllowancesTests
         await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxAllowances.Owner, fxAllowances.TestAsset.Metadata.Length);
         await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 0);
     }
+    [Fact(DisplayName = "Execute Allowances: Can Delete Account having Allowance")]
+    public async Task CanDeleteAccountHavingAllowance()
+    {
+        await using var fxAllowances = await TestAllowance.CreateAsync(_network);
+        await using var fxDestination = await TestAccount.CreateAsync(_network);
+
+        await fxDestination.Client.AssociateTokenAsync(fxAllowances.TestToken, fxDestination, fxDestination.PrivateKey);
+
+        var xferAmount = (long)fxAllowances.TestToken.Params.Circulation / 2;
+
+        var client = fxAllowances.Client.Clone(ctx =>
+        {
+            ctx.Payer = fxAllowances.Agent;
+            ctx.Signatory = fxAllowances.Agent;
+        });
+
+        var receipt = await client.TransferAsync(new TransferParams
+        {
+            TokenTransfers = new[] {
+                new TokenTransfer(fxAllowances.TestToken, fxAllowances.Owner, -xferAmount, true),
+                new TokenTransfer(fxAllowances.TestToken, fxDestination, xferAmount, false)
+            }
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await AssertHg.TokenBalanceAsync(fxAllowances.TestToken, fxDestination, (ulong)xferAmount);
+
+        var del = await client.DeleteAccountAsync(fxAllowances.Agent, _network.Payer);
+        Assert.Equal(ResponseCode.Success, del.Status);
+    }
 }

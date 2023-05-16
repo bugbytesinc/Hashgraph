@@ -59,7 +59,7 @@ public partial class MirrorRestClient
     /// <returns>
     /// The token information.
     /// </returns>
-    public Task<TokenData?> GetToken(Address tokenId, params IMirrorQueryFilter[] filters)
+    public Task<TokenData?> GetTokenAsync(Address tokenId, params IMirrorQueryFilter[] filters)
     {
         var path = GenerateInitialPath($"tokens/{tokenId}", filters);
         return GetSingleItem<TokenData?>(path);
@@ -140,10 +140,10 @@ public partial class MirrorRestClient
     /// <summary>
     /// Retrieves the token balance for an account and given token.
     /// </summary>
-    /// <param name="accountId">
+    /// <param name="account">
     /// The account ID.
     /// </param>
-    /// <param name="tokenId">
+    /// <param name="token">
     /// The token ID
     /// </param>
     /// <param name="timestamp">
@@ -154,12 +154,12 @@ public partial class MirrorRestClient
     /// A token balance object if a record was found for the given 
     /// timestamp, otherwise null.
     /// </returns>
-    public async Task<long?> GetAccountTokenBalanceAsync(Address accountId, Address tokenId, params IMirrorQueryFilter[] filters)
+    public async Task<long?> GetAccountTokenBalanceAsync(Address account, Address token, params IMirrorQueryFilter[] filters)
     {
-        var allFilters = new IMirrorQueryFilter[] { new AccountIsFilter(accountId) }.Concat(filters).ToArray();
-        var path = GenerateInitialPath($"tokens/{tokenId}/balances", allFilters);
-        var payload = await GetSingleItem<AccountBalancePage>(path);
-        var record = payload?.Balances?.FirstOrDefault(r => r.Account == accountId);
+        var allFilters = new IMirrorQueryFilter[] { new TokenIsFilter(token) }.Concat(filters).ToArray();
+        var path = GenerateInitialPath($"accounts/{account}/tokens", allFilters);
+        var payload = await GetSingleItem<TokenHoldingDataPage>(path);
+        var record = payload?.TokenHoldings?.FirstOrDefault(r => r.Token == token);
         if (record is not null)
         {
             return record.Balance;
