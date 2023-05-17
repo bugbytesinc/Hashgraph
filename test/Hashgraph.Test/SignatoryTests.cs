@@ -4,6 +4,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Proto;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -365,6 +366,9 @@ public class SignatoriesTests
         Assert.NotNull(sigPair);
         Assert.Equal(SignaturePair.SignatureOneofCase.Ed25519, sigPair.SignatureCase);
         Assert.Equal("b9732ad628cb6c28da0c52a3123af7f2725e7a4df53c36a7fc357334ff6dba37", Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
+
+        var exported = Hex.FromBytes(signatory.GetEndorsements()[0].ToBytes(KeyFormat.Raw));
+        Assert.Equal("b9732ad628cb6c28da0c52a3123af7f2725e7a4df53c36a7fc357334ff6dba37", exported);
     }
 
     [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Der Encoding")]
@@ -453,5 +457,9 @@ public class SignatoriesTests
         Assert.NotNull(sigPair);
         Assert.Equal(SignaturePair.SignatureOneofCase.ECDSASecp256K1, sigPair.SignatureCase);
         Assert.Equal("032ac21b3fb74a014c3473c51153c590c75fbd969b4b007830bccc7a99c489ab88", Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
+        var x = new List<double>();
+
+        var exported = Hex.FromBytes(signatory.GetEndorsements()[0].ToBytes(KeyFormat.Raw));
+        Assert.Equal("032ac21b3fb74a014c3473c51153c590c75fbd969b4b007830bccc7a99c489ab88", exported);
     }
 }

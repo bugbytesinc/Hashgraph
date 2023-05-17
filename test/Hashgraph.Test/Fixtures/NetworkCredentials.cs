@@ -1,11 +1,11 @@
 ﻿using Google.Protobuf;
+using Hashgraph.Extensions;
 using Hashgraph.Implementation;
 using Hashgraph.Mirror;
 using Microsoft.Extensions.Configuration;
 using Org.BouncyCastle.Crypto.Parameters;
 using Proto;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -267,25 +267,16 @@ public class NetworkCredentials
     {
         try
         {
-            var list = await GetGosspNodeListAsync();
-            var node = list[new Random().Next(0, list.Count)];
-            var endpoints = node.Endpoints.Where(e => e.Port == 50211).ToArray();
-            var endpoint = endpoints[new Random().Next(0, endpoints.Length)];
-            return new Gateway(new($"http://{endpoint.Address}:{endpoint.Port}"), node.Account);
+            var list = (await _mirrorClient.GetActiveGatewaysAsync(2000)).Keys.ToArray();
+            if (list.Length == 0)
+            {
+                throw new Exception("Unable to find a target gossip node, no gossip endpoints are responding.");
+            }
+            return list[new Random().Next(0, list.Length)];
         }
         catch (Exception ex)
         {
             throw new Exception("Unable to find a target gossip node.", ex);
-        }
-
-        async Task<List<GossipNodeData>> GetGosspNodeListAsync()
-        {
-            var list = new List<GossipNodeData>();
-            await foreach (var node in _mirrorClient.GetGossipNodesAsync())
-            {
-                list.Add(node);
-            }
-            return list;
         }
     }
 

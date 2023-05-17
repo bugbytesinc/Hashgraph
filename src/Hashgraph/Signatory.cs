@@ -1,6 +1,7 @@
 ﻿using Hashgraph.Implementation;
 using Org.BouncyCastle.Crypto.Parameters;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -337,6 +338,38 @@ public sealed class Signatory : ISignatory, IEquatable<Signatory>
             Type.List => $"Signatory:{_type}:{string.Join(':', ((Signatory[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode(),
             _ => "Signatory:Empty".GetHashCode(),
         };
+    }
+    /// <summary>
+    /// Retrieves a list of Endorsment (Public Keys) held internally
+    /// by this Signatory (and/or its child signatories). At this time
+    /// only Endorsements backed by Ed25519 and ECDSA keys are
+    /// exported.  If this signatory representes a Pending marker
+    /// or Contract, the list returned will be empty.
+    /// </summary>
+    /// <returns>
+    /// A collection of Ed25519 and/or ECDSA Endorsments, can
+    /// be an empty list if none exist.
+    /// </returns>
+    public IReadOnlyList<Endorsement> GetEndorsements()
+    {
+        switch (_type)
+        {
+            case Type.Ed25519:
+                return new[] { new Endorsement(KeyType.Ed25519, ((Ed25519PrivateKeyParameters)_data).GeneratePublicKey().GetEncoded()) };
+            case Type.ECDSASecp256K1:
+                var keyParam = (ECPrivateKeyParameters)_data;
+                var publicKey = keyParam.Parameters.G.Multiply(keyParam.D).GetEncoded(true);
+                return new[] { new Endorsement(KeyType.ECDSASecp256K1, publicKey) };
+            case Type.List:
+                var list = new List<Endorsement>();
+                foreach (var child in (Signatory[])_data)
+                {
+                    list.AddRange(child.GetEndorsements());
+                }
+                return list;
+            default:
+                return Array.Empty<Endorsement>();
+        }
     }
     /// <summary>
     /// Equals implementation.
