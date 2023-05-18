@@ -24,8 +24,8 @@ public class PingTests
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         var elapsed = await client.PingAsync();
-        stopwatch.Start();
+        stopwatch.Stop();
 
-        Assert.True(stopwatch.ElapsedMilliseconds > elapsed);
+        Assert.True(stopwatch.ElapsedMilliseconds >= elapsed);
     }
 }
