@@ -88,7 +88,7 @@ public sealed record Moniker
     /// An ECDSASecp256K1 public key.  The moniker will automatically 
     /// convert the public key into the matching 20-byte eth hash.
     /// </param>
-    public Moniker(Endorsement endorsement) : this(0, 0, evmAddressFromEndorsement(endorsement))
+    public Moniker(Endorsement endorsement) : this(0, 0, EvmAddressFromEndorsement(endorsement))
     {
     }
     /// <summary>
@@ -106,7 +106,7 @@ public sealed record Moniker
     /// An ECDSASecp256K1 public key.  The moniker will automatically 
     /// convert the public key into the matching 20-byte eth hash.
     /// </param>
-    public Moniker(long shardNum, long realmNum, Endorsement endorsement) : this(shardNum, realmNum, evmAddressFromEndorsement(endorsement))
+    public Moniker(long shardNum, long realmNum, Endorsement endorsement) : this(shardNum, realmNum, EvmAddressFromEndorsement(endorsement))
     {
     }
     /// <summary>
@@ -243,11 +243,11 @@ public sealed record Moniker
     /// <exception cref="ArgumentException">
     /// If the endorsement is not of type ECDSASecp256K1
     /// </exception>
-    private static ReadOnlyMemory<byte> evmAddressFromEndorsement(Endorsement endorsement)
+    private static ReadOnlyMemory<byte> EvmAddressFromEndorsement(Endorsement endorsement)
     {
         if (endorsement.Type == KeyType.ECDSASecp256K1)
         {
-            var publicKey = EcdsaSecp256k1Util.PublicParamsFromDerOrRaw(endorsement.PublicKey).Q.GetEncoded(false);
+            var publicKey = KeyUtils.ParsePublicEcdsaSecp256k1Key(endorsement.ToBytes(KeyFormat.Raw)).Q.GetEncoded(false);
             var digest = new KeccakDigest(256);
             digest.BlockUpdate(publicKey, 1, publicKey.Length - 1);
             var hash = new byte[digest.GetDigestSize()];

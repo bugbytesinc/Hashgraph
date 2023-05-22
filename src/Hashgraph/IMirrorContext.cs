@@ -4,13 +4,13 @@ using System;
 namespace Hashgraph;
 
 /// <summary>
-/// A <see cref="MirrorClient"/> instance’s configuration.
+/// A <see cref="MirrorGrpcClient"/> instance’s configuration.
 /// </summary>
 /// <remarks>
 /// This interface exposes the current configuration context for a 
-/// <see cref="MirrorClient"/> instance.  When accessed thru a 
-/// <see cref="MirrorClient.Configure(Action{IMirrorContext})"/>, 
-/// <see cref="MirrorClient.Clone(Action{IMirrorContext}?)"/> or one of the 
+/// <see cref="MirrorGrpcClient"/> instance.  When accessed thru a 
+/// <see cref="MirrorGrpcClient.Configure(Action{IMirrorContext})"/>, 
+/// <see cref="MirrorGrpcClient.Clone(Action{IMirrorContext}?)"/> or one of the 
 /// network request methods, calling code can interrogate the 
 /// object for configuration details and update as necessary.  
 /// Typically, the bare minimum that must be configured in a 

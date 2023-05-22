@@ -276,7 +276,7 @@ public class CreateAccountTests
         Assert.Equal(list.Length, info.Endorsement.List.Length);
         foreach (var key in info.Endorsement.List)
         {
-            Assert.Equal(list[0], key.PublicKey);
+            Assert.Equal(list[0], key);
         }
 
         var createdBalance = await client.GetAccountBalanceAsync(createdAddress);
@@ -331,5 +331,29 @@ public class CreateAccountTests
         AssertHg.NotEmpty(info2.Ledger);
         Assert.NotNull(info1.StakingInfo);
         Assert.NotNull(info2.StakingInfo);
+    }
+
+    [Fact(DisplayName = "Create Account: Account Can Self Destruct")]
+    public async Task AccountCanSelfDestruct()
+    {
+        var (publicKey, privateKey) = Generator.KeyPair();
+        await using var client = _network.NewClient();
+        var createResult = await client.CreateAccountAsync(new CreateAccountParams
+        {
+            InitialBalance = 22_00_000_000,
+            Endorsement = publicKey
+        });
+        Assert.Equal(ResponseCode.Success, createResult.Status);
+        var deleteResult = await client.DeleteAccountAsync(createResult.Address, _network.Payer, ctx => {
+            ctx.Payer = createResult.Address;
+            ctx.Signatory = privateKey;
+        });
+        Assert.Equal(ResponseCode.Success, deleteResult.Status);
+
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+        {
+            await client.GetAccountInfoAsync(createResult.Address);
+        });
+        Assert.Equal(ResponseCode.AccountDeleted, pex.Status);
     }
 }

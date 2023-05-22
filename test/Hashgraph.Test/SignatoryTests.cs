@@ -4,6 +4,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Proto;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,6 +31,18 @@ public class SignatoriesTests
         var sig1 = new Signatory(KeyType.Ed25519, privateKey[^32..]);
         var sig2 = new Signatory(KeyType.Ed25519, privateKey);
         Assert.Equal(sig1, sig2);
+    }
+    [Fact(DisplayName = "Signatories: Implicit and Explicit Ed25519 Signatories Are Same")]
+    public void ImplicitAndExplicitEd25519SignatoriesAreSame()
+    {
+        var (_, privateKey) = Generator.Ed25519KeyPair();
+
+        var sig1 = new Signatory(KeyType.Ed25519, privateKey[^32..]);
+        var sig2 = new Signatory(KeyType.Ed25519, privateKey);
+        var sig3 = new Signatory(privateKey);
+        Assert.Equal(sig1, sig2);
+        Assert.Equal(sig1, sig3);
+        Assert.Equal(sig2, sig3);
     }
     [Fact(DisplayName = "Signatories: Can Create Explicit ECDSASecp256K1 Signatories Object")]
     public void CanCreateExplicitECDSASecp256K1SignatoriesObject()
@@ -353,10 +366,13 @@ public class SignatoriesTests
         Assert.NotNull(sigPair);
         Assert.Equal(SignaturePair.SignatureOneofCase.Ed25519, sigPair.SignatureCase);
         Assert.Equal("b9732ad628cb6c28da0c52a3123af7f2725e7a4df53c36a7fc357334ff6dba37", Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
+
+        var exported = Hex.FromBytes(signatory.GetEndorsements()[0].ToBytes(KeyFormat.Raw));
+        Assert.Equal("b9732ad628cb6c28da0c52a3123af7f2725e7a4df53c36a7fc357334ff6dba37", exported);
     }
 
-    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Extended Der Encoding")]
-    public async Task CanParseSecp256K1FromExtendedDerEncoding()
+    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Der Encoding")]
+    public async Task CanParseSecp256K1FromDerEncoding()
     {
         var body = new TransactionBody
         {
@@ -380,8 +396,8 @@ public class SignatoriesTests
         Assert.Equal(Hex.FromBytes(compressed), Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
     }
 
-    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Compacted Der Encoding")]
-    public async Task CanParseSecp256K1FromCompactedDerEncoding()
+    [Fact(DisplayName = "Signatories: Can Parse Secp256K1 From Hedera Der Encoding")]
+    public async Task CanParseSecp256K1FromHederaDerEncoding()
     {
         var body = new TransactionBody
         {
@@ -441,5 +457,9 @@ public class SignatoriesTests
         Assert.NotNull(sigPair);
         Assert.Equal(SignaturePair.SignatureOneofCase.ECDSASecp256K1, sigPair.SignatureCase);
         Assert.Equal("032ac21b3fb74a014c3473c51153c590c75fbd969b4b007830bccc7a99c489ab88", Hex.FromBytes(sigPair.PubKeyPrefix.Memory));
+        var x = new List<double>();
+
+        var exported = Hex.FromBytes(signatory.GetEndorsements()[0].ToBytes(KeyFormat.Raw));
+        Assert.Equal("032ac21b3fb74a014c3473c51153c590c75fbd969b4b007830bccc7a99c489ab88", exported);
     }
 }

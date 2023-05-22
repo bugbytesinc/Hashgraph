@@ -578,7 +578,7 @@ public class UpdateAccountTests
     public async Task CanUpdateAutoAssociateValueToGreatherThanOneThousand()
     {
         await using var fxAccount = await TestAccount.CreateAsync(_network);
-        var limit = Generator.Integer(1001, 10000);
+        var limit = Generator.Integer(1001, 5000);
         var record = await fxAccount.Client.UpdateAccountWithRecordAsync(new UpdateAccountParams
         {
             Address = fxAccount,

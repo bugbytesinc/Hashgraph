@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Hashgraph.Converters;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Hashgraph;
 
 /// <summary>
 /// Represents a Hedera Network Account Address.
 /// </summary>
+[JsonConverter(typeof(AddressConverter))]
 public sealed record Address
 {
     /// <summary>

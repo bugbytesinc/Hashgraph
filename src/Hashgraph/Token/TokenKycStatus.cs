@@ -1,4 +1,7 @@
-﻿namespace Hashgraph;
+﻿using Hashgraph.Converters;
+using System.Text.Json.Serialization;
+
+namespace Hashgraph;
 
 /// <summary>
 /// KYC Status of a Token

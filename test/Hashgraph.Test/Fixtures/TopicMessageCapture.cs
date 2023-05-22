@@ -58,7 +58,7 @@ public sealed class TopicMessageCapture
         return adapter.MessageWriter;
     }
 
-    public static async Task<TopicMessage[]> CaptureOrTimeoutAsync(MirrorClient mirror, Address topic, int expectedCount, int timeoutInMiliseconds)
+    public static async Task<TopicMessage[]> CaptureOrTimeoutAsync(MirrorGrpcClient mirror, Address topic, int expectedCount, int timeoutInMiliseconds)
     {
         using var cts = new CancellationTokenSource();
         var capture = new TopicMessageCapture(expectedCount);

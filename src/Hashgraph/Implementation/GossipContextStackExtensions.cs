@@ -112,7 +112,15 @@ internal static class GossipContextStackExtensions
                         return tenativeResponse;
                     }
                 }
-                catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable || rpcex.StatusCode == StatusCode.Unknown)
+                catch (RpcException rpcex) when (request is Query query && query.QueryCase == Query.QueryOneofCase.TransactionGetReceipt)
+                {
+                    var channel = context.GetChannel();
+                    var message = channel.State == ConnectivityState.Connecting ?
+                        $"Unable to communicate with network node {channel.Target} while retrieving receipt, it may be down or not reachable." :
+                        $"Unable to communicate with network node {channel.Target} while retrieving receipt: {rpcex.Status}";
+                    callOnResponseReceivedHandlers(retryCount, new StringValue { Value = message });
+                }
+                catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable || rpcex.StatusCode == StatusCode.Unknown || rpcex.StatusCode == StatusCode.Cancelled)
                 {
                     var channel = context.GetChannel();
                     var message = channel.State == ConnectivityState.Connecting ?

@@ -1,7 +1,10 @@
-﻿using Hashgraph.Implementation;
+﻿using Google.Protobuf;
+using Hashgraph.Converters;
+using Hashgraph.Implementation;
 using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Hashgraph;
 
@@ -9,6 +12,7 @@ namespace Hashgraph;
 /// Represents the key signing requirements for various
 /// transactions available within the network.
 /// </summary>
+[JsonConverter(typeof(EndorsementConverter))]
 public sealed class Endorsement : IEquatable<Endorsement>
 {
     /// <summary>
@@ -46,16 +50,48 @@ public sealed class Endorsement : IEquatable<Endorsement>
     /// </summary>
     public KeyType Type { get; private set; }
     /// <summary>
-    /// The value of the public key held by this endorsement if it is
+    /// The bytes of the public key held by this endorsement if it is
     /// an Ed25519 or ECDSA Secp256K1 key type.  If it is a list or 
-    /// contract, the value returned will be <code>Empty</code>.
+    /// contract, it can be extracted as HAPI protobuf.
     /// </summary>
-    public ReadOnlyMemory<byte> PublicKey => Type switch
+    public ReadOnlyMemory<byte> ToBytes(KeyFormat keyFormat = KeyFormat.Default)
     {
-        KeyType.Ed25519 => Ed25519Util.ToDerBytes((Ed25519PublicKeyParameters)_data),
-        KeyType.ECDSASecp256K1 => EcdsaSecp256k1Util.ToDerBytes((ECPublicKeyParameters)_data),
-        _ => ReadOnlyMemory<byte>.Empty,
-    };
+        return keyFormat switch
+        {
+            KeyFormat.Default => Type switch
+            {
+                KeyType.Ed25519 => KeyUtils.EncodeAsDer((Ed25519PublicKeyParameters)_data),
+                KeyType.ECDSASecp256K1 => KeyUtils.EncodeAsDer((ECPublicKeyParameters)_data),
+                _ => new Proto.Key(this).ToByteArray()
+            },
+            KeyFormat.Raw => Type switch
+            {
+                KeyType.Ed25519 => KeyUtils.EncodeAsRaw((Ed25519PublicKeyParameters)_data),
+                KeyType.ECDSASecp256K1 => KeyUtils.EncodeAsRaw((ECPublicKeyParameters)_data),
+                _ => ReadOnlyMemory<byte>.Empty
+            },
+            KeyFormat.Der => Type switch
+            {
+                KeyType.Ed25519 => KeyUtils.EncodeAsDer((Ed25519PublicKeyParameters)_data),
+                KeyType.ECDSASecp256K1 => KeyUtils.EncodeAsDer((ECPublicKeyParameters)_data),
+                _ => ReadOnlyMemory<byte>.Empty
+            },
+            KeyFormat.Protobuf => new Proto.Key(this).ToByteArray(),
+            KeyFormat.Hedera => Type switch
+            {
+                KeyType.Ed25519 => KeyUtils.EncodeAsDer((Ed25519PublicKeyParameters)_data),
+                KeyType.ECDSASecp256K1 => KeyUtils.EncodeAsHedera((ECPublicKeyParameters)_data),
+                _ => new Proto.Key(this).ToByteArray()
+            },
+            KeyFormat.Mirror => Type switch
+            {
+                KeyType.Ed25519 => KeyUtils.EncodeAsRaw((Ed25519PublicKeyParameters)_data),
+                KeyType.ECDSASecp256K1 => KeyUtils.EncodeAsRaw((ECPublicKeyParameters)_data),
+                _ => new Proto.Key(this).ToByteArray()
+            },
+            _ => throw new ArgumentException("Unknown Key Format", nameof(keyFormat)),
+        };
+    }
     /// <summary>
     /// The contract address value held by this endorsement if it is
     /// a Contract type.  If it is a list or other key type the value 
@@ -86,7 +122,7 @@ public sealed class Endorsement : IEquatable<Endorsement>
     private Endorsement()
     {
         Type = KeyType.List;
-        _data = new Endorsement[0];
+        _data = Array.Empty<Endorsement>();
         RequiredCount = 0;
     }
     /// <summary>
@@ -105,7 +141,7 @@ public sealed class Endorsement : IEquatable<Endorsement>
     /// </exception>
     public Endorsement(ReadOnlyMemory<byte> publicKey)
     {
-        (Type, _data) = MultiKeyEncodingUtil.ParsePublicKeyFromDerOrRawBytes(publicKey);
+        (Type, _data) = KeyUtils.ParsePublicKey(publicKey);
     }
     /// <summary>
     /// Create a M of M requied list of endorsements.  All listed endorsements
@@ -176,19 +212,13 @@ public sealed class Endorsement : IEquatable<Endorsement>
     public Endorsement(KeyType type, ReadOnlyMemory<byte> publicKey)
     {
         Type = type;
-        switch (type)
+        _data = type switch
         {
-            case KeyType.Ed25519:
-                _data = Ed25519Util.PublicParamsFromDerOrRaw(publicKey);
-                break;
-            case KeyType.ECDSASecp256K1:
-                _data = EcdsaSecp256k1Util.PublicParamsFromDerOrRaw(publicKey);
-                break;
-            case KeyType.Contract:
-                throw new ArgumentOutOfRangeException(nameof(type), "Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the contract address constructor instead.");
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type), "Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the list constructor instead.");
-        }
+            KeyType.Ed25519 => KeyUtils.ParsePublicEd25519Key(publicKey),
+            KeyType.ECDSASecp256K1 => KeyUtils.ParsePublicEcdsaSecp256k1Key(publicKey),
+            KeyType.Contract => throw new ArgumentOutOfRangeException(nameof(type), "Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the contract address constructor instead."),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), "Only endorsements representing single Ed25519 or ECDSASecp256K1 keys are supported with this constructor, please use the list constructor instead."),
+        };
     }
     /// <summary>
     /// Creates an endorsement representing a contract instance.
@@ -314,18 +344,14 @@ public sealed class Endorsement : IEquatable<Endorsement>
     /// </returns>
     public override int GetHashCode()
     {
-        switch (Type)
+        return Type switch
         {
-            case KeyType.Ed25519:
-                return $"Endorsement:{Type}:{((Ed25519PublicKeyParameters)_data).GetHashCode()}".GetHashCode();
-            case KeyType.ECDSASecp256K1:
-                return $"Endorsement:{Type}:{((ECPublicKeyParameters)_data).GetHashCode()}".GetHashCode();
-            case KeyType.Contract:
-                return $"Endorsement:{Type}:{((Address)_data).GetHashCode()}".GetHashCode();
-            case KeyType.List:
-                return $"Endorsement:{Type}:{string.Join(':', ((Endorsement[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode();
-        }
-        return "Endorsement:Empty".GetHashCode();
+            KeyType.Ed25519 => $"Endorsement:{Type}:{((Ed25519PublicKeyParameters)_data).GetHashCode()}".GetHashCode(),
+            KeyType.ECDSASecp256K1 => $"Endorsement:{Type}:{((ECPublicKeyParameters)_data).GetHashCode()}".GetHashCode(),
+            KeyType.Contract => $"Endorsement:{Type}:{((Address)_data).GetHashCode()}".GetHashCode(),
+            KeyType.List => $"Endorsement:{Type}:{string.Join(':', ((Endorsement[])_data).Select(e => e.GetHashCode().ToString()))}".GetHashCode(),
+            _ => "Endorsement:Empty".GetHashCode()
+        };
     }
     /// <summary>
     /// Equals implementation.
