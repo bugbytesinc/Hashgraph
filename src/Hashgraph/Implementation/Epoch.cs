@@ -12,21 +12,19 @@ namespace Hashgraph.Implementation;
 /// </summary>
 internal static class Epoch
 {
-    private static readonly DateTime EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    private static readonly long NanosPerTick = 1_000_000_000L / TimeSpan.TicksPerSecond;
+    private const long NanosPerTick = 1_000_000_000L / TimeSpan.TicksPerSecond;
     private static long _previousNano = 0;
     private static long _localClockDrift = 0;
     internal static long UniqueClockNanos()
     {
+        var clockNanos = (DateTime.UtcNow - DateTime.UnixEpoch).Ticks * NanosPerTick;
         for (int i = 0; i < 1000; i++)
         {
-            var nanos = (DateTime.UtcNow - EPOCH).Ticks * NanosPerTick;
-            var previousValue = Interlocked.Read(ref _previousNano);
-            if (nanos <= previousValue)
-            {
-                nanos = previousValue + 1;
-            }
-            if (previousValue == Interlocked.CompareExchange(ref _previousNano, nanos, previousValue))
+            var previousNanos = Interlocked.Read(ref _previousNano);
+            Thread.MemoryBarrier();
+            var nanos = Math.Max(clockNanos, previousNanos + 1);
+            Thread.MemoryBarrier();
+            if (previousNanos == Interlocked.CompareExchange(ref _previousNano, nanos, previousNanos))
             {
                 return nanos;
             }
@@ -44,7 +42,7 @@ internal static class Epoch
     }
     internal static (long seconds, int nanos) FromDate(DateTime dateTime)
     {
-        TimeSpan timespan = dateTime - EPOCH;
+        TimeSpan timespan = dateTime - DateTime.UnixEpoch;
         long seconds = (long)timespan.TotalSeconds;
         int nanos = (int)((timespan.Ticks - (seconds * TimeSpan.TicksPerSecond)) * NanosPerTick);
         return (seconds, nanos);

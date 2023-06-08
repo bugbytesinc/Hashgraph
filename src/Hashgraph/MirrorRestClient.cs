@@ -65,6 +65,25 @@ public partial class MirrorRestClient
         return GetSingleItem<TokenData?>(path);
     }
     /// <summary>
+    /// Retreives the balances for a given token and filtering criteria.
+    /// </summary>
+    /// <param name="tokenId">
+    /// The Token ID to retrieve.
+    /// </param>
+    /// <param name="filters">
+    /// Additional query filters if desired.
+    /// </param>
+    /// <returns>
+    /// An enumerable of balance and amount pairs, including possibly zero
+    /// balance values indicating a token association without a balance.
+    /// </returns>
+    public IAsyncEnumerable<AccountBalanceData> GetTokenBalancesAsync(Address tokenId, params IMirrorQueryFilter[] filters)
+    {
+        var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100) }.Concat(filters).ToArray();
+        var path = GenerateInitialPath($"tokens/{tokenId}/balances", allFilters);
+        return GetPagedItems<AccountBalancePage, AccountBalanceData>(path);
+    }
+    /// <summary>
     /// Retrieves an HCS message with the given token and sequence number.
     /// </summary>
     /// <param name="topicId">
@@ -87,13 +106,8 @@ public partial class MirrorRestClient
     /// <param name="topicId">
     /// The topic id of the HCS stream.
     /// </param>
-    /// <param name="afterSequenceNumber">
-    /// If specified, only return messages having a sequence number larger 
-    /// than this value.
-    /// </param>
-    /// <param name="afterTimeStamp">
-    /// If specified, only return messages having a consensus timestamp 
-    /// after this value.
+    /// <param name="filters">
+    /// Additional query filters if desired.
     /// </param>
     /// <returns>
     /// An enumerable of HCS Messages meeting the given criteria, may be empty if 
@@ -126,7 +140,7 @@ public partial class MirrorRestClient
     /// The account to retrieve the token holdings.
     /// </param>
     /// <param name="filters">
-    /// Additional time based filters if desired.
+    /// Additional query filters if desired.
     /// </param>
     /// <returns>
     /// An async enumerable of the native token holdings given the constraints.
