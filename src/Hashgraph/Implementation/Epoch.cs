@@ -13,23 +13,20 @@ namespace Hashgraph.Implementation;
 internal static class Epoch
 {
     private const long NanosPerTick = 1_000_000_000L / TimeSpan.TicksPerSecond;
-    private static long _previousNano = 0;
+    private static long _lastValue = (DateTime.UtcNow - DateTime.UnixEpoch).Ticks * NanosPerTick;
     private static long _localClockDrift = 0;
     internal static long UniqueClockNanos()
     {
-        var clockNanos = (DateTime.UtcNow - DateTime.UnixEpoch).Ticks * NanosPerTick;
-        for (int i = 0; i < 1000; i++)
+        long newValue;
+        long oldValue;
+        long clockValue = (DateTime.UtcNow - DateTime.UnixEpoch).Ticks * NanosPerTick;
+        do
         {
-            var previousNanos = Interlocked.Read(ref _previousNano);
-            Thread.MemoryBarrier();
-            var nanos = Math.Max(clockNanos, previousNanos + 1);
-            Thread.MemoryBarrier();
-            if (previousNanos == Interlocked.CompareExchange(ref _previousNano, nanos, previousNanos))
-            {
-                return nanos;
-            }
-        }
-        throw new InvalidOperationException("Unable to retrieve a unique timestamp for a transaction, is my processor overloaded?");
+            oldValue = Interlocked.Read(ref _lastValue);
+            Interlocked.MemoryBarrierProcessWide();
+            newValue = clockValue > oldValue ? clockValue : oldValue + 1;
+        } while (oldValue != Interlocked.CompareExchange(ref _lastValue, newValue, oldValue));
+        return newValue;
     }
     internal static long UniqueClockNanosAfterDrift()
     {

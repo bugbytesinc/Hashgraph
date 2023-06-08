@@ -43,11 +43,9 @@ internal static class GossipContextStackExtensions
         if (preExistingTransaction is null)
         {
             var payer = context.Payer;
-            if (payer is null)
-            {
-                throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.");
-            }
-            return CreateTransactionID(context, payer);
+            return payer is null
+                ? throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.")
+                : CreateTransactionID(context, payer);
         }
         else if (preExistingTransaction.Pending)
         {
