@@ -172,9 +172,7 @@ internal static class GossipContextStackExtensions
                 // performance or grpc connection issues already.
                 if (transaction != null)
                 {
-                    var signedTransaction = SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
-                    var transactionBody = TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
-                    var transactionId = transactionBody.TransactionID;
+                    var transactionId = ExtractTransactionID(transaction);
                     var query = new Query
                     {
                         TransactionGetReceipt = new TransactionGetReceiptQuery
@@ -235,11 +233,12 @@ internal static class GossipContextStackExtensions
         }
         catch (RpcException rpcex)
         {
+            var transactionId = (request is Transaction transaction) ? ExtractTransactionID(transaction) : null;
             var channel = context.GetChannel();
             var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ConnectivityState.Connecting ?
                 $"Unable to communicate with network node {channel.Target}, it may be down or not reachable." :
                 $"Unable to communicate with network node {channel.Target}: {rpcex.Status}";
-            throw new PrecheckException(message, TxId.None, ResponseCode.RpcError, 0, rpcex);
+            throw new PrecheckException(message, transactionId.AsTxId(), ResponseCode.RpcError, 0, rpcex);
         }
     }
 
@@ -326,5 +325,12 @@ internal static class GossipContextStackExtensions
                 response.TransactionGetReceipt?.Header?.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||
                 response.TransactionGetReceipt?.Receipt?.Status == ResponseCodeEnum.Unknown;
         }
+    }
+
+    private static TransactionID ExtractTransactionID(Transaction transaction)
+    {
+        var signedTransaction = SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
+        var transactionBody = TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
+        return transactionBody.TransactionID;
     }
 }

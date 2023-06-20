@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using Hashgraph.Converters;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Hashgraph;
 
@@ -6,6 +8,7 @@ namespace Hashgraph;
 /// Pre-Check and Receipt Response Codes - 1to1 mapping with protobuf ResponseCodeEnum
 /// except RpcError indicating a fundamental inability to communicate with an Hedera Node
 /// </summary>
+[JsonConverter(typeof(RepsponseCodeConverter))]
 public enum ResponseCode
 {
     /// <summary>

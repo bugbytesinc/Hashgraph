@@ -1,5 +1,6 @@
 ﻿using Hashgraph.Test.Fixtures;
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -251,4 +252,40 @@ public class SubmitMessageTests
         Assert.Equal(fxTopic.TestAccount.Record.Address, info.RenewAccount);
         AssertHg.NotEmpty(info.Ledger);
     }
+
+    [Fact(DisplayName = "Submit Message: Can Submit a Birst of Messages")]
+    public async Task CanSubmitABirstOfMessages()
+    {
+        await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+        await using var client = fxPayer.Client.Clone(ctx => { ctx.Payer = fxPayer; ctx.Signatory = fxPayer.PrivateKey; });
+        await using var fx = await TestTopic.CreateAsync(_network);
+        var message = Encoding.ASCII.GetBytes(Generator.String(10, 100));
+        var tasks = Enumerable.Range(1, 4000).Select(_ => Task.Run(async () =>
+        {
+            try
+            {
+                return await client.SubmitMessageAsync(fx.Record.Topic, message, fx.ParticipantPrivateKey);
+            }
+            catch (PrecheckException pex) when (pex.Status == ResponseCode.DuplicateTransaction)
+            {
+                // This is not a case we should be dealing with
+                // at the lower level as it is a problem with the
+                // hedera network itself, but under load duplicate
+                // transaction errors are returned by the proxy instead
+                // of OKs, it is as if the proxy is double submitting
+                // a transaction.
+                return await client.GetReceiptAsync(pex.TxId) as SubmitMessageReceipt;
+            }
+        }));
+        var receipts = await Task.WhenAll(tasks);
+        foreach (var receipt in receipts)
+        {
+            Assert.NotNull(receipt);
+            Assert.Equal(ResponseCode.Success, receipt.Status);
+        }
+
+        var info = await fx.Client.GetTopicInfoAsync(fx.Record.Topic);
+        Assert.Equal((ulong)receipts.Length, info.SequenceNumber);
+    }
+
 }

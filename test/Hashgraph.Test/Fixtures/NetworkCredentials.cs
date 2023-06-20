@@ -231,7 +231,7 @@ public class NetworkCredentials
     public async Task WaitForMirrorNodeConsensusTimestamp(ConsensusTimeStamp timestamp)
     {
         var count = 0;
-        var latest = await _mirrorClient.GetLatestTransactionTimestampAsync();
+        var latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
         while (latest < timestamp)
         {
             if (count > 500)
@@ -240,7 +240,7 @@ public class NetworkCredentials
             }
             count++;
             await Task.Delay(700);
-            latest = await _mirrorClient.GetLatestTransactionTimestampAsync();
+            latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
         }
     }
 

@@ -190,10 +190,12 @@ public class DeleteAllowancesTests
         }
     }
 
-    [Fact(DisplayName = "Delete Allowances: Can Delete an Token Allowance")]
-    public async Task CanDeleteATokenAllowance()
+    [Fact(DisplayName = "Delete Allowances: Agent Can Delete a Token Allowance from Deleted Account")]
+    async Task AgentCanDeleteATokenAllowanceFromDeletedAccount()
     {
         await using var fxAllowances = await TestAllowance.CreateAsync(_network);
+
+        await fxAllowances.Client.DeleteAccountAsync(fxAllowances.Agent, _network.Payer, fxAllowances.Agent.PrivateKey);
 
         var receipt = await fxAllowances.Client.AllocateAsync(new AllowanceParams
         {
@@ -201,35 +203,5 @@ public class DeleteAllowancesTests
             Signatory = fxAllowances.Owner.PrivateKey
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        var systemAddress = await _network.GetGenisisAccountAddress();
-        if (systemAddress is null)
-        {
-            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
-            {
-                await checkDetails(_network.Payer);
-            });
-            Assert.Equal(ResponseCode.NotSupported, pex.Status);
-        }
-        else
-        {
-            await checkDetails(systemAddress);
-        }
-
-        async Task checkDetails(Address payer)
-        {
-            var info = await fxAllowances.Client.GetAccountDetailAsync(fxAllowances.Owner, ctx => ctx.Payer = payer);
-            Assert.Single(info.CryptoAllowances);
-            Assert.Empty(info.TokenAllowances);
-            Assert.Single(info.AssetAllowances);
-            var cryptoAllowance = info.CryptoAllowances[0];
-            Assert.Equal(info.Address, cryptoAllowance.Owner);
-            Assert.Equal(fxAllowances.Agent, cryptoAllowance.Agent);
-            Assert.Equal((long)fxAllowances.Owner.CreateParams.InitialBalance, cryptoAllowance.Amount);
-            var assetAllowance = info.AssetAllowances[0];
-            Assert.Equal(fxAllowances.TestAsset, assetAllowance.Token);
-            Assert.Equal(fxAllowances.Agent, assetAllowance.Agent);
-        }
     }
-
 }

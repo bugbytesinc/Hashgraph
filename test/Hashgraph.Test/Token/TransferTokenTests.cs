@@ -909,6 +909,17 @@ public class TransferTokenTests
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
+        await fxToken.Client.AllocateAsync(new AllowanceParams
+        {
+            TokenAllowances = new[] {
+                new TokenAllowance(
+                    fxToken.Record.Token,
+                    fxToken.TreasuryAccount.Record.Address,
+                    fxContract.ContractRecord.Contract,
+                    xferAmount)},
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });
+
         var receipt = await client.CallContractAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
@@ -922,7 +933,8 @@ public class TransferTokenTests
                 xferAmount
             },
             //Signatory = fxToken.TreasuryAccount.PrivateKey
-        }, ctx => {
+        }, ctx =>
+        {
             ctx.Payer = fxToken.TreasuryAccount;
             ctx.Signatory = fxToken.TreasuryAccount;
         }); ;
@@ -968,6 +980,17 @@ public class TransferTokenTests
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
+
+        await fxToken.Client.AllocateAsync(new AllowanceParams
+        {
+            TokenAllowances = new[] {
+                new TokenAllowance(
+                    fxToken.Record.Token,
+                    fxToken.TreasuryAccount.Record.Address,
+                    fxContract.ContractRecord.Contract,
+                    xferAmount)},
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });
 
         var receipt = await client.CallContractAsync(new CallContractParams
         {
@@ -1026,6 +1049,17 @@ public class TransferTokenTests
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
+        await fxToken.Client.AllocateAsync(new AllowanceParams
+        {
+            TokenAllowances = new[] {
+                new TokenAllowance(
+                    fxToken.Record.Token,
+                    fxToken.TreasuryAccount.Record.Address,
+                    fxContract.ContractRecord.Contract,
+                    xferAmount)},
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });
+
         var receipt = await client.CallContractAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
@@ -1083,6 +1117,17 @@ public class TransferTokenTests
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
+        await fxToken.Client.AllocateAsync(new AllowanceParams
+        {
+            TokenAllowances = new[] {
+                new TokenAllowance(
+                    fxToken.Record.Token,
+                    fxToken.TreasuryAccount.Record.Address,
+                    fxContract.ContractRecord.Contract,
+                    xferAmount)},
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });
+
         var receipt = await client.CallContractAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
@@ -1139,6 +1184,17 @@ public class TransferTokenTests
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
+
+        await fxToken.Client.AllocateAsync(new AllowanceParams
+        {
+            TokenAllowances = new[] {
+                new TokenAllowance(
+                    fxToken.Record.Token,
+                    fxToken.TreasuryAccount.Record.Address,
+                    fxContract.ContractRecord.Contract,
+                    xferAmount)},
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });
 
         var receipt = await client.CallContractAsync(new CallContractParams
         {
