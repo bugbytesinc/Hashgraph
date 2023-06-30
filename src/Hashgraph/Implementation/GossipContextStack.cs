@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Grpc.Net.Client;
 using System;
+using System.Net.Http;
 
 namespace Hashgraph.Implementation;
 
@@ -60,6 +61,14 @@ internal class GossipContextStack : ContextStack<GossipContextStack>, IContext
     }
     protected override GrpcChannel ConstructNewChannel(Uri uri)
     {
-        return GrpcChannel.ForAddress(uri);
+        var options = new GrpcChannelOptions()
+        {            
+            HttpHandler = new SocketsHttpHandler
+            {
+                EnableMultipleHttp2Connections = true,                
+            },
+            DisposeHttpClient = true,
+        };
+        return GrpcChannel.ForAddress(uri, options);
     }
 }
