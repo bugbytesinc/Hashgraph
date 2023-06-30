@@ -333,7 +333,7 @@ public class MirrorDataTests
             Assert.Equal(validDuration, data.ValidDuration);
             Assert.Equal(new ConsensusTimeStamp(record.Id.ValidStartSeconds, record.Id.ValidStartNanos), data.ValidStarting);
             Assert.Null(data.AssessedFees);
-            Assert.Null(data.AssetTransfers);
+            Assert.Empty(data.AssetTransfers);
             Assert.Equal(2, data.TokenTransfers.Length);
             var fromXfer = data.TokenTransfers.First(x => x.Account == fxTokens[i].TreasuryAccount.Record.Address);
             Assert.NotNull(fromXfer);

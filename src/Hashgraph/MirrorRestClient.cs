@@ -231,13 +231,25 @@ public partial class MirrorRestClient
         }
         return Array.Empty<TransactionDetailData>();
     }
+    /// <summary>
+    /// Retrieves a list of transactions associated with this account
+    /// </summary>
+    /// <param name="account">
+    /// Address of the account to search for.
+    /// </param>
+    /// <param name="filters">
+    /// Additional query filters if desired.
+    /// </param>
+    /// <returns>
+    /// A list of transactions (which may be child transactions) that
+    /// involve the specified account (regardless of payer status).
+    /// </returns>
     public IAsyncEnumerable<TransactionDetailData> GetTransactionsForAccountAsync(Address account, params IMirrorQueryFilter[] filters)
     {
         var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100), new AccountIsFilter(account) }.Concat(filters).ToArray();
         var path = GenerateInitialPath($"transactions", allFilters);
         return GetPagedItemsAsync<TransactionDetailDataPage, TransactionDetailData>(path);
     }
-
     /// <summary>
     /// Internal helper function to retrieve a paged items structured
     /// object, converting it into an IAsyncEnumerable for consumption.
@@ -258,6 +270,19 @@ public partial class MirrorRestClient
             fullPath = payload?.Links?.Next;
         }
         while (!string.IsNullOrWhiteSpace(fullPath));
+    }
+    /// <summary>
+    /// Retreives the current and next exchange rate from
+    /// the mirror node.
+    /// </summary>
+    /// <returns>
+    /// Exchange rate information for the current and next
+    /// rate utilized by the network for determining
+    /// transaction and gas fees.
+    /// </returns>
+    public Task<ExchangeRateData?> GetExchangeRateAsync()
+    {
+        return GetSingleItemAsync<ExchangeRateData>("network/exchangerate");
     }
     /// <summary>
     /// Helper function to retreive a single item from the rest api call.
