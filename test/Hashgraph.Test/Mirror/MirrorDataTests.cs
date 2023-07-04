@@ -103,14 +103,14 @@ public class MirrorDataTests
         }
         var results = await Task.WhenAll(list);
         _network.Output.WriteLine(JsonSerializer.Serialize(results));
-        Assert.Equal(list.Count, results.Count(r => r > -1));
+        Assert.Equal(list.Count, results.Length);
 
         var activeGateways = await _network.MirrorRestClient.GetActiveGatewaysAsync(15000);
         // Yes, this is a fuzzy test in that network circumstances
         // could cause this to fail.  But most of the time since the
         // timeout is higher in the second series of pings, this value
         // should almost always be equal to or higher.
-        Assert.True(results.Length <= activeGateways.Count);
+        Assert.True(results.Count(r => r > -1) <= activeGateways.Count);
     }
     [Fact(DisplayName = "Mirror Data: Can Get Token Data")]
     public async Task CanGetTokenData()

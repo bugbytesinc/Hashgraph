@@ -1,5 +1,7 @@
-﻿using Hashgraph.Implementation;
+﻿using Grpc.Net.Client;
+using Hashgraph.Implementation;
 using System;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -44,13 +46,47 @@ public sealed partial class MirrorGrpcClient : IAsyncDisposable
     /// Optional configuration method that can set the location of the network node 
     /// accessing the network and how transaction fees shall be paid for.
     /// </param>
-    public MirrorGrpcClient(Action<IMirrorContext>? configure = null) : this(configure, null)
+    public MirrorGrpcClient(Action<IMirrorContext>? configure = null) : this(DefaultChannelFactory, configure)
     {
+    }
+    /// <summary>
+    /// Creates a new instance of an Hedera Mirror Network Client with a 
+    /// custom gRPC channel factory.
+    /// </summary>
+    /// <remarks>
+    /// Creating a new instance of a <code>Mirror</code> initializes a new instance 
+    /// of a client.  It will have a separate cache of GRPC channels to the network 
+    /// and will maintain a separate configuration from other clients.  The constructor 
+    /// takes an optional callback method that configures the details on how the 
+    /// client should connect to the network configuraable details.  See the 
+    /// <see cref="IMirrorContext"/> documentation for configuration details.
+    /// </remarks>
+    /// <param name="channelFactory">
+    /// A custom callback method returning a new channel given the target mirror 
+    /// node URI.  Note, this method is only called once for each unique URI 
+    /// requested by the mirror grpc client (which is a function of the current
+    /// context's URI parameter)
+    /// </param>
+    /// <param name="configure">
+    /// Optional configuration method that can set the location of the network node 
+    /// accessing the network and how transaction fees shall be paid for.
+    /// </param>
+    public MirrorGrpcClient(Func<Uri, GrpcChannel> channelFactory, Action<IMirrorContext>? configure = null)
+    {
+        // Create a Context with System Defaults 
+        // that are unreachable and can't be "Reset".
+        // At the moment, there are no defaults to set
+        // but we still want a "root".
+        _context = new MirrorContextStack(new MirrorContextStack(channelFactory));
+        configure?.Invoke(_context);
     }
     /// <summary>
     /// Internal implementation of mirror client creation.  Accounts for  newly created 
     /// clients and cloning of clients alike.
     /// </summary>
+    /// <param name="channelFactory">
+    /// The channel factory method to use when a new gRPC client channel is needed.
+    /// </param>
     /// <param name="configure">
     /// The optional <see cref="IContext"/> callback method, passed in from public 
     /// instantiation or a <see cref="MirrorGrpcClient.Clone(Action{IMirrorContext})"/> method call.
@@ -59,13 +95,8 @@ public sealed partial class MirrorGrpcClient : IAsyncDisposable
     /// The parent <see cref="MirrorContextStack"/> if this creation is a result of a 
     /// <see cref="Client.Clone(Action{IContext})"/> method call.
     /// </param>
-    private MirrorGrpcClient(Action<IMirrorContext>? configure, MirrorContextStack? parent)
+    private MirrorGrpcClient(MirrorContextStack parent, Action<IMirrorContext>? configure)
     {
-        // Create a Context with System Defaults 
-        // that are unreachable and can't be "Reset".
-        // At the moment, there are no defaults to set
-        // but we still want a "root".
-        parent ??= new MirrorContextStack(null);
         _context = new MirrorContextStack(parent);
         configure?.Invoke(_context);
     }
@@ -102,7 +133,7 @@ public sealed partial class MirrorGrpcClient : IAsyncDisposable
     /// </returns>
     public MirrorGrpcClient Clone(Action<IMirrorContext>? configure = null)
     {
-        return new MirrorGrpcClient(configure, _context);
+        return new MirrorGrpcClient(_context, configure);
     }
     /// <summary>
     /// Creates a new child context based on the current context instance.  
@@ -129,5 +160,32 @@ public sealed partial class MirrorGrpcClient : IAsyncDisposable
     public ValueTask DisposeAsync()
     {
         return _context.DisposeAsync();
+    }
+    /// <summary>
+    /// The default algorithm for creatting channels for the
+    /// gRPC mirror streaming client.  This implementation sets
+    /// the keep alive timeout of 30s, ping delay 60s and
+    /// keep alive policy of always.  Testing has shown this is
+    /// the best method for keepign the HCS streaming service alive
+    /// for monitoring an HCS stream.
+    /// </summary>
+    /// <param name="uri">
+    /// The URI endpoint of the gRPC mirror node HCS stream.
+    /// </param>
+    /// <returns>
+    /// A GrpcChannel pointing to the URI of the mirror node endpoing.
+    /// </returns>
+    private static GrpcChannel DefaultChannelFactory(Uri uri)
+    {
+        var options = new GrpcChannelOptions()
+        {
+            HttpHandler = new SocketsHttpHandler
+            {
+                KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
+                KeepAlivePingDelay = TimeSpan.FromSeconds(60),
+                KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
+            }
+        };
+        return GrpcChannel.ForAddress(uri, options);
     }
 }

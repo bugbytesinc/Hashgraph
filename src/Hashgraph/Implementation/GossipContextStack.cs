@@ -1,7 +1,6 @@
 ﻿using Google.Protobuf;
 using Grpc.Net.Client;
 using System;
-using System.Net.Http;
 
 namespace Hashgraph.Implementation;
 
@@ -11,7 +10,7 @@ namespace Hashgraph.Implementation;
 /// and coordinates values returned for various contexts.  Not intended for
 /// public use.
 /// </summary>
-internal class GossipContextStack : ContextStack<GossipContextStack>, IContext
+internal class GossipContextStack : ContextStack<GossipContextStack, Gateway>, IContext
 {
     public Gateway? Gateway { get => get<Gateway>(nameof(Gateway)); set => set(nameof(Gateway), value); }
     public Address? Payer { get => get<Address>(nameof(Payer)); set => set(nameof(Payer), value); }
@@ -27,7 +26,8 @@ internal class GossipContextStack : ContextStack<GossipContextStack>, IContext
     public Action<IMessage>? OnSendingRequest { get => get<Action<IMessage>>(nameof(OnSendingRequest)); set => set(nameof(OnSendingRequest), value); }
     public Action<int, IMessage>? OnResponseReceived { get => get<Action<int, IMessage>>(nameof(OnResponseReceived)); set => set(nameof(OnResponseReceived), value); }
 
-    public GossipContextStack(GossipContextStack? parent) : base(parent) { }
+    public GossipContextStack(GossipContextStack parent) : base(parent) { }
+    public GossipContextStack(Func<Gateway, GrpcChannel> channelFactory) : base(channelFactory) { }
     protected override bool IsValidPropertyName(string name)
     {
         switch (name)
@@ -50,25 +50,8 @@ internal class GossipContextStack : ContextStack<GossipContextStack>, IContext
                 return false;
         }
     }
-    protected override Uri GetChannelUrl()
+    protected override Gateway GetChannelKey()
     {
-        var uri = Gateway?.Uri;
-        if (uri is null)
-        {
-            throw new InvalidOperationException("The Network Gateway Node has not been configured.");
-        }
-        return uri;
-    }
-    protected override GrpcChannel ConstructNewChannel(Uri uri)
-    {
-        var options = new GrpcChannelOptions()
-        {            
-            HttpHandler = new SocketsHttpHandler
-            {
-                EnableMultipleHttp2Connections = true,                
-            },
-            DisposeHttpClient = true,
-        };
-        return GrpcChannel.ForAddress(uri, options);
+        return Gateway ?? throw new InvalidOperationException("The Network Gateway Node has not been configured.");
     }
 }

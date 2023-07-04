@@ -2,7 +2,6 @@
 using Grpc.Net.Client;
 using System;
 using System.Linq;
-using System.Net.Http;
 
 namespace Hashgraph.Implementation;
 
@@ -12,12 +11,14 @@ namespace Hashgraph.Implementation;
 /// and coordinates values returned for various contexts.  Not intended for
 /// public use.
 /// </summary>
-internal class MirrorContextStack : ContextStack<GossipContextStack>, IMirrorContext
+internal class MirrorContextStack : ContextStack<GossipContextStack, Uri>, IMirrorContext
 {
     public Uri Uri { get => get<Uri>(nameof(Uri)); set => set(nameof(Uri), value); }
     public Action<IMessage>? OnSendingRequest { get => get<Action<IMessage>>(nameof(OnSendingRequest)); set => set(nameof(OnSendingRequest), value); }
 
-    public MirrorContextStack(MirrorContextStack? parent) : base(parent) { }
+    public MirrorContextStack(MirrorContextStack parent) : base(parent) { }
+    public MirrorContextStack(Func<Uri, GrpcChannel> channelFactory) : base(channelFactory) { }
+
     protected override bool IsValidPropertyName(string name)
     {
         switch (name)
@@ -29,27 +30,9 @@ internal class MirrorContextStack : ContextStack<GossipContextStack>, IMirrorCon
                 return false;
         }
     }
-    protected override Uri GetChannelUrl()
+    protected override Uri GetChannelKey()
     {
-        var uri = Uri;
-        if (uri is null)
-        {
-            throw new InvalidOperationException("The Mirror Node Url has not been configured.");
-        }
-        return uri;
-    }
-    protected override GrpcChannel ConstructNewChannel(Uri uri)
-    {
-        var options = new GrpcChannelOptions()
-        {
-            HttpHandler = new SocketsHttpHandler
-            {
-                KeepAlivePingTimeout = TimeSpan.FromSeconds(30),
-                KeepAlivePingDelay = TimeSpan.FromSeconds(60),
-                KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
-            }
-        };
-        return GrpcChannel.ForAddress(uri, options);
+        return Uri ?? throw new InvalidOperationException("The Mirror Node Url has not been configured.");
     }
 
     public Action<IMessage> InstantiateOnSendingRequestHandler()
