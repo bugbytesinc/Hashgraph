@@ -188,7 +188,7 @@ internal static class GossipContextStackExtensions
                             var receipt = await client.getTransactionReceiptsAsync(query);
                             return new TransactionResponse { NodeTransactionPrecheckCode = receipt.TransactionGetReceipt.Header.NodeTransactionPrecheckCode };
                         }
-                        catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable)
+                        catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable || rpcex.StatusCode == StatusCode.Unknown || rpcex.StatusCode == StatusCode.Cancelled)
                         {
                             var channel = context.GetChannel();
                             var message = channel.State == ConnectivityState.Connecting ?
@@ -211,7 +211,7 @@ internal static class GossipContextStackExtensions
                         await Task.Delay(retryDelay * retryCount).ConfigureAwait(false);
                         return await sendRequest(request, null, null, default);
                     }
-                    catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable && retryCount < maxRetries - 1)
+                    catch (RpcException rpcex) when ((rpcex.StatusCode == StatusCode.Unavailable || rpcex.StatusCode == StatusCode.Unknown || rpcex.StatusCode == StatusCode.Cancelled) && retryCount < maxRetries - 1)
                     {
                         var channel = context.GetChannel();
                         var message = channel.State == ConnectivityState.Connecting ?

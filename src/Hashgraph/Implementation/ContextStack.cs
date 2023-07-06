@@ -66,7 +66,15 @@ internal abstract class ContextStack<TContext, TChannelKey> : IAsyncDisposable w
     }
     public GrpcChannel GetChannel()
     {
-        return _channels.GetOrAdd(GetChannelKey(), _channelFactory);
+        var key = GetChannelKey();
+        if (_channels.TryGetValue(key, out GrpcChannel? channel))
+        {
+            return channel;
+        }
+        lock (_channels)
+        {
+            return _channels.GetOrAdd(key, _channelFactory);
+        }
     }
     public ValueTask DisposeAsync()
     {
