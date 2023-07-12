@@ -42,7 +42,14 @@ public static class GetActiveGatewaysExtension
                         var task = grpClient.PingAsync();
                         if (await Task.WhenAny(task, Task.Delay(maxTimeoutInMiliseconds)) == task)
                         {
-                            response = task.Result;
+                            try
+                            {
+                                response = task.Result;
+                            }
+                            catch
+                            {
+                                // fall thru with -1
+                            }
                         }
                         return (gateway, response);
                     }));
