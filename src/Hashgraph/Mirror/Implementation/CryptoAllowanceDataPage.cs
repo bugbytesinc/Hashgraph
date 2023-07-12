@@ -4,23 +4,23 @@ using System.Text.Json.Serialization;
 
 namespace Hashgraph.Mirror.Implementation;
 /// <summary>
-/// Paged list of token allowances
+/// Paged list of crypto (hbar) allowances
 /// </summary>
-internal class TokenAllowanceDataPage : Page<TokenAllowanceData>
+internal class CryptoAllowanceDataPage : Page<CryptoAllowanceData>
 {
     /// <summary>
-    /// List of token allowances
+    /// List of crypto (hbar) allowances
     /// </summary>
     [JsonPropertyName("allowances")]
-    public TokenAllowanceData[]? TokenAllowances { get; set; }
+    public CryptoAllowanceData[]? CryptoAllowances { get; set; }
     /// <summary>
     /// Enumerates the list of token allowances.
     /// </summary>
     /// <returns>
     /// An enumerator listing the token allowance records in the list.
     /// </returns>
-    public override IEnumerable<TokenAllowanceData> GetItems()
+    public override IEnumerable<CryptoAllowanceData> GetItems()
     {
-        return TokenAllowances ?? Array.Empty<TokenAllowanceData>();
+        return CryptoAllowances ?? Array.Empty<CryptoAllowanceData>();
     }
 }

@@ -161,13 +161,13 @@ public partial class MirrorRestClient
     /// <param name="token">
     /// The token ID
     /// </param>
-    /// <param name="timestamp">
-    /// Optional value indicating the information is required for the 
-    /// specified consensus timestamp.
+    /// <param name="filters">
+    /// Additional query filters if desired.
     /// </param>
     /// <returns>
-    /// A token balance object if a record was found for the given 
-    /// timestamp, otherwise null.
+    /// The amount of token held by the 
+    /// target account, or null if the
+    /// token has not been associated.
     /// </returns>
     public async Task<long?> GetAccountTokenBalanceAsync(Address account, Address token, params IMirrorQueryFilter[] filters)
     {
@@ -180,6 +180,42 @@ public partial class MirrorRestClient
             return record.Balance;
         }
         return null;
+    }
+    /// <summary>
+    /// Retrieves the crypto allowances associated with this account.
+    /// </summary>
+    /// <param name="account">
+    /// The account ID
+    /// </param>
+    /// <param name="filters">
+    /// Additional query filters if desired.
+    /// </param>
+    /// <returns>
+    /// A list of crypto allowances associated with this account.
+    /// </returns>
+    public IAsyncEnumerable<CryptoAllowanceData> GetAccountCryptoAllowancesAsync(Address account, params IMirrorQueryFilter[] filters)
+    {
+        var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100) }.Concat(filters).ToArray();
+        var path = GenerateInitialPath($"accounts/{account}/allowances/crypto", allFilters);
+        return GetPagedItemsAsync<CryptoAllowanceDataPage, CryptoAllowanceData>(path);
+    }
+    /// <summary>
+    /// Retrieves the token allowances associated with this account.
+    /// </summary>
+    /// <param name="account">
+    /// The account ID
+    /// </param>
+    /// <param name="filters">
+    /// Additional query filters if desired.
+    /// </param>
+    /// <returns>
+    /// A list of token allowances granted by this account.
+    /// </returns>
+    public IAsyncEnumerable<TokenAllowanceData> GetAccountTokenAllowancesAsync(Address account, params IMirrorQueryFilter[] filters)
+    {
+        var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100) }.Concat(filters).ToArray();
+        var path = GenerateInitialPath($"accounts/{account}/allowances/tokens", allFilters);
+        return GetPagedItemsAsync<TokenAllowanceDataPage, TokenAllowanceData>(path);
     }
     /// <summary>
     /// Returns a list of accounts matching the given public key endorsement value.

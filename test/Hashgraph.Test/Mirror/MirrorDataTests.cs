@@ -1,9 +1,12 @@
 ﻿using Hashgraph.Extensions;
 using Hashgraph.Implementation;
+using Hashgraph.Mirror;
 using Hashgraph.Test.Fixtures;
+using Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -347,5 +350,63 @@ public class MirrorDataTests
             Assert.False(toXfer.IsAllowance);
             Assert.Equal(3, data.CryptoTransfers.Length);
         }
+    }
+    [Fact(DisplayName = "Mirror Data: Can Get Crypto Allowance Data")]
+    public async Task CanGetCryptoAllowanceData()
+    {
+        await using var fxOwner = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 10_00_000_000);
+        await using var fxAgent = await TestAccount.CreateAsync(_network);
+
+        var amount = (long)fxOwner.CreateParams.InitialBalance;
+        var receipt = await fxOwner.Client.AllocateAsync(new AllowanceParams
+        {
+            CryptoAllowances = new[] { new CryptoAllowance(fxOwner, fxAgent, amount) },
+            Signatory = fxOwner
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForTransactionInMirror(receipt.Id);
+
+        var list = new List<CryptoAllowanceData>();
+        await foreach(var record in _network.MirrorRestClient.GetAccountCryptoAllowancesAsync(fxOwner))
+        {
+            list.Add(record);
+        }
+        Assert.Single(list);
+
+        var info = list.First();
+        Assert.Equal(amount, info.Amount);
+        Assert.Equal(fxOwner.Record.Address, info.Owner);
+        Assert.Equal(fxAgent.Record.Address, info.Spender);
+    }
+
+    [Fact(DisplayName = "Mirror Data: Can Get Token Allowance Data")]
+    public async Task CanGetTokenAllowanceData()
+    {
+        await using var fxToken = await TestToken.CreateAsync(_network);
+        await using var fxAgent = await TestAccount.CreateAsync(_network);
+
+        var amount = (long)fxToken.Params.Circulation / 3 + 1;
+        var receipt = await fxToken.Client.AllocateAsync(new AllowanceParams
+        {
+            TokenAllowances = new[] { new TokenAllowance(fxToken.Record.Token, fxToken.TreasuryAccount, fxAgent, amount) },
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForTransactionInMirror(receipt.Id);
+
+        var list = new List<TokenAllowanceData>();
+        await foreach (var record in _network.MirrorRestClient.GetAccountTokenAllowancesAsync(fxToken.TreasuryAccount))
+        {
+            list.Add(record);
+        }
+        Assert.Single(list);
+
+        var info = list.First();
+        Assert.Equal(amount, info.Amount);
+        Assert.Equal(fxToken.Record.Token, info.Token);
+        Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Owner);
+        Assert.Equal(fxAgent.Record.Address, info.Spender);
     }
 }
