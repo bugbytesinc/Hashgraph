@@ -48,6 +48,8 @@ public class PayableContractTests
         Assert.Equal(Moniker.None, record.CallResult.EncodedAddress);
         Assert.Equal(fx.ContractParams.InitialBalance, record.CallResult.Result.As<long>());
         Assert.Equal(0, record.CallResult.FunctionArgs.Size);
+        /// UM, is this correct?
+        Assert.Empty(record.CallResult.Nonces);
 
         // Ensure matches API vesion.
         var apiBalance = await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract);
@@ -75,6 +77,7 @@ public class PayableContractTests
         Assert.Empty(result.Events);
         Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
         Assert.Equal(0, result.FunctionArgs.Size);
+        Assert.Empty(result.Nonces);
         /**
          * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
          * 

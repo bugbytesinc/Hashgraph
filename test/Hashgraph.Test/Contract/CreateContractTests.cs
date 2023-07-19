@@ -236,6 +236,7 @@ public class CreateContractTests
         Assert.False(fx.ContractRecord.CallResult.Result.Data.IsEmpty);
         // NETWORK DEFECT: NOT IMPLEMENED
         Assert.Equal(0, fx.ContractRecord.CallResult.FunctionArgs.Size);
+        Assert.NotEmpty(fx.ContractRecord.CallResult.Nonces);
     }
 
     [Fact(DisplayName = "Create Contract: Missing Construction Parameters that are Required raises Error")]

@@ -205,7 +205,7 @@ public class CallContractTests
             await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 8000,
+                Gas = 33000,
                 FunctionName = "greet",
             });
         });

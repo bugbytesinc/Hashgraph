@@ -1,5 +1,6 @@
 ﻿using Proto;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -70,6 +71,13 @@ public sealed record ContractCallResult
     /// </summary>
     public EncodedParams FunctionArgs { get; private init; }
     /// <summary>
+    /// A list of updated contract account nonces containing the new nonce 
+    /// value for each contract account involved in this transaction. For
+    /// Query transactions, this should be empty as a Contract Query call
+    /// does not change the state of the EVM.
+    /// </summary>
+    public ReadOnlyDictionary<Address, long> Nonces { get; private init; }
+    /// <summary>
     /// Internal Constructor from Raw Results
     /// </summary>
     internal ContractCallResult(Response response) : this(response.ContractCallLocal.FunctionResult)
@@ -96,6 +104,7 @@ public sealed record ContractCallResult
          */
         EncodedAddress = result.EvmAddress.AsMoniker(result.ContractID.AsAddress());
         FunctionArgs = new EncodedParams(result.FunctionParameters.Memory);
+        Nonces = new ReadOnlyDictionary<Address, long>(result.ContractNonces?.ToDictionary(i => i.ContractId.AsAddress(), i => i.Nonce) ?? new Dictionary<Address, long>());
     }
 }
 /// <summary>
