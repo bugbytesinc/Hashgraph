@@ -20,38 +20,39 @@ namespace Hashgraph.Implementation;
 /// a stack of parent objects and coordinates values returned for 
 /// various contexts.  Not intended for public use.
 /// </summary>
-internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext : class
+internal abstract class ContextStack<TContext, TChannelKey> : IAsyncDisposable where TContext : class where TChannelKey : notnull
 {
-    private readonly ContextStack<TContext>? _parent;
+    private readonly ContextStack<TContext, TChannelKey>? _parent;
     private readonly Dictionary<string, object?> _map;
-    private readonly ConcurrentDictionary<Uri, GrpcChannel> _channels;
+    private readonly ConcurrentDictionary<TChannelKey, GrpcChannel> _channels;
+    private readonly Func<TChannelKey, GrpcChannel> _channelFactory;
     private int _refCount;
 
-    public ContextStack(ContextStack<TContext>? parent)
+    public ContextStack(Func<TChannelKey, GrpcChannel> channelFactory)
     {
+        // Root Context, holds the channels and is
+        // only accessible via other contexts
+        // so the ref count starts at 0
+        _parent = null;
+        _refCount = 0;
+        _map = new Dictionary<string, object?>();
+        _channels = new ConcurrentDictionary<TChannelKey, GrpcChannel>();
+        _channelFactory = channelFactory;
+    }
+    public ContextStack(ContextStack<TContext, TChannelKey> parent)
+    {
+        // Not the root context, will be held
+        // by a client or call context. Ref count
+        // starts at 1 for convenience
         _parent = parent;
         _map = new Dictionary<string, object?>();
-        if (parent == null)
-        {
-            // Root Context, holds the channels and is
-            // only accessible via other contexts
-            // so the ref count starts at 0
-            _refCount = 0;
-            _channels = new ConcurrentDictionary<Uri, GrpcChannel>();
-        }
-        else
-        {
-            // Not the root context, will be held
-            // by a client or call context. Ref count
-            // starts at 1 for convenience
-            _refCount = 1;
-            _channels = parent._channels;
-            parent.addRef();
-        }
+        _refCount = 1;
+        _channels = parent._channels;
+        _channelFactory = parent._channelFactory;
+        parent.addRef();
     }
     protected abstract bool IsValidPropertyName(string name);
-    protected abstract Uri GetChannelUrl();
-    protected abstract GrpcChannel ConstructNewChannel(Uri uri);
+    protected abstract TChannelKey GetChannelKey();
     public void Reset(string name)
     {
         if (IsValidPropertyName(name))
@@ -65,7 +66,15 @@ internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext
     }
     public GrpcChannel GetChannel()
     {
-        return _channels.GetOrAdd(GetChannelUrl(), ConstructNewChannel);
+        var key = GetChannelKey();
+        if (_channels.TryGetValue(key, out GrpcChannel? channel))
+        {
+            return channel;
+        }
+        lock (_channels)
+        {
+            return _channels.GetOrAdd(key, _channelFactory);
+        }
     }
     public ValueTask DisposeAsync()
     {
@@ -80,7 +89,7 @@ internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext
     // if method returns false, ignore nullable warnings
     private bool TryGet<T>(string name, out T value)
     {
-        for (ContextStack<TContext> ctx = this; ctx != null; ctx = ctx._parent)
+        for (ContextStack<TContext, TChannelKey> ctx = this; ctx != null; ctx = ctx._parent)
         {
             if (ctx._map.TryGetValue(name, out object asObject))
             {
@@ -100,7 +109,7 @@ internal abstract class ContextStack<TContext> : IAsyncDisposable where TContext
     }
     public IEnumerable<T> GetAll<T>(string name)
     {
-        for (ContextStack<TContext>? ctx = this; ctx != null; ctx = ctx._parent)
+        for (ContextStack<TContext, TChannelKey>? ctx = this; ctx != null; ctx = ctx._parent)
         {
             if (ctx._map.TryGetValue(name, out object? asObject) && asObject is T t)
             {

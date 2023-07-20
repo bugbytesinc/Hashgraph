@@ -1,4 +1,7 @@
 ﻿using Google.Protobuf;
+using Grpc.Core;
+using Grpc.Net.Client;
+using Grpc.Net.Client.Configuration;
 using Hashgraph.Extensions;
 using Hashgraph.Implementation;
 using Hashgraph.Mirror;
@@ -7,6 +10,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Proto;
 using System;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -67,7 +71,7 @@ public class NetworkCredentials
             _privateKey = Hex.ToBytes(payerPrivateKey);
             _signatory = new Signatory(_privateKey);
             _rootPayer = await LookupPayerAsync();
-            _rootClient = new Client(ctx =>
+            _rootClient = new Client(channelFactory, ctx =>
             {
                 ctx.Gateway = _gateway;
                 ctx.Payer = _rootPayer.Account;
@@ -231,7 +235,7 @@ public class NetworkCredentials
     public async Task WaitForMirrorNodeConsensusTimestamp(ConsensusTimeStamp timestamp)
     {
         var count = 0;
-        var latest = await _mirrorClient.GetLatestTransactionTimestampAsync();
+        var latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
         while (latest < timestamp)
         {
             if (count > 500)
@@ -240,7 +244,7 @@ public class NetworkCredentials
             }
             count++;
             await Task.Delay(700);
-            latest = await _mirrorClient.GetLatestTransactionTimestampAsync();
+            latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
         }
     }
 
@@ -302,7 +306,34 @@ public class NetworkCredentials
             return privateKey.Parameters.G.Multiply(privateKey.D).GetEncoded(true);
         }
     }
-
+    GrpcChannel channelFactory(Gateway gateway)
+    {
+        var defaultMethodConfig = new MethodConfig
+        {
+            Names = { MethodName.Default },
+            RetryPolicy = new RetryPolicy
+            {
+                MaxAttempts = 50,
+                InitialBackoff = TimeSpan.FromSeconds(0.05),
+                MaxBackoff = TimeSpan.FromSeconds(0.4),
+                BackoffMultiplier = 1.01,
+                RetryableStatusCodes = { StatusCode.Unavailable, StatusCode.Unknown, StatusCode.Cancelled, StatusCode.Internal }
+            }
+        };
+        var httpHandler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromSeconds(10),
+            EnableMultipleHttp2Connections = false,
+        };
+        var options = new GrpcChannelOptions
+        {
+            HttpHandler = httpHandler,
+            MaxRetryBufferSize = null,
+            DisposeHttpClient = true,
+            ServiceConfig = new ServiceConfig { MethodConfigs = { defaultMethodConfig } }
+        };
+        return GrpcChannel.ForAddress(gateway.Uri, options);
+    }
 
     [CollectionDefinition(nameof(NetworkCredentials))]
     public class FixtureCollection : ICollectionFixture<NetworkCredentials>

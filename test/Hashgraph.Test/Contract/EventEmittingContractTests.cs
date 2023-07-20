@@ -40,6 +40,11 @@ public class EventEmittingContractTests
         Assert.Equal(0, record.CallResult.PayableAmount);
         Assert.Equal(Address.None, record.CallResult.MessageSender);
         Assert.Empty(record.CallResult.Events);
+        Assert.NotEmpty(fx.ContractRecord.CallResult.Nonces);
+        /**
+         * This looks like a bug in the hedera EVM implementation?
+         */
+        Assert.Empty(record.CallResult.Nonces);
         /**
          * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
          * 
@@ -78,6 +83,7 @@ public class EventEmittingContractTests
         Assert.Equal(Moniker.None, result.EncodedAddress);
         Assert.Equal(fx.ContractParams.InitialBalance, result.Result.As<long>());
         Assert.Equal(0, result.FunctionArgs.Size);
+        Assert.Empty(result.Nonces);
     }
     [Fact(DisplayName = "Event Emitting Contract: Can Call Contract that Sends Funds, Emitting Event")]
     async Task CanCallContractMethodSendingFunds()

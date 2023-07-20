@@ -1,13 +1,12 @@
-﻿using Hashgraph.Implementation;
+﻿using Grpc.Net.Client;
+using Hashgraph.Implementation;
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("Hashgraph.Test")]
-[assembly: InternalsVisibleTo("Hashgraph.Mirror")]
 
 namespace Hashgraph;
-
 /// <summary>
 /// Hedera Network Client
 /// </summary>
@@ -46,8 +45,45 @@ public sealed partial class Client : IAsyncDisposable
     /// Optional configuration method that can set the location of the network node 
     /// accessing the network and how transaction fees shall be paid for.
     /// </param>
-    public Client(Action<IContext>? configure = null) : this(configure, null)
+    public Client(Action<IContext>? configure = null) : this(DefaultChannelFactory, configure)
     {
+    }
+    /// <summary>
+    /// Creates a new instance of an Hedera Network Client with a custom
+    /// gRPC channel factory.
+    /// </summary>
+    /// <remarks>
+    /// Creating a new instance of a <code>Client</code> initializes a new instance 
+    /// of a client.  It will have a separate cache of GRPC channels to the network 
+    /// and will maintain a separate configuration from other clients.  The constructor 
+    /// takes an optional callback method that configures the details on how the 
+    /// client should connect to the network and what accounts generally pay 
+    /// transaction fees and other details.  See the <see cref="IContext"/> documentation 
+    /// for configuration details.
+    /// </remarks>
+    /// <param name="channelFactory">
+    /// A custom callback method returning a new channel given the target Gateway.
+    /// Note, this method is only called once for each unique Gateway requested by 
+    /// the Client (which is a function of the current context's Gateway parameter)
+    /// </param>
+    /// <param name="configure">
+    /// Optional configuration method that can set the location of the network node 
+    /// accessing the network and how transaction fees shall be paid for.
+    /// </param>
+    public Client(Func<Gateway, GrpcChannel> channelFactory, Action<IContext>? configure = null)
+    {
+        // Create a Context with System Defaults 
+        // that are unreachable and can't be "Reset".
+        _context = new GossipContextStack(new GossipContextStack(channelFactory)
+        {
+            FeeLimit = 2_900_000_000,
+            TransactionDuration = TimeSpan.FromSeconds(120),
+            RetryCount = 5,
+            RetryDelay = TimeSpan.FromMilliseconds(200),
+            SignaturePrefixTrimLimit = 0,
+            AdjustForLocalClockDrift = false
+        });
+        configure?.Invoke(_context);
     }
     /// <summary>
     /// Internal implementation of client creation.  Accounts for  newly created 
@@ -61,19 +97,8 @@ public sealed partial class Client : IAsyncDisposable
     /// The parent <see cref="GossipContextStack"/> if this creation is a result of a 
     /// <see cref="Client.Clone(Action{IContext})"/> method call.
     /// </param>
-    private Client(Action<IContext>? configure, GossipContextStack? parent)
+    private Client(GossipContextStack parent, Action<IContext>? configure)
     {
-        // Create a Context with System Defaults 
-        // that are unreachable and can't be "Reset".
-        parent ??= new GossipContextStack(null)
-        {
-            FeeLimit = 2_900_000_000,
-            TransactionDuration = TimeSpan.FromSeconds(120),
-            RetryCount = 5,
-            RetryDelay = TimeSpan.FromMilliseconds(200),
-            SignaturePrefixTrimLimit = 0,
-            AdjustForLocalClockDrift = false
-        };
         _context = new GossipContextStack(parent);
         configure?.Invoke(_context);
     }
@@ -110,7 +135,7 @@ public sealed partial class Client : IAsyncDisposable
     /// </returns>
     public Client Clone(Action<IContext>? configure = null)
     {
-        return new Client(configure, _context);
+        return new Client(_context, configure);
     }
     /// <summary>
     /// Creates a new child context based on the current context instance.  
@@ -137,5 +162,20 @@ public sealed partial class Client : IAsyncDisposable
     public ValueTask DisposeAsync()
     {
         return _context.DisposeAsync();
+    }
+    /// <summary>
+    /// The default algorithm for creating channels for the client.
+    /// It defaults to the underlying system gRPC defaults.
+    /// </summary>
+    /// <param name="gateway">
+    /// A Gateway holding the address information for the channel
+    /// to be created.
+    /// </param>
+    /// <returns>
+    /// A GrpcChannel pointing to the URI of the associated gateway.
+    /// </returns>
+    private static GrpcChannel DefaultChannelFactory(Gateway gateway)
+    {
+        return GrpcChannel.ForAddress(gateway.Uri);
     }
 }

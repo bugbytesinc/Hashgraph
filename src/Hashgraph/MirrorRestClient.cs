@@ -1,6 +1,7 @@
 ﻿using Hashgraph.Mirror;
 using Hashgraph.Mirror.Filters;
 using Hashgraph.Mirror.Implementation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -45,7 +46,7 @@ public partial class MirrorRestClient
     /// </returns>
     public IAsyncEnumerable<GossipNodeData> GetGossipNodesAsync()
     {
-        return GetPagedItems<GossipNodePage, GossipNodeData>("network/nodes");
+        return GetPagedItemsAsync<GossipNodePage, GossipNodeData>("network/nodes");
     }
     /// <summary>
     /// Retrieves information for the given token.
@@ -62,7 +63,26 @@ public partial class MirrorRestClient
     public Task<TokenData?> GetTokenAsync(Address tokenId, params IMirrorQueryFilter[] filters)
     {
         var path = GenerateInitialPath($"tokens/{tokenId}", filters);
-        return GetSingleItem<TokenData?>(path);
+        return GetSingleItemAsync<TokenData?>(path);
+    }
+    /// <summary>
+    /// Retreives the balances for a given token and filtering criteria.
+    /// </summary>
+    /// <param name="tokenId">
+    /// The Token ID to retrieve.
+    /// </param>
+    /// <param name="filters">
+    /// Additional query filters if desired.
+    /// </param>
+    /// <returns>
+    /// An enumerable of balance and amount pairs, including possibly zero
+    /// balance values indicating a token association without a balance.
+    /// </returns>
+    public IAsyncEnumerable<AccountBalanceData> GetTokenBalancesAsync(Address tokenId, params IMirrorQueryFilter[] filters)
+    {
+        var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100) }.Concat(filters).ToArray();
+        var path = GenerateInitialPath($"tokens/{tokenId}/balances", allFilters);
+        return GetPagedItemsAsync<AccountBalancePage, AccountBalanceData>(path);
     }
     /// <summary>
     /// Retrieves an HCS message with the given token and sequence number.
@@ -78,7 +98,7 @@ public partial class MirrorRestClient
     /// </returns>    
     public Task<HcsMessageData?> GetHcsMessageAsync(Address topicId, ulong sequenceNumber)
     {
-        return GetSingleItem<HcsMessageData?>($"topics/{topicId}/messages/{sequenceNumber}");
+        return GetSingleItemAsync<HcsMessageData?>($"topics/{topicId}/messages/{sequenceNumber}");
     }
     /// <summary>
     /// Retrieves a list of HCS message.  Messages may be filtered by a starting 
@@ -87,13 +107,8 @@ public partial class MirrorRestClient
     /// <param name="topicId">
     /// The topic id of the HCS stream.
     /// </param>
-    /// <param name="afterSequenceNumber">
-    /// If specified, only return messages having a sequence number larger 
-    /// than this value.
-    /// </param>
-    /// <param name="afterTimeStamp">
-    /// If specified, only return messages having a consensus timestamp 
-    /// after this value.
+    /// <param name="filters">
+    /// Additional query filters if desired.
     /// </param>
     /// <returns>
     /// An enumerable of HCS Messages meeting the given criteria, may be empty if 
@@ -103,7 +118,7 @@ public partial class MirrorRestClient
     {
         var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100) }.Concat(filters).ToArray();
         var path = GenerateInitialPath($"topics/{topicId}/messages", allFilters);
-        return GetPagedItems<HcsMessageDataPage, HcsMessageData>(path);
+        return GetPagedItemsAsync<HcsMessageDataPage, HcsMessageData>(path);
     }
     /// <summary>
     /// Retrieves information about an account.
@@ -116,7 +131,7 @@ public partial class MirrorRestClient
     /// </returns>
     public Task<AccountData?> GetAccountDataAsync(Address account)
     {
-        return GetSingleItem<AccountData>($"accounts/{account}");
+        return GetSingleItemAsync<AccountData>($"accounts/{account}");
     }
     /// <summary>
     /// Retrieves the list of token holdings for this account, which includes
@@ -126,16 +141,16 @@ public partial class MirrorRestClient
     /// The account to retrieve the token holdings.
     /// </param>
     /// <param name="filters">
-    /// Additional time based filters if desired.
+    /// Additional query filters if desired.
     /// </param>
     /// <returns>
     /// An async enumerable of the native token holdings given the constraints.
     /// </returns>
-    public IAsyncEnumerable<TokenHoldingData> GetAccountTokenHoldings(Address account, params IMirrorQueryFilter[] filters)
+    public IAsyncEnumerable<TokenHoldingData> GetAccountTokenHoldingsAsync(Address account, params IMirrorQueryFilter[] filters)
     {
         var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100) }.Concat(filters).ToArray();
         var path = GenerateInitialPath($"accounts/{account}/tokens", allFilters);
-        return GetPagedItems<TokenHoldingDataPage, TokenHoldingData>(path);
+        return GetPagedItemsAsync<TokenHoldingDataPage, TokenHoldingData>(path);
     }
     /// <summary>
     /// Retrieves the token balance for an account and given token.
@@ -146,25 +161,61 @@ public partial class MirrorRestClient
     /// <param name="token">
     /// The token ID
     /// </param>
-    /// <param name="timestamp">
-    /// Optional value indicating the information is required for the 
-    /// specified consensus timestamp.
+    /// <param name="filters">
+    /// Additional query filters if desired.
     /// </param>
     /// <returns>
-    /// A token balance object if a record was found for the given 
-    /// timestamp, otherwise null.
+    /// The amount of token held by the 
+    /// target account, or null if the
+    /// token has not been associated.
     /// </returns>
     public async Task<long?> GetAccountTokenBalanceAsync(Address account, Address token, params IMirrorQueryFilter[] filters)
     {
         var allFilters = new IMirrorQueryFilter[] { new TokenIsFilter(token) }.Concat(filters).ToArray();
         var path = GenerateInitialPath($"accounts/{account}/tokens", allFilters);
-        var payload = await GetSingleItem<TokenHoldingDataPage>(path);
+        var payload = await GetSingleItemAsync<TokenHoldingDataPage>(path);
         var record = payload?.TokenHoldings?.FirstOrDefault(r => r.Token == token);
         if (record is not null)
         {
             return record.Balance;
         }
         return null;
+    }
+    /// <summary>
+    /// Retrieves the crypto allowances associated with this account.
+    /// </summary>
+    /// <param name="account">
+    /// The account ID
+    /// </param>
+    /// <param name="filters">
+    /// Additional query filters if desired.
+    /// </param>
+    /// <returns>
+    /// A list of crypto allowances associated with this account.
+    /// </returns>
+    public IAsyncEnumerable<CryptoAllowanceData> GetAccountCryptoAllowancesAsync(Address account, params IMirrorQueryFilter[] filters)
+    {
+        var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100) }.Concat(filters).ToArray();
+        var path = GenerateInitialPath($"accounts/{account}/allowances/crypto", allFilters);
+        return GetPagedItemsAsync<CryptoAllowanceDataPage, CryptoAllowanceData>(path);
+    }
+    /// <summary>
+    /// Retrieves the token allowances associated with this account.
+    /// </summary>
+    /// <param name="account">
+    /// The account ID
+    /// </param>
+    /// <param name="filters">
+    /// Additional query filters if desired.
+    /// </param>
+    /// <returns>
+    /// A list of token allowances granted by this account.
+    /// </returns>
+    public IAsyncEnumerable<TokenAllowanceData> GetAccountTokenAllowancesAsync(Address account, params IMirrorQueryFilter[] filters)
+    {
+        var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100) }.Concat(filters).ToArray();
+        var path = GenerateInitialPath($"accounts/{account}/allowances/tokens", allFilters);
+        return GetPagedItemsAsync<TokenAllowanceDataPage, TokenAllowanceData>(path);
     }
     /// <summary>
     /// Returns a list of accounts matching the given public key endorsement value.
@@ -179,7 +230,7 @@ public partial class MirrorRestClient
     public IAsyncEnumerable<AccountData> GetAccountsFromEndorsementAsync(Endorsement endorsement)
     {
         var searchKey = Hex.FromBytes(endorsement.ToBytes(KeyFormat.Mirror));
-        return GetPagedItems<AccountDataPage, AccountData>($"accounts?account.publickey={searchKey}&balance=true&limit=20&order=asc");
+        return GetPagedItemsAsync<AccountDataPage, AccountData>($"accounts?account.publickey={searchKey}&balance=true&limit=20&order=asc");
     }
     /// <summary>
     /// Retrieves the latest consensus timestamp known by the mirror node.
@@ -187,20 +238,59 @@ public partial class MirrorRestClient
     /// <returns>
     /// The latest consensus timestamp known by the mirror node.
     /// </returns>
-    public async Task<ConsensusTimeStamp> GetLatestTransactionTimestampAsync()
+    public async Task<ConsensusTimeStamp> GetLatestConsensusTimestampAsync()
     {
-        var list = await GetSingleItem<TransactionDataPage>("transactions?limit=1&order=desc");
+        var list = await GetSingleItemAsync<TransactionTimestampDataPage>("transactions?limit=1&order=desc");
         if (list?.Transactions?.Length > 0)
         {
-            return list.Transactions[0].TimeStamp;
+            return list.Transactions[0].Consensus;
         }
         return ConsensusTimeStamp.MinValue;
+    }
+    /// <summary>
+    /// Retrieves the entire list of parent and child transactions
+    /// having the givin root transaction ID.
+    /// </summary>
+    /// <param name="txId">
+    /// The transaction ID to search by.
+    /// </param>
+    /// <returns>
+    /// A list of transactions (including child transactions with nonces)
+    /// matching the given transaciton ID, or an empty list if none are found.
+    /// </returns>
+    public async Task<TransactionDetailData[]> GetTransactionGroupAsync(TxId txId)
+    {
+        var list = await GetSingleItemAsync<TransactionDetailByIdResponse>($"transactions/{txId.Address}-{txId.ValidStartSeconds}-{txId.ValidStartNanos:000000000}");
+        if (list?.Transactions?.Length > 0)
+        {
+            return list.Transactions;
+        }
+        return Array.Empty<TransactionDetailData>();
+    }
+    /// <summary>
+    /// Retrieves a list of transactions associated with this account
+    /// </summary>
+    /// <param name="account">
+    /// Address of the account to search for.
+    /// </param>
+    /// <param name="filters">
+    /// Additional query filters if desired.
+    /// </param>
+    /// <returns>
+    /// A list of transactions (which may be child transactions) that
+    /// involve the specified account (regardless of payer status).
+    /// </returns>
+    public IAsyncEnumerable<TransactionDetailData> GetTransactionsForAccountAsync(Address account, params IMirrorQueryFilter[] filters)
+    {
+        var allFilters = new IMirrorQueryFilter[] { new LimitFilter(100), new AccountIsFilter(account) }.Concat(filters).ToArray();
+        var path = GenerateInitialPath($"transactions", allFilters);
+        return GetPagedItemsAsync<TransactionDetailDataPage, TransactionDetailData>(path);
     }
     /// <summary>
     /// Internal helper function to retrieve a paged items structured
     /// object, converting it into an IAsyncEnumerable for consumption.
     /// </summary>
-    private async IAsyncEnumerable<TItem> GetPagedItems<TList, TItem>(string path) where TList : Page<TItem>
+    private async IAsyncEnumerable<TItem> GetPagedItemsAsync<TList, TItem>(string path) where TList : Page<TItem>
     {
         var fullPath = "/api/v1/" + path;
         do
@@ -218,9 +308,22 @@ public partial class MirrorRestClient
         while (!string.IsNullOrWhiteSpace(fullPath));
     }
     /// <summary>
+    /// Retreives the current and next exchange rate from
+    /// the mirror node.
+    /// </summary>
+    /// <returns>
+    /// Exchange rate information for the current and next
+    /// rate utilized by the network for determining
+    /// transaction and gas fees.
+    /// </returns>
+    public Task<ExchangeRateData?> GetExchangeRateAsync()
+    {
+        return GetSingleItemAsync<ExchangeRateData>("network/exchangerate");
+    }
+    /// <summary>
     /// Helper function to retreive a single item from the rest api call.
     /// </summary>
-    private async Task<TItem?> GetSingleItem<TItem>(string path)
+    private async Task<TItem?> GetSingleItemAsync<TItem>(string path)
     {
         return await _client.GetFromJsonAsync<TItem>($"{_endpointUrl}/api/v1/{path}");
     }

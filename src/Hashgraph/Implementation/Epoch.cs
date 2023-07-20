@@ -12,26 +12,21 @@ namespace Hashgraph.Implementation;
 /// </summary>
 internal static class Epoch
 {
-    private static readonly DateTime EPOCH = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    private static readonly long NanosPerTick = 1_000_000_000L / TimeSpan.TicksPerSecond;
-    private static long _previousNano = 0;
+    private const long NanosPerTick = 1_000_000_000L / TimeSpan.TicksPerSecond;
+    private static long _lastValue = (DateTime.UtcNow - DateTime.UnixEpoch).Ticks * NanosPerTick;
     private static long _localClockDrift = 0;
     internal static long UniqueClockNanos()
     {
-        for (int i = 0; i < 1000; i++)
+        long newValue;
+        long oldValue;
+        long clockValue = (DateTime.UtcNow - DateTime.UnixEpoch).Ticks * NanosPerTick;
+        do
         {
-            var nanos = (DateTime.UtcNow - EPOCH).Ticks * NanosPerTick;
-            var previousValue = Interlocked.Read(ref _previousNano);
-            if (nanos <= previousValue)
-            {
-                nanos = previousValue + 1;
-            }
-            if (previousValue == Interlocked.CompareExchange(ref _previousNano, nanos, previousValue))
-            {
-                return nanos;
-            }
-        }
-        throw new InvalidOperationException("Unable to retrieve a unique timestamp for a transaction, is my processor overloaded?");
+            oldValue = Interlocked.Read(ref _lastValue);
+            Interlocked.MemoryBarrierProcessWide();
+            newValue = clockValue > oldValue ? clockValue : oldValue + 1;
+        } while (oldValue != Interlocked.CompareExchange(ref _lastValue, newValue, oldValue));
+        return newValue;
     }
     internal static long UniqueClockNanosAfterDrift()
     {
@@ -44,7 +39,7 @@ internal static class Epoch
     }
     internal static (long seconds, int nanos) FromDate(DateTime dateTime)
     {
-        TimeSpan timespan = dateTime - EPOCH;
+        TimeSpan timespan = dateTime - DateTime.UnixEpoch;
         long seconds = (long)timespan.TotalSeconds;
         int nanos = (int)((timespan.Ticks - (seconds * TimeSpan.TicksPerSecond)) * NanosPerTick);
         return (seconds, nanos);

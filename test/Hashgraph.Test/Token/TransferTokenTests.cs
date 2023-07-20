@@ -933,7 +933,8 @@ public class TransferTokenTests
                 xferAmount
             },
             //Signatory = fxToken.TreasuryAccount.PrivateKey
-        }, ctx => {
+        }, ctx =>
+        {
             ctx.Payer = fxToken.TreasuryAccount;
             ctx.Signatory = fxToken.TreasuryAccount;
         }); ;
@@ -1050,11 +1051,11 @@ public class TransferTokenTests
 
         await fxToken.Client.AllocateAsync(new AllowanceParams
         {
-            TokenAllowances = new[] { 
+            TokenAllowances = new[] {
                 new TokenAllowance(
-                    fxToken.Record.Token, 
-                    fxToken.TreasuryAccount.Record.Address, 
-                    fxContract.ContractRecord.Contract, 
+                    fxToken.Record.Token,
+                    fxToken.TreasuryAccount.Record.Address,
+                    fxContract.ContractRecord.Contract,
                     xferAmount)},
             Signatory = fxToken.TreasuryAccount.PrivateKey
         });

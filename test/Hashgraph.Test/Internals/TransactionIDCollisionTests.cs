@@ -1,4 +1,6 @@
 ﻿using Hashgraph.Implementation;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -33,5 +35,34 @@ public class TransactionIDCollisionTests
             });
         }
         await Task.WhenAll(tasks);
+    }
+    [Fact(DisplayName = "Transaction ID: Ticks Creator Does not Collide Multi Threaded In Linq")]
+    public async Task TicsCreatorDoesNotCollideMultiThreadInLinq()
+    {
+        var tasks = Enumerable.Range(1, 30000).Select(_ => Task.Run(() => Epoch.UniqueClockNanos()));
+        var nano = await Task.WhenAll(tasks);
+        for(int i = 0; i < nano.Length; i ++)
+        {
+            for(int j = i+1; j < nano.Length; j++)
+            {
+                Assert.NotEqual(nano[i], nano[j]);
+            }
+        }
+    }
+    [Fact(DisplayName = "Transaction ID: Client Creator Does not Collide Multi Threaded In Linq")]
+    public async Task ClientCreatorDoesNotCollideMultiThreadInLinq()
+    {
+        await using Client client = new(cfg => {
+            cfg.Payer = new Address(0, 0, 3);
+        });
+        var tasks = Enumerable.Range(1, 20000).Select(_ => Task.Run(() => client.CreateNewTxId()));
+        var txids = await Task.WhenAll(tasks);
+        for (int i = 0; i < txids.Length; i++)
+        {
+            for (int j = i + 1; j < txids.Length; j++)
+            {
+                Assert.NotEqual(txids[i], txids[j]);
+            }
+        }
     }
 }

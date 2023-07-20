@@ -37,6 +37,7 @@ public class QueryContractTests
         Assert.Empty(result.Events);
         Assert.Equal("Hello, world!", result.Result.As<string>());
         Assert.Equal(0, result.FunctionArgs.Size);
+        Assert.Empty(result.Nonces);
         /**
          * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
          * 
@@ -66,6 +67,7 @@ public class QueryContractTests
         Assert.Empty(result.Events);
         Assert.Equal(fx.ContractParams.Arguments[0] as string, result.Result.As<string>());
         Assert.Equal(0, result.FunctionArgs.Size);
+        Assert.Empty(result.Nonces);
         /**
          * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
          * 
@@ -102,6 +104,7 @@ public class QueryContractTests
         Assert.Empty(qex.CallResult.Events);
         Assert.Equal(0, qex.CallResult.Result.Size);
         Assert.Equal(0, qex.CallResult.FunctionArgs.Size);
+        Assert.Empty(qex.CallResult.Nonces);
         /**
          * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
          * 
@@ -132,6 +135,7 @@ public class QueryContractTests
         Assert.Empty(result.Events);
         Assert.Equal(0, result.Result.Size);
         Assert.Equal(0, result.FunctionArgs.Size);
+        Assert.Empty(result.Nonces);
         /**
          * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.
          * 
@@ -186,6 +190,7 @@ public class QueryContractTests
         Assert.Equal(0, result.Result.Size);
         // NETWORK DEFECT: NOT IMPLEMENED
         Assert.Equal(0, result.FunctionArgs.Size);
+        Assert.Empty(result.Nonces);
         //Assert.Equal(newMessage, result.FunctionArgs.As<string>());
         /**
          * HEDERA CHURN: THE FOLLOWING WILL BE ADDED BACK IF/WHEN HAPI SUPPORTS IT.

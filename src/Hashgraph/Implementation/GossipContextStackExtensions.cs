@@ -43,11 +43,9 @@ internal static class GossipContextStackExtensions
         if (preExistingTransaction is null)
         {
             var payer = context.Payer;
-            if (payer is null)
-            {
-                throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.");
-            }
-            return CreateTransactionID(context, payer);
+            return payer is null
+                ? throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.")
+                : CreateTransactionID(context, payer);
         }
         else if (preExistingTransaction.Pending)
         {
@@ -174,9 +172,7 @@ internal static class GossipContextStackExtensions
                 // performance or grpc connection issues already.
                 if (transaction != null)
                 {
-                    var signedTransaction = SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
-                    var transactionBody = TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
-                    var transactionId = transactionBody.TransactionID;
+                    var transactionId = ExtractTransactionID(transaction);
                     var query = new Query
                     {
                         TransactionGetReceipt = new TransactionGetReceiptQuery
@@ -192,7 +188,7 @@ internal static class GossipContextStackExtensions
                             var receipt = await client.getTransactionReceiptsAsync(query);
                             return new TransactionResponse { NodeTransactionPrecheckCode = receipt.TransactionGetReceipt.Header.NodeTransactionPrecheckCode };
                         }
-                        catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable)
+                        catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable || rpcex.StatusCode == StatusCode.Unknown || rpcex.StatusCode == StatusCode.Cancelled)
                         {
                             var channel = context.GetChannel();
                             var message = channel.State == ConnectivityState.Connecting ?
@@ -215,7 +211,7 @@ internal static class GossipContextStackExtensions
                         await Task.Delay(retryDelay * retryCount).ConfigureAwait(false);
                         return await sendRequest(request, null, null, default);
                     }
-                    catch (RpcException rpcex) when (rpcex.StatusCode == StatusCode.Unavailable && retryCount < maxRetries - 1)
+                    catch (RpcException rpcex) when ((rpcex.StatusCode == StatusCode.Unavailable || rpcex.StatusCode == StatusCode.Unknown || rpcex.StatusCode == StatusCode.Cancelled) && retryCount < maxRetries - 1)
                     {
                         var channel = context.GetChannel();
                         var message = channel.State == ConnectivityState.Connecting ?
@@ -237,11 +233,12 @@ internal static class GossipContextStackExtensions
         }
         catch (RpcException rpcex)
         {
+            var transactionId = (request is Transaction transaction) ? ExtractTransactionID(transaction) : null;
             var channel = context.GetChannel();
             var message = rpcex.StatusCode == StatusCode.Unavailable && channel.State == ConnectivityState.Connecting ?
                 $"Unable to communicate with network node {channel.Target}, it may be down or not reachable." :
                 $"Unable to communicate with network node {channel.Target}: {rpcex.Status}";
-            throw new PrecheckException(message, TxId.None, ResponseCode.RpcError, 0, rpcex);
+            throw new PrecheckException(message, transactionId.AsTxId(), ResponseCode.RpcError, 0, rpcex);
         }
     }
 
@@ -328,5 +325,12 @@ internal static class GossipContextStackExtensions
                 response.TransactionGetReceipt?.Header?.NodeTransactionPrecheckCode == ResponseCodeEnum.Busy ||
                 response.TransactionGetReceipt?.Receipt?.Status == ResponseCodeEnum.Unknown;
         }
+    }
+
+    private static TransactionID ExtractTransactionID(Transaction transaction)
+    {
+        var signedTransaction = SignedTransaction.Parser.ParseFrom(transaction.SignedTransactionBytes);
+        var transactionBody = TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
+        return transactionBody.TransactionID;
     }
 }

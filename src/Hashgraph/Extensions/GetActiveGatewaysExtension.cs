@@ -38,11 +38,18 @@ public static class GetActiveGatewaysExtension
                         var uri = new Uri($"http://{endpoint.Address}:{endpoint.Port}");
                         var gateway = new Gateway(uri, node.Account);
                         var grpClient = new Client(cfg => cfg.Gateway = gateway);
-                        var response = -1l;
+                        var response = -1L;
                         var task = grpClient.PingAsync();
                         if (await Task.WhenAny(task, Task.Delay(maxTimeoutInMiliseconds)) == task)
                         {
-                            response = task.Result;
+                            try
+                            {
+                                response = task.Result;
+                            }
+                            catch
+                            {
+                                // fall thru with -1
+                            }
                         }
                         return (gateway, response);
                     }));
@@ -50,11 +57,11 @@ public static class GetActiveGatewaysExtension
             }
         }
         var result = new Dictionary<Gateway, long>();
-        foreach (var record in await Task.WhenAll(list))
+        foreach (var (gatway, response) in await Task.WhenAll(list))
         {
-            if (record.response > -1)
+            if (response > -1)
             {
-                result.Add(record.gatway, record.response);
+                result.Add(gatway, response);
             }
         }
         return result;

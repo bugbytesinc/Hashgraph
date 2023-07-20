@@ -1,9 +1,12 @@
 ﻿using Hashgraph.Extensions;
 using Hashgraph.Implementation;
+using Hashgraph.Mirror;
 using Hashgraph.Test.Fixtures;
+using Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -103,14 +106,14 @@ public class MirrorDataTests
         }
         var results = await Task.WhenAll(list);
         _network.Output.WriteLine(JsonSerializer.Serialize(results));
-        Assert.Equal(list.Count, results.Count(r => r > -1));
+        Assert.Equal(list.Count, results.Length);
 
         var activeGateways = await _network.MirrorRestClient.GetActiveGatewaysAsync(15000);
         // Yes, this is a fuzzy test in that network circumstances
         // could cause this to fail.  But most of the time since the
         // timeout is higher in the second series of pings, this value
         // should almost always be equal to or higher.
-        Assert.True(results.Length <= activeGateways.Count);
+        Assert.True(results.Count(r => r > -1) <= activeGateways.Count);
     }
     [Fact(DisplayName = "Mirror Data: Can Get Token Data")]
     public async Task CanGetTokenData()
@@ -259,7 +262,7 @@ public class MirrorDataTests
             xferRecords[i] = await fxTokens[i].Client.TransferTokensWithRecordAsync(fxTokens[i].Record.Token, fxTokens[i].TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmounts[i], fxTokens[i].TreasuryAccount.PrivateKey);
         }
         await _network.WaitForMirrorNodeConsensusTimestamp(xferRecords[^1].Concensus.Value);
-        await foreach (var data in _network.MirrorRestClient.GetAccountTokenHoldings(fxAccount))
+        await foreach (var data in _network.MirrorRestClient.GetAccountTokenHoldingsAsync(fxAccount))
         {
             var index = findTokenIndex(data.Token);
             Assert.NotNull(data);
@@ -289,5 +292,121 @@ public class MirrorDataTests
             }
             throw new Exception("token not found");
         }
+    }
+    [Fact(DisplayName = "Mirror Data: Can Get Transfer Details")]
+    public async Task CanGetTransferDetails()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(_network);
+        var fxTokens = new TestToken[3];
+        var xferAmounts = new ulong[fxTokens.Length];
+        var assocRecords = new TransactionRecord[fxTokens.Length];
+        var xferRecords = new TransactionRecord[fxTokens.Length];
+        for (int i = 0; i < xferAmounts.Length; i++)
+        {
+            fxTokens[i] = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+            assocRecords[i] = await fxAccount.Client.AssociateTokenWithRecordAsync(fxTokens[i], fxAccount, fxAccount.PrivateKey);
+            xferAmounts[i] = 2 * fxTokens[i].Params.Circulation / 3;
+            xferRecords[i] = await fxTokens[i].Client.TransferTokensWithRecordAsync(fxTokens[i].Record.Token, fxTokens[i].TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmounts[i], fxTokens[i].TreasuryAccount.PrivateKey);
+        }
+        await _network.WaitForMirrorNodeConsensusTimestamp(xferRecords[^1].Concensus.Value);
+        long feeLimit = 0;
+        TimeSpan validDuration = TimeSpan.Zero;
+        fxAccount.Client.Configure(ctx => { feeLimit = ctx.FeeLimit; validDuration = ctx.TransactionDuration; });
+        for (int i = 0; i < xferAmounts.Length; i++)
+        {
+            var record = xferRecords[i];
+            var dataList = await _network.MirrorRestClient.GetTransactionGroupAsync(xferRecords[i].Id);
+            Assert.NotNull(dataList);
+            Assert.Single(dataList);
+            var data = dataList[0];
+            Assert.Equal(record.Id, data.TxId);
+            Assert.Equal(record.Fee, (ulong)data.Fee);
+            Assert.Equal(record.Concensus, data.Consensus);
+            Assert.Null(data.CreatedEntity);
+            Assert.Equal(feeLimit, data.FeeLimit);
+            Assert.Equal(record.Memo, Encoding.UTF8.GetString(data.Memo.Span));
+            Assert.Equal("CRYPTOTRANSFER", data.TransactionType);
+            Assert.Equal(_network.Gateway, data.GossipNode);
+            Assert.Equal(0, data.Nonce);
+            Assert.Null(data.ParentConsensus);
+            Assert.Equal(ResponseCode.Success, data.Status);
+            Assert.False(data.IsScheduled);
+            Assert.Empty(data.StakingRewards);
+            AssertHg.Equal(record.Hash, data.Hash);
+            Assert.Equal(validDuration, data.ValidDuration);
+            Assert.Equal(new ConsensusTimeStamp(record.Id.ValidStartSeconds, record.Id.ValidStartNanos), data.ValidStarting);
+            Assert.Null(data.AssessedFees);
+            Assert.Empty(data.AssetTransfers);
+            Assert.Equal(2, data.TokenTransfers.Length);
+            var fromXfer = data.TokenTransfers.First(x => x.Account == fxTokens[i].TreasuryAccount.Record.Address);
+            Assert.NotNull(fromXfer);
+            Assert.Equal(fxTokens[i].Record.Token, fromXfer.Token);
+            Assert.Equal(-(long)xferAmounts[i], fromXfer.Amount);
+            Assert.False(fromXfer.IsAllowance);
+            var toXfer = data.TokenTransfers.First(x => x.Account == fxAccount.Record.Address);
+            Assert.NotNull(toXfer);
+            Assert.Equal(fxTokens[i].Record.Token, toXfer.Token);
+            Assert.Equal((long)xferAmounts[i], toXfer.Amount);
+            Assert.False(toXfer.IsAllowance);
+            Assert.Equal(3, data.CryptoTransfers.Length);
+        }
+    }
+    [Fact(DisplayName = "Mirror Data: Can Get Crypto Allowance Data")]
+    public async Task CanGetCryptoAllowanceData()
+    {
+        await using var fxOwner = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 10_00_000_000);
+        await using var fxAgent = await TestAccount.CreateAsync(_network);
+
+        var amount = (long)fxOwner.CreateParams.InitialBalance;
+        var receipt = await fxOwner.Client.AllocateAsync(new AllowanceParams
+        {
+            CryptoAllowances = new[] { new CryptoAllowance(fxOwner, fxAgent, amount) },
+            Signatory = fxOwner
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForTransactionInMirror(receipt.Id);
+
+        var list = new List<CryptoAllowanceData>();
+        await foreach(var record in _network.MirrorRestClient.GetAccountCryptoAllowancesAsync(fxOwner))
+        {
+            list.Add(record);
+        }
+        Assert.Single(list);
+
+        var info = list.First();
+        Assert.Equal(amount, info.Amount);
+        Assert.Equal(fxOwner.Record.Address, info.Owner);
+        Assert.Equal(fxAgent.Record.Address, info.Spender);
+    }
+
+    [Fact(DisplayName = "Mirror Data: Can Get Token Allowance Data")]
+    public async Task CanGetTokenAllowanceData()
+    {
+        await using var fxToken = await TestToken.CreateAsync(_network);
+        await using var fxAgent = await TestAccount.CreateAsync(_network);
+
+        var amount = (long)fxToken.Params.Circulation / 3 + 1;
+        var receipt = await fxToken.Client.AllocateAsync(new AllowanceParams
+        {
+            TokenAllowances = new[] { new TokenAllowance(fxToken.Record.Token, fxToken.TreasuryAccount, fxAgent, amount) },
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForTransactionInMirror(receipt.Id);
+
+        var list = new List<TokenAllowanceData>();
+        await foreach (var record in _network.MirrorRestClient.GetAccountTokenAllowancesAsync(fxToken.TreasuryAccount))
+        {
+            list.Add(record);
+        }
+        Assert.Single(list);
+
+        var info = list.First();
+        Assert.Equal(amount, info.Amount);
+        Assert.Equal(fxToken.Record.Token, info.Token);
+        Assert.Equal(fxToken.TreasuryAccount.Record.Address, info.Owner);
+        Assert.Equal(fxAgent.Record.Address, info.Spender);
     }
 }

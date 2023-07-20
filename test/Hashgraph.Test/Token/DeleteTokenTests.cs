@@ -368,4 +368,23 @@ public class DeleteTokenTests
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);
     }
+    [Fact(DisplayName = "Token Delete: Can Delete Token having Holders")]
+    public async Task CanDeleteTokenHavingHolders()
+    {
+        await using var fxAccount1 = await TestAccount.CreateAsync(_network);
+        await using var fxAccount2 = await TestAccount.CreateAsync(_network);
+        await using var fxToken = await TestToken.CreateAsync(_network, ctx => ctx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
+
+        await fxAccount1.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, 1, fxToken.TreasuryAccount.PrivateKey);
+        await fxAccount2.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount2, 1, fxToken.TreasuryAccount.PrivateKey);
+
+        var record = await fxToken.Client.DeleteTokenAsync(fxToken.Record.Token, fxToken.AdminPrivateKey);
+        Assert.Equal(ResponseCode.Success, record.Status);
+
+        var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
+        Assert.True(info.Deleted);
+
+        await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 1);
+        await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 1);
+    }
 }

@@ -71,7 +71,7 @@ public static class Generator
 
     public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) KeyPair()
     {
-        return _random.Next(0, 1) == 1 ? Ed25519KeyPair() : Secp256k1KeyPair();
+        return _random.Next(0, 2) == 1 ? Ed25519KeyPair() : Secp256k1KeyPair();
     }
     public static (ReadOnlyMemory<byte> publicKey, ReadOnlyMemory<byte> privateKey) Ed25519KeyPair()
     {

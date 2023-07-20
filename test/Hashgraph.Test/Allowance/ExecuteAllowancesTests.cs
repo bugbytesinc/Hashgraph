@@ -389,4 +389,61 @@ public class ExecuteAllowancesTests
         var del = await client.DeleteAccountAsync(fxAllowances.Agent, _network.Payer);
         Assert.Equal(ResponseCode.Success, del.Status);
     }
+
+    [Fact(DisplayName = "Execute Allowances: Can Spend a Token Allowance With Reimbursement")]
+    public async Task CanSpendATokenAllowanceWithReimbursement()
+    {
+        await using var fxAgent = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
+        await using var fxDestination = await TestAccount.CreateAsync(_network);
+        await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxDestination);
+
+        await fxToken.Client.AllocateAsync(new AllowanceParams
+        {
+            CryptoAllowances = new[] { new CryptoAllowance(fxToken.TreasuryAccount, fxAgent, 50) },
+            TokenAllowances = new[] { new TokenAllowance(fxToken, fxToken.TreasuryAccount, fxAgent, (long)fxToken.Params.Circulation - 1) },
+            Signatory = fxToken.TreasuryAccount.PrivateKey
+        });
+
+        var xferAmount = fxToken.Params.Circulation / 3 + 1;
+        await using var client = fxToken.Client.Clone(ctx => { ctx.Payer = fxAgent; ctx.Signatory = fxAgent; });
+
+        var receipt = await client.TransferAsync(new TransferParams
+        {
+            CryptoTransfers = new[]
+            {
+                new CryptoTransfer(fxToken.TreasuryAccount, -10, true),
+                new CryptoTransfer(fxAgent, 10)
+            },
+            TokenTransfers = new[] {
+                new TokenTransfer(fxToken, fxToken.TreasuryAccount, - (long) xferAmount, true),
+                new TokenTransfer(fxToken, fxDestination, (long) xferAmount)
+            }
+        });
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - xferAmount);
+        await AssertHg.TokenBalanceAsync(fxToken, fxDestination, xferAmount);
+
+        await client.DeleteAccountAsync(fxAgent, fxDestination);
+
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+        {
+            await client.TransferAsync(new TransferParams
+            {
+                CryptoTransfers = new[]
+                {
+                new CryptoTransfer(fxToken.TreasuryAccount, -10, true),
+                new CryptoTransfer(fxAgent, 10)
+            },
+                TokenTransfers = new[] {
+                new TokenTransfer(fxToken, fxToken.TreasuryAccount, - (long) xferAmount, true),
+                new TokenTransfer(fxToken, fxDestination, (long) xferAmount)
+            }
+            });
+        });
+        Assert.Equal(ResponseCode.PayerAccountNotFound, pex.Status);
+
+        await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - xferAmount);
+        await AssertHg.TokenBalanceAsync(fxToken, fxDestination, xferAmount);
+    }
 }

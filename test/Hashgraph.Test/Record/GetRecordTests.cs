@@ -199,6 +199,7 @@ public class GetRecordTests
         Assert.Equal(new Moniker(Abi.EncodeArguments(new[] { fx.ContractRecord.Contract })[12..]), fx.ContractRecord.CallResult.EncodedAddress);
         Assert.Equal(fx.ContractRecord.CallResult.Result.Size, createRecord.CallResult.Result.Size);
         Assert.Equal(fx.ContractRecord.CallResult.FunctionArgs.Size, createRecord.CallResult.FunctionArgs.Size);
+        Assert.NotEmpty(fx.ContractRecord.CallResult.Nonces);
     }
     [Fact(DisplayName = "Get Record: Can get Create Account Record")]
     public async Task CanGetCreateAccountRecord()

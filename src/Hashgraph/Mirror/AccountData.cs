@@ -49,7 +49,8 @@ public class AccountData
     /// The account's associated EVM nonce.
     /// </summary>
     [JsonPropertyName("ethereum_nonce")]
-    public long Nonce { get; set; }
+
+    public long? Nonce { get; set; }
     /// <summary>
     /// The account's public address encoded
     /// for use with the contract EVM.
