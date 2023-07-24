@@ -28,13 +28,13 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.5.3
       with:
         fetch-depth: 0
         submodules: true
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.5.0
       with:
         dotnet-version: 6.0.x
 
@@ -49,7 +49,7 @@ jobs:
         'payerPrivateKey': ${{ secrets.PAYER_PRIVATE_KEY }}
 
     - name: Upload Test Results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: test-results-windows
         path: test-results
@@ -67,13 +67,13 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.5.3
       with:
         fetch-depth: 0
         submodules: true
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.5.0
       with:
         dotnet-version: 6.0.x
 
@@ -88,7 +88,7 @@ jobs:
         'payerPrivateKey': ${{ secrets.PAYER_PRIVATE_KEY }}
 
     - name: Upload Test Results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: test-results-linux
         path: test-results
@@ -106,13 +106,13 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3.5.3
       with:
         fetch-depth: 0
         submodules: true
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.5.0
       with:
         dotnet-version: 6.0.x
 
@@ -127,7 +127,7 @@ jobs:
         'payerPrivateKey': ${{ secrets.PAYER_PRIVATE_KEY }}
 
     - name: Upload Test Results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.1.2
       with:
         name: test-results-macos
         path: test-results
