@@ -348,7 +348,7 @@ public class TransferTokenTests
         Assert.Empty(record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
-        Assert.Equal(5, record.Transfers.Count);
+        Assert.Equal(6, record.Transfers.Count);
         Assert.Equal(3, record.TokenTransfers.Count);
         Assert.Empty(record.AssetTransfers);
         Assert.Empty(record.Royalties);

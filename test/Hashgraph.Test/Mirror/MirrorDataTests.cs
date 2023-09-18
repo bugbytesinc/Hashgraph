@@ -348,7 +348,7 @@ public class MirrorDataTests
             Assert.Equal(fxTokens[i].Record.Token, toXfer.Token);
             Assert.Equal((long)xferAmounts[i], toXfer.Amount);
             Assert.False(toXfer.IsAllowance);
-            Assert.Equal(3, data.CryptoTransfers.Length);
+            Assert.Equal(4, data.CryptoTransfers.Length);
         }
     }
     [Fact(DisplayName = "Mirror Data: Can Get Crypto Allowance Data")]

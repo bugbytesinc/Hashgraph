@@ -71,7 +71,7 @@ public class TransferTests
 
         var record = await fx.Client.TransferWithRecordAsync(_network.Payer, fx.Record.Address, transferAmount);
         Assert.Equal(ResponseCode.Success, record.Status);
-        Assert.Equal(4, record.Transfers.Count);
+        Assert.Equal(5, record.Transfers.Count);
         Assert.Equal(-transferAmount - (long)record.Fee, record.Transfers[_network.Payer]);
         Assert.Equal(transferAmount, record.Transfers[fx.Record.Address]);
         Assert.Empty(record.TokenTransfers);

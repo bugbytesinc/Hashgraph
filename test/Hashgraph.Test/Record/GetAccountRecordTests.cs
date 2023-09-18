@@ -38,7 +38,7 @@ public class GetAccountRecordTests
         foreach (var record in records)
         {
             Assert.Equal(ResponseCode.Success, record.Status);
-            Assert.Equal(4, record.Transfers.Count);
+            Assert.Equal(5, record.Transfers.Count);
             Assert.Equal(-transferAmount - (long)record.Fee, record.Transfers[childAccount]);
             Assert.Equal(transferAmount, record.Transfers[parentAccount]);
             Assert.Empty(record.TokenTransfers);

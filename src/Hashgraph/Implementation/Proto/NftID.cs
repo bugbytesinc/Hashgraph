@@ -11,7 +11,7 @@ public sealed partial class NftID
         {
             throw new ArgumentNullException(nameof(asset), "Asset is missing. Please check that it is not null or empty.");
         }
-        TokenID = new TokenID(asset);
+        TokenId = new TokenID(asset);
         SerialNumber = asset.SerialNum;
     }
 }
@@ -19,9 +19,9 @@ internal static class NftIDExtensions
 {
     internal static Asset AsAsset(this NftID? id)
     {
-        if (id is not null && id.TokenID is not null)
+        if (id is not null && id.TokenId is not null)
         {
-            return new Asset(id.TokenID.ShardNum, id.TokenID.RealmNum, id.TokenID.TokenNum, id.SerialNumber);
+            return new Asset(id.TokenId.ShardNum, id.TokenId.RealmNum, id.TokenId.TokenNum, id.SerialNumber);
         }
         return Asset.None;
     }
