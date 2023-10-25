@@ -1,4 +1,6 @@
 ﻿using Hashgraph.Test.Fixtures;
+using Proto;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -203,5 +205,39 @@ public class DeleteAllowancesTests
             Signatory = fxAllowances.Owner.PrivateKey
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
+    }
+
+    [Fact(DisplayName = "Delete Allowances: Agent Can Delete a Token Allowance with Mirror Node Confirmation")]
+    async Task AgentCanDeleteATokenAllowanceWithMirrorNodeConfirmation()
+    {
+        await using var fxAllowances = await TestAllowance.CreateAsync(_network);
+
+        Assert.True(await hasNonZeroTokenAllowanceAsync(fxAllowances.DelegationRecord.Id));
+
+        var deleteReceipt = await fxAllowances.Client.DeleteAccountAsync(fxAllowances.Agent, _network.Payer, fxAllowances.Agent.PrivateKey);
+
+        Assert.True(await hasNonZeroTokenAllowanceAsync(deleteReceipt.Id));
+
+        var clearReceipt = await fxAllowances.Client.AllocateAsync(new AllowanceParams
+        {
+            TokenAllowances = new[] { new TokenAllowance(fxAllowances.TestToken, fxAllowances.Owner, fxAllowances.Agent, 0) },
+            Signatory = fxAllowances.Owner.PrivateKey
+        });
+        Assert.Equal(ResponseCode.Success, clearReceipt.Status);
+
+        Assert.False(await hasNonZeroTokenAllowanceAsync(clearReceipt.Id));
+
+        async Task<bool> hasNonZeroTokenAllowanceAsync(TxId consensusTxId)
+        {
+            await _network.WaitForTransactionInMirror(consensusTxId);
+            await foreach (var record in _network.MirrorRestClient.GetAccountTokenAllowancesAsync(fxAllowances.Owner.Record.Address))
+            {
+                if (record.Spender == fxAllowances.Agent.Record.Address && record.Token == fxAllowances.TestToken.Record.Token && record.Amount > 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

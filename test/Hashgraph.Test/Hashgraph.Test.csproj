@@ -5,7 +5,7 @@
     <RootNamespace>Hashgraph.Test</RootNamespace>
 
     <IsPackable>false</IsPackable>
-    <UserSecretsId>4D78E0AF-4138-4902-8CE0-21F39965EECE</UserSecretsId>
+    <UserSecretsId>4D78E0AF-4138-4902-8CE0-21F39965EECF</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

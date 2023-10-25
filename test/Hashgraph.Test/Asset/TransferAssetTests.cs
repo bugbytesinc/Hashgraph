@@ -481,7 +481,7 @@ public class TransferAssetTests
         Assert.Empty(record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
-        Assert.Equal(5, record.Transfers.Count);
+        Assert.Equal(6, record.Transfers.Count);
         Assert.Equal(2, record.AssetTransfers.Count);
 
         Assert.Equal(cryptoAmount, record.Transfers[fxAccount1]);
