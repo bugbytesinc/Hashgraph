@@ -1,9 +1,12 @@
 ﻿using Google.Protobuf;
+using Hashgraph.Extensions;
 using Hashgraph.Implementation;
 using Hashgraph.Test.Fixtures;
 using Org.BouncyCastle.X509;
+using Proto;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Hashgraph.Tests;
@@ -574,7 +577,7 @@ public class EndorsementsTests
         var endorsement = new Endorsement(1, inner);
 
         var contract = new Address(Generator.Integer(0, 5), Generator.Integer(1, 5), Generator.Integer(1001, 1000000));
-        ReadOnlyMemory<byte> prtPublicKey = (new Proto.Key(endorsement)).ToByteString().Memory;  
+        ReadOnlyMemory<byte> prtPublicKey = (new Proto.Key(endorsement)).ToByteString().Memory;
 
         AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Default));
         AssertHg.Equal(ReadOnlyMemory<byte>.Empty, endorsement.ToBytes(KeyFormat.Raw));
@@ -582,5 +585,100 @@ public class EndorsementsTests
         AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Protobuf));
         AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Hedera));
         AssertHg.Equal(prtPublicKey, endorsement.ToBytes(KeyFormat.Mirror));
+    }
+    [Fact(DisplayName = "Endorsements: Can Verify a valid Ed25519 Signature")]
+    public async Task CanVerifyAvalidEd25519Signature()
+    {
+        var (publicKey, privateKey) = Generator.Ed25519KeyPair();
+
+        var endorsement = new Endorsement(publicKey);
+        var signatory = new Signatory(privateKey);
+        var message = Generator.Secp256k1KeyPair().publicKey;
+        var sigMap = new SignatureMap();
+        await sigMap.AddSignatureAsync(message, signatory);
+        var signature = sigMap.SigPair[0].Ed25519.ToByteArray();
+
+        Assert.True(endorsement.Verify(message, signature));
+    }
+    [Fact(DisplayName = "Endorsements: Can Not Verify an invalid Ed25519 Signature")]
+    public async Task CannotVerifyAnInvalidEd25519Signature()
+    {
+        var (publicKey, _) = Generator.Ed25519KeyPair();
+        var (_, privateKey) = Generator.Ed25519KeyPair();
+
+        var endorsement = new Endorsement(publicKey);
+        var signatory = new Signatory(privateKey);
+        var message = Generator.Secp256k1KeyPair().publicKey;
+        var sigMap = new SignatureMap();
+        await sigMap.AddSignatureAsync(message, signatory);
+        var signature = sigMap.SigPair[0].Ed25519.ToByteArray();
+
+        Assert.False(endorsement.Verify(message, signature));
+    }
+    [Fact(DisplayName = "Endorsements: Can Verify a valid Secp256k1KeyPair Signature")]
+    public async Task CanVerifyAvalidSecp256k1KeyPairSignature()
+    {
+        var (publicKey, privateKey) = Generator.Secp256k1KeyPair();
+
+        var endorsement = new Endorsement(publicKey);
+        var signatory = new Signatory(privateKey);
+        var message = Generator.Ed25519KeyPair().publicKey;
+        var sigMap = new SignatureMap();
+        await sigMap.AddSignatureAsync(message, signatory);
+        var signature = sigMap.SigPair[0].ECDSASecp256K1.ToByteArray();
+
+        Assert.True(endorsement.Verify(message, signature));
+    }
+    [Fact(DisplayName = "Endorsements: Can Not Verify an invalid Secp256k1KeyPair Signature")]
+    public async Task CannotVerifyAnInvalidSecp256k1KeyPairSignature()
+    {
+        var (publicKey, _) = Generator.Secp256k1KeyPair();
+        var (_, privateKey) = Generator.Secp256k1KeyPair();
+
+        var endorsement = new Endorsement(publicKey);
+        var signatory = new Signatory(privateKey);
+        var message = Generator.Ed25519KeyPair().publicKey;
+        var sigMap = new SignatureMap();
+        await sigMap.AddSignatureAsync(message, signatory);
+        var signature = sigMap.SigPair[0].ECDSASecp256K1.ToByteArray();
+
+        Assert.False(endorsement.Verify(message, signature));
+    }
+    [Fact(DisplayName = "Endorsements: Attempt to Verify A List Endorsment Raises Error")]
+    public async Task AttemptToVerifyAListEndorsmentRaisesError()
+    {
+        var (publicKey1, privateKey1) = Generator.KeyPair();
+        var (publicKey2, privateKey2) = Generator.KeyPair();
+
+        var endorsement = new Endorsement(new Endorsement(publicKey1), new Endorsement(publicKey2));
+        var signatory = new Signatory(new Signatory(privateKey1), new Signatory(privateKey2));
+        var message = Generator.Ed25519KeyPair().publicKey;
+        var sigMap = new SignatureMap();
+        await sigMap.AddSignatureAsync(message, signatory);
+        var signature = sigMap.SigPair[0].ECDSASecp256K1.ToByteArray();
+
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+        {
+            endorsement.Verify(message, signature);
+        });
+        Assert.StartsWith("Only endorsements representing single Ed25519 or ECDSASecp256K1 keys support validation of signatures, use SigPair.Satisfies for complex public key types.", ex.Message);
+    }
+    [Fact(DisplayName = "Endorsements: Attempt to Verify A Contract Endorsement Raises Error")]
+    public async Task AttemptToVerifyAContractEndorsmentRaisesError()
+    {
+        var (_, privateKey) = Generator.KeyPair();
+
+        var endorsement = new Endorsement(new Address(0, 0, Generator.Integer(1000, 2000)));
+        var signatory = new Signatory(privateKey);
+        var message = Generator.Ed25519KeyPair().publicKey;
+        var sigMap = new SignatureMap();
+        await sigMap.AddSignatureAsync(message, signatory);
+        var signature = sigMap.SigPair[0].ECDSASecp256K1.ToByteArray();
+
+        var ex = Assert.Throws<InvalidOperationException>(() =>
+        {
+            endorsement.Verify(message, signature);
+        });
+        Assert.StartsWith("Only endorsements representing single Ed25519 or ECDSASecp256K1 keys support validation of signatures, unable to validate Contract key type.", ex.Message);
     }
 }

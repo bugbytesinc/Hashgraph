@@ -97,7 +97,7 @@ public sealed partial class Client
         if (cost > 0)
         {
             var transactionId = context.GetOrCreateTransactionID();
-            query.SetHeader(await createSignedQueryHeader((long)cost + supplementalCost, transactionId).ConfigureAwait(false));
+            query.SetHeader(await context.CreateSignedQueryHeader((long)cost + supplementalCost, transactionId).ConfigureAwait(false));
             response = await executeSignedQuery().ConfigureAwait(false);
             query.CheckResponse(transactionId, response);
         }
@@ -116,7 +116,7 @@ public sealed partial class Client
                     // empty transfer instead, this is not the most efficient, but we're already
                     // in a failure mode and performance is already broken.
                     var transactionId = context.GetOrCreateTransactionID();
-                    query.SetHeader(await createEmptyQueryHeader(transactionId).ConfigureAwait(false));
+                    query.SetHeader(await context.CreateSignedQueryHeader(0, transactionId).ConfigureAwait(false));
                     answer = await executeSignedQuery().ConfigureAwait(false);
                     // If we get a valid repsonse back, it turns out that we needed to identify
                     // ourselves with the signature, the rest of the process can proceed as normal.
@@ -135,91 +135,6 @@ public sealed partial class Client
             {
                 return ResponseCodeEnum.Busy == response.ResponseHeader?.NodeTransactionPrecheckCode;
             }
-        }
-
-        async Task<QueryHeader> createSignedQueryHeader(long queryFee, TransactionID transactionId)
-        {
-            var payer = context.Payer;
-            if (payer is null)
-            {
-                throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.");
-            }
-            var signatory = context.Signatory as ISignatory;
-            if (signatory is null)
-            {
-                throw new InvalidOperationException("The Payer's signatory (signing key/callback) has not been configured. This is required for retreiving records and other general network Queries. Please check that 'Signatory' is set in the Client context.");
-            }
-            var gateway = context.Gateway;
-            if (gateway is null)
-            {
-                throw new InvalidOperationException("The Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
-            }
-            var feeLimit = context.FeeLimit;
-            if (feeLimit < queryFee)
-            {
-                throw new InvalidOperationException($"The user specified fee limit is not enough for the anticipated query required fee of {queryFee:n0} tinybars.");
-            }
-            var transactionBody = new TransactionBody
-            {
-                TransactionID = transactionId,
-                NodeAccountID = new AccountID(gateway),
-                TransactionFee = (ulong)context.FeeLimit,
-                TransactionValidDuration = new Duration(context.TransactionDuration),
-                Memo = context.Memo ?? ""
-            };
-            var transfers = new TransferList();
-            transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(payer), Amount = -queryFee });
-            transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(gateway), Amount = queryFee });
-            transactionBody.CryptoTransfer = new CryptoTransferTransactionBody { Transfers = transfers };
-            var invoice = new Invoice(transactionBody, context.SignaturePrefixTrimLimit);
-            await signatory.SignAsync(invoice).ConfigureAwait(false);
-            var signedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString();
-            return new QueryHeader
-            {
-                Payment = new Transaction
-                {
-                    SignedTransactionBytes = signedTransactionBytes
-                }
-            };
-        }
-
-        async Task<QueryHeader> createEmptyQueryHeader(TransactionID transactionId)
-        {
-            var payer = context.Payer;
-            if (payer is null)
-            {
-                throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.");
-            }
-            var signatory = context.Signatory as ISignatory;
-            if (signatory is null)
-            {
-                throw new InvalidOperationException("The Payer's signatory (signing key/callback) has not been configured. This is required for retreiving records and other general network Queries. Please check that 'Signatory' is set in the Client context.");
-            }
-            var gateway = context.Gateway;
-            if (gateway is null)
-            {
-                throw new InvalidOperationException("The Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
-            }
-            var feeLimit = context.FeeLimit;
-            var transactionBody = new TransactionBody
-            {
-                TransactionID = transactionId,
-                NodeAccountID = new AccountID(gateway),
-                TransactionFee = (ulong)context.FeeLimit,
-                TransactionValidDuration = new Duration(context.TransactionDuration),
-                Memo = context.Memo ?? "",
-                CryptoTransfer = new CryptoTransferTransactionBody { Transfers = null }
-            };
-            var invoice = new Invoice(transactionBody, context.SignaturePrefixTrimLimit);
-            await signatory.SignAsync(invoice).ConfigureAwait(false);
-            var signedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString();
-            return new QueryHeader
-            {
-                Payment = new Transaction
-                {
-                    SignedTransactionBytes = signedTransactionBytes
-                }
-            };
         }
 
         Task<Response> executeSignedQuery()

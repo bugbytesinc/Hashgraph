@@ -104,8 +104,6 @@ public partial class Client
     {
         try
         {
-
-
             if (signedTransactionBytes.IsEmpty)
             {
                 throw new ArgumentOutOfRangeException(nameof(signedTransactionBytes), "Missing Signed Transaction Bytes (was empty).");

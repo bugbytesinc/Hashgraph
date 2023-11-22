@@ -265,6 +265,59 @@ internal static class GossipContextStackExtensions
         {
         }
     }
+    internal static async Task<QueryHeader> CreateSignedQueryHeader(this GossipContextStack context, long queryFee, TransactionID transactionId)
+    {
+        var payer = context.Payer;
+        if (payer is null)
+        {
+            throw new InvalidOperationException("The Payer address has not been configured. Please check that 'Payer' is set in the Client context.");
+        }
+        var signatory = context.Signatory as ISignatory;
+        if (signatory is null)
+        {
+            throw new InvalidOperationException("The Payer's signatory (signing key/callback) has not been configured. This is required for retreiving records and other general network Queries. Please check that 'Signatory' is set in the Client context.");
+        }
+        var gateway = context.Gateway;
+        if (gateway is null)
+        {
+            throw new InvalidOperationException("The Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
+        }
+        var feeLimit = context.FeeLimit;
+        if (feeLimit < queryFee)
+        {
+            throw new InvalidOperationException($"The user specified fee limit is not enough for the anticipated query required fee of {queryFee:n0} tinybars.");
+        }
+        var transactionBody = new TransactionBody
+        {
+            TransactionID = transactionId,
+            NodeAccountID = new AccountID(gateway),
+            TransactionFee = (ulong)context.FeeLimit,
+            TransactionValidDuration = new Proto.Duration(context.TransactionDuration),
+            Memo = context.Memo ?? "",
+            CryptoTransfer = new CryptoTransferTransactionBody { Transfers = createTransferList() }
+        };
+        var invoice = new Invoice(transactionBody, context.SignaturePrefixTrimLimit);
+        await signatory.SignAsync(invoice).ConfigureAwait(false);
+        return new QueryHeader
+        {
+            Payment = new Transaction
+            {
+                SignedTransactionBytes = invoice.GenerateSignedTransactionFromSignatures().ToByteString()
+            }
+        };
+
+        TransferList? createTransferList()
+        {
+            if (queryFee > 0)
+            {
+                var transfers = new TransferList();
+                transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(payer), Amount = -queryFee });
+                transfers.AccountAmounts.Add(new AccountAmount { AccountID = new AccountID(gateway), Amount = queryFee });
+                return transfers;
+            }
+            return null;
+        }
+    }
     private static Action<int, IMessage> InstantiateOnResponseReceivedHandler(this GossipContextStack context)
     {
         var handlers = context.GetAll<Action<int, IMessage>>(nameof(context.OnResponseReceived)).Where(h => h != null).ToArray();
