@@ -284,28 +284,24 @@ public static class AssertHg
 
     internal static void Empty(ReadOnlyMemory<byte> value)
     {
-        var array = value.ToArray();
-        if (array.Length != 0)
+        if (!value.IsEmpty)
         {
-            throw new Xunit.Sdk.EmptyException(array);
+            throw Xunit.Sdk.EmptyException.ForNonEmptyCollection(nameof(value));
         }
     }
 
     internal static void NotEmpty(ReadOnlyMemory<byte> value)
     {
-        if (value.ToArray().Length == 0)
+        if (value.IsEmpty)
         {
-            throw new Xunit.Sdk.NotEmptyException();
+            throw Xunit.Sdk.EmptyException.ForNonEmptyCollection(nameof(value));
         }
     }
 
     internal static void Equal(ReadOnlyMemory<byte> expected, ReadOnlyMemory<byte> actual)
     {
-        var expectedBytes = expected.ToArray();
-        var actualBytes = actual.ToArray();
-        if (!Enumerable.SequenceEqual(expectedBytes, actualBytes))
-        {
-            throw new Xunit.Sdk.EqualException(expectedBytes, actualBytes);
-        }
+        var expectedBytes = Hex.FromBytes(expected.ToArray());
+        var actualBytes = Hex.FromBytes(actual.ToArray());
+        Assert.Equal(expectedBytes, actualBytes);
     }
 }
