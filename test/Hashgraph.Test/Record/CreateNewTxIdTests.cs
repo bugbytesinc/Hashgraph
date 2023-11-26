@@ -87,7 +87,9 @@ public class CreateNewTxIdTests
         {
             for (int j = i + 1; j < tasks.Length; j++)
             {
+#pragma warning disable xUnit1031 // Do not use blocking task operations in test method
                 Assert.NotEqual(tasks[i].Result, tasks[j].Result);
+#pragma warning restore xUnit1031 // Do not use blocking task operations in test method
             }
         }
     }

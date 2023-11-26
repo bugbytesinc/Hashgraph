@@ -84,7 +84,7 @@ public class AssetInfoTests
         var (seconds, nanos) = Epoch.UniqueSecondsAndNanos(false);
         var nftInfo = new TokenNftInfo
         {
-            NftID = new NftID { TokenId = new TokenID { TokenNum = Generator.Integer(100, 200) }, SerialNumber = Generator.Integer(100, 200) },
+            NftID = new NftID { TokenID = new TokenID { TokenNum = Generator.Integer(100, 200) }, SerialNumber = Generator.Integer(100, 200) },
             AccountID = new Proto.AccountID { AccountNum = Generator.Integer(100, 200) },
             CreationTime = new Timestamp { Seconds = seconds, Nanos = nanos },
             Metadata = ByteString.CopyFrom(Generator.SHA384Hash().Span)

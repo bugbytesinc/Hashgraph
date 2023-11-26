@@ -94,7 +94,9 @@ public class MirrorDataTests
                         var task = grpClient.PingAsync(ctx => ctx.Gateway = gateway);
                         if (await Task.WhenAny(task, Task.Delay(10000)) == task)
                         {
+#pragma warning disable xUnit1031 // Do not use blocking task operations in test method
                             return task.Result;
+#pragma warning restore xUnit1031 // Do not use blocking task operations in test method
                         }
                         else
                         {

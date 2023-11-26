@@ -107,8 +107,7 @@ public sealed record Alias
         {
             return "None";
         }
-        return $"{ShardNum}.{RealmNum}.{Endorsement}";
-
+        return $"{ShardNum}.{RealmNum}.{Hex.FromBytes(Endorsement.ToBytes(KeyFormat.Hedera))}";
     }
     /// <summary>
     /// Implicit operator for converting a byte array into an alias.  It assumes

@@ -310,6 +310,25 @@ internal static class KeyUtils
         var prefix = new ReadOnlyMemory<byte>(publicKey, 0, Math.Min(Math.Max(6, invoice.MinimumDesiredPrefixSize), publicKey.Length));
         invoice.AddSignature(KeyType.ECDSASecp256K1, prefix, encoded);
     }
+    internal static bool Verify(ReadOnlyMemory<byte> data, ReadOnlyMemory<byte> signature, Ed25519PublicKeyParameters publicKeyParameters)
+    {
+        var signer = new Ed25519Signer();
+        signer.Init(false, publicKeyParameters);
+        signer.BlockUpdate(data.ToArray(), 0, data.Length);
+        return signer.VerifySignature(signature.ToArray());
+    }
+    internal static bool Verify(ReadOnlyMemory<byte> message, ReadOnlyMemory<byte> signature, ECPublicKeyParameters publicKeyParameters)
+    {
+        var digest = new KeccakDigest(256);
+        digest.BlockUpdate(message.ToArray(), 0, message.Length);
+        var hash = new byte[digest.GetDigestSize()];
+        digest.DoFinal(hash, 0);
+        var signer = new ECDsaSigner(new HMacDsaKCalculator(new Sha256Digest()));
+        signer.Init(false, publicKeyParameters);
+        var r = new BigInteger(1, signature[..32].ToArray());
+        var s = new BigInteger(1, signature[32..].ToArray());
+        return signer.VerifySignature(hash, r, s);
+    }
     private static void Insert256Int(BigInteger component, int offset, byte[] array)
     {
         byte[] bytes = component.ToByteArrayUnsigned();

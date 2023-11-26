@@ -56,7 +56,6 @@ public class GetAssetInfoTests
         // tokenGetNftInfo does not return correct spenderID accountNum value.
         var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.EqualException>(CanGetAssetInfoHavingAllowAllAllowance));
         Assert.StartsWith("Assert.Equal() Failure", testFailException.Message);
-        Assert.Equal("None", testFailException.Actual);
         //[Fact(DisplayName = "Asset Info: Can Get Asset Info Having Allow All Allowance")]
         async Task CanGetAssetInfoHavingAllowAllAllowance()
         {

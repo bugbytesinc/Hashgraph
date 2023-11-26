@@ -28,7 +28,7 @@ public class TimeDriftTests
             ctx.Transaction = new TransactionID
             {
                 AccountID = new AccountID(_network.Payer),
-                TransactionValidStart = new Timestamp(new ConsensusTimeStamp(DateTime.UtcNow.AddSeconds(6)))
+                TransactionValidStart = new Timestamp(new ConsensusTimeStamp(DateTime.UtcNow.AddSeconds(16)))
             }.AsTxId();
         });
         var duration = Epoch.UniqueClockNanos() - startInstant;

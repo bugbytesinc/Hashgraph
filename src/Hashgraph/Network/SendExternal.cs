@@ -9,7 +9,9 @@ namespace Hashgraph;
 public partial class Client
 {
     /// <summary>
-    /// Submits an arbitrary externally Hedera Transaction to the network.  
+    /// Sends an arbitrary externally created Hedera Transaction to the network, 
+    /// but does not wait for a receipt, only returning the <code>PRECHECK</code>
+    /// code returned from the network (as <code>ResponseCode</code>).
     /// The transaction is submitted as a <code>SignedTransaction</code> object, 
     /// protobuf encoded, and may include signatures in the associated 
     /// <code>sigMap</code> field.  Any Signatories held in the client context 
@@ -23,14 +25,14 @@ public partial class Client
     /// <remarks>
     /// Note: this method accepts protobuf encoded as a <code>SignedTransaction</code>,
     /// not a <code>Transaction</code> object as the transaction object contains 
-    /// depricated protobuf fields not supported by this SDK.  The method will peform
+    /// depricated protobuf fields not supported by this SDK.  The method will perform
     /// the necessary final wrapping of the transaction for final submission.
     /// </remarks>
     /// <param name="signedTransactionBytes">
     /// The serialized protobuf encoded bytes of a <code>SignedTransaction</code>
-    /// object to be submitted to a Gossip Network Transaction. These bytes must be 
-    /// manually created from calling code having a knowledge of how to construct the 
-    /// Hedera transaction.
+    /// object to be submitted to a Hedera Gossip Network Node. These bytes must be 
+    /// manually created from calling code having a knowledge of how to construct a
+    /// proper Hedera transaction.
     /// </param>
     /// <param name="configure">
     /// Optional callback method providing an opportunity to modify 
@@ -38,20 +40,27 @@ public partial class Client
     /// It is executed prior to submitting the request to the network.
     /// </param>
     /// <returns>
-    /// A receipt for the submitted transaction, if successfull, 
-    /// otherwise an exception is thrown.
+    /// The <code>ResponseCode</code> corresponding to the precheck value
+    /// returned from the remote Hedera Gossip Node which can indicate
+    /// success or failure.  This method does not wait for consensus and does 
+    /// not return a receipt.  However, it will retry sending the transaction
+    /// when it receives a <code>BUSY</code> response from the remote node.
     /// </returns>
     /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
     /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
-    /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-    /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
-    /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TransactionReceipt> SubmitExternalTransactionAsync(ReadOnlyMemory<byte> signedTransactionBytes, Action<IContext>? configure = null)
+    /// <exception cref="PrecheckException">If transaction submission failed due to network communication errors.  
+    /// The PrecheckException will not be thrown for PRECHECK error codes returned from the remote gRPC endpoint.  
+    /// This behavior is different from most other API calls that throw a PrecheckException for any precheck value
+    /// returned that is not <code>OK</code>.  The PrecheckException is thrown because there is no true response
+    /// code to return and the method should divulge some information as to the nature of the network error.</exception>
+    public Task<ResponseCode> SendExternalTransactionAsync(ReadOnlyMemory<byte> signedTransactionBytes, Action<IContext>? configure = null)
     {
-        return new TransactionReceipt(await SubmitExternalTransactionImplementationAsync(signedTransactionBytes, null, configure).ConfigureAwait(false));
+        return SendExternalTransactionImplementationAsync(signedTransactionBytes, null, configure);
     }
     /// <summary>
-    /// Submits an arbitrary externally Hedera Transaction to the network.  
+    /// Sends an arbitrary externally created Hedera Transaction to the network, 
+    /// but does not wait for a receipt, only returning the <code>PRECHECK</code>
+    /// code returned from the network (as <code>ResponseCode</code>).
     /// The transaction is submitted as a <code>SignedTransaction</code> object, 
     /// protobuf encoded, and may include signatures in the associated 
     /// <code>sigMap</code> field.  Any Signatories held in the client context 
@@ -65,7 +74,7 @@ public partial class Client
     /// <remarks>
     /// Note: this method accepts protobuf encoded as a <code>SignedTransaction</code>,
     /// not a <code>Transaction</code> object as the transaction object contains 
-    /// depricated protobuf fields not supported by this SDK.  The method will peform
+    /// depricated protobuf fields not supported by this SDK.  The method will perform
     /// the necessary final wrapping of the transaction for final submission.
     /// </remarks>
     /// <param name="signedTransactionBytes">
@@ -85,22 +94,27 @@ public partial class Client
     /// It is executed prior to submitting the request to the network.
     /// </param>
     /// <returns>
-    /// A receipt for the submitted transaction, if successfull, 
-    /// otherwise an exception is thrown.
+    /// The <code>ResponseCode</code> corresponding to the precheck value
+    /// returned from the remote Hedera Gossip Node which can indicate
+    /// success or failure.  This method does not wait for consensus and does 
+    /// not return a receipt.  However, it will retry sending the transaction
+    /// when it receives a <code>BUSY</code> response from the remote node.
     /// </returns>
     /// <exception cref="ArgumentOutOfRangeException">If required arguments are missing.</exception>
     /// <exception cref="InvalidOperationException">If required context configuration is missing.</exception>
-    /// <exception cref="PrecheckException">If the gateway node create rejected the request upon submission.</exception>
-    /// <exception cref="ConsensusException">If the network was unable to come to consensus before the duration of the transaction expired.</exception>
-    /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
-    public async Task<TransactionReceipt> SubmitExternalTransactionAsync(ReadOnlyMemory<byte> signedTransactionBytes, Signatory signatory, Action<IContext>? configure = null)
+    /// <exception cref="PrecheckException">If transaction submission failed due to network communication errors.  
+    /// The PrecheckException will not be thrown for PRECHECK error codes returned from the remote gRPC endpoint.  
+    /// This behavior is different from most other API calls that throw a PrecheckException for any precheck value
+    /// returned that is not <code>OK</code>.  The PrecheckException is thrown because there is no true response
+    /// code to return and the method should divulge some information as to the nature of the network error.</exception>
+    public Task<ResponseCode> SendExternalTransactionAsync(ReadOnlyMemory<byte> signedTransactionBytes, Signatory signatory, Action<IContext>? configure = null)
     {
-        return new TransactionReceipt(await SubmitExternalTransactionImplementationAsync(signedTransactionBytes, signatory, configure).ConfigureAwait(false));
+        return SendExternalTransactionImplementationAsync(signedTransactionBytes, signatory, configure);
     }
     /// <summary>
-    /// Internal implementation of the submit message call.
+    /// Internal implementation of the send message call.
     /// </summary>
-    private async Task<NetworkResult> SubmitExternalTransactionImplementationAsync(ReadOnlyMemory<byte> signedTransactionBytes, Signatory? extraSignatory, Action<IContext>? configure)
+    private async Task<ResponseCode> SendExternalTransactionImplementationAsync(ReadOnlyMemory<byte> signedTransactionBytes, Signatory? extraSignatory, Action<IContext>? configure)
     {
         try
         {
@@ -156,14 +170,7 @@ public partial class Client
                 SignedTransactionBytes = signedTransaction.ToByteString()
             };
             var precheck = await context.ExecuteSignedRequestWithRetryImplementationAsync(transaction, networkTransaction.InstantiateNetworkRequestMethod, getResponseCode).ConfigureAwait(false);
-            if (precheck.NodeTransactionPrecheckCode != ResponseCodeEnum.Ok)
-            {
-                var responseCode = (ResponseCode)precheck.NodeTransactionPrecheckCode;
-                throw new PrecheckException($"Transaction Failed Pre-Check: {responseCode}", result.TransactionID.AsTxId(), responseCode, precheck.Cost);
-            }
-            result.Receipt = await context.GetReceiptAsync(result.TransactionID).ConfigureAwait(false);
-            networkTransaction.CheckReceipt(result);
-            return result;
+            return (ResponseCode)precheck.NodeTransactionPrecheckCode;
 
             static ResponseCodeEnum getResponseCode(TransactionResponse response)
             {
