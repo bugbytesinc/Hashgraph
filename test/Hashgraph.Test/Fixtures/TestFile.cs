@@ -33,7 +33,7 @@ public class TestFile : IAsyncDisposable
             Signatory = test.PrivateKey
         };
         customize?.Invoke(test);
-        test.Record = await test.Client.RetryKnownNetworkIssues(async client =>
+        test.Record = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await test.Client.CreateFileWithRecordAsync(test.CreateParams, ctx =>
             {

@@ -33,7 +33,7 @@ public class StatefulContract : IAsyncDisposable
             Contents = Encoding.UTF8.GetBytes(STATEFUL_CONTRACT_BYTECODE)
         };
         fx.Client = networkCredentials.NewClient();
-        fx.FileRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.FileRecord = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
@@ -52,7 +52,7 @@ public class StatefulContract : IAsyncDisposable
             Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
         };
         customize?.Invoke(fx);
-        fx.ContractRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.ContractRecord = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
             {

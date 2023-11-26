@@ -40,7 +40,7 @@ public class TestTopic : IAsyncDisposable
             Signatory = fx.Signatory
         };
         customize?.Invoke(fx);
-        fx.Record = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.Record = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.CreateTopicWithRecordAsync(fx.Params, ctx =>
             {

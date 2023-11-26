@@ -25,7 +25,7 @@ public class TestAliasAccount : IAsyncDisposable
         fx.Alias = new Alias(fx.PublicKey);
         fx.InitialTransfer = Generator.Integer(1_00_000_000, 2_00_000_000);
         customize?.Invoke(fx);
-        fx.TransactionRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.TransactionRecord = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.TransferWithRecordAsync(fx.Network.Payer, fx.Alias, fx.InitialTransfer, ctx =>
             {
