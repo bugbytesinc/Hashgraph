@@ -77,7 +77,7 @@ public class NetworkCredentials
                 ctx.Payer = _rootPayer.Account;
                 ctx.Signatory = Signatory;
                 ctx.RetryCount = 50; // Use a high number, sometimes the test network glitches.
-                ctx.RetryDelay = TimeSpan.FromMilliseconds(100); // Use this setting for a while to see if we can trim a few ms off of each test
+                ctx.RetryDelay = TimeSpan.FromMilliseconds(50); // Use this setting for a while to see if we can trim a few ms off of each test
                 ctx.OnSendingRequest = OutputSendingRequest;
                 ctx.OnResponseReceived = OutputReceivResponse;
                 ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
@@ -248,6 +248,38 @@ public class NetworkCredentials
         }
     }
 
+    public async Task<TRecord> RetryForKnownNetworkIssuesAsync<TRecord>(Func<Task<TRecord>> callback) where TRecord : TransactionRecord
+    {
+        try
+        {
+            while (true)
+            {
+                try
+                {
+                    return await callback().ConfigureAwait(false);
+                }
+                catch (PrecheckException pex) when (pex.Status == ResponseCode.TransactionExpired || pex.Status == ResponseCode.Busy || pex.Status == ResponseCode.RpcError)
+                {
+                    await SwitchRootGatewayAsync();
+                    continue;
+                }
+            }
+        }
+        catch (TransactionException ex) when (ex.Message?.StartsWith("The Network Changed the price of Retrieving a Record while attempting to retrieve this record") == true)
+        {
+            var record = await _rootClient.GetTransactionRecordAsync(ex.TxId) as TRecord;
+            if (record is not null)
+            {
+                return record;
+            }
+            else
+            {
+                throw;
+            }
+        }
+    }
+
+
     private async Task<Address> GetSpecialAccount(Address address)
     {
         await using var client = NewClient();
@@ -283,6 +315,33 @@ public class NetworkCredentials
             throw new Exception("Unable to find a target gossip node.", ex);
         }
     }
+
+    private async Task SwitchRootGatewayAsync()
+    {
+        try
+        {
+            var validGateways = (await _mirrorClient.GetActiveGatewaysAsync(2000))
+                .Where(g => g.Key != _gateway)
+                .OrderBy(g => g.Value)
+                .Select(g => g.Key)
+                .ToArray();
+            if (validGateways.Length > 0)
+            {
+                Output?.WriteLine($"{DateTime.UtcNow}  Tried switching Root Gateway, but none responded to ping, staying with  {_gateway.ShardNum}.{_gateway.RealmNum}.{_gateway.AccountNum} at {_gateway.Uri}");
+            }
+            else
+            {
+                _gateway = validGateways[0];
+                _rootClient.Configure(ctx => ctx.Gateway = _gateway);
+                Output?.WriteLine($"{DateTime.UtcNow}  Switched Root Client Gateway to {_gateway.ShardNum}.{_gateway.RealmNum}.{_gateway.AccountNum} at {_gateway.Uri}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Output?.WriteLine($"{DateTime.UtcNow}  Tried to switch main Gateway, but no Gateways are resonding: {ex.Message}");
+        }
+    }
+
 
     private async Task<AccountData> LookupPayerAsync()
     {

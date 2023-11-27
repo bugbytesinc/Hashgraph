@@ -39,7 +39,7 @@ public class InitCodeContract : IAsyncDisposable
             Memo = ".NET SDK Test: " + Generator.Code(10)
         };
         customize?.Invoke(fx);
-        fx.ContractRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.ContractRecord = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
             {

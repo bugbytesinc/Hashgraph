@@ -28,7 +28,7 @@ public class TestAccount : IAsyncDisposable
             AutoAssociationLimit = Generator.Integer(5, 10)
         };
         customize?.Invoke(fx);
-        fx.Record = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.Record = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.CreateAccountWithRecordAsync(fx.CreateParams, ctx =>
              {

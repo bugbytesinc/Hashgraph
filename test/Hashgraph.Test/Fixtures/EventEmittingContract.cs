@@ -34,7 +34,7 @@ public class EventEmittingContract : IAsyncDisposable
             Contents = Encoding.UTF8.GetBytes(EVENTEMIT_CONTRACT_BYTECODE)
         };
         fx.Client = networkCredentials.NewClient();
-        fx.FileRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.FileRecord = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.CreateFileWithRecordAsync(fx.FileParams, ctx =>
             {
@@ -52,7 +52,7 @@ public class EventEmittingContract : IAsyncDisposable
             RenewPeriod = TimeSpan.FromSeconds(7890000),//TimeSpan.FromDays(Generator.Integer(2, 4))
         };
         customize?.Invoke(fx);
-        fx.ContractRecord = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.ContractRecord = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.CreateContractWithRecordAsync(fx.ContractParams, ctx =>
             {

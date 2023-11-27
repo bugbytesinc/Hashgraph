@@ -72,7 +72,7 @@ public class TestAsset : IAsyncDisposable
             Memo = ("Test Asset: " + Generator.Code(20)).TruncateMemo()
         };
         customize?.Invoke(fx);
-        fx.Record = await fx.Client.RetryKnownNetworkIssues(async client =>
+        fx.Record = await networkCredentials.RetryForKnownNetworkIssuesAsync(async () =>
         {
             return await fx.Client.CreateTokenWithRecordAsync(fx.Params, ctx =>
             {
