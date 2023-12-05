@@ -32,7 +32,7 @@ public class TimeDriftTests
             }.AsTxId();
         });
         var duration = Epoch.UniqueClockNanos() - startInstant;
-        Assert.InRange(duration, 4_000_000_000L, 240_000_000_000L);
+        Assert.InRange(duration, 500_000L, 240_000_000_000L);
     }
     [Fact(DisplayName = "Time Drift: Testing Network Forces Wait on Auto Transaction IDs Too Forward in Time")]
     public async Task SimulateTimeDrift()

@@ -101,6 +101,16 @@ public interface IContext
     /// </summary>
     TimeSpan RetryDelay { get; set; }
     /// <summary>
+    /// The additional amount of tinybars to add to the estimated
+    /// cost of a Query when a query fee is required.  Sometimes the
+    /// network can under-report the required query fee.  For critical
+    /// application paths, this value can be used to hedge any last
+    /// nanosecond changes to the cost of a query.  Most use cases
+    /// will not need to set this value unless they frequently see
+    /// "The Network Changed the price of ..." errors in their logs.
+    /// </summary>
+    long QueryTip { get; set; }
+    /// <summary>
     /// The smallest desired signature map prefix value length.  
     /// The client will trim the length of signature prefix identifiers 
     /// in a signature map to the smallest value possible, but not less 

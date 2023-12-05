@@ -78,6 +78,7 @@ public class NetworkCredentials
                 ctx.OnResponseReceived = OutputReceivResponse;
                 ctx.AdjustForLocalClockDrift = true; // Build server has clock drift issues
                 ctx.FeeLimit = 60_00_000_000; // Testnet is getting pricey.
+                ctx.QueryTip = 2; // Testnet cost query is unreliable.
             });
             var info = await _rootClient.GetAccountInfoAsync(_rootPayer.Account);
             _ledger = info.Ledger;
