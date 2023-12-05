@@ -8,7 +8,7 @@ For an [introduction](https://bugbytesinc.github.io/Hashgraph/tutorials/index.ht
 
 ## Cloning
 This project references the [Hedera Protobufs](https://github.com/hashgraph/hedera-protobufs)
-project as a git submodule (currently the `develop` Branch).  It is recommended to include ```--recurse-submodules``` options 
+project as a git submodule (currently the `v0.44.0` Tag).  It is recommended to include ```--recurse-submodules``` options 
 when cloning the repository so that the ```*.proto``` files from the submodule are present
 when building the project:
 ```
@@ -16,7 +16,7 @@ $ git clone --recurse-submodules https://github.com/bugbytesinc/Hashgraph.git
 ```
 
 ## Contributing
-While we are in the process of building the preliminary infrastructure for this project, please direct any feedback, requests or questions to  [Hedera’s Discord](https://discordapp.com/invite/FFb9YFX) channel.
+Please direct any feedback, requests or questions to  [Hedera’s Discord](https://discordapp.com/invite/FFb9YFX) channel.
 
 ## Build Status
 
@@ -34,9 +34,7 @@ While we are in the process of building the preliminary infrastructure for this 
 
 
 ## Build Requirements
-This project relies protobuf support found in .net core 6, 
-previous versions of the .net core framework will not work.
-(At the time of this writing we are in [6.0.101](https://dotnet.microsoft.com/download/dotnet-core/6.0))
+This project relies on [.NET 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 Visual Studio is not required to build the library, however the project
 references the [NSec.Cryptography](https://nsec.rocks/) library, which 
