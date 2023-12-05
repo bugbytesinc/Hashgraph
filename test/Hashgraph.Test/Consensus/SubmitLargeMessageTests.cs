@@ -24,7 +24,7 @@ public class SubmiLargeMessageTests
         await using var fx = await TestTopic.CreateAsync(_network);
         var message = Encoding.ASCII.GetBytes(Generator.String(1200, 1990));
         var segmentSize = Generator.Integer(100, 200);
-        var expectedCount = message.Length / segmentSize + 1;
+        var expectedCount = (message.Length + segmentSize - 1) / segmentSize;
         var receipts = await fx.Client.SubmitLargeMessageAsync(fx.Record.Topic, message, segmentSize, fx.ParticipantPrivateKey);
         Assert.Equal(expectedCount, receipts.Length);
         for (int i = 0; i < expectedCount; i++)
@@ -166,7 +166,7 @@ public class SubmiLargeMessageTests
         await using var fx = await TestTopic.CreateAsync(_network);
         var message = Encoding.ASCII.GetBytes(Generator.String(1200, 1990));
         var segmentSize = Generator.Integer(100, 200);
-        var expectedCount = message.Length / segmentSize + 1;
+        var expectedCount = (message.Length + segmentSize - 1) / segmentSize;
         var receipts = await fx.Client.SubmitLargeMessageAsync(fx.Record.Topic, message, segmentSize, fx.ParticipantPrivateKey);
         Assert.Equal(expectedCount, receipts.Length);
         for (int i = 0; i < expectedCount; i++)
@@ -396,7 +396,7 @@ public class SubmiLargeMessageTests
         await using var fxTopic = await TestTopic.CreateAsync(_network);
         var message = Encoding.ASCII.GetBytes(Generator.String(1200, 1990));
         var segmentSize = Generator.Integer(100, 200);
-        var expectedCount = message.Length / segmentSize + 1;
+        var expectedCount = (message.Length + segmentSize - 1) / segmentSize;
         await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000 * (ulong)expectedCount);
         var receipts = await fxTopic.Client.SubmitLargeMessageAsync(
             fxTopic.Record.Topic,
