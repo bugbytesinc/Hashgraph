@@ -80,6 +80,7 @@ public sealed partial class Client : IAsyncDisposable
             TransactionDuration = TimeSpan.FromSeconds(120),
             RetryCount = 5,
             RetryDelay = TimeSpan.FromMilliseconds(200),
+            QueryTip = 0,
             SignaturePrefixTrimLimit = 0,
             AdjustForLocalClockDrift = false
         });

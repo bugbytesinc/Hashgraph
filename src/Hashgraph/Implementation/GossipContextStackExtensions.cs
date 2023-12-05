@@ -282,6 +282,7 @@ internal static class GossipContextStackExtensions
         {
             throw new InvalidOperationException("The Network Gateway Node has not been configured. Please check that 'Gateway' is set in the Client context.");
         }
+        queryFee += context.QueryTip;
         var feeLimit = context.FeeLimit;
         if (feeLimit < queryFee)
         {
