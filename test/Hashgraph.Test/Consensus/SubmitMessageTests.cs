@@ -276,8 +276,17 @@ public class SubmitMessageTests
                 // a transaction.
                 return await client.GetReceiptAsync(pex.TxId) as SubmitMessageReceipt;
             }
+            catch (PrecheckException pex) when (pex.Status == ResponseCode.TransactionExpired)
+            {
+                // This is not a case we should be dealing with
+                // at the lower level as it is a problem with the
+                // hedera network itself, under load the transaction
+                // can expire.  Applications will need to be programmed
+                // to handle such situations.
+                return null;
+            }
         }));
-        var receipts = await Task.WhenAll(tasks);
+        var receipts = (await Task.WhenAll(tasks)).Where(r => r != null).ToArray();
         foreach (var receipt in receipts)
         {
             Assert.NotNull(receipt);
