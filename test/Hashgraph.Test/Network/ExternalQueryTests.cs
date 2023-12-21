@@ -1,11 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Test.Fixtures;
-using Proto;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.System;
+﻿namespace Hashgraph.Test.System;
 
 [Collection(nameof(NetworkCredentials))]
 public class ExternalQueryTests
@@ -83,7 +76,7 @@ public class ExternalQueryTests
         var response = Response.Parser.ParseFrom(result.Span);
         Assert.NotNull(response);
         Assert.Equal(ResponseCodeEnum.InvalidAccountId, response.CryptoGetInfo.Header.NodeTransactionPrecheckCode);
-        Assert.Null(response.CryptoGetInfo.AccountInfo);        
+        Assert.Null(response.CryptoGetInfo.AccountInfo);
     }
     [Fact(DisplayName = "External Query: Invalid Receipt Request Still Produces Result")]
     public async Task InvalidReceiptRequestStillProducesResult()
@@ -100,7 +93,7 @@ public class ExternalQueryTests
 
         var response = Response.Parser.ParseFrom(result.Span);
         Assert.NotNull(response);
-        Assert.Null(response.TransactionGetReceipt.Receipt);   
-        Assert.Equal(ResponseCodeEnum.InvalidTransactionId,response.ResponseHeader.NodeTransactionPrecheckCode);
+        Assert.Null(response.TransactionGetReceipt.Receipt);
+        Assert.Equal(ResponseCodeEnum.InvalidTransactionId, response.ResponseHeader.NodeTransactionPrecheckCode);
     }
 }

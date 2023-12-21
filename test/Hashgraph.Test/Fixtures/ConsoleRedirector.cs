@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Fixtures;
+﻿namespace Hashgraph.Test.Fixtures;
 
 public class ConsoleRedirector : IDisposable
 {

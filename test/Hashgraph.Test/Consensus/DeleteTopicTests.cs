@@ -1,10 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Topic;
+﻿namespace Hashgraph.Test.Topic;
 
 [Collection(nameof(NetworkCredentials))]
 public class DeleteTopicTests

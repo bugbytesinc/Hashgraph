@@ -1,11 +1,6 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿namespace Hashgraph.Test.Fixtures;
 
-namespace Hashgraph.Test.Fixtures;
-
-public class GreetingContract : IAsyncDisposable
+public class GreetingContract : IHasCryptoBalance, IHasTokenBalance, IAsyncDisposable
 {
     public string TestInstanceId;
     public string Memo;
@@ -88,6 +83,27 @@ public class GreetingContract : IAsyncDisposable
         await Client.DisposeAsync();
         Network.Output?.WriteLine("TEARDOWN COMPLETED Greeting Contract Instance");
     }
+
+    public async Task<ulong> GetCryptoBalanceAsync()
+    {
+        return await Client.GetContractBalanceAsync(ContractRecord.Contract);
+    }
+
+    public async Task<long?> GetTokenBalanceAsync(Address token)
+    {
+        return await Network.MirrorRestClient.GetAccountTokenBalanceAsync(ContractRecord.Contract, token);
+    }
+
+    public async Task<TokenHoldingData[]> GetTokenBalancesAsync()
+    {
+        var list = new List<TokenHoldingData>();
+        await foreach (var info in Network.MirrorRestClient.GetAccountTokenHoldingsAsync(ContractRecord.Contract))
+        {
+            list.Add(info);
+        }
+        return list.ToArray();
+    }
+
     public static implicit operator Address(GreetingContract fxContract)
     {
         return fxContract.ContractRecord.Contract;

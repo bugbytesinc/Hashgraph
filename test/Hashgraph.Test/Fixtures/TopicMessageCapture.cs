@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-
-namespace Hashgraph.Test.Fixtures;
+﻿namespace Hashgraph.Test.Fixtures;
 
 public sealed class TopicMessageCapture
 {

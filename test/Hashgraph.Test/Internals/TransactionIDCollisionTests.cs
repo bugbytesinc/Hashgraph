@@ -1,10 +1,4 @@
-﻿using Hashgraph.Implementation;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace Hashgraph.Test.Internals;
+﻿namespace Hashgraph.Test.Internals;
 
 public class TransactionIDCollisionTests
 {
@@ -41,9 +35,9 @@ public class TransactionIDCollisionTests
     {
         var tasks = Enumerable.Range(1, 30000).Select(_ => Task.Run(() => Epoch.UniqueClockNanos()));
         var nano = await Task.WhenAll(tasks);
-        for(int i = 0; i < nano.Length; i ++)
+        for (int i = 0; i < nano.Length; i++)
         {
-            for(int j = i+1; j < nano.Length; j++)
+            for (int j = i + 1; j < nano.Length; j++)
             {
                 Assert.NotEqual(nano[i], nano[j]);
             }
@@ -52,7 +46,8 @@ public class TransactionIDCollisionTests
     [Fact(DisplayName = "Transaction ID: Client Creator Does not Collide Multi Threaded In Linq")]
     public async Task ClientCreatorDoesNotCollideMultiThreadInLinq()
     {
-        await using Client client = new(cfg => {
+        await using Client client = new(cfg =>
+        {
             cfg.Payer = new Address(0, 0, 3);
         });
         var tasks = Enumerable.Range(1, 20000).Select(_ => Task.Run(() => client.CreateNewTxId()));

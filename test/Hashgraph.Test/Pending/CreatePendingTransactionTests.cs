@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Schedule;
+﻿namespace Hashgraph.Test.Schedule;
 
 [Collection(nameof(NetworkCredentials))]
 public class CreatePendingTransactionTests

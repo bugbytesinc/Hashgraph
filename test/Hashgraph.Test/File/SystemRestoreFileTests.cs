@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.File;
+﻿namespace Hashgraph.Test.File;
 
 [Collection(nameof(NetworkCredentials))]
 public class SystemRestoreFileTests
@@ -17,13 +12,13 @@ public class SystemRestoreFileTests
     [Fact(DisplayName = "System Restore File: Can Restore File")]
     public async Task CanRestoreAFile()
     {
-        var deleteAddress = await _network.GetSystemDeleteAdminAddress();
+        var deleteAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (deleteAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
             return;
         }
-        var restoreAddress = await _network.GetSystemUndeleteAdminAddress();
+        var restoreAddress = await _network.GetSystemUndeleteAdminAddressAsync();
         if (restoreAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Undelete Administrator Account.");
@@ -53,13 +48,13 @@ public class SystemRestoreFileTests
     [Fact(DisplayName = "System Restore File: Can Restore File using Signatory")]
     public async Task CanRestoreAFileUsingSignatory()
     {
-        var deleteAddress = await _network.GetSystemDeleteAdminAddress();
+        var deleteAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (deleteAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
             return;
         }
-        var restoreAddress = await _network.GetSystemUndeleteAdminAddress();
+        var restoreAddress = await _network.GetSystemUndeleteAdminAddressAsync();
         if (restoreAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Restore Administrator Account.");
@@ -89,13 +84,13 @@ public class SystemRestoreFileTests
     [Fact(DisplayName = "System Restore File: Can Restore File and get Record")]
     public async Task CanRestoreAFileWithRecord()
     {
-        var deleteAddress = await _network.GetSystemDeleteAdminAddress();
+        var deleteAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (deleteAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
             return;
         }
-        var restoreAddress = await _network.GetSystemUndeleteAdminAddress();
+        var restoreAddress = await _network.GetSystemUndeleteAdminAddressAsync();
         if (restoreAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Restore Administrator Account.");
@@ -132,13 +127,13 @@ public class SystemRestoreFileTests
     [Fact(DisplayName = "System Restore File: Can Restore File and get Record using Signatory")]
     public async Task CanRestoreAFileWithRecordUsingSignatory()
     {
-        var deleteAddress = await _network.GetSystemDeleteAdminAddress();
+        var deleteAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (deleteAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
             return;
         }
-        var restoreAddress = await _network.GetSystemUndeleteAdminAddress();
+        var restoreAddress = await _network.GetSystemUndeleteAdminAddressAsync();
         if (restoreAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Restore Administrator Account.");
@@ -175,13 +170,13 @@ public class SystemRestoreFileTests
     [Fact(DisplayName = "System Restore File: Can Not Schedule Restore.")]
     public async Task CanNotScheduleRestore()
     {
-        var deleteAddress = await _network.GetSystemDeleteAdminAddress();
+        var deleteAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (deleteAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
             return;
         }
-        var restoreAddress = await _network.GetSystemUndeleteAdminAddress();
+        var restoreAddress = await _network.GetSystemUndeleteAdminAddressAsync();
         if (restoreAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Restore Administrator Account.");

@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.QueryFee;
+﻿namespace Hashgraph.Test.QueryFee;
 
 [Collection(nameof(NetworkCredentials))]
 public class QueryFeeTests

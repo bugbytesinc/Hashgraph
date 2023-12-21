@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using Xunit;
+﻿namespace Hashgraph.Test.Fixtures;
 
-namespace Hashgraph.Test.Fixtures;
-
-public class TestAliasAccount : IAsyncDisposable
+public class TestAliasAccount : IHasCryptoBalance, IHasTokenBalance, IAsyncDisposable
 {
     public ReadOnlyMemory<byte> PublicKey;
     public ReadOnlyMemory<byte> PrivateKey;
@@ -68,6 +64,26 @@ public class TestAliasAccount : IAsyncDisposable
         }
         await Client.DisposeAsync();
         Network.Output?.WriteLine("TEARDOWN COMPLETED: Pay to Alias Account Instance");
+    }
+
+    public async Task<ulong> GetCryptoBalanceAsync()
+    {
+        return await Client.GetAccountBalanceAsync(CreateRecord.Address);
+    }
+
+    public async Task<long?> GetTokenBalanceAsync(Address token)
+    {
+        return await Network.MirrorRestClient.GetAccountTokenBalanceAsync(CreateRecord.Address, token);
+    }
+
+    public async Task<TokenHoldingData[]> GetTokenBalancesAsync()
+    {
+        var list = new List<TokenHoldingData>();
+        await foreach (var info in Network.MirrorRestClient.GetAccountTokenHoldingsAsync(CreateRecord.Address))
+        {
+            list.Add(info);
+        }
+        return list.ToArray();
     }
 
     public static implicit operator Address(TestAliasAccount fxAccount)

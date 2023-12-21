@@ -1,15 +1,5 @@
-﻿using Google.Protobuf;
-using Hashgraph.Extensions;
-using Hashgraph.Implementation;
-using Hashgraph.Mirror;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Org.BouncyCastle.Crypto.Parameters;
-using Proto;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace Hashgraph.Test.Fixtures;
 
@@ -198,39 +188,58 @@ public class NetworkCredentials
         }
         return payment != null;
     }
-    public async Task<Address> GetSystemAccountAddress()
+    public async Task<Address> GetSystemAccountAddressAsync()
     {
-        _systemAccountAddress ??= await GetSpecialAccount(new Address(0, 0, 50));
+        _systemAccountAddress ??= await GetSpecialAccountAsync(new Address(0, 0, 50));
         return _systemAccountAddress == Address.None ? null : _systemAccountAddress;
     }
-    public async Task<Address> GetGenisisAccountAddress()
+    public async Task<Address> GetGenisisAccountAddressAsync()
     {
-        _systemAccountAddress ??= await GetSpecialAccount(new Address(0, 0, 2));
+        _systemAccountAddress ??= await GetSpecialAccountAsync(new Address(0, 0, 2));
         return _systemAccountAddress == Address.None ? null : _systemAccountAddress;
     }
-    public async Task<Address> GetSystemDeleteAdminAddress()
+    public async Task<Address> GetSystemDeleteAdminAddressAsync()
     {
-        _systemDeleteAdminAddress ??= await GetSpecialAccount(new Address(0, 0, 59));
+        _systemDeleteAdminAddress ??= await GetSpecialAccountAsync(new Address(0, 0, 59));
         return _systemDeleteAdminAddress == Address.None ? null : _systemDeleteAdminAddress;
     }
-    public async Task<Address> GetSystemUndeleteAdminAddress()
+    public async Task<Address> GetSystemUndeleteAdminAddressAsync()
     {
-        _systemUndeleteAdminAddress ??= await GetSpecialAccount(new Address(0, 0, 60));
+        _systemUndeleteAdminAddress ??= await GetSpecialAccountAsync(new Address(0, 0, 60));
         return _systemUndeleteAdminAddress == Address.None ? null : _systemUndeleteAdminAddress;
     }
-    public async Task<Address> GetSystemFreezeAdminAddress()
+    public async Task<Address> GetSystemFreezeAdminAddressAsync()
     {
-        _systemFreezeAdminAddress ??= await GetSpecialAccount(new Address(0, 0, 58));
+        _systemFreezeAdminAddress ??= await GetSpecialAccountAsync(new Address(0, 0, 58));
         return _systemFreezeAdminAddress == Address.None ? null : _systemFreezeAdminAddress;
     }
-    public async Task WaitForTransactionInMirror(TxId transactionID)
+    public async Task WaitForMirrorConsensusAsync()
+    {
+        // Make a placebo transaction that we can wait for.
+        var placebo = await _rootClient.TransferWithRecordAsync(Payer, Gateway, 1, ctx => ctx.Memo = "Mirror Node HIP-367 Consensus Time Marker");
+        await WaitForMirrorConsensusAsync(placebo);
+    }
+    public async Task WaitForMirrorConsensusAsync(TransactionRecord record)
+    {
+        await WaitForMirrorConsensusAsync(record.Concensus.Value);
+    }
+    public async Task WaitForMirrorConsensusAsync(TransactionReceipt receipt)
+    {
+        await WaitForMirrorConsensusAsync(receipt.Id);
+    }
+    public async Task WaitForMirrorConsensusAsync(TransactionException tex)
+    {
+        await WaitForMirrorConsensusAsync(tex.TxId);
+    }
+    public async Task WaitForMirrorConsensusAsync(TxId transactionID)
     {
         // Need to add more to _mirrorClient about getting a TX by ID
         var record = await _rootClient.GetTransactionRecordAsync(transactionID);
-        await WaitForMirrorNodeConsensusTimestamp(record.Concensus.Value);
+        await WaitForMirrorConsensusAsync(record.Concensus.Value);
     }
-    public async Task WaitForMirrorNodeConsensusTimestamp(ConsensusTimeStamp timestamp)
+    public async Task WaitForMirrorConsensusAsync(ConsensusTimeStamp timestamp)
     {
+        Output?.WriteLine($"{DateTime.UtcNow}    WAIT → Waiting for Mirror Consensus Timestamp {timestamp}");
         var count = 0;
         var latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
         while (latest < timestamp)
@@ -277,7 +286,7 @@ public class NetworkCredentials
     }
 
 
-    private async Task<Address> GetSpecialAccount(Address address)
+    private async Task<Address> GetSpecialAccountAsync(Address address)
     {
         await using var client = NewClient();
         try

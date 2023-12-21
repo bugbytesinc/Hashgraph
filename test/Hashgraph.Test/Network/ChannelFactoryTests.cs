@@ -1,13 +1,4 @@
-﻿using Grpc.Net.Client;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Diagnostics;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Crypto;
+﻿namespace Hashgraph.Test.Crypto;
 
 [Collection(nameof(NetworkCredentials))]
 public class ChannelFactoryTests
@@ -50,7 +41,7 @@ public class ChannelFactoryTests
 
     [Fact(DisplayName = "Channel Factory: Channel Creation Error Propigates")]
     public async Task ChannelCreationErrorPropigates()
-    {      
+    {
         await using var client = new Client(channelFactory, ctx =>
         {
             ctx.Payer = _network.Payer;

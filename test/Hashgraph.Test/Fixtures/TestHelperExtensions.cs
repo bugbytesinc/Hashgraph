@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Hashgraph.Test.Fixtures;
+﻿namespace Hashgraph.Test.Fixtures;
 
 public static class TestHelperExtensions
 {

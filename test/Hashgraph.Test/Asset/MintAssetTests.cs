@@ -1,13 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetTokens;
+﻿namespace Hashgraph.Test.AssetTokens;
 
 [Collection(nameof(NetworkCredentials))]
 public class MintAssetTests
@@ -59,7 +50,9 @@ public class MintAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal((ulong)metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Mint Assets: Can Mint Asset Coins (No Extra Signatory)")]
     public async Task CanMintAssetsWithouExtraSignatory()
@@ -100,7 +93,9 @@ public class MintAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal((ulong)metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Mint Assets: Can Mint Asset Coins and get Record")]
     public async Task CanMintAssetsAndGetRecord()
@@ -152,7 +147,9 @@ public class MintAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal((ulong)metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal((long)metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Mint Assets: Can Mint Asset Coins from Any Account with Supply Key")]
     public async Task CanMintAssetsFromAnyAccountWithSupplyKey()
@@ -201,7 +198,9 @@ public class MintAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal((ulong)metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Mint Assets: Mint Asset Record Includes Asset Transfers")]
     public async Task MintAssetRecordIncludesAssetTransfers()
@@ -225,7 +224,10 @@ public class MintAssetTests
             Assert.Equal(Address.None, xfer.From);
             Assert.Equal(fxAsset.TreasuryAccount.Record.Address, xfer.To);
         }
-        Assert.Equal((ulong)metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal(metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((ulong)metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
     }
     [Fact(DisplayName = "Mint Assets: Mint Asset Requires Signature by Supply Key")]
@@ -241,7 +243,9 @@ public class MintAssetTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
         Assert.StartsWith("Unable to Mint Token Coins, status: InvalidSignature", tex.Message);
 
-        Assert.Equal(0UL, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal(0, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(0UL, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
     }
     [Fact(DisplayName = "Mint Assets: Can Not More Mint Assets than Ceiling")]
@@ -279,6 +283,8 @@ public class MintAssetTests
                         PendingPayer = fxPayer
                     }));
 
+        await _network.WaitForMirrorConsensusAsync(pendingReceipt);
+
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)fxAsset.Metadata.Length);
 
         var schedulingReceipt = await fxAsset.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey);
@@ -302,6 +308,8 @@ public class MintAssetTests
             Assert.True(serialNumber > 0);
         }
         Assert.Equal((ulong)(fxAsset.Metadata.Length + metadata.Length), record.Circulation);
+
+        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)(metadata.Length + fxAsset.Metadata.Length));
 

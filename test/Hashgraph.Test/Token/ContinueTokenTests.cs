@@ -1,11 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Test.Fixtures;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class ContinueTokenTests
@@ -140,20 +133,22 @@ public class ContinueTokenTests
 
         await AssertHg.TokenPausedAsync(fxToken, TokenTradableStatus.Tradable);
 
-        await fxToken.Client.ContinueTokenAsync(fxToken.Record.Token, fxToken.PausePrivateKey);
+        var receipt = await fxToken.Client.ContinueTokenAsync(fxToken.Record.Token, fxToken.PausePrivateKey);
 
-        var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
-        Assert.Equal(0Ul, info.Balance);
-        Assert.Equal(fxToken.Params.Decimals, info.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        Assert.Equal(0, info.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
-        Assert.Equal(xferAmount, info.Balance);
-        Assert.Equal(fxToken.Params.Decimals, info.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        Assert.Equal((long)xferAmount, info.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
     }
     [Fact(DisplayName = "Continue Tokens: Can Continue a Paused Token")]

@@ -1,9 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
-using System.Linq;
-using Xunit;
-
-namespace Hashgraph.Test.Internals;
+﻿namespace Hashgraph.Test.Internals;
 
 public class AbiConversionTests
 {
@@ -32,7 +27,8 @@ public class AbiConversionTests
     [Fact(DisplayName = "ABI: Can Pack and Unpack Address Array")]
     public void CanPackAndUnpackAddressArray()
     {
-        var expected = Enumerable.Range(3, Generator.Integer(4, 10)).Select(_ => {
+        var expected = Enumerable.Range(3, Generator.Integer(4, 10)).Select(_ =>
+        {
             var shard = Generator.Integer(1, 50);
             var realm = Generator.Integer(1, 50);
             var num = Generator.Integer(1, 50);

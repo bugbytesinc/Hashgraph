@@ -1,10 +1,4 @@
-﻿using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
-using Proto;
-using System;
-using Xunit;
-
-namespace Hashgraph.Tests;
+﻿namespace Hashgraph.Tests;
 
 public class TxIdTests
 {

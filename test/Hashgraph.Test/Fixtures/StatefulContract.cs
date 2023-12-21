@@ -1,9 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace Hashgraph.Test.Fixtures;
+﻿namespace Hashgraph.Test.Fixtures;
 
 public class StatefulContract : IAsyncDisposable
 {
@@ -47,7 +42,7 @@ public class StatefulContract : IAsyncDisposable
             Administrator = fx.PublicKey,
             Signatory = fx.PrivateKey,
             Memo = ".NET SDK Test: " + Generator.Code(10),
-            Gas = 150000,
+            Gas = 180000,
             RenewPeriod = TimeSpan.FromSeconds(7890000),
             Arguments = new object[] { "Hello from .NET. " + DateTime.UtcNow.ToLongDateString() }
         };

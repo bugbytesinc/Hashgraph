@@ -1,7 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using Xunit;
-
-namespace Hashgraph.Tests;
+﻿namespace Hashgraph.Tests;
 
 public class ScheduleParamsTests
 {

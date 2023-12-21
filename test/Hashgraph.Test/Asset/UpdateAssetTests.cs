@@ -1,12 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetToken;
+﻿namespace Hashgraph.Test.AssetToken;
 
 [Collection(nameof(NetworkCredentials))]
 public class UpdateAssetTests
@@ -873,8 +865,10 @@ public class UpdateAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
-        Assert.Equal(0UL, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)fxAsset.Metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxAsset));
     }
 
     [Fact(DisplayName = "Update Asset: Updating the Treasury Without Signing Without Admin Key Raises Error")]
@@ -920,8 +914,10 @@ public class UpdateAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
-        Assert.Equal(0UL, await fxAsset.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)fxAsset.Metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Update Asset: Can Update Treasury to Contract")]
     public async Task CanUpdateTreasuryToContract()
@@ -993,8 +989,10 @@ public class UpdateAssetTests
         });
         var totalCirculation = (ulong)fxAsset.Metadata.Length;
 
-        Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
-        Assert.Equal(totalCirculation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync();
+
+        Assert.Null(await fxAccount.GetTokenBalanceAsync(fxAsset));
+        Assert.Equal((long)totalCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
 
         // Returns A Failure
         var tex = await Assert.ThrowsAnyAsync<TransactionException>(async () =>
@@ -1025,8 +1023,10 @@ public class UpdateAssetTests
         });
         var totalCirculation = (ulong)fxAsset.Metadata.Length;
 
-        Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset));
-        Assert.Equal(totalCirculation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAsset.TreasuryAccount, fxAsset));
+        await _network.WaitForMirrorConsensusAsync(fxAsset.MintRecord);
+
+        Assert.Null(await fxAccount.GetTokenBalanceAsync(fxAsset));
+        Assert.Equal((long)totalCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
 
         await fxAsset.Client.UpdateTokenAsync(new UpdateTokenParams
         {

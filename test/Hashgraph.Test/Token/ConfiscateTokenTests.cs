@@ -1,11 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class ConfiscateTokenTests
@@ -24,18 +17,22 @@ public class ConfiscateTokenTests
         var xferAmount = 2 * fxToken.Params.Circulation / (ulong)Generator.Integer(3, 5);
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var xferReceipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(xferReceipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var receipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
         Assert.Equal(expectedTreasury, receipt.Circulation);
 
-        Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Tokens: Can Confiscate Token Coins From Alias Account")]
@@ -48,18 +45,22 @@ public class ConfiscateTokenTests
         var xferAmount = 2 * fxToken.Params.Circulation / (ulong)Generator.Integer(3, 5);
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var xferRecipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(xferRecipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var receipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount.Alias, xferAmount, fxToken.ConfiscatePrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
         Assert.Equal(expectedTreasury, receipt.Circulation);
 
-        Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
 
@@ -71,18 +72,22 @@ public class ConfiscateTokenTests
         var xferAmount = 2ul;
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var xferReceipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(xferReceipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var receipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
         Assert.Equal(expectedTreasury, receipt.Circulation);
 
-        Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Tokens: Can Confiscate A Small Amount Token Coins and get Record")]
@@ -93,10 +98,12 @@ public class ConfiscateTokenTests
         var xferAmount = 2ul;
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var record = await fxToken.Client.ConfiscateTokensWithRecordAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
@@ -110,8 +117,11 @@ public class ConfiscateTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
         Assert.Equal(expectedTreasury, record.Circulation);
-        Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Tokens: Can Confiscate A Small Amount Token Coins and get Record without Extra Signatory")]
@@ -122,10 +132,12 @@ public class ConfiscateTokenTests
         var xferAmount = 2ul;
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var record = await fxToken.Client.ConfiscateTokensWithRecordAsync(fxToken, fxAccount, xferAmount, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxToken.ConfiscatePrivateKey));
@@ -139,8 +151,11 @@ public class ConfiscateTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
         Assert.Equal(expectedTreasury, record.Circulation);
-        Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Tokens: Can Confiscate A Small Amount Token Coins from Any Account with Confiscate Key")]
@@ -152,10 +167,12 @@ public class ConfiscateTokenTests
         var xferAmount = 2ul;
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var xferReceipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync();
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var receipt = await fxToken.Client.ConfiscateTokensAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey, ctx =>
@@ -166,8 +183,10 @@ public class ConfiscateTokenTests
         Assert.Equal(ResponseCode.Success, receipt.Status);
         Assert.Equal(expectedTreasury, receipt.Circulation);
 
-        Assert.Equal(0ul, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedTreasury, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Tokens: Can Not Confiscate More Tokens than Account Has")]
@@ -178,10 +197,12 @@ public class ConfiscateTokenTests
         var xferAmount = 2ul;
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -191,8 +212,10 @@ public class ConfiscateTokenTests
         Assert.Equal(ResponseCode.InvalidWipingAmount, tex.Status);
         Assert.StartsWith("Unable to Confiscate Token, status: InvalidWipingAmount", tex.Message);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Tokens: Confiscate Record Includes Token Transfers")]
@@ -203,10 +226,12 @@ public class ConfiscateTokenTests
         var xferAmount = 2ul;
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var record = await fxToken.Client.ConfiscateTokensWithRecordAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);
@@ -216,6 +241,8 @@ public class ConfiscateTokenTests
         Assert.Empty(record.AssetTransfers);
         Assert.Empty(record.Royalties);
         Assert.Empty(record.Associations);
+
+        await _network.WaitForMirrorConsensusAsync(record);
 
         var xfer = record.TokenTransfers[0];
         Assert.Equal(fxToken.Record.Token, xfer.Token);
@@ -231,10 +258,12 @@ public class ConfiscateTokenTests
         var xferAmount = 2ul;
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -244,8 +273,10 @@ public class ConfiscateTokenTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.StartsWith("Unable to Confiscate Token, status: InvalidSignature", tex.Message);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Tokens: Cannot Confiscate when no Confiscation Endorsement")]
@@ -260,10 +291,12 @@ public class ConfiscateTokenTests
         var xferAmount = 2ul;
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -273,8 +306,10 @@ public class ConfiscateTokenTests
         Assert.Equal(ResponseCode.TokenHasNoWipeKey, tex.Status);
         Assert.StartsWith("Unable to Confiscate Token, status: TokenHasNoWipeKey", tex.Message);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Confiscate Tokens: Can Not Schedule Confiscate Token Coins")]

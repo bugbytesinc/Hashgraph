@@ -1,11 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Test.Fixtures;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetToken;
+﻿namespace Hashgraph.Test.AssetToken;
 
 [Collection(nameof(NetworkCredentials))]
 public class ContinueAssetTests
@@ -190,20 +183,21 @@ public class ContinueAssetTests
 
         await AssertHg.AssetPausedAsync(fxAsset, TokenTradableStatus.Tradable);
 
-        await fxAsset.Client.ContinueTokenAsync(fxAsset.Record.Token, fxAsset.PausePrivateKey);
+        var receipt = await fxAsset.Client.ContinueTokenAsync(fxAsset.Record.Token, fxAsset.PausePrivateKey);
 
-        var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
-        Assert.Equal(0Ul, info.Balance);
-        Assert.Equal(0U, info.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        Assert.Equal(0, info.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
-        info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
-        Assert.Equal(1UL, info.Balance);
-        Assert.Equal(0U, info.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        Assert.Equal(1, info.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
     }
     [Fact(DisplayName = "Continue Assets: Continue Asset Requires Pause Key to Sign Transaction")]

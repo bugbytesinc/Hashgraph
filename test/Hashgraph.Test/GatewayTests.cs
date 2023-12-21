@@ -1,8 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System;
-using Xunit;
-
-namespace Hashgraph.Tests;
+﻿namespace Hashgraph.Tests;
 
 public class GatewayTests
 {

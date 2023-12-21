@@ -1,11 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Crypto;
+﻿namespace Hashgraph.Test.Crypto;
 
 [Collection(nameof(NetworkCredentials))]
 public class GetContractBalanceTests
@@ -32,9 +25,7 @@ public class GetContractBalanceTests
     {
         await using var fx = await PayableContract.CreateAsync(_network);
 
-        var balances = await fx.Client.GetContractBalancesAsync(fx.ContractRecord.Contract);
-        Assert.Equal((ulong)fx.ContractParams.InitialBalance, balances.Crypto);
-        Assert.Empty(balances.Tokens);
+        Assert.Equal((ulong)fx.ContractParams.InitialBalance, await fx.Client.GetContractBalanceAsync(fx.ContractRecord.Contract));
     }
     [Fact(DisplayName = "Get Contract Balance: Missing Payer Account Does not Throw Exception (Free Query)")]
     public async Task MissingPayerAccountDosNotThrowException()

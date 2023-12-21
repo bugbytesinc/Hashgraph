@@ -1,13 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetTokens;
+﻿namespace Hashgraph.Test.AssetTokens;
 
 [Collection(nameof(NetworkCredentials))]
 public class DeleteAssetTests
@@ -87,25 +78,21 @@ public class DeleteAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        var accountInfo = await fxAsset.Client.GetAccountInfoAsync(fxAccount.Record.Address);
-        var asset = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        var asset = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(asset);
         Assert.Equal(fxAsset.Record.Token, asset.Token);
-        Assert.Equal(fxAsset.Params.Symbol, asset.Symbol);
-        Assert.Equal(xferAmount, asset.Balance);
-        Assert.Equal(0U, asset.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+        Assert.Equal((long)xferAmount, asset.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, asset.FreezeStatus);
         Assert.False(asset.AutoAssociated);
         Assert.Equal(TokenKycStatus.NotApplicable, asset.KycStatus);
 
-        var treasuryInfo = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
-        asset = treasuryInfo.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        asset = (await fxAsset.TreasuryAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(asset);
         Assert.Equal(fxAsset.Record.Token, asset.Token);
-        Assert.Equal(fxAsset.Params.Symbol, asset.Symbol);
-        Assert.Equal(expectedTreasury, asset.Balance);
-        Assert.Equal(0U, asset.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+        Assert.Equal((long)expectedTreasury, asset.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, asset.FreezeStatus);
         Assert.False(asset.AutoAssociated);
         Assert.Equal(TokenKycStatus.NotApplicable, asset.KycStatus);
     }
@@ -308,9 +295,11 @@ public class DeleteAssetTests
         Assert.Equal(ResponseCode.AccountIsTreasury, tex.Receipt.Status);
         Assert.StartsWith("Unable to delete account, status: AccountIsTreasury", tex.Message);
 
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         // Confirm Assets still exist in account 2
-        Assert.Equal(0ul, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxAsset));
-        Assert.Equal(circulation, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxAsset));
+        Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxAsset));
+        Assert.Equal((long)circulation, await fxAccount2.GetTokenBalanceAsync(fxAsset));
 
         // What does the info say,
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
@@ -342,8 +331,8 @@ public class DeleteAssetTests
         });
 
         // Double check balances
-        Assert.Equal(0ul, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxAsset));
-        Assert.Equal(circulation, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxAsset));
+        Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxAsset));
+        Assert.Equal((long)circulation, await fxAccount2.GetTokenBalanceAsync(fxAsset));
 
         // What does the info say now?
         info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);

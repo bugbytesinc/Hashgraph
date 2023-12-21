@@ -1,12 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetTokens;
+﻿namespace Hashgraph.Test.AssetTokens;
 
 [Collection(nameof(NetworkCredentials))]
 public class AssociateAssetTests
@@ -28,13 +20,13 @@ public class AssociateAssetTests
         var receipt = await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
-        Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0UL, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Associate Assets: Can Associate asset with Alias Account")]
@@ -56,13 +48,13 @@ public class AssociateAssetTests
             var receipt = await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount.Alias, fxAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
 
+            await _network.WaitForMirrorConsensusAsync(receipt);
+
             var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
             Assert.Equal(fxAsset.Record.Token, association.Token);
-            Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
-            Assert.Equal(0UL, association.Balance);
-            Assert.Equal(0UL, association.Decimals);
+            Assert.Equal(0, association.Balance);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-            Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
             Assert.False(association.AutoAssociated);
         }
     }
@@ -86,13 +78,13 @@ public class AssociateAssetTests
         Assert.Equal(_network.Payer, record.Id.Address);
         Assert.Null(record.ParentTransactionConcensus);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
-        Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0u, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: Can Associate asset with Account (No Extra Signatory)")]
@@ -110,13 +102,13 @@ public class AssociateAssetTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
-        Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: Can Associate asset with Account and get Record (No Extra Signatory)")]
@@ -143,13 +135,13 @@ public class AssociateAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(fxAccount.Record.Address, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
-        Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: Can Associate Multpile Assets with Account")]
@@ -169,31 +161,27 @@ public class AssociateAssetTests
         var receipt = await fxAccount.Client.AssociateTokensAsync(assets, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         Assert.Equal(fxAsset1.Record.Token, association.Token);
-        Assert.Equal(fxAsset1.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         association = await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);
         Assert.Equal(fxAsset2.Record.Token, association.Token);
-        Assert.Equal(fxAsset2.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         association = await AssertHg.TokenIsAssociatedAsync(fxToken3, fxAccount);
         Assert.Equal(fxToken3.Record.Token, association.Token);
-        Assert.Equal(fxToken3.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken3.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: Can Associate Multiple Assets with Account and get Record")]
@@ -220,22 +208,20 @@ public class AssociateAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         Assert.Equal(fxAsset1.Record.Token, association.Token);
-        Assert.Equal(fxAsset1.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         association = await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);
         Assert.Equal(fxAsset2.Record.Token, association.Token);
-        Assert.Equal(fxAsset2.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: Can Associate Multiple Asset with Account (No Extra Signatory)")]
@@ -257,22 +243,20 @@ public class AssociateAssetTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         Assert.Equal(fxAsset1.Record.Token, association.Token);
-        Assert.Equal(fxAsset1.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         association = await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);
         Assert.Equal(fxAsset2.Record.Token, association.Token);
-        Assert.Equal(fxAsset2.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: Can Associate Multiple Asset with Account and get Record (No Extra Signatory)")]
@@ -303,22 +287,20 @@ public class AssociateAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(fxAccount.Record.Address, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         Assert.Equal(fxAsset1.Record.Token, association.Token);
-        Assert.Equal(fxAsset1.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         association = await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);
         Assert.Equal(fxAsset2.Record.Token, association.Token);
-        Assert.Equal(fxAsset2.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: No Asset Balance Record Exists When not Associated")]
@@ -332,13 +314,13 @@ public class AssociateAssetTests
         var receipt = await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
-        Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: Association Requires Signing by Target Account")]
@@ -466,21 +448,21 @@ public class AssociateAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network);
 
         // Assert Not Associated
-        var info = await fxContract.Client.GetContractInfoAsync(fxContract);
-        Assert.Null(info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token));
+        var info = await fxContract.GetTokenBalancesAsync();
+        Assert.Null(info.FirstOrDefault(t => t.Token == fxAsset.Record.Token));
 
         var receipt = await fxContract.Client.AssociateTokenAsync(fxAsset.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        info = await fxContract.Client.GetContractInfoAsync(fxContract);
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        info = await fxContract.GetTokenBalancesAsync();
+        var association = info.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(association);
         Assert.Equal(fxAsset.Record.Token, association.Token);
-        Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(0U, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Associate Assets: Can Not Schedule Associate asset with Account")]

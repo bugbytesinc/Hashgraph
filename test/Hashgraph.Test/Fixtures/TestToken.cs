@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace Hashgraph.Test.Fixtures;
+﻿namespace Hashgraph.Test.Fixtures;
 
 public class TestToken : IAsyncDisposable
 {

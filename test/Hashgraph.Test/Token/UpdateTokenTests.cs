@@ -1,12 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class UpdateTokenTests
@@ -859,8 +851,11 @@ public class UpdateTokenTests
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-        Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
-        Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
     }
 
     [Fact(DisplayName = "Update Token: Updating the Treasury Without Signing Without Admin Key Raises Error")]
@@ -906,8 +901,11 @@ public class UpdateTokenTests
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-        Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
-        Assert.Equal(0UL, await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
+
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Update Token: Can Update Treasury to Contract")]
     public async Task CanUpdateTreasuryToContract()
@@ -931,7 +929,9 @@ public class UpdateTokenTests
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
         Assert.Equal(fxContract.ContractRecord.Contract, info.Treasury);
 
-        Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)fxToken.Params.Circulation, await fxContract.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Update Token: Can Delete an Auto Renew Account while Used by Token")]
     public async Task RemovingAnAutoRenewAccountIsNotAllowed()
@@ -977,8 +977,10 @@ public class UpdateTokenTests
         });
         var totalCirculation = fxToken.Params.Circulation;
 
-        Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(totalCirculation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
+
+        Assert.Null(await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)totalCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
 
         // Returns A Failure
         var tex = await Assert.ThrowsAnyAsync<TransactionException>(async () =>
@@ -990,6 +992,7 @@ public class UpdateTokenTests
                 Signatory = new Signatory(fxToken.AdminPrivateKey, fxAccount.PrivateKey)
             });
         });
+
         Assert.Equal(ResponseCode.NoRemainingAutomaticAssociations, tex.Status);
         Assert.Equal(ResponseCode.NoRemainingAutomaticAssociations, tex.Receipt.Status);
 
@@ -1009,8 +1012,10 @@ public class UpdateTokenTests
         });
         var totalCirculation = fxToken.Params.Circulation;
 
-        Assert.Equal(0UL, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(totalCirculation, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
+
+        Assert.Null(await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)totalCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
 
         await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
         {

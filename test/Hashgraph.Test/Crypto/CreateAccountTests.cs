@@ -1,11 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Test.Fixtures;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Crypto;
+﻿namespace Hashgraph.Test.Crypto;
 
 [Collection(nameof(NetworkCredentials))]
 public class CreateAccountTests
@@ -38,7 +31,6 @@ public class CreateAccountTests
         Assert.Equal(createResult.Address.RealmNum, info.Address.RealmNum);
         Assert.Equal(createResult.Address.ShardNum, info.Address.ShardNum);
         Assert.Equal(createResult.Address.AccountNum, info.Address.AccountNum);
-        Assert.Empty(info.Tokens);
         Assert.False(info.Deleted);
         Assert.Equal(0, info.ContractNonce);
         Assert.Equal(0, info.AutoAssociationLimit);
@@ -313,8 +305,6 @@ public class CreateAccountTests
         var info1 = await client.GetAccountInfoAsync(createResult1.Address);
         var info2 = await client.GetAccountInfoAsync(createResult2.Address);
         Assert.Equal(info1.Balance, info2.Balance);
-        Assert.Empty(info1.Tokens);
-        Assert.Empty(info2.Tokens);
         Assert.False(info1.Deleted);
         Assert.False(info2.Deleted);
         Assert.Equal(0, info1.ContractNonce);
@@ -344,7 +334,8 @@ public class CreateAccountTests
             Endorsement = publicKey
         });
         Assert.Equal(ResponseCode.Success, createResult.Status);
-        var deleteResult = await client.DeleteAccountAsync(createResult.Address, _network.Payer, ctx => {
+        var deleteResult = await client.DeleteAccountAsync(createResult.Address, _network.Payer, ctx =>
+        {
             ctx.Payer = createResult.Address;
             ctx.Signatory = privateKey;
         });

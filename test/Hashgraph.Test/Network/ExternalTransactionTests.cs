@@ -1,13 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
-using Proto;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.System;
+﻿namespace Hashgraph.Test.System;
 
 [Collection(nameof(NetworkCredentials))]
 public class ExternalTransactionTests

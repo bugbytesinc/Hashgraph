@@ -1,5 +1,4 @@
-﻿using Hashgraph.Implementation;
-using NSec.Cryptography;
+﻿using NSec.Cryptography;
 using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto.Generators;
@@ -7,8 +6,6 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
-using System;
-using System.Security.Cryptography;
 
 namespace Hashgraph.Test.Fixtures;
 
@@ -87,7 +84,7 @@ public static class Generator
          this is common to all keys, it's ASN.1 Encoding that specifies the format of the data in the string.
          so 20aa4780f.... becomes 302a300506032b657003210020aa4780f... for a public key
          * */
-        using var key = Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport });
+        using var key = NSec.Cryptography.Key.Create(SignatureAlgorithm.Ed25519, new KeyCreationParameters { ExportPolicy = KeyExportPolicies.AllowPlaintextExport });
         var publicKey = key.Export(KeyBlobFormat.PkixPublicKey);
         var privateKey = key.Export(KeyBlobFormat.PkixPrivateKey);
         return (publicKey, privateKey);

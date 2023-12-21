@@ -1,19 +1,4 @@
-﻿using Hashgraph.Extensions;
-using Hashgraph.Implementation;
-using Hashgraph.Mirror;
-using Hashgraph.Test.Fixtures;
-using Proto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Crypto;
+﻿namespace Hashgraph.Test.Crypto;
 
 [Collection(nameof(NetworkCredentials))]
 public class MirrorDataTests
@@ -29,7 +14,7 @@ public class MirrorDataTests
     {
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        await _network.WaitForMirrorNodeConsensusTimestamp(fxAccount.Record.Concensus.Value);
+        await _network.WaitForMirrorConsensusAsync(fxAccount.Record.Concensus.Value);
         var data = await _network.MirrorRestClient.GetAccountDataAsync(fxAccount);
 
         Assert.Equal(info.Address, data.Account);
@@ -122,7 +107,7 @@ public class MirrorDataTests
     {
         await using var fxToken = await TestToken.CreateAsync(_network);
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
-        await _network.WaitForMirrorNodeConsensusTimestamp(fxToken.Record.Concensus.Value);
+        await _network.WaitForMirrorConsensusAsync(fxToken.Record.Concensus.Value);
         var data = await _network.MirrorRestClient.GetTokenAsync(fxToken);
 
         Assert.NotNull(data);
@@ -160,7 +145,7 @@ public class MirrorDataTests
     {
         await using var fxAsset = await TestAsset.CreateAsync(_network);
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
-        await _network.WaitForMirrorNodeConsensusTimestamp(fxAsset.MintRecord.Concensus.Value);
+        await _network.WaitForMirrorConsensusAsync(fxAsset.MintRecord.Concensus.Value);
         var data = await _network.MirrorRestClient.GetTokenAsync(fxAsset);
 
         Assert.NotNull(data);
@@ -205,7 +190,7 @@ public class MirrorDataTests
         }
         var expectedMessage = Encoding.ASCII.GetBytes(Generator.String(10, 100));
         var record = await fxTopic.Client.SubmitMessageWithRecordAsync(fxTopic.Record.Topic, expectedMessage, fxTopic.ParticipantPrivateKey);
-        await _network.WaitForMirrorNodeConsensusTimestamp(record.Concensus.Value);
+        await _network.WaitForMirrorConsensusAsync(record.Concensus.Value);
 
         var data = await _network.MirrorRestClient.GetHcsMessageAsync(fxTopic, 11);
 
@@ -231,7 +216,7 @@ public class MirrorDataTests
             messages[i] = Encoding.ASCII.GetBytes(Generator.String(10, 100));
             records[i] = await fxTopic.Client.SubmitMessageWithRecordAsync(fxTopic.Record.Topic, messages[i], fxTopic.ParticipantPrivateKey);
         }
-        await _network.WaitForMirrorNodeConsensusTimestamp(records[^1].Concensus.Value);
+        await _network.WaitForMirrorConsensusAsync(records[^1].Concensus.Value);
 
         var index = 0;
         await foreach (var data in _network.MirrorRestClient.GetHcsMessagesAsync(fxTopic))
@@ -263,7 +248,7 @@ public class MirrorDataTests
             xferAmounts[i] = 2 * fxTokens[i].Params.Circulation / 3;
             xferRecords[i] = await fxTokens[i].Client.TransferTokensWithRecordAsync(fxTokens[i].Record.Token, fxTokens[i].TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmounts[i], fxTokens[i].TreasuryAccount.PrivateKey);
         }
-        await _network.WaitForMirrorNodeConsensusTimestamp(xferRecords[^1].Concensus.Value);
+        await _network.WaitForMirrorConsensusAsync(xferRecords[^1].Concensus.Value);
         await foreach (var data in _network.MirrorRestClient.GetAccountTokenHoldingsAsync(fxAccount))
         {
             var index = findTokenIndex(data.Token);
@@ -310,7 +295,7 @@ public class MirrorDataTests
             xferAmounts[i] = 2 * fxTokens[i].Params.Circulation / 3;
             xferRecords[i] = await fxTokens[i].Client.TransferTokensWithRecordAsync(fxTokens[i].Record.Token, fxTokens[i].TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmounts[i], fxTokens[i].TreasuryAccount.PrivateKey);
         }
-        await _network.WaitForMirrorNodeConsensusTimestamp(xferRecords[^1].Concensus.Value);
+        await _network.WaitForMirrorConsensusAsync(xferRecords[^1].Concensus.Value);
         long feeLimit = 0;
         TimeSpan validDuration = TimeSpan.Zero;
         fxAccount.Client.Configure(ctx => { feeLimit = ctx.FeeLimit; validDuration = ctx.TransactionDuration; });
@@ -367,10 +352,10 @@ public class MirrorDataTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        await _network.WaitForTransactionInMirror(receipt.Id);
+        await _network.WaitForMirrorConsensusAsync(receipt.Id);
 
         var list = new List<CryptoAllowanceData>();
-        await foreach(var record in _network.MirrorRestClient.GetAccountCryptoAllowancesAsync(fxOwner))
+        await foreach (var record in _network.MirrorRestClient.GetAccountCryptoAllowancesAsync(fxOwner))
         {
             list.Add(record);
         }
@@ -396,7 +381,7 @@ public class MirrorDataTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        await _network.WaitForTransactionInMirror(receipt.Id);
+        await _network.WaitForMirrorConsensusAsync(receipt.Id);
 
         var list = new List<TokenAllowanceData>();
         await foreach (var record in _network.MirrorRestClient.GetAccountTokenAllowancesAsync(fxToken.TreasuryAccount))

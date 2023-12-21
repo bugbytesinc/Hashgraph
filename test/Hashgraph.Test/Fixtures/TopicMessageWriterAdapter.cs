@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-
-namespace Hashgraph.Test.Fixtures;
+﻿namespace Hashgraph.Test.Fixtures;
 
 public sealed class TopicMessageWriterAdapter
 {

@@ -1,11 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Crypto;
+﻿namespace Hashgraph.Test.Crypto;
 
 [Collection(nameof(NetworkCredentials))]
 public class NetworkAdministrationTests
@@ -20,7 +13,7 @@ public class NetworkAdministrationTests
     [Fact(DisplayName = "Network Administration: Can Schedule and CancelSuspend Network")]
     public async Task CanScheduleAndCancelSuspendNetwork()
     {
-        var systemAddress = await _network.GetSystemFreezeAdminAddress();
+        var systemAddress = await _network.GetSystemFreezeAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Freeze Administrator Account.");
@@ -43,7 +36,7 @@ public class NetworkAdministrationTests
     public async Task CanSuspendNetworkWithUpdateFile()
     {
         await using var client = _network.NewClient();
-        var systemAddress = await _network.GetSystemFreezeAdminAddress();
+        var systemAddress = await _network.GetSystemFreezeAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Freeze Administrator Account.");

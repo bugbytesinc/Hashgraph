@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Contract;
+﻿namespace Hashgraph.Test.Contract;
 
 [Collection(nameof(NetworkCredentials))]
 public class SystemDeleteContractTests
@@ -17,7 +12,7 @@ public class SystemDeleteContractTests
     [Fact(DisplayName = "System Contract Delete: Can Delete Contract")]
     public async Task CanDeleteContract()
     {
-        var systemAddress = await _network.GetSystemDeleteAdminAddress();
+        var systemAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
@@ -40,7 +35,7 @@ public class SystemDeleteContractTests
     [Fact(DisplayName = "System Contract Delete: Can Not Schedule Delete.")]
     public async Task CanNotScheduleDelete()
     {
-        var systemAddress = await _network.GetSystemDeleteAdminAddress();
+        var systemAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");

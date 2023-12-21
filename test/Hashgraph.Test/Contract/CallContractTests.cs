@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Contract;
+﻿namespace Hashgraph.Test.Contract;
 
 [Collection(nameof(NetworkCredentials))]
 public class CallContractTests
@@ -95,7 +90,7 @@ public class CallContractTests
         var setRecord = await fx.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 40000,
+            Gas = 45000,
             FunctionName = "set_message",
             FunctionArgs = new object[] { newMessage }
         }, ctx => ctx.Memo = ".NET SDK Test");
@@ -159,7 +154,7 @@ public class CallContractTests
         var setRecord = await fx.Client.CallContractAsync(new CallContractParams
         {
             Contract = fx.ContractRecord.Contract,
-            Gas = 40000,
+            Gas = 45000,
             FunctionName = "set_message",
             FunctionArgs = new object[] { newMessage }
         });

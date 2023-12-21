@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.File;
+﻿namespace Hashgraph.Test.File;
 
 [Collection(nameof(NetworkCredentials))]
 public class SystemDeleteFileTests
@@ -17,7 +12,7 @@ public class SystemDeleteFileTests
     [Fact(DisplayName = "System Delete File: Can Delete File")]
     public async Task CanDeleteAFile()
     {
-        var systemAddress = await _network.GetSystemDeleteAdminAddress();
+        var systemAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
@@ -45,7 +40,7 @@ public class SystemDeleteFileTests
     [Fact(DisplayName = "System Delete File: Can Delete File using Signatory")]
     public async Task CanDeleteAFileUsingSignatory()
     {
-        var systemAddress = await _network.GetSystemDeleteAdminAddress();
+        var systemAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
@@ -73,7 +68,7 @@ public class SystemDeleteFileTests
     [Fact(DisplayName = "System Delete File: Can Delete File and get Record")]
     public async Task CanDeleteAFileWithRecord()
     {
-        var systemAddress = await _network.GetSystemDeleteAdminAddress();
+        var systemAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
@@ -108,7 +103,7 @@ public class SystemDeleteFileTests
     [Fact(DisplayName = "System Delete File: Can Delete File and get Record using Signatory")]
     public async Task CanDeleteAFileWithRecordUsingSignatory()
     {
-        var systemAddress = await _network.GetSystemDeleteAdminAddress();
+        var systemAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");
@@ -143,7 +138,7 @@ public class SystemDeleteFileTests
     [Fact(DisplayName = "System Delete File: Can Not Schedule Delete.")]
     public async Task CanNotScheduleDelete()
     {
-        var systemAddress = await _network.GetSystemDeleteAdminAddress();
+        var systemAddress = await _network.GetSystemDeleteAdminAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Delete Administrator Account.");

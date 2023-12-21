@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class SuspendTokenTests
@@ -26,9 +21,13 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
+        var receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
@@ -38,6 +37,8 @@ public class SuspendTokenTests
         });
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
@@ -63,9 +64,13 @@ public class SuspendTokenTests
             var circulation = fxToken.Params.Circulation;
             var xferAmount = circulation / 3;
 
+            await _network.WaitForMirrorConsensusAsync();
+
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
-            await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.SuspendPrivateKey);
+            var receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.SuspendPrivateKey);
+
+            await _network.WaitForMirrorConsensusAsync();
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
@@ -75,6 +80,8 @@ public class SuspendTokenTests
             });
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
+
+            await _network.WaitForMirrorConsensusAsync(tex);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
@@ -91,6 +98,8 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var record = await fxToken.Client.SuspendTokenWithRecordAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
@@ -104,6 +113,8 @@ public class SuspendTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -112,6 +123,8 @@ public class SuspendTokenTests
         });
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
@@ -127,6 +140,8 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var record = await fxToken.Client.SuspendTokenWithRecordAsync(fxToken.Record.Token, fxAccount, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxToken.SuspendPrivateKey));
@@ -140,6 +155,8 @@ public class SuspendTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -148,6 +165,8 @@ public class SuspendTokenTests
         });
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
@@ -164,13 +183,17 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey, ctx =>
+        var receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey, ctx =>
         {
             ctx.Payer = fxOther.Record.Address;
             ctx.Signatory = fxOther.PrivateKey;
         });
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
@@ -180,6 +203,8 @@ public class SuspendTokenTests
         });
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
@@ -194,6 +219,8 @@ public class SuspendTokenTests
         }, fxAccount);
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
@@ -218,13 +245,19 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
-        await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
+        var receipt = await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
+        receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
@@ -234,6 +267,8 @@ public class SuspendTokenTests
         });
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
@@ -273,6 +308,8 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -281,6 +318,8 @@ public class SuspendTokenTests
         });
         Assert.Equal(ResponseCode.TokenHasNoFreezeKey, tex.Status);
         Assert.StartsWith("Unable to Suspend Token, status: TokenHasNoFreezeKey", tex.Message);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
 
@@ -300,6 +339,9 @@ public class SuspendTokenTests
         }, fxAccount);
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
+
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {

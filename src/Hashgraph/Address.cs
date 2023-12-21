@@ -105,7 +105,7 @@ public sealed record Address
         {
             AddressType.Alias => ((Alias)_alternate!).ToString(),
             AddressType.Moniker => ((Moniker)_alternate!).ToString(),
-            _ => this == None ? "None" : $"{ShardNum}.{ShardNum}.{AccountNum}"
+            _ => this == None ? "None" : $"{ShardNum}.{RealmNum}.{AccountNum}"
         };
     }
     /// <summary>

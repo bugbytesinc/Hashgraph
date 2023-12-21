@@ -1,12 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class MintTokenTests
@@ -53,8 +45,10 @@ public class MintTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var expectedTreasury = 2 * fxToken.Params.Circulation;
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Mint Tokens: Can Mint Token Coins (No Extra Signatory)")]
     public async Task CanMintTokensWithouExtraSignatory()
@@ -92,8 +86,10 @@ public class MintTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var expectedTreasury = 2 * fxToken.Params.Circulation;
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Mint Tokens: Can Mint Token Coins and get Record")]
     public async Task CanMintTokensAndGetRecord()
@@ -139,8 +135,10 @@ public class MintTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         var expectedTreasury = 2 * fxToken.Params.Circulation;
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Mint Tokens: Can Mint Token Coins from Any Account with Supply Key")]
     public async Task CanMintTokensFromAnyAccountWithSupplyKey()
@@ -183,8 +181,11 @@ public class MintTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var expectedTreasury = 2 * fxToken.Params.Circulation;
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Mint Tokens: Mint Token Record Includes Token Transfers")]
     public async Task MintTokenRecordIncludesTokenTransfers()
@@ -206,7 +207,9 @@ public class MintTokenTests
         Assert.Equal(fxToken.TreasuryAccount.Record.Address, xfer.Address);
         Assert.Equal(treasuryMintTransfer, xfer.Amount);
 
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Mint Tokens: Mint Token Requires a Positive Amount")]
@@ -225,7 +228,9 @@ public class MintTokenTests
         Assert.Equal("amount", aoe.ParamName);
         Assert.StartsWith("The token amount must be greater than zero.", aoe.Message);
 
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
+
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Mint Tokens: Mint Token Requires Signature by Supply Key")]
@@ -244,7 +249,9 @@ public class MintTokenTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.StartsWith("Unable to Mint Token Coins, status: InvalidSignature", tex.Message);
 
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Mint Tokens: Can Not Mint More than Ceiling")]
@@ -279,7 +286,9 @@ public class MintTokenTests
                     PendingPayer = fxPayer
                 }));
 
-        Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(pendingReceipt);
+
+        Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         // This should be considered a network bug.
         Assert.Equal(0UL, pendingReceipt.Circulation);
 
@@ -319,6 +328,10 @@ public class MintTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
 }

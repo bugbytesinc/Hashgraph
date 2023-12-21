@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using Xunit;
-
-namespace Hashgraph.Tests;
+﻿namespace Hashgraph.Tests;
 
 public class ConsensusTimeStampTests
 {
@@ -81,7 +77,7 @@ public class ConsensusTimeStampTests
         var value = decimal.Add(seconds, decimal.Divide(nanos, 1000000000m));
         Assert.Equal($"{seconds}.000000099", new ConsensusTimeStamp(seconds, nanos).ToString());
         Assert.Equal($"{seconds}.000000099", new ConsensusTimeStamp(value).ToString());
-        Assert.Equal("10.000000000", new ConsensusTimeStamp(10,0).ToString());
+        Assert.Equal("10.000000000", new ConsensusTimeStamp(10, 0).ToString());
         Assert.Equal("1000.100000000", new ConsensusTimeStamp(1000.1m).ToString());
         Assert.Equal("-1000.100000000", new ConsensusTimeStamp(-1000.1m).ToString());
         Assert.Equal("0.100000000", new ConsensusTimeStamp(0, 100000000).ToString());

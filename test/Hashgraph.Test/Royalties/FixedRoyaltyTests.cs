@@ -1,10 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class FixedRoyaltyTests
@@ -37,16 +31,18 @@ public class FixedRoyaltyTests
         await fxPaymentToken.Client.TransferTokensAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxBuyer, 100, fxPaymentToken.TreasuryAccount);
         await fxPaymentToken.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 0);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxPaymentToken.TreasuryAccount);
 
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 100);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor, 0);
-        await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+        await AssertHg.TokenNotAssociatedAsync(fxPaymentToken, fxAsset.TreasuryAccount);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100);
 
         var record = await fxAsset.Client.TransferWithRecordAsync(new TransferParams
@@ -79,16 +75,18 @@ public class FixedRoyaltyTests
         Assert.Single(record.Royalties);
         AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 10, record.Royalties);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxPaymentToken.TreasuryAccount);
 
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 90);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor, 10);
-        await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+        await AssertHg.TokenNotAssociatedAsync(fxPaymentToken, fxAsset.TreasuryAccount);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100);
     }
 
@@ -110,11 +108,13 @@ public class FixedRoyaltyTests
 
         var movedAsset = new Asset(fxAsset, 1);
 
-        await fxAsset.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+        var receipt = await fxAsset.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 0);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
 
         await AssertHg.CryptoBalanceAsync(fxBuyer, 10_00_000_000);
@@ -126,7 +126,7 @@ public class FixedRoyaltyTests
             AssetTransfers = new[] {
                     new AssetTransfer(movedAsset,fxSeller,fxBuyer)
                 },
-            CryptoTransfers = new [] {
+            CryptoTransfers = new[] {
                     new CryptoTransfer( fxBuyer.Record.Address, -5_00_000_000 ),
                     new CryptoTransfer(fxSeller.Record.Address, 5_00_000_000 )
                 },
@@ -147,9 +147,11 @@ public class FixedRoyaltyTests
         Assert.Single(record.Royalties);
         AssertHg.ContainsHbarRoyalty(fxSeller, fxBenefactor, 1_00_000_000, record.Royalties);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
 
         await AssertHg.CryptoBalanceAsync(fxBuyer, 5_00_000_000);
@@ -177,18 +179,20 @@ public class FixedRoyaltyTests
         var movedAsset = new Asset(fxAsset, 1);
 
         await fxPaymentToken.Client.TransferTokensAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxBuyer, 200, fxPaymentToken.TreasuryAccount);
-        await fxPaymentToken.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+        var receipt = await fxPaymentToken.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 0);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxPaymentToken.TreasuryAccount);
 
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 200);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor, 0);
-        await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+        await AssertHg.TokenNotAssociatedAsync(fxPaymentToken, fxAsset.TreasuryAccount);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 200);
 
         await AssertHg.CryptoBalanceAsync(fxBuyer, 10_00_000_000);
@@ -229,16 +233,18 @@ public class FixedRoyaltyTests
         Assert.Single(record.Royalties);
         AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor, 50, record.Royalties);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxPaymentToken.TreasuryAccount);
 
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 100);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 50);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor, 50);
-        await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+        await AssertHg.TokenNotAssociatedAsync(fxPaymentToken, fxAsset.TreasuryAccount);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 200);
 
         await AssertHg.CryptoBalanceAsync(fxBuyer, 0);
@@ -275,22 +281,24 @@ public class FixedRoyaltyTests
         var movedAsset = new Asset(fxAsset, 1);
 
         await fxPaymentToken.Client.TransferTokensAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxBuyer, 100_00, fxPaymentToken.TreasuryAccount);
-        await fxPaymentToken.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+        var receipt = await fxPaymentToken.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 0);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor1, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor2, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor3, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor1);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor2);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor3);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxPaymentToken.TreasuryAccount);
 
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 100_00);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor1, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor2, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor3, 0);
-        await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+        await AssertHg.TokenNotAssociatedAsync(fxPaymentToken, fxAsset.TreasuryAccount);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100_00);
 
         var record = await fxAsset.Client.TransferWithRecordAsync(new TransferParams
@@ -327,20 +335,22 @@ public class FixedRoyaltyTests
         AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor2, 20, record.Royalties);
         AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor3, 40, record.Royalties);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor1, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor2, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor3, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor1);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor2);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor3);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxPaymentToken.TreasuryAccount);
 
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 90_00);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 9_20);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor1, 20);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor2, 20);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor3, 40);
-        await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+        await AssertHg.TokenNotAssociatedAsync(fxPaymentToken, fxAsset.TreasuryAccount);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100_00);
     }
 
@@ -373,22 +383,24 @@ public class FixedRoyaltyTests
         var movedAsset = new Asset(fxAsset, 1);
 
         await fxPaymentToken.Client.TransferTokensAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxSeller, 100_00, fxPaymentToken.TreasuryAccount);
-        await fxPaymentToken.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+        var receipt = await fxPaymentToken.Client.TransferAssetAsync(movedAsset, fxAsset.TreasuryAccount, fxSeller, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 0);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor1, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor2, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor3, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor1);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor2);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor3);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxPaymentToken.TreasuryAccount);
 
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 100_00);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor1, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor2, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor3, 0);
-        await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+        await AssertHg.TokenNotAssociatedAsync(fxPaymentToken, fxAsset.TreasuryAccount);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100_00);
 
         var record = await fxAsset.Client.TransferWithRecordAsync(new TransferParams
@@ -420,20 +432,22 @@ public class FixedRoyaltyTests
         AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor2, 20, record.Royalties);
         AssertHg.ContainsRoyalty(fxPaymentToken, fxSeller, fxBenefactor3, 40, record.Royalties);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetBalanceAsync(fxAsset, fxBuyer, 1);
         await AssertHg.AssetBalanceAsync(fxAsset, fxSeller, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor1, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor2, 0);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxBenefactor3, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor1);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor2);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxBenefactor3);
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, fxAsset.Metadata.Length - 1);
-        await AssertHg.AssetBalanceAsync(fxAsset, fxPaymentToken.TreasuryAccount, 0);
+        await AssertHg.AssetNotAssociatedAsync(fxAsset, fxPaymentToken.TreasuryAccount);
 
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBuyer, 0);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxSeller, 99_20);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor1, 20);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor2, 20);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxBenefactor3, 40);
-        await AssertHg.TokenBalanceAsync(fxPaymentToken, fxAsset.TreasuryAccount, 0);
+        await AssertHg.TokenNotAssociatedAsync(fxPaymentToken, fxAsset.TreasuryAccount);
         await AssertHg.TokenBalanceAsync(fxPaymentToken, fxPaymentToken.TreasuryAccount, fxPaymentToken.Params.Circulation - 100_00);
     }
 }

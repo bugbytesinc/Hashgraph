@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Allowance;
+﻿namespace Hashgraph.Test.Allowance;
 
 [Collection(nameof(NetworkCredentials))]
 public class UpdateAllowancesTests
@@ -42,7 +37,7 @@ public class UpdateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -94,7 +89,7 @@ public class UpdateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>

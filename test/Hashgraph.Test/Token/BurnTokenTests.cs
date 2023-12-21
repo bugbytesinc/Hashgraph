@@ -1,11 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class BurnTokenTests
@@ -54,7 +47,9 @@ public class BurnTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)expectedCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Burn Tokens: Can Burn Token Coins and get Record")]
     public async Task CanBurnTokensAsyncAndGetRecord()
@@ -101,7 +96,9 @@ public class BurnTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal((long)expectedCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Burn Tokens: Can Burn Token Coins and get Record Without Extra Signatory")]
     public async Task CanBurnTokensAsyncAndGetRecordWithoutExtraSignatory()
@@ -148,7 +145,9 @@ public class BurnTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal((long)expectedCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Burn Tokens: Can Burn Token Coins from Any Account with Supply Key")]
     public async Task CanBurnTokenCoinsFromAnyAccountWithSupplyKey()
@@ -194,7 +193,9 @@ public class BurnTokenTests
         Assert.Equal(fxToken.TreasuryAccount.Record.Address, xfer.Address);
         Assert.Equal(-(long)amountToDestory, xfer.Amount);
 
-        Assert.Equal(expectedCirculation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(record);
+
+        Assert.Equal((long)expectedCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Burn Tokens: Can Not Burn More Tokens than are in Circulation")]
@@ -204,7 +205,9 @@ public class BurnTokenTests
 
         var amountToDestory = fxToken.Params.Circulation + 1;
 
-        Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
+
+        Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -214,7 +217,9 @@ public class BurnTokenTests
         Assert.Equal(ResponseCode.InvalidTokenBurnAmount, tex.Status);
         Assert.StartsWith("Unable to Burn Token Coins, status: InvalidTokenBurnAmount", tex.Message);
 
-        Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Burn Tokens: Burning Coins Requires Supply Key to Sign Transaction")]
@@ -224,7 +229,9 @@ public class BurnTokenTests
 
         var amountToDestory = fxToken.Params.Circulation / 3;
 
-        Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
+
+        Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -234,7 +241,9 @@ public class BurnTokenTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.StartsWith("Unable to Burn Token Coins, status: InvalidSignature", tex.Message);
 
-        Assert.Equal(fxToken.Params.Circulation, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Burn Tokens: Can Not Burn More Tokens than Treasury Has")]
@@ -247,10 +256,12 @@ public class BurnTokenTests
         var amountToTransfer = amountToDestory;
         var expectedTreasury = fxToken.Params.Circulation - amountToTransfer;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)amountToTransfer, fxToken.TreasuryAccount);
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)amountToTransfer, fxToken.TreasuryAccount);
 
-        Assert.Equal(amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)amountToTransfer, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -260,8 +271,10 @@ public class BurnTokenTests
         Assert.Equal(ResponseCode.InsufficientTokenBalance, tex.Status);
         Assert.StartsWith("Unable to Burn Token Coins, status: InsufficientTokenBalance", tex.Message);
 
-        Assert.Equal(amountToTransfer, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxToken.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Equal((long)amountToTransfer, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
     [Fact(DisplayName = "Burn Tokens: Can Schedule Burn Token Coins")]
@@ -285,6 +298,8 @@ public class BurnTokenTests
         // This should be considered a network bug.
         Assert.Equal(0UL, pendingReceipt.Circulation);
 
+        await _network.WaitForMirrorConsensusAsync(pendingReceipt);
+
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation);
 
         var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey);
@@ -297,6 +312,8 @@ public class BurnTokenTests
         var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as TokenRecord;
         Assert.Equal(ResponseCode.Success, executedRecord.Status);
         Assert.Equal(expectedCirculation, executedRecord.Circulation);
+
+        await _network.WaitForMirrorConsensusAsync(executedRecord);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, expectedCirculation);
 
