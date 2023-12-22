@@ -241,17 +241,30 @@ public class NetworkCredentials
     {
         Output?.WriteLine($"{DateTime.UtcNow}    WAIT → Waiting for Mirror Consensus Timestamp {timestamp}");
         var count = 0;
-        var latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
-        while (latest < timestamp)
+        var httpErrorCount = 0;
+        do
         {
-            if (count > 500)
+            try
             {
-                throw new Exception($"The Mirror node appears to be too far out of sync, gave up waiting for {timestamp}");
+                var latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
+                while (latest < timestamp)
+                {
+                    if (count > 500)
+                    {
+                        throw new Exception($"The Mirror node appears to be too far out of sync, gave up waiting for {timestamp}");
+                    }
+                    count++;
+                    await Task.Delay(700);
+                    latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
+                }
+                return;
             }
-            count++;
-            await Task.Delay(700);
-            latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
-        }
+            catch (HttpRequestException)
+            {
+                httpErrorCount++;
+            }
+        } while (httpErrorCount < 1000);
+        throw new Exception($"The Mirror node appears to have gone off to lala land, gave up waiting for {timestamp}");
     }
 
     public async Task<TRecord> RetryForKnownNetworkIssuesAsync<TRecord>(Func<Task<TRecord>> callback) where TRecord : TransactionRecord
