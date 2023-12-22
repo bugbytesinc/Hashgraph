@@ -433,7 +433,9 @@ public class TransferTokenTests
         await fxToken.Client.SuspendTokenAsync(fxToken, fxAccount2, fxToken.SuspendPrivateKey);
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
+
         await _network.WaitForMirrorConsensusAsync(receipt);
+
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
@@ -460,7 +462,9 @@ public class TransferTokenTests
         await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount1, fxToken.GrantPrivateKey);
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
+
         await _network.WaitForMirrorConsensusAsync(receipt);
+
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
@@ -472,6 +476,7 @@ public class TransferTokenTests
         Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
 
         await _network.WaitForMirrorConsensusAsync(tex);
+
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
     }
@@ -774,6 +779,7 @@ public class TransferTokenTests
         };
         var schedulingReceipt = await fxToken.Client.TransferAsync(transfers);
         Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
+
         await _network.WaitForMirrorConsensusAsync(schedulingReceipt);
 
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
@@ -917,6 +923,8 @@ public class TransferTokenTests
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
         await fxToken.Client.AllocateAsync(new AllowanceParams
@@ -955,7 +963,7 @@ public class TransferTokenTests
         var result = record.CallResult.Result.As<long>();
         Assert.Equal((long)ResponseCode.Success, result);
 
-        await _network.WaitForMirrorConsensusAsync(record);
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - (ulong)xferAmount);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, (ulong)xferAmount);
@@ -990,6 +998,8 @@ public class TransferTokenTests
         await using var client = fxContract.Client.Clone(ctx => ctx.SignaturePrefixTrimLimit = int.MaxValue);
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
@@ -1061,7 +1071,7 @@ public class TransferTokenTests
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
-        await _network.WaitForMirrorConsensusAsync(fxContract.ContractRecord);
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
@@ -1132,6 +1142,8 @@ public class TransferTokenTests
         await using var client = fxContract.Client.Clone(ctx => ctx.SignaturePrefixTrimLimit = int.MaxValue);
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
