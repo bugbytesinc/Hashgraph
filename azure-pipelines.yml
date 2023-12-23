@@ -12,9 +12,9 @@ jobs:
     timeoutInMinutes: 0
     steps:
     - task: DotNetCoreInstaller@0
-      displayName: 'Ensure .Net Core 8.0'
+      displayName: 'Ensure .Net 8.0.100'
       inputs:
-        version: '8.0.0'
+        version: '8.0.100'
 
     - task: DotNetCoreCLI@2
       displayName: Restore Dependencies  
