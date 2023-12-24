@@ -57,7 +57,7 @@ public class NetworkCredentials
             _privateKey = Hex.ToBytes(payerPrivateKey);
             _signatory = new Signatory(_privateKey);
             _rootPayer = await LookupPayerAsync();
-            _rootClient = new Client(channelFactory, ctx =>
+            _rootClient = new Client(ctx =>
             {
                 ctx.Gateway = _gateway;
                 ctx.Payer = _rootPayer.Account;
@@ -384,34 +384,7 @@ public class NetworkCredentials
             return privateKey.Parameters.G.Multiply(privateKey.D).GetEncoded(true);
         }
     }
-    GrpcChannel channelFactory(Gateway gateway)
-    {
-        var defaultMethodConfig = new MethodConfig
-        {
-            Names = { MethodName.Default },
-            RetryPolicy = new RetryPolicy
-            {
-                MaxAttempts = 50,
-                InitialBackoff = TimeSpan.FromSeconds(0.05),
-                MaxBackoff = TimeSpan.FromSeconds(0.4),
-                BackoffMultiplier = 1.01,
-                RetryableStatusCodes = { StatusCode.Unavailable, StatusCode.Unknown, StatusCode.Cancelled, StatusCode.Internal }
-            }
-        };
-        var httpHandler = new SocketsHttpHandler
-        {
-            PooledConnectionLifetime = TimeSpan.FromSeconds(10),
-            EnableMultipleHttp2Connections = false,
-        };
-        var options = new GrpcChannelOptions
-        {
-            HttpHandler = httpHandler,
-            MaxRetryBufferSize = null,
-            DisposeHttpClient = true,
-            ServiceConfig = new ServiceConfig { MethodConfigs = { defaultMethodConfig } }
-        };
-        return GrpcChannel.ForAddress(gateway.Uri, options);
-    }
+
 
     [CollectionDefinition(nameof(NetworkCredentials))]
     public class FixtureCollection : ICollectionFixture<NetworkCredentials>
