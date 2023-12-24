@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Allowance;
+﻿namespace Hashgraph.Test.Allowance;
 
 [Collection(nameof(NetworkCredentials))]
 public class ExecuteAllowancesTests
@@ -34,6 +29,8 @@ public class ExecuteAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 1);
     }
 
@@ -60,7 +57,9 @@ public class ExecuteAllowancesTests
         });
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
 
-        await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 0);
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        await AssertHg.AssetNotAssociatedAsync(fxAllowances.TestAsset, fxDestination);
     }
 
     [Fact(DisplayName = "Execute Allowances: Can Spend a Token Allowance")]
@@ -87,6 +86,8 @@ public class ExecuteAllowancesTests
             }
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenBalanceAsync(fxAllowances.TestToken, fxAllowances.Owner, fxAllowances.TestToken.Params.Circulation - xferAmount);
         await AssertHg.TokenBalanceAsync(fxAllowances.TestToken, fxDestination, xferAmount);
@@ -120,6 +121,8 @@ public class ExecuteAllowancesTests
             });
         });
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.TokenBalanceAsync(fxAllowances.TestToken, fxAllowances.Owner, fxAllowances.TestToken.Params.Circulation);
         await AssertHg.TokenBalanceAsync(fxAllowances.TestToken, fxDestination, 0);
@@ -226,6 +229,8 @@ public class ExecuteAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         await AssertHg.AssetBalanceAsync(fxAllowance.TestAsset, fxDestination, 1);
 
         info = await fxAllowance.Client.GetAssetInfoAsync(asset);
@@ -275,6 +280,8 @@ public class ExecuteAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         await AssertHg.AssetBalanceAsync(fxAllowance.TestAsset, fxDestination, 1);
 
         info = await fxAllowance.Client.GetAssetInfoAsync(asset);
@@ -307,6 +314,8 @@ public class ExecuteAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 1);
     }
 
@@ -329,6 +338,8 @@ public class ExecuteAllowancesTests
             AssetTransfers = new[] { new AssetTransfer(new Asset(fxAllowances.TestAsset, 1), fxAllowances.Owner, fxDestination, true) }
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 1);
     }
@@ -355,6 +366,8 @@ public class ExecuteAllowancesTests
             });
         });
         Assert.Equal(ResponseCode.SpenderDoesNotHaveAllowance, tex.Status);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxAllowances.Owner, fxAllowances.TestAsset.Metadata.Length);
         await AssertHg.AssetBalanceAsync(fxAllowances.TestAsset, fxDestination, 0);
@@ -383,6 +396,8 @@ public class ExecuteAllowancesTests
             }
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenBalanceAsync(fxAllowances.TestToken, fxDestination, (ulong)xferAmount);
 
@@ -420,6 +435,8 @@ public class ExecuteAllowancesTests
             }
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - xferAmount);
         await AssertHg.TokenBalanceAsync(fxToken, fxDestination, xferAmount);

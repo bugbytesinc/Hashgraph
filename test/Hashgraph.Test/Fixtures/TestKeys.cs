@@ -1,5 +1,5 @@
 ﻿using NSec.Cryptography;
-using System;
+using Key = NSec.Cryptography.Key;
 
 namespace Hashgraph.Implementation;
 
@@ -11,7 +11,7 @@ internal static class TestKeys
 {
     internal static readonly byte[] privateKeyPrefix = Hex.ToBytes("302e020100300506032b6570").ToArray();
     internal static readonly byte[] publicKeyPrefix = Hex.ToBytes("302a300506032b6570032100").ToArray();
-    internal static Key ImportPrivateEd25519KeyFromBytes(ReadOnlyMemory<byte> privateKey)
+    internal static NSec.Cryptography.Key ImportPrivateEd25519KeyFromBytes(ReadOnlyMemory<byte> privateKey)
     {
         try
         {

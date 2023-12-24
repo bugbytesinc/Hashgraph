@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class RevokeTokenTests
@@ -22,15 +17,21 @@ public class RevokeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
-        await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+        var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await fxToken.Client.RevokeTokenKycAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey);
+        receipt = await fxToken.Client.RevokeTokenKycAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
@@ -59,15 +60,21 @@ public class RevokeTokenTests
             var circulation = fxToken.Params.Circulation;
             var xferAmount = circulation / 3;
 
+            await _network.WaitForMirrorConsensusAsync();
+
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
-            await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+            var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+            await _network.WaitForMirrorConsensusAsync(receipt);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
             await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-            await fxToken.Client.RevokeTokenKycAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.GrantPrivateKey);
+            receipt = await fxToken.Client.RevokeTokenKycAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.GrantPrivateKey);
+
+            await _network.WaitForMirrorConsensusAsync(receipt);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
@@ -87,9 +94,13 @@ public class RevokeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
-        await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+        var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
@@ -105,6 +116,8 @@ public class RevokeTokenTests
         Assert.Empty(record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
+
+        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
@@ -123,9 +136,13 @@ public class RevokeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
-        await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+        var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
@@ -141,6 +158,8 @@ public class RevokeTokenTests
         Assert.Empty(record.Memo);
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
+
+        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
@@ -160,19 +179,25 @@ public class RevokeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
-        await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+        var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await fxToken.Client.RevokeTokenKycAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey, ctx =>
+        receipt = await fxToken.Client.RevokeTokenKycAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey, ctx =>
         {
             ctx.Payer = fxOther.Record.Address;
             ctx.Signatory = fxOther.PrivateKey;
         });
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
@@ -191,9 +216,13 @@ public class RevokeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
-        await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+        var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
@@ -206,6 +235,8 @@ public class RevokeTokenTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.StartsWith("Unable to Revoke Token, status: InvalidSignature", tex.Message);
 
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
     [Fact(DisplayName = "Revoke Tokens: Cannot Revoke Token Coins When Grant KYC is Turned Off")]
@@ -215,6 +246,8 @@ public class RevokeTokenTests
         await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.NotApplicable);
 
@@ -234,9 +267,13 @@ public class RevokeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
-        await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+        var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken, fxAccount, fxToken.GrantPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 

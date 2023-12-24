@@ -1,12 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Topic;
+﻿namespace Hashgraph.Test.Topic;
 
 [Collection(nameof(NetworkCredentials))]
 public class SubmitMessageTests

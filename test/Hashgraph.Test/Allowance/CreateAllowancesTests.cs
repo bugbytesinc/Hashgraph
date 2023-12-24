@@ -1,10 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Allowance;
+﻿namespace Hashgraph.Test.Allowance;
 
 [Collection(nameof(NetworkCredentials))]
 public class CreateAllowancesTests
@@ -29,7 +23,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -70,7 +64,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -110,7 +104,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -150,7 +144,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -191,7 +185,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -228,7 +222,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -265,7 +259,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -303,7 +297,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -345,7 +339,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -396,7 +390,7 @@ public class CreateAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -431,7 +425,7 @@ public class CreateAllowancesTests
     {
         await using var fxAllowances = await TestAllowance.CreateAsync(_network);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>

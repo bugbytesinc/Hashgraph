@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Contract;
+﻿namespace Hashgraph.Test.Contract;
 
 [Collection(nameof(NetworkCredentials))]
 public class EventEmittingContractTests

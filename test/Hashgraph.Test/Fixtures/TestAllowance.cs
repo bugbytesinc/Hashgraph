@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Hashgraph.Test.Fixtures;
+﻿namespace Hashgraph.Test.Fixtures;
 
 public class TestAllowance : IAsyncDisposable
 {
@@ -44,7 +40,7 @@ public class TestAllowance : IAsyncDisposable
         });
         fx.DelegationRecord = await fx.Owner.Client.AllocateWithRecordAsync(new AllowanceParams
         {
-            AssetAllowances = new[] { new AssetAllowance(new Asset(fx.TestAsset.Record.Token,1), fx.Owner, fx.DelegatedAgent, fx.Agent) },
+            AssetAllowances = new[] { new AssetAllowance(new Asset(fx.TestAsset.Record.Token, 1), fx.Owner, fx.DelegatedAgent, fx.Agent) },
             Signatory = fx.Agent.PrivateKey
         });
         fx.Client = fx.Owner.Client;

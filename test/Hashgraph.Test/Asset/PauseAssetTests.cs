@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetToken;
+﻿namespace Hashgraph.Test.AssetToken;
 
 [Collection(nameof(NetworkCredentials))]
 public class PauseAssetTests

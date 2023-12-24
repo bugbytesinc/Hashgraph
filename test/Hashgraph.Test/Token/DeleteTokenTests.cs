@@ -1,13 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class DeleteTokenTests
@@ -79,25 +70,23 @@ public class DeleteTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         var accountInfo = await fxToken.Client.GetAccountInfoAsync(fxAccount.Record.Address);
-        var token = accountInfo.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var token = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(token);
         Assert.Equal(fxToken.Record.Token, token.Token);
-        Assert.Equal(fxToken.Params.Symbol, token.Symbol);
-        Assert.Equal(xferAmount, token.Balance);
-        Assert.Equal(fxToken.Params.Decimals, token.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
+        Assert.Equal((long)xferAmount, token.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, token.FreezeStatus);
         Assert.False(token.AutoAssociated);
         Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
 
         var treasuryInfo = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
-        token = treasuryInfo.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        token = (await fxToken.TreasuryAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(token);
         Assert.Equal(fxToken.Record.Token, token.Token);
-        Assert.Equal(fxToken.Params.Symbol, token.Symbol);
-        Assert.Equal(totalTinytokens - xferAmount, token.Balance);
-        Assert.Equal(fxToken.Params.Decimals, token.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, token.TradableStatus);
+        Assert.Equal((long)(totalTinytokens - xferAmount), token.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, token.FreezeStatus);
         Assert.False(token.AutoAssociated);
         Assert.Equal(TokenKycStatus.NotApplicable, token.KycStatus);
     }
@@ -276,9 +265,11 @@ public class DeleteTokenTests
         Assert.Equal(ResponseCode.AccountIsTreasury, tex.Status);
         Assert.StartsWith("Unable to delete account, status: AccountIsTreasury", tex.Message);
 
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         // Confirm Tokens still exist in account 2
-        Assert.Equal(0ul, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
-        Assert.Equal(fxToken.Params.Circulation, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
+        Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)fxToken.Params.Circulation, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
         // What does the info say,
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
@@ -303,16 +294,18 @@ public class DeleteTokenTests
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
         // Move the Treasury, hmm...don't need treasury key?
-        await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
+        var receipt = await fxToken.Client.UpdateTokenAsync(new UpdateTokenParams
         {
             Token = fxToken,
             Treasury = fxAccount1,
             Signatory = new Signatory(fxToken.AdminPrivateKey, fxAccount1.PrivateKey)
         });
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         // Double check balances
-        Assert.Equal(0ul, await fxAccount1.Client.GetAccountTokenBalanceAsync(fxAccount1, fxToken));
-        Assert.Equal(fxToken.Params.Circulation, await fxAccount2.Client.GetAccountTokenBalanceAsync(fxAccount2, fxToken));
+        Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)fxToken.Params.Circulation, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
         // What does the info say now?
         info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
@@ -383,6 +376,8 @@ public class DeleteTokenTests
 
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
         Assert.True(info.Deleted);
+
+        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 1);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 1);

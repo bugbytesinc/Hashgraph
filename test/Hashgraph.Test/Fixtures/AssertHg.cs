@@ -1,21 +1,13 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace Hashgraph.Test.Fixtures;
+﻿namespace Hashgraph.Test.Fixtures;
 
 public static class AssertHg
 {
     public static async Task TokenStatusAsync(TestToken fxToken, TestAccount fxAccount, TokenKycStatus status)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var tokenRecord = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(tokenRecord);
 
         Assert.Equal(status, tokenRecord.KycStatus);
@@ -23,10 +15,10 @@ public static class AssertHg
 
     public static async Task TokenStatusAsync(TestToken fxToken, TestAliasAccount fxAccount, TokenKycStatus status)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var tokenRecord = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(tokenRecord);
 
         Assert.Equal(status, tokenRecord.KycStatus);
@@ -34,10 +26,10 @@ public static class AssertHg
 
     public static async Task AssetStatusAsync(TestAsset fxAsset, TestAccount fxAccount, TokenKycStatus status)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        var tokenRecord = tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(tokenRecord);
 
         Assert.Equal(status, tokenRecord.KycStatus);
@@ -45,10 +37,10 @@ public static class AssertHg
 
     public static async Task AssetStatusAsync(TestAsset fxAsset, TestAliasAccount fxAccount, TokenKycStatus status)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        var tokenRecord = tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(tokenRecord);
 
         Assert.Equal(status, tokenRecord.KycStatus);
@@ -56,46 +48,46 @@ public static class AssertHg
 
     public static async Task TokenStatusAsync(TestToken fxToken, TestAccount fxAccount, TokenTradableStatus status)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var tokenRecord = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(tokenRecord);
 
-        Assert.Equal(status, tokenRecord.TradableStatus);
+        Assert.Equal(status, tokenRecord.FreezeStatus);
     }
 
     public static async Task TokenStatusAsync(TestToken fxToken, TestAliasAccount fxAccount, TokenTradableStatus status)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var tokenRecord = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(tokenRecord);
 
-        Assert.Equal(status, tokenRecord.TradableStatus);
+        Assert.Equal(status, tokenRecord.FreezeStatus);
     }
 
     public static async Task AssetStatusAsync(TestAsset fxAsset, TestAccount fxAccount, TokenTradableStatus status)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        var tokenRecord = tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(tokenRecord);
 
-        Assert.Equal(status, tokenRecord.TradableStatus);
+        Assert.Equal(status, tokenRecord.FreezeStatus);
     }
 
     public static async Task AssetStatusAsync(TestAsset fxAsset, TestAliasAccount fxAccount, TokenTradableStatus status)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var tokenRecord = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        var tokenRecord = tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(tokenRecord);
 
-        Assert.Equal(status, tokenRecord.TradableStatus);
+        Assert.Equal(status, tokenRecord.FreezeStatus);
     }
 
     public static async Task TokenPausedAsync(TestToken fxToken, TokenTradableStatus status)
@@ -116,55 +108,55 @@ public static class AssertHg
 
     public static async Task TokenBalanceAsync(TestToken fxToken, TestAccount fxAccount, ulong expectedBalance)
     {
-        var balance = await fxToken.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken);
-        Assert.Equal(expectedBalance, balance);
+        var balance = await fxAccount.GetTokenBalanceAsync(fxToken);
+        Assert.Equal((long)expectedBalance, balance);
     }
     public static async Task AssetBalanceAsync(TestAsset fxAsset, TestAccount fxAccount, ulong expectedBalance)
     {
-        var balance = await fxAsset.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset);
-        Assert.Equal(expectedBalance, balance);
+        var balance = await fxAccount.GetTokenBalanceAsync(fxAsset);
+        Assert.Equal((long)expectedBalance, balance);
     }
     public static async Task AssetBalanceAsync(TestAsset fxAsset, TestAccount fxAccount, int expectedBalance)
     {
-        var balance = await fxAsset.Client.GetAccountTokenBalanceAsync(fxAccount, fxAsset);
-        Assert.Equal((ulong)expectedBalance, balance);
+        var balance = await fxAccount.GetTokenBalanceAsync(fxAsset);
+        Assert.Equal(expectedBalance, balance);
     }
 
     internal static async Task TokenNotAssociatedAsync(TestToken fxToken, TestAccount fxAccount)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var association = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.Null(association);
     }
 
     internal static async Task TokenNotAssociatedAsync(TestToken fxToken, TestAliasAccount fxAccount)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var association = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.Null(association);
     }
 
-    internal static async Task<TokenBalance> TokenIsAssociatedAsync(TestToken fxToken, TestAccount fxAccount)
+    internal static async Task<TokenHoldingData> TokenIsAssociatedAsync(TestToken fxToken, TestAccount fxAccount)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var association = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(association);
 
         return association;
     }
 
-    internal static async Task<TokenBalance> TokenIsAssociatedAsync(TestToken fxToken, TestAliasAccount fxAccount)
+    internal static async Task<TokenHoldingData> TokenIsAssociatedAsync(TestToken fxToken, TestAliasAccount fxAccount)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount.CreateRecord.Address);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var association = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(association);
 
         return association;
@@ -172,38 +164,38 @@ public static class AssertHg
 
     internal static async Task AssetNotAssociatedAsync(TestAsset fxAsset, TestAccount fxAccount)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        var association = tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.Null(association);
     }
 
     internal static async Task AssetNotAssociatedAsync(TestAsset fxAsset, TestAliasAccount fxAccount)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        var association = tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.Null(association);
     }
 
-    internal static async Task<TokenBalance> AssetIsAssociatedAsync(TestAsset fxAsset, TestAccount fxAccount)
+    internal static async Task<TokenHoldingData> AssetIsAssociatedAsync(TestAsset fxAsset, TestAccount fxAccount)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        var association = tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(association);
 
         return association;
     }
-    internal static async Task<TokenBalance> AssetIsAssociatedAsync(TestAsset fxAsset, TestAliasAccount fxAccount)
+    internal static async Task<TokenHoldingData> AssetIsAssociatedAsync(TestAsset fxAsset, TestAliasAccount fxAccount)
     {
-        var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        Assert.NotNull(info);
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.NotNull(tokens);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        var association = tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(association);
 
         return association;

@@ -1,10 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class AutoAssociateTokenTests
@@ -27,24 +21,25 @@ public class AutoAssociateTokenTests
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(xferAmount, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal((long)xferAmount, association.Balance);
         Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.True(association.AutoAssociated);
 
         var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
-        Assert.Single(info.Tokens);
 
-        var balance = info.Tokens[0];
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+
+        var balance = tokens[0];
         Assert.Equal(fxToken.Record.Token, balance.Token);
-        Assert.Equal(fxToken.Params.Symbol, balance.Symbol);
         Assert.Equal(TokenKycStatus.NotApplicable, balance.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, balance.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, balance.FreezeStatus);
         Assert.True(balance.AutoAssociated);
     }
     [Fact(DisplayName = "Auto Associate Tokens: Can Auto Associate asset with Account")]
@@ -58,24 +53,25 @@ public class AutoAssociateTokenTests
         var receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
-        Assert.Equal(fxAsset.Params.Symbol, association.Symbol);
-        Assert.Equal(1UL, association.Balance);
-        Assert.Equal(0UL, association.Decimals);
+        Assert.Equal(1, association.Balance);
         Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.True(association.AutoAssociated);
 
         var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
         Assert.Equal(fxAccount.CreateParams.AutoAssociationLimit, info.AutoAssociationLimit);
-        Assert.Single(info.Tokens);
 
-        var balance = info.Tokens[0];
+        var tokens = await fxAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+
+        var balance = tokens[0];
         Assert.Equal(fxAsset.Record.Token, balance.Token);
-        Assert.Equal(fxAsset.Params.Symbol, balance.Symbol);
         Assert.Equal(TokenKycStatus.NotApplicable, balance.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, balance.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, balance.FreezeStatus);
         Assert.True(balance.AutoAssociated);
     }
 
@@ -101,6 +97,8 @@ public class AutoAssociateTokenTests
         Assert.Equal(ResponseCode.NoRemainingAutomaticAssociations, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: NoRemainingAutomaticAssociations", tex.Message);
 
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         await AssertHg.TokenIsAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenNotAssociatedAsync(fxToken2, fxAccount);
         await AssertHg.TokenBalanceAsync(fxToken1, fxAccount, xferAmount1);
@@ -125,6 +123,8 @@ public class AutoAssociateTokenTests
         });
         Assert.Equal(ResponseCode.NoRemainingAutomaticAssociations, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: NoRemainingAutomaticAssociations", tex.Message);
+
+        await _network.WaitForMirrorConsensusAsync(tex);
 
         await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         await AssertHg.AssetNotAssociatedAsync(fxAsset2, fxAccount);
@@ -197,6 +197,8 @@ public class AutoAssociateTokenTests
         Assert.Equal(ResponseCode.NoRemainingAutomaticAssociations, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: NoRemainingAutomaticAssociations", tex.Message);
 
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         await AssertHg.TokenIsAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenNotAssociatedAsync(fxToken2, fxAccount);
         await AssertHg.TokenBalanceAsync(fxToken1, fxAccount, xferAmount1);
@@ -229,6 +231,8 @@ public class AutoAssociateTokenTests
         Assert.Equal(ResponseCode.NoRemainingAutomaticAssociations, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: NoRemainingAutomaticAssociations", tex.Message);
 
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         await AssertHg.AssetNotAssociatedAsync(fxAsset2, fxAccount);
         await AssertHg.AssetBalanceAsync(fxAsset1, fxAccount, 1);
@@ -240,6 +244,8 @@ public class AutoAssociateTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.AutoAssociationLimit = 1);
         await using var fxToken1 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
         await using var fxToken2 = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenNotAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenNotAssociatedAsync(fxToken2, fxAccount);
@@ -258,6 +264,8 @@ public class AutoAssociateTokenTests
         var xferAmount2 = fxToken2.Params.Circulation / 2;
         var receipt2 = await fxToken2.Client.TransferTokensAsync(fxToken2, fxToken2.TreasuryAccount, fxAccount, (long)xferAmount2, fxToken2.TreasuryAccount);
         Assert.Equal(ResponseCode.Success, receipt2.Status);
+
+        await _network.WaitForMirrorConsensusAsync(receipt2);
 
         await AssertHg.TokenIsAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenIsAssociatedAsync(fxToken2, fxAccount);
@@ -287,6 +295,8 @@ public class AutoAssociateTokenTests
 
         var receipt2 = await fxAsset2.Client.TransferAssetAsync(new Asset(fxAsset2, 1), fxAsset2.TreasuryAccount, fxAccount, fxAsset2.TreasuryAccount);
         Assert.Equal(ResponseCode.Success, receipt2.Status);
+
+        await _network.WaitForMirrorConsensusAsync(receipt2);
 
         await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         await AssertHg.AssetIsAssociatedAsync(fxAsset2, fxAccount);

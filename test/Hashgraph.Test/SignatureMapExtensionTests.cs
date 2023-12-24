@@ -1,10 +1,4 @@
-﻿using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using Proto;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace Hashgraph.Tests;
+﻿namespace Hashgraph.Tests;
 
 public class SignatureMapExtensionTests
 {

@@ -1,13 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Token;
+﻿namespace Hashgraph.Test.Token;
 
 [Collection(nameof(NetworkCredentials))]
 public class DissociateTokenTests
@@ -24,19 +15,19 @@ public class DissociateTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         var receipt = await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
+        await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Dissociate Tokens: Can Dissociate token from Alias Account")]
     public async Task CanDissociateTokenFromAliasAccountDefect()
@@ -53,17 +44,19 @@ public class DissociateTokenTests
             await using var fxToken = await TestToken.CreateAsync(_network);
             await fxToken.Client.AssociateTokenAsync(fxToken.Record.Token, fxAccount, fxAccount.PrivateKey);
 
+            await _network.WaitForMirrorConsensusAsync();
+
             var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
             Assert.Equal(fxToken.Record.Token, association.Token);
-            Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-            Assert.Equal(0UL, association.Balance);
-            Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+            Assert.Equal(0, association.Balance);
             Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-            Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
             Assert.False(association.AutoAssociated);
 
             var receipt = await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, fxAccount.Alias, fxAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
+
+            await _network.WaitForMirrorConsensusAsync(receipt);
 
             await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
         }
@@ -74,13 +67,13 @@ public class DissociateTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         var record = await fxAccount.Client.DissociateTokenWithRecordAsync(fxToken.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
@@ -95,6 +88,8 @@ public class DissociateTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
     }
     [Fact(DisplayName = "Dissociate Tokens: Can Dissociate token from Account (No Extra Signatory)")]
@@ -103,13 +98,13 @@ public class DissociateTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         var receipt = await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, fxAccount.Record.Address, ctx =>
@@ -119,6 +114,8 @@ public class DissociateTokenTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
     }
     [Fact(DisplayName = "Dissociate Tokens: Can Dissociate token from Account and get Record (No Extra Signatory)")]
@@ -127,13 +124,13 @@ public class DissociateTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         var record = await fxAccount.Client.DissociateTokenWithRecordAsync(fxToken.Record.Token, fxAccount.Record.Address, ctx =>
@@ -152,6 +149,8 @@ public class DissociateTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(fxAccount.Record.Address, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
     }
     [Fact(DisplayName = "Dissociate Tokens: Can Dissociate Multpile Tokens with Account")]
@@ -161,6 +160,8 @@ public class DissociateTokenTests
         await using var fxToken1 = await TestToken.CreateAsync(_network, null, fxAccount);
         await using var fxToken2 = await TestToken.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         var tokens = new Address[] { fxToken1.Record.Token, fxToken2.Record.Token };
 
         await AssertHg.TokenIsAssociatedAsync(fxToken1, fxAccount);
@@ -168,6 +169,8 @@ public class DissociateTokenTests
 
         var receipt = await fxAccount.Client.DissociateTokensAsync(tokens, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenNotAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenNotAssociatedAsync(fxToken2, fxAccount);
@@ -180,6 +183,8 @@ public class DissociateTokenTests
         await using var fxToken2 = await TestToken.CreateAsync(_network, null, fxAccount);
 
         var tokens = new Address[] { fxToken1.Record.Token, fxToken2.Record.Token };
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenIsAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenIsAssociatedAsync(fxToken2, fxAccount);
@@ -196,6 +201,8 @@ public class DissociateTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.TokenNotAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenNotAssociatedAsync(fxToken2, fxAccount);
     }
@@ -205,6 +212,8 @@ public class DissociateTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 120_00_000_000);
         await using var fxToken1 = await TestToken.CreateAsync(_network, null, fxAccount);
         await using var fxToken2 = await TestToken.CreateAsync(_network, null, fxAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         var tokens = new Address[] { fxToken1.Record.Token, fxToken2.Record.Token };
 
@@ -218,6 +227,8 @@ public class DissociateTokenTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         await AssertHg.TokenNotAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenNotAssociatedAsync(fxToken2, fxAccount);
     }
@@ -229,6 +240,8 @@ public class DissociateTokenTests
         await using var fxToken2 = await TestToken.CreateAsync(_network, null, fxAccount);
 
         var tokens = new Address[] { fxToken1.Record.Token, fxToken2.Record.Token };
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenIsAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenIsAssociatedAsync(fxToken2, fxAccount);
@@ -249,6 +262,8 @@ public class DissociateTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(fxAccount.Record.Address, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.TokenNotAssociatedAsync(fxToken1, fxAccount);
         await AssertHg.TokenNotAssociatedAsync(fxToken2, fxAccount);
     }
@@ -258,17 +273,19 @@ public class DissociateTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         var receipt = await fxAccount.Client.DissociateTokenAsync(fxToken.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenNotAssociatedAsync(fxToken, fxAccount);
     }
@@ -278,13 +295,13 @@ public class DissociateTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         var association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -294,13 +311,13 @@ public class DissociateTokenTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.StartsWith("Unable to Dissociate Token from Account, status: InvalidSignature", tex.Message);
 
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         association = await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.Revoked, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
     }
     [Fact(DisplayName = "Dissociate Tokens: Dissociation Requires Token Account")]
@@ -412,25 +429,27 @@ public class DissociateTokenTests
         var receipt = await fxContract.Client.AssociateTokenAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var info = await fxAccount.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        var info = await fxContract.GetTokenBalancesAsync();
         Assert.NotNull(info);
 
-        var association = info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
+        var association = info.FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(association);
         Assert.Equal(fxToken.Record.Token, association.Token);
-        Assert.Equal(fxToken.Params.Symbol, association.Symbol);
-        Assert.Equal(0UL, association.Balance);
-        Assert.Equal(fxToken.Params.Decimals, association.Decimals);
+        Assert.Equal(0, association.Balance);
         Assert.Equal(TokenKycStatus.NotApplicable, association.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, association.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, association.FreezeStatus);
         Assert.False(association.AutoAssociated);
 
         receipt = await fxContract.Client.DissociateTokenAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        info = await fxAccount.Client.GetContractInfoAsync(fxContract.ContractRecord.Contract);
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        info = await fxContract.GetTokenBalancesAsync();
         Assert.NotNull(info);
-        Assert.Null(info.Tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token));
+        Assert.Null(info.FirstOrDefault(t => t.Token == fxToken.Record.Token));
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -439,7 +458,9 @@ public class DissociateTokenTests
         Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: TokenNotAssociatedToAccount", tex.Message);
 
-        Assert.Equal(0UL, await fxToken.Client.GetContractTokenBalanceAsync(fxContract, fxToken));
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        Assert.Empty(await fxContract.GetTokenBalancesAsync());
     }
     [Fact(DisplayName = "Token Delete: Can Delete Account Having Token Balance")]
     public async Task CanDeleteAccountHavingTokenBalance()
@@ -449,11 +470,15 @@ public class DissociateTokenTests
         await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount1, fxAccount2);
         var xferAmount = (long)fxToken.Params.Circulation;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 0);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation);
 
-        await fxAccount1.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, xferAmount, fxToken.TreasuryAccount);
+        var receipt = await fxAccount1.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, xferAmount, fxToken.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, fxToken.Params.Circulation);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
@@ -467,12 +492,16 @@ public class DissociateTokenTests
         Assert.Equal(ResponseCode.TransactionRequiresZeroTokenBalances, tex.Status);
         Assert.StartsWith("Unable to delete account, status: TransactionRequiresZeroTokenBalances", tex.Message);
 
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, fxToken.Params.Circulation);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 0);
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, 0);
 
         await fxAccount1.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, xferAmount, fxAccount1);
-        await fxAccount1.Client.DeleteAccountAsync(fxAccount1, fxAccount2, fxAccount1.PrivateKey);
+        receipt = await fxAccount1.Client.DeleteAccountAsync(fxAccount1, fxAccount2, fxAccount1.PrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, fxToken.Params.Circulation);
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, 0);
@@ -483,7 +512,11 @@ public class DissociateTokenTests
         await using var fxPayer = await TestAccount.CreateAsync(_network, fx => fx.CreateParams.InitialBalance = 20_00_000_000);
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.TokenIsAssociatedAsync(fxToken, fxAccount);
+
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxAccount.Client.DissociateTokenAsync(

@@ -1,7 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using Xunit;
-
-namespace Hashgraph.Tests;
+﻿namespace Hashgraph.Tests;
 
 public class AddressTests
 {
@@ -110,7 +107,7 @@ public class AddressTests
         var realmNum = Generator.Integer(0, 200);
         var (publicKey1, _) = Generator.KeyPair();
         var (publicKey2, _) = Generator.KeyPair();
-        var alias1 = new Address( new Alias(shardNum, realmNum, publicKey1));
+        var alias1 = new Address(new Alias(shardNum, realmNum, publicKey1));
         Assert.NotEqual(alias1, new Address(new Alias(shardNum, realmNum + 1, publicKey1)));
         Assert.NotEqual(alias1, new Address(new Alias(shardNum + 1, realmNum, publicKey1)));
         Assert.NotEqual(alias1, new Address(new Alias(shardNum, realmNum, publicKey2)));
@@ -161,9 +158,9 @@ public class AddressTests
     {
         var (publicKey, _) = Generator.KeyPair();
         var endorsement = new Endorsement(publicKey);
-        var alias1 = new Address( new Alias(publicKey));
-        var alias2 = new Address( new Alias(endorsement));
-        var alias3 = new Address( new Alias(0, 0, publicKey));
+        var alias1 = new Address(new Alias(publicKey));
+        var alias2 = new Address(new Alias(endorsement));
+        var alias3 = new Address(new Alias(0, 0, publicKey));
         var alias4 = new Address(new Alias(0, 0, endorsement));
         Assert.Equal(alias1, alias2);
         Assert.Equal(alias1, alias3);
@@ -244,8 +241,8 @@ public class AddressTests
         var shardNum = Generator.Integer(0, 200);
         var realmNum = Generator.Integer(0, 200);
         var bytes = Generator.KeyPair().publicKey[^20..];
-        var moniker = new Address( new Moniker(shardNum, realmNum, bytes));
-        object equivalent = new Address( new Moniker(shardNum, realmNum, bytes));
+        var moniker = new Address(new Moniker(shardNum, realmNum, bytes));
+        object equivalent = new Address(new Moniker(shardNum, realmNum, bytes));
         Assert.True(moniker.Equals(equivalent));
         Assert.True(equivalent.Equals(moniker));
     }
@@ -264,7 +261,7 @@ public class AddressTests
     public void CanCreateEquivalentMonikerWithDifferentConstructors()
     {
         var bytes = Generator.KeyPair().publicKey[^20..];
-        var moniker1 = new Address( new Moniker(bytes));
+        var moniker1 = new Address(new Moniker(bytes));
         var moniker2 = new Address(new Moniker(0, 0, bytes));
         Assert.Equal(moniker1, moniker2);
         Assert.True(moniker1 == moniker2);
@@ -303,7 +300,7 @@ public class AddressTests
         var bytes = Generator.KeyPair().publicKey[^20..];
         var address = new Address(new Moniker(shardNum, realmNum, bytes));
         var moniker1 = new Moniker(shardNum, realmNum, bytes);
-        
+
         Assert.True(address.TryGetMoniker(out Moniker moniker2));
         Assert.True(moniker1 == moniker2);
 

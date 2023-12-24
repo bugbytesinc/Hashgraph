@@ -1,13 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetTokens;
+﻿namespace Hashgraph.Test.AssetTokens;
 
 [Collection(nameof(NetworkCredentials))]
 public class CreateAssetTests
@@ -52,16 +43,17 @@ public class CreateAssetTests
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-        Assert.Single(treasury.Tokens);
         Assert.Equal(0, treasury.AssetCount);
 
-        var tokInfo = treasury.Tokens[0];
+        await _network.WaitForMirrorConsensusAsync();
+
+        var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+        var tokInfo = tokens[0];
         Assert.Equal(fxAsset.Record.Token, tokInfo.Token);
-        Assert.Equal(fxAsset.Params.Symbol, tokInfo.Symbol);
-        Assert.Equal(0UL, tokInfo.Balance);
-        Assert.Equal(0UL, tokInfo.Decimals);
+        Assert.Equal(0, tokInfo.Balance);
         Assert.Equal(TokenKycStatus.Granted, tokInfo.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, tokInfo.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, tokInfo.FreezeStatus);
         Assert.False(tokInfo.AutoAssociated);
         Assert.Empty(info.Royalties);
 
@@ -128,16 +120,16 @@ public class CreateAssetTests
 
             var treasury = await fxAsset.Client.GetAccountInfoAsync(fxTreasury.CreateRecord.Address);
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-            Assert.Single(treasury.Tokens);
             Assert.Equal(0, treasury.AssetCount);
 
-            var tokInfo = treasury.Tokens[0];
+            await _network.WaitForMirrorConsensusAsync(fxTreasury.CreateRecord);
+            var tokens = await fxTreasury.GetTokenBalancesAsync();
+            Assert.Single(tokens);
+            var tokInfo = tokens[0];
             Assert.Equal(fxAsset.Record.Token, tokInfo.Token);
-            Assert.Equal(fxAsset.Params.Symbol, tokInfo.Symbol);
-            Assert.Equal(0UL, tokInfo.Balance);
-            Assert.Equal(0UL, tokInfo.Decimals);
+            Assert.Equal(0, tokInfo.Balance);
             Assert.Equal(TokenKycStatus.Granted, tokInfo.KycStatus);
-            Assert.Equal(TokenTradableStatus.Tradable, tokInfo.TradableStatus);
+            Assert.Equal(TokenTradableStatus.Tradable, tokInfo.FreezeStatus);
             Assert.False(tokInfo.AutoAssociated);
             Assert.Empty(info.Royalties);
 
@@ -359,9 +351,9 @@ public class CreateAssetTests
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
         Assert.Equal(fxContract.ContractRecord.Contract, info.Treasury);
 
-        var treasury = await fxAsset.Client.GetContractBalancesAsync(fxContract.ContractRecord.Contract);
-        var balance = treasury.Tokens.GetValueOrDefault(fxAsset.Record.Token);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, balance.Balance);
+        await _network.WaitForMirrorConsensusAsync();
+
+        Assert.Equal(fxAsset.Metadata.Length, await fxContract.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Create Asset: Null Administrator Key is Allowed")]
     public async Task NullAdministratorKeyIsAllowed()
@@ -566,15 +558,16 @@ public class CreateAssetTests
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-        Assert.Single(treasury.Tokens);
 
-        var assets = treasury.Tokens[0];
+        await _network.WaitForMirrorConsensusAsync();
+
+        var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+        var assets = tokens[0];
         Assert.Equal(fxAsset.Record.Token, assets.Token);
-        Assert.Equal(fxAsset.Params.Symbol, assets.Symbol);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, assets.Balance);
-        Assert.Equal(0U, assets.Decimals);
+        Assert.Equal(fxAsset.Metadata.Length, assets.Balance);
         Assert.Equal(TokenKycStatus.Granted, assets.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, assets.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, assets.FreezeStatus);
         Assert.False(assets.AutoAssociated);
     }
     [Fact(DisplayName = "Create Asset: Duplicate Symbols Are Allowed")]
@@ -614,15 +607,16 @@ public class CreateAssetTests
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-        Assert.Single(treasury.Tokens);
 
-        var asset = treasury.Tokens[0];
+        await _network.WaitForMirrorConsensusAsync();
+
+        var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+        var asset = tokens[0];
         Assert.Equal(fxAsset.Record.Token, asset.Token);
-        Assert.Equal(fxAsset.Params.Symbol, asset.Symbol);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, asset.Balance);
-        Assert.Equal(0U, asset.Decimals);
+        Assert.Equal(fxAsset.Metadata.Length, asset.Balance);
         Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, asset.FreezeStatus);
         Assert.False(asset.AutoAssociated);
     }
     [Fact(DisplayName = "Create Asset: Null Name is Not Allowed")]
@@ -698,15 +692,16 @@ public class CreateAssetTests
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-        Assert.Single(treasury.Tokens);
 
-        var asset = treasury.Tokens[0];
+        await _network.WaitForMirrorConsensusAsync();
+
+        var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+        var asset = tokens[0];
         Assert.Equal(fxAsset.Record.Token, asset.Token);
-        Assert.Equal(fxAsset.Params.Symbol, asset.Symbol);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, asset.Balance);
-        Assert.Equal(0U, asset.Decimals);
+        Assert.Equal(fxAsset.Metadata.Length, asset.Balance);
         Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, asset.FreezeStatus);
         Assert.False(asset.AutoAssociated);
     }
     [Fact(DisplayName = "Create Asset: Initialize Supended Can Be True")]
@@ -895,15 +890,16 @@ public class CreateAssetTests
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-        Assert.Single(treasury.Tokens);
 
-        var asset = treasury.Tokens[0];
+        await _network.WaitForMirrorConsensusAsync();
+
+        var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+        var asset = tokens[0];
         Assert.Equal(fxAsset.Record.Token, asset.Token);
-        Assert.Equal(fxAsset.Params.Symbol, asset.Symbol);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, asset.Balance);
-        Assert.Equal(0U, asset.Decimals);
+        Assert.Equal(fxAsset.Metadata.Length, asset.Balance);
         Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, asset.FreezeStatus);
         Assert.False(asset.AutoAssociated);
     }
     [Fact(DisplayName = "Create Asset: Can Create With ReUsed Name From Deleted Asset")]
@@ -944,15 +940,16 @@ public class CreateAssetTests
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-        Assert.Single(treasury.Tokens);
 
-        var asset = treasury.Tokens[0];
+        await _network.WaitForMirrorConsensusAsync();
+
+        var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+        var asset = tokens[0];
         Assert.Equal(fxAsset.Record.Token, asset.Token);
-        Assert.Equal(fxAsset.Params.Symbol, asset.Symbol);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, asset.Balance);
-        Assert.Equal(0U, asset.Decimals);
+        Assert.Equal(fxAsset.Metadata.Length, asset.Balance);
         Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, asset.FreezeStatus);
         Assert.False(asset.AutoAssociated);
     }
     [Fact(DisplayName = "Create Asset: Can Create with Contract as Treasury")]
@@ -987,11 +984,12 @@ public class CreateAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        var treasury = await fxAsset.Client.GetContractBalancesAsync(fxContract);
-        Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, treasury.Crypto);
-        Assert.Single(treasury.Tokens);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, treasury.Tokens[fxAsset].Balance);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, await fxAsset.Client.GetContractTokenBalanceAsync(fxContract, fxAsset));
+        await _network.WaitForMirrorConsensusAsync();
+
+        Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, await fxContract.GetCryptoBalanceAsync());
+        Assert.Single(await fxContract.GetTokenBalancesAsync());
+        Assert.Equal(fxAsset.Metadata.Length, await fxContract.GetTokenBalanceAsync(fxAsset));
+        Assert.Equal(fxAsset.Metadata.Length, await fxContract.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Create Asset: Can Create without Renewal Information")]
     public async Task CanCreateWithoutRenewalInformation()
@@ -1027,17 +1025,16 @@ public class CreateAssetTests
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
 
-        var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
-        Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-        Assert.Single(treasury.Tokens);
+        await _network.WaitForMirrorConsensusAsync();
 
-        var asset = treasury.Tokens[0];
+        Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, await fxAsset.TreasuryAccount.GetCryptoBalanceAsync());
+        var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
+        Assert.Single(tokens);
+        var asset = tokens[0];
         Assert.Equal(fxAsset.Record.Token, asset.Token);
-        Assert.Equal(fxAsset.Params.Symbol, asset.Symbol);
-        Assert.Equal((ulong)fxAsset.Metadata.Length, asset.Balance);
-        Assert.Equal(0U, asset.Decimals);
+        Assert.Equal(fxAsset.Metadata.Length, asset.Balance);
         Assert.Equal(TokenKycStatus.Granted, asset.KycStatus);
-        Assert.Equal(TokenTradableStatus.Tradable, asset.TradableStatus);
+        Assert.Equal(TokenTradableStatus.Tradable, asset.FreezeStatus);
         Assert.False(asset.AutoAssociated);
     }
     [Fact(DisplayName = "Create Asset: Can Not Schedule a Create Asset")]

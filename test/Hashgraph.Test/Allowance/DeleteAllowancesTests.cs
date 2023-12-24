@@ -1,11 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using Proto;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Allowance;
+﻿namespace Hashgraph.Test.Allowance;
 
 [Collection(nameof(NetworkCredentials))]
 public class DeleteAllowancesTests
@@ -24,7 +17,7 @@ public class DeleteAllowancesTests
         var receipt = await fxAllowances.Client.RevokeAssetAllowancesAsync(fxAllowances.TestAsset, fxAllowances.Owner, new long[] { 1 }, fxAllowances.Owner.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -69,7 +62,7 @@ public class DeleteAllowancesTests
         var record = await fxAllowances.Client.RevokeAssetAllowancesWithRecordAsync(fxAllowances.TestAsset, fxAllowances.Owner, new long[] { 1 }, fxAllowances.Owner.PrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -120,7 +113,7 @@ public class DeleteAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -162,7 +155,7 @@ public class DeleteAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, record.Status);
 
-        var systemAddress = await _network.GetGenisisAccountAddress();
+        var systemAddress = await _network.GetGenisisAccountAddressAsync();
         if (systemAddress is null)
         {
             var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
@@ -229,7 +222,7 @@ public class DeleteAllowancesTests
 
         async Task<bool> hasNonZeroTokenAllowanceAsync(TxId consensusTxId)
         {
-            await _network.WaitForTransactionInMirror(consensusTxId);
+            await _network.WaitForMirrorConsensusAsync(consensusTxId);
             await foreach (var record in _network.MirrorRestClient.GetAccountTokenAllowancesAsync(fxAllowances.Owner.Record.Address))
             {
                 if (record.Spender == fxAllowances.Agent.Record.Address && record.Token == fxAllowances.TestToken.Record.Token && record.Amount > 0)

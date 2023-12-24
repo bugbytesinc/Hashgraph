@@ -1,10 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Crypto;
+﻿namespace Hashgraph.Test.Crypto;
 
 [Collection(nameof(NetworkCredentials))]
 public class CreateAccountByAliasTests
@@ -48,11 +42,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(createReceipt.Address, createReceiptByTx.Address);
         Assert.Equal(createReceipt.Id, createReceiptByTx.Id);
 
-        var balances = await client.GetAccountBalancesAsync(alias);
-        Assert.NotNull(balances);
-        Assert.Equal(createReceipt.Address, balances.Address);
-        Assert.True(balances.Crypto > 0);
-        Assert.Empty(balances.Tokens);
+        Assert.Equal((ulong)initialPayment, await client.GetAccountBalanceAsync(alias));
 
         var infoFromAccount = await client.GetAccountInfoAsync(createReceipt.Address);
         Assert.Equal(createReceipt.Address, infoFromAccount.Address);
@@ -143,11 +133,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(createReceipt.Address, createReceiptByTx.Address);
         Assert.Equal(createReceipt.Id, createReceiptByTx.Id);
 
-        var balances = await client.GetAccountBalancesAsync(alias);
-        Assert.NotNull(balances);
-        Assert.Equal(createReceipt.Address, balances.Address);
-        Assert.True(balances.Crypto > 0);
-        Assert.Empty(balances.Tokens);
+        Assert.Equal((ulong)initialPayment, await client.GetAccountBalanceAsync(alias));
 
         var infoFromAccount = await client.GetAccountInfoAsync(createReceipt.Address);
         Assert.Equal(createReceipt.Address, infoFromAccount.Address);
@@ -220,7 +206,7 @@ public class CreateAccountByAliasTests
 
         var createRecord = allRecords[1] as CreateAccountRecord;
         Assert.NotNull(createRecord);
-        Assert.NotNull(createRecord.Address);        
+        Assert.NotNull(createRecord.Address);
         Assert.Equal(_network.Gateway.RealmNum, createRecord.Address.RealmNum);
         Assert.Equal(_network.Gateway.ShardNum, createRecord.Address.ShardNum);
         Assert.True(createRecord.Address.AccountNum > 0);
@@ -246,11 +232,7 @@ public class CreateAccountByAliasTests
         Assert.Null(createRecordByTx.ParentTransactionConcensus);
         // NETWORK V0.21.0 UNSUPPORTED ^^^^            
 
-        var balances = await client.GetAccountBalancesAsync(alias);
-        Assert.NotNull(balances);
-        Assert.Equal(createRecord.Address, balances.Address);
-        Assert.True(balances.Crypto > 0);
-        Assert.Empty(balances.Tokens);
+        Assert.Equal((ulong)initialPayment, await client.GetAccountBalanceAsync(alias));
 
         var infoFromAccount = await client.GetAccountInfoAsync(createRecord.Address);
         Assert.Equal(createRecord.Address, infoFromAccount.Address);
@@ -352,11 +334,7 @@ public class CreateAccountByAliasTests
         Assert.Null(createRecordByTx.ParentTransactionConcensus);
         // NETWORK V0.21.0 UNSUPPORTED ^^^^            
 
-        var balances = await client.GetAccountBalancesAsync(alias);
-        Assert.NotNull(balances);
-        Assert.Equal(createRecord.Address, balances.Address);
-        Assert.True(balances.Crypto > 0);
-        Assert.Empty(balances.Tokens);
+        Assert.Equal((ulong)initialPayment, await client.GetAccountBalanceAsync(alias));
 
         var infoFromAccount = await client.GetAccountInfoAsync(createRecord.Address);
         Assert.Equal(createRecord.Address, infoFromAccount.Address);
@@ -383,7 +361,7 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAccount.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAccount.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
-        Assert.Equal(0, infoFromAccount.StakingInfo.Node);        
+        Assert.Equal(0, infoFromAccount.StakingInfo.Node);
 
         var infoFromAlias = await client.GetAccountInfoAsync(alias);
         Assert.Equal(createRecord.Address, infoFromAlias.Address);
@@ -410,6 +388,6 @@ public class CreateAccountByAliasTests
         Assert.Equal(0, infoFromAlias.StakingInfo.PendingReward);
         Assert.Equal(0, infoFromAlias.StakingInfo.Proxied);
         Assert.Equal(Address.None, infoFromAlias.StakingInfo.Proxy);
-        Assert.Equal(0, infoFromAlias.StakingInfo.Node);        
+        Assert.Equal(0, infoFromAlias.StakingInfo.Node);
     }
 }

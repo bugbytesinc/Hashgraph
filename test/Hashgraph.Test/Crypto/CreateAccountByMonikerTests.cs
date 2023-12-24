@@ -1,10 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Crypto;
+﻿namespace Hashgraph.Test.Crypto;
 
 [Collection(nameof(NetworkCredentials))]
 public class CreateAccountByMonikerTests
@@ -42,7 +36,8 @@ public class CreateAccountByMonikerTests
         var balance = await client.GetAccountBalanceAsync(receipt.Address);
         Assert.Equal(initialPayment - 1, balance);
 
-        var tex = await Assert.ThrowsAsync<TransactionException>(async () => {
+        var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        {
             await client.TransferAsync(alias, _network.Payer, 1, new Signatory(privateKey));
         });
         Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
@@ -51,7 +46,8 @@ public class CreateAccountByMonikerTests
         balance = await client.GetAccountBalanceAsync(receipt.Address);
         Assert.Equal(initialPayment - 1, balance);
 
-        tex = await Assert.ThrowsAsync<TransactionException>(async () => {
+        tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        {
             await client.TransferAsync(moniker, _network.Payer, 1, new Signatory(privateKey));
         });
         Assert.Equal(ResponseCode.InvalidAccountId, tex.Status);
@@ -86,13 +82,15 @@ public class CreateAccountByMonikerTests
         Assert.Equal(Address.None, infoFromAccount.StakingInfo.Proxy);
         Assert.Equal(0, infoFromAccount.StakingInfo.Node);
 
-        var pex = await Assert.ThrowsAsync<PrecheckException>(async () => {
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+        {
             await client.GetAccountInfoAsync(alias);
         });
         Assert.Equal(ResponseCode.InvalidAccountId, pex.Status);
         Assert.StartsWith("Transaction Failed Pre-Check: InvalidAccountId", pex.Message);
 
-        pex = await Assert.ThrowsAsync<PrecheckException>(async () => {
+        pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
+        {
             await client.GetAccountInfoAsync(moniker);
         });
         Assert.Equal(ResponseCode.InvalidAccountId, pex.Status);

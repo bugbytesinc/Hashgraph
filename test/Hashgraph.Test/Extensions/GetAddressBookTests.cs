@@ -1,12 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Extensions;
+﻿namespace Hashgraph.Test.Extensions;
 
 [Collection(nameof(NetworkCredentials))]
 public class GetAddressBookTests

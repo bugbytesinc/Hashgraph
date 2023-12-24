@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using Xunit;
+﻿namespace Hashgraph.Test.Fixtures;
 
-namespace Hashgraph.Test.Fixtures;
-
-public class TestAccount : IAsyncDisposable
+public class TestAccount : IHasCryptoBalance, IHasTokenBalance, IAsyncDisposable
 {
     public ReadOnlyMemory<byte> PublicKey;
     public ReadOnlyMemory<byte> PrivateKey;
@@ -68,6 +64,26 @@ public class TestAccount : IAsyncDisposable
         }
         await Client.DisposeAsync();
         Network.Output?.WriteLine("TEARDOWN COMPLETED: Test Account Instance");
+    }
+
+    public async Task<ulong> GetCryptoBalanceAsync()
+    {
+        return await Client.GetAccountBalanceAsync(Record.Address);
+    }
+
+    public async Task<long?> GetTokenBalanceAsync(Address token)
+    {
+        return await Network.MirrorRestClient.GetAccountTokenBalanceAsync(Record.Address, token);
+    }
+
+    public async Task<TokenHoldingData[]> GetTokenBalancesAsync()
+    {
+        var list = new List<TokenHoldingData>();
+        await foreach (var info in Network.MirrorRestClient.GetAccountTokenHoldingsAsync(Record.Address))
+        {
+            list.Add(info);
+        }
+        return list.ToArray();
     }
 
     public static implicit operator Address(TestAccount fxAccount)

@@ -1,11 +1,4 @@
-﻿using Google.Protobuf;
-using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.System;
+﻿namespace Hashgraph.Test.System;
 
 [Collection(nameof(NetworkCredentials))]
 public class UnsafeSubmitTests
@@ -20,7 +13,7 @@ public class UnsafeSubmitTests
     public async Task SubmitUnsafeTransaction()
     {
         await using var client = _network.NewClient();
-        var systemAddress = await _network.GetSystemAccountAddress();
+        var systemAddress = await _network.GetSystemAccountAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Administrator Account.");
@@ -63,7 +56,7 @@ public class UnsafeSubmitTests
     public async Task SubmitUnsafeTransactionWithRecord()
     {
         await using var client = _network.NewClient();
-        var systemAddress = await _network.GetSystemAccountAddress();
+        var systemAddress = await _network.GetSystemAccountAddressAsync();
         if (systemAddress is null)
         {
             _network.Output?.WriteLine("TEST SKIPPED: No access to System Administrator Account.");

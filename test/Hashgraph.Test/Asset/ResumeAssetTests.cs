@@ -1,11 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Test.Fixtures;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetToken;
+﻿namespace Hashgraph.Test.AssetToken;
 
 [Collection(nameof(NetworkCredentials))]
 public class ResumeAssetTests
@@ -26,13 +19,19 @@ public class ResumeAssetTests
             fx.Params.InitializeSuspended = true;
         }, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
-        await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
+        var receipt = await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -48,6 +47,8 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var record = await fxAsset.Client.ResumeTokenWithRecordAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
@@ -61,9 +62,13 @@ public class ResumeAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        var receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -79,6 +84,8 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var record = await fxAsset.Client.ResumeTokenWithRecordAsync(fxAsset.Record.Token, fxAccount, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxAsset.SuspendPrivateKey));
@@ -92,9 +99,13 @@ public class ResumeAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        var receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -111,17 +122,23 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
-        await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey, ctx =>
+        var receipt = await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey, ctx =>
         {
             ctx.Payer = fxOther.Record.Address;
             ctx.Signatory = fxOther.PrivateKey;
         });
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -136,22 +153,26 @@ public class ResumeAssetTests
         }, fxAccount);
         var circulation = (ulong)fxAsset.Metadata.Length;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
+        var receipt = await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
 
-        var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
-        Assert.Equal(0Ul, info.Balance);
-        Assert.Equal(0U, info.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        Assert.Equal(0, info.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
-        info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
-        Assert.Equal(1UL, info.Balance);
-        Assert.Equal(0U, info.Decimals);
-        Assert.Equal(TokenTradableStatus.Tradable, info.TradableStatus);
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        Assert.Equal(1, info.Balance);
+        Assert.Equal(TokenTradableStatus.Tradable, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
     }
     [Fact(DisplayName = "Resume Assets: Can Resume a Suspended Account")]
@@ -166,17 +187,25 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxAsset.Client.SuspendTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
+        var receipt = await fxAsset.Client.SuspendTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
-        await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
+        receipt = await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -192,6 +221,8 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -202,10 +233,11 @@ public class ResumeAssetTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
         Assert.StartsWith("Unable to Resume Token, status: InvalidSignature", tex.Message);
 
-        var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
-        Assert.Equal(0Ul, info.Balance);
-        Assert.Equal(0U, info.Decimals);
-        Assert.Equal(TokenTradableStatus.Suspended, info.TradableStatus);
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        Assert.Equal(0, info.Balance);
+        Assert.Equal(TokenTradableStatus.Suspended, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
 
         tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -229,6 +261,8 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.NotApplicable);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -239,10 +273,11 @@ public class ResumeAssetTests
         Assert.Equal(ResponseCode.TokenHasNoFreezeKey, tex.Receipt.Status);
         Assert.StartsWith("Unable to Resume Token, status: TokenHasNoFreezeKey", tex.Message);
 
-        var info = (await fxAccount.Client.GetAccountInfoAsync(fxAccount)).Tokens.FirstOrDefault(t => t.Token == fxAsset.Record.Token);
-        Assert.Equal(0Ul, info.Balance);
-        Assert.Equal(0U, info.Decimals);
-        Assert.Equal(TokenTradableStatus.NotApplicable, info.TradableStatus);
+        await _network.WaitForMirrorConsensusAsync(tex);
+
+        var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
+        Assert.Equal(0, info.Balance);
+        Assert.Equal(TokenTradableStatus.NotApplicable, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
 
         await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
@@ -259,7 +294,11 @@ public class ResumeAssetTests
             fx.Params.GrantKycEndorsement = null;
             fx.Params.InitializeSuspended = true;
         }, fxAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
+
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxAsset.Client.ResumeTokenAsync(
@@ -272,6 +311,9 @@ public class ResumeAssetTests
                         PendingPayer = fxPayer
                     }));
         });
+
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);

@@ -1,9 +1,4 @@
-﻿using Hashgraph.Test.Fixtures;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.AssetToken;
+﻿namespace Hashgraph.Test.AssetToken;
 
 [Collection(nameof(NetworkCredentials))]
 public class GrantAssetTests
@@ -20,13 +15,19 @@ public class GrantAssetTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
-        await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount, fxAsset.GrantPrivateKey);
+        var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount, fxAsset.GrantPrivateKey);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
     }
@@ -43,15 +44,21 @@ public class GrantAssetTests
         {
             await using var fxAccount = await TestAliasAccount.CreateAsync(_network);
             await using var fxAsset = await TestAsset.CreateAsync(_network);
-            await fxAsset.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount, fxAccount.PrivateKey);
+            var receipt = await fxAsset.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount, fxAccount.PrivateKey);
+
+            await _network.WaitForMirrorConsensusAsync(receipt);
 
             await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
-            await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount.Alias, fxAsset.GrantPrivateKey);
+            receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount.Alias, fxAsset.GrantPrivateKey);
+
+            await _network.WaitForMirrorConsensusAsync(receipt);
 
             await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
-            await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+            receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+            await _network.WaitForMirrorConsensusAsync(receipt);
 
             await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
         }
@@ -61,6 +68,8 @@ public class GrantAssetTests
     {
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
@@ -76,9 +85,13 @@ public class GrantAssetTests
         Assert.Equal(_network.Payer, record.Id.Address);
         Assert.Null(record.ParentTransactionConcensus);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        var receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
     }
@@ -87,6 +100,8 @@ public class GrantAssetTests
     {
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
+
+        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
@@ -101,9 +116,13 @@ public class GrantAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
+        await _network.WaitForMirrorConsensusAsync(record);
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        var receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
     }
@@ -114,17 +133,23 @@ public class GrantAssetTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
-        await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount, fxAsset.GrantPrivateKey, ctx =>
+        var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount, fxAsset.GrantPrivateKey, ctx =>
         {
             ctx.Payer = fxOther.Record.Address;
             ctx.Signatory = fxOther.PrivateKey;
         });
 
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
-        await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+        receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
+
+        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
     }
@@ -150,12 +175,17 @@ public class GrantAssetTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
 
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.NotApplicable);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxAsset.Client.GrantTokenKycAsync(fxAsset.Record.Token, fxAccount, fxAsset.GrantPrivateKey);
         });
+
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Status);
         Assert.Equal(ResponseCode.TokenHasNoKycKey, tex.Receipt.Status);
         Assert.StartsWith("Unable to Grant Token, status: TokenHasNoKycKey", tex.Message);
@@ -168,7 +198,11 @@ public class GrantAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
+
+        await _network.WaitForMirrorConsensusAsync();
+
         await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxAsset.Client.GrantTokenKycAsync(
@@ -181,6 +215,9 @@ public class GrantAssetTests
                         PendingPayer = fxPayer
                     }));
         });
+
+        await _network.WaitForMirrorConsensusAsync(tex);
+
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Status);
         Assert.Equal(ResponseCode.ScheduledTransactionNotInWhitelist, tex.Receipt.Status);
         Assert.StartsWith("Unable to schedule transaction, status: ScheduledTransactionNotInWhitelist", tex.Message);

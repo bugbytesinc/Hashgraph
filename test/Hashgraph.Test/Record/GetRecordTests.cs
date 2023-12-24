@@ -1,16 +1,4 @@
-﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Hashgraph.Extensions;
-using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
-using Proto;
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Hashgraph.Test.Record;
+﻿namespace Hashgraph.Test.Record;
 
 [Collection(nameof(NetworkCredentials))]
 public class GetRecordTests
@@ -357,10 +345,12 @@ public class GetRecordTests
         var xferAmount = 2 * fxToken.Params.Circulation / (ulong)Generator.Integer(3, 5);
         var expectedTreasury = fxToken.Params.Circulation - xferAmount;
 
-        await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        Assert.Equal(xferAmount, await fxAccount.Client.GetAccountTokenBalanceAsync(fxAccount, fxToken));
-        Assert.Equal(expectedTreasury, await fxAccount.Client.GetAccountTokenBalanceAsync(fxToken.TreasuryAccount, fxToken));
+        await _network.WaitForMirrorConsensusAsync(receipt);
+
+        Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
+        Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
 
         var originalRecord = await fxToken.Client.ConfiscateTokensWithRecordAsync(fxToken, fxAccount, xferAmount, fxToken.ConfiscatePrivateKey);

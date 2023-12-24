@@ -1,6 +1,5 @@
 ﻿using Proto;
 using System;
-using System.Collections.ObjectModel;
 
 namespace Hashgraph;
 
@@ -67,11 +66,6 @@ public sealed record ContractInfo
     /// </summary>
     public ulong Balance { get; private init; }
     /// <summary>
-    /// [DPRICATED] Balances of tokens associated with this account.
-    /// </summary>
-    [Obsolete("This field is deprecated by HIP-367")]
-    public ReadOnlyCollection<TokenBalance> Tokens { get; private init; }
-    /// <summary>
     /// <code>True</code> if this contract has been deleted.
     /// </summary>
     public bool Deleted { get; private init; }
@@ -106,11 +100,6 @@ public sealed record ContractInfo
         Size = info.Storage;
         Memo = info.Memo;
         Balance = info.Balance;
-#pragma warning disable CS0612 // Type or member is obsolete
-#pragma warning disable CS0618 // Type or member is obsolete
-        Tokens = info.TokenRelationships.ToBalances();
-#pragma warning restore CS0618 // Type or member is obsolete
-#pragma warning restore CS0612 // Type or member is obsolete
         Deleted = info.Deleted;
         AutoAssociationLimit = info.MaxAutomaticTokenAssociations;
         Ledger = info.LedgerId.Memory;
