@@ -18,16 +18,16 @@ public class NetworkCredentials
     private ReadOnlyMemory<byte> _ledger = default;
     private AccountData _rootPayer = default;
     private readonly string _mirrorGrpcUrl = default;
+    private ConsensusTimeStamp _latestKnownMutatingTimestamp = ConsensusTimeStamp.MinValue;
+    private ConsensusTimeStamp _latestKnownMirrorTimestamp = ConsensusTimeStamp.MinValue;
 
     public ITestOutputHelper Output { get; set; }
-
     public Gateway Gateway => _gateway;
     public Address Payer => _rootPayer.Account;
     public ReadOnlyMemory<byte> PrivateKey => _privateKey;
     public ReadOnlyMemory<byte> PublicKey => _rootPayer.Endorsement.ToBytes();
     public Signatory Signatory => _signatory;
     public ReadOnlyMemory<byte> Ledger => _ledger;
-    public MirrorRestClient MirrorRestClient => _mirrorClient;
     public NetworkCredentials()
     {
         _configuration = new ConfigurationBuilder()
@@ -79,7 +79,7 @@ public class NetworkCredentials
     {
         return _rootClient.Clone();
     }
-    public MirrorGrpcClient NewMirror()
+    public MirrorGrpcClient NewMirrorGrpcClient()
     {
         return new MirrorGrpcClient(ctx =>
         {
@@ -87,6 +87,12 @@ public class NetworkCredentials
             ctx.OnSendingRequest = OutputSendingRequest;
         });
     }
+    public async Task<MirrorRestClient> GetMirrorRestClientAsync()
+    {
+        await WaitForMirrorConsensusCatchUpAsync();
+        return _mirrorClient;
+    }
+
     private void OutputSendingRequest(IMessage message)
     {
         if (Output != null)
@@ -97,6 +103,7 @@ public class NetworkCredentials
                 var transactionBody = Proto.TransactionBody.Parser.ParseFrom(signedTransaction.BodyBytes);
                 Output.WriteLine($"{DateTime.UtcNow}  TX BODY  {JsonFormatter.Default.Format(transactionBody)}");
                 Output.WriteLine($"{DateTime.UtcNow}  └─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
+                _latestKnownMutatingTimestamp = ConsensusTimeStamp.MinValue;
             }
             else if (message is Proto.Query query && TryGetQueryTransaction(query, out Proto.Transaction payment) && payment.SignedTransactionBytes != null)
             {
@@ -111,6 +118,7 @@ public class NetworkCredentials
                     Output.WriteLine($"{DateTime.UtcNow}  QX PYMT  {JsonFormatter.Default.Format(transactionBody)}");
                     Output.WriteLine($"{DateTime.UtcNow}  ├─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
                     Output.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(query)}");
+                    _latestKnownMutatingTimestamp = ConsensusTimeStamp.MinValue;
                 }
             }
             else if (message is Com.Hedera.Mirror.Api.Proto.ConsensusTopicQuery)
@@ -126,6 +134,14 @@ public class NetworkCredentials
     private void OutputReceivResponse(int tryNo, IMessage message)
     {
         Output?.WriteLine($"{DateTime.UtcNow}  RX:({tryNo:00})  {JsonFormatter.Default.Format(message)}");
+        if (message is Proto.Response response)
+        {
+            var record = response.TransactionGetRecord?.TransactionRecord;
+            if (record != null)
+            {
+                _latestKnownMutatingTimestamp = record.ConsensusTimestamp.ToConsensusTimeStamp();
+            }
+        }
     }
     private static bool TryGetQueryTransaction(Query query, out Proto.Transaction payment)
     {
@@ -213,60 +229,43 @@ public class NetworkCredentials
         _systemFreezeAdminAddress ??= await GetSpecialAccountAsync(new Address(0, 0, 58));
         return _systemFreezeAdminAddress == Address.None ? null : _systemFreezeAdminAddress;
     }
-    public async Task WaitForMirrorConsensusAsync()
+    private async Task WaitForMirrorConsensusCatchUpAsync()
     {
-        // Make a placebo transaction that we can wait for.
-        var placebo = await _rootClient.TransferWithRecordAsync(Payer, Gateway, 1, ctx => ctx.Memo = "Mirror Node HIP-367 Consensus Time Marker");
-        await WaitForMirrorConsensusAsync(placebo);
-    }
-    public async Task WaitForMirrorConsensusAsync(TransactionRecord record)
-    {
-        await WaitForMirrorConsensusAsync(record.Concensus.Value);
-    }
-    public async Task WaitForMirrorConsensusAsync(TransactionReceipt receipt)
-    {
-        await WaitForMirrorConsensusAsync(receipt.Id);
-    }
-    public async Task WaitForMirrorConsensusAsync(TransactionException tex)
-    {
-        await WaitForMirrorConsensusAsync(tex.TxId);
-    }
-    public async Task WaitForMirrorConsensusAsync(TxId transactionID)
-    {
-        // Need to add more to _mirrorClient about getting a TX by ID
-        var record = await _rootClient.GetTransactionRecordAsync(transactionID);
-        await WaitForMirrorConsensusAsync(record.Concensus.Value);
-    }
-    public async Task WaitForMirrorConsensusAsync(ConsensusTimeStamp timestamp)
-    {
-        Output?.WriteLine($"{DateTime.UtcNow}    WAIT → Waiting for Mirror Consensus Timestamp {timestamp}");
-        var count = 0;
-        var httpErrorCount = 0;
-        do
+        if (_latestKnownMutatingTimestamp == ConsensusTimeStamp.MinValue)
         {
-            try
+            await _rootClient.TransferWithRecordAsync(Payer, Gateway, 1, ctx => ctx.Memo = "Mirror Node HIP-367 Consensus Time Marker");
+        }
+        if (_latestKnownMirrorTimestamp < _latestKnownMutatingTimestamp)
+        {
+            Output?.WriteLine($"{DateTime.UtcNow}  WAIT   ⇌ Waiting for Mirror Consensus Timestamp {_latestKnownMutatingTimestamp}");
+            var count = 0;
+            var httpErrorCount = 0;
+            do
             {
-                var latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
-                while (latest < timestamp)
+                try
                 {
-                    if (count > 500)
+                    _latestKnownMirrorTimestamp = await _mirrorClient.GetLatestConsensusTimestampAsync();
+                    while (_latestKnownMirrorTimestamp < _latestKnownMutatingTimestamp)
                     {
-                        throw new Exception($"The Mirror node appears to be too far out of sync, gave up waiting for {timestamp}");
+                        if (count > 500)
+                        {
+                            throw new Exception($"The Mirror node appears to be too far out of sync, gave up waiting for {_latestKnownMutatingTimestamp}");
+                        }
+                        count++;
+                        await Task.Delay(700);
+                        _latestKnownMirrorTimestamp = await _mirrorClient.GetLatestConsensusTimestampAsync();
                     }
-                    count++;
-                    await Task.Delay(700);
-                    latest = await _mirrorClient.GetLatestConsensusTimestampAsync();
+                    return;
                 }
-                return;
-            }
-            catch (HttpRequestException)
-            {
-                httpErrorCount++;
-            }
-        } while (httpErrorCount < 1000);
-        throw new Exception($"The Mirror node appears to have gone off to lala land, gave up waiting for {timestamp}");
+                catch (HttpRequestException hre)
+                {
+                    httpErrorCount++;
+                    Output?.WriteLine($"{DateTime.UtcNow}  WAIT   ⇌ The Mirror node appears to be struggling {hre.Message}");
+                }
+            } while (httpErrorCount < 1000);
+            throw new Exception($"The Mirror node appears to have gone off to lala land, gave up waiting for {_latestKnownMutatingTimestamp}");
+        }
     }
-
     public async Task<TRecord> RetryForKnownNetworkIssuesAsync<TRecord>(Func<Task<TRecord>> callback) where TRecord : TransactionRecord
     {
         try
@@ -297,8 +296,6 @@ public class NetworkCredentials
             }
         }
     }
-
-
     private async Task<Address> GetSpecialAccountAsync(Address address)
     {
         await using var client = NewClient();

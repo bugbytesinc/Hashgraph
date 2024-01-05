@@ -45,8 +45,6 @@ public class CreateAssetTests
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
         Assert.Equal(0, treasury.AssetCount);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
         var tokInfo = tokens[0];
@@ -122,7 +120,6 @@ public class CreateAssetTests
             Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
             Assert.Equal(0, treasury.AssetCount);
 
-            await _network.WaitForMirrorConsensusAsync(fxTreasury.CreateRecord);
             var tokens = await fxTreasury.GetTokenBalancesAsync();
             Assert.Single(tokens);
             var tokInfo = tokens[0];
@@ -351,8 +348,6 @@ public class CreateAssetTests
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset.Record.Token);
         Assert.Equal(fxContract.ContractRecord.Contract, info.Treasury);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         Assert.Equal(fxAsset.Metadata.Length, await fxContract.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Create Asset: Null Administrator Key is Allowed")]
@@ -559,8 +554,6 @@ public class CreateAssetTests
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
         var assets = tokens[0];
@@ -607,8 +600,6 @@ public class CreateAssetTests
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
@@ -692,8 +683,6 @@ public class CreateAssetTests
 
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
@@ -891,8 +880,6 @@ public class CreateAssetTests
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
         var asset = tokens[0];
@@ -941,8 +928,6 @@ public class CreateAssetTests
         var treasury = await fxAsset.Client.GetAccountInfoAsync(fxAsset.TreasuryAccount.Record.Address);
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
         var asset = tokens[0];
@@ -984,8 +969,6 @@ public class CreateAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, await fxContract.GetCryptoBalanceAsync());
         Assert.Single(await fxContract.GetTokenBalancesAsync());
         Assert.Equal(fxAsset.Metadata.Length, await fxContract.GetTokenBalanceAsync(fxAsset));
@@ -1024,8 +1007,6 @@ public class CreateAssetTests
         Assert.Equal(TokenTradableStatus.Tradable, info.PauseStatus);
         Assert.Equal(TokenKycStatus.Revoked, info.KycStatus);
         Assert.False(info.Deleted);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         Assert.Equal(fxAsset.TreasuryAccount.CreateParams.InitialBalance, await fxAsset.TreasuryAccount.GetCryptoBalanceAsync());
         var tokens = await fxAsset.TreasuryAccount.GetTokenBalancesAsync();

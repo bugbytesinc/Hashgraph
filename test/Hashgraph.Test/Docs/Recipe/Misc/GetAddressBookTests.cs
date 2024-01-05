@@ -1,11 +1,5 @@
 ﻿#pragma warning disable CS8892 //Main will not be used as an entry point
-using Hashgraph.Extensions;
-using Hashgraph.Test.Fixtures;
-using System;
 using System.Net;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace Hashgraph.Tests.Docs.Recipe;
 

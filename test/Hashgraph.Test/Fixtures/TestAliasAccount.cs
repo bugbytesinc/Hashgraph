@@ -73,13 +73,13 @@ public class TestAliasAccount : IHasCryptoBalance, IHasTokenBalance, IAsyncDispo
 
     public async Task<long?> GetTokenBalanceAsync(Address token)
     {
-        return await Network.MirrorRestClient.GetAccountTokenBalanceAsync(CreateRecord.Address, token);
+        return await (await Network.GetMirrorRestClientAsync()).GetAccountTokenBalanceAsync(CreateRecord.Address, token);
     }
 
     public async Task<TokenHoldingData[]> GetTokenBalancesAsync()
     {
         var list = new List<TokenHoldingData>();
-        await foreach (var info in Network.MirrorRestClient.GetAccountTokenHoldingsAsync(CreateRecord.Address))
+        await foreach (var info in (await Network.GetMirrorRestClientAsync()).GetAccountTokenHoldingsAsync(CreateRecord.Address))
         {
             list.Add(info);
         }

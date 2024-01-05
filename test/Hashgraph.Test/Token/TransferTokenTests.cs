@@ -41,8 +41,6 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal(fxAccount.CreateParams.InitialBalance, await fxAccount.GetCryptoBalanceAsync());
         Assert.Single(await fxAccount.GetTokenBalancesAsync());
         Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
@@ -104,8 +102,6 @@ public class TransferTokenTests
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(record);
 
         Assert.Equal(fxAccount.CreateParams.InitialBalance, await fxAccount.GetCryptoBalanceAsync());
         Assert.Single(await fxAccount.GetTokenBalancesAsync());
@@ -169,8 +165,6 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         Assert.Equal(fxAccount.CreateParams.InitialBalance, await fxAccount.GetCryptoBalanceAsync());
         Assert.Single(await fxAccount.GetTokenBalancesAsync());
         Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
@@ -199,8 +193,6 @@ public class TransferTokenTests
         };
         var receipt = await fxToken.Client.TransferAsync(transfers);
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)xferAmount, await fxAccount2.GetTokenBalanceAsync(fxToken));
@@ -254,8 +246,6 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Record.Token, xferFrom.Token);
         Assert.Equal((long)xferAmount, xferTo2.Amount);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)xferAmount, await fxAccount2.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
@@ -290,8 +280,6 @@ public class TransferTokenTests
         Assert.NotNull(receipt.CurrentExchangeRate);
         Assert.NotNull(receipt.NextExchangeRate);
         Assert.Equal(_network.Payer, receipt.Id.Address);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.Equal(fxAccount1.CreateParams.InitialBalance + (ulong)cryptoAmount, await fxAccount1.Client.GetAccountBalanceAsync(fxAccount1));
         Assert.Equal(fxAccount2.CreateParams.InitialBalance + (ulong)cryptoAmount, await fxAccount2.Client.GetAccountBalanceAsync(fxAccount2));
@@ -358,8 +346,6 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Record.Token, xferFrom.Token);
         Assert.Equal((long)tokenAmount, xferTo2.Amount);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         Assert.Equal(fxAccount1.CreateParams.InitialBalance + (ulong)cryptoAmount, await fxAccount1.Client.GetAccountBalanceAsync(fxAccount1));
         Assert.Equal(fxAccount2.CreateParams.InitialBalance + (ulong)cryptoAmount, await fxAccount2.Client.GetAccountBalanceAsync(fxAccount2));
         Assert.Equal((long)tokenAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
@@ -375,12 +361,10 @@ public class TransferTokenTests
         var xferAmount = fxToken.Params.Circulation / 3;
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
-        await _network.WaitForMirrorConsensusAsync(receipt);
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, (long)xferAmount, fxAccount1);
-        await _network.WaitForMirrorConsensusAsync(receipt);
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)xferAmount, await fxAccount2.GetTokenBalanceAsync(fxToken));
     }
@@ -398,8 +382,6 @@ public class TransferTokenTests
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
@@ -410,14 +392,10 @@ public class TransferTokenTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: InvalidSignature", tex.Message);
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, (long)xferAmount, new Signatory(fxAccount1, fxAccount2));
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)xferAmount, await fxAccount2.GetTokenBalanceAsync(fxToken));
@@ -434,8 +412,6 @@ public class TransferTokenTests
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
@@ -445,8 +421,6 @@ public class TransferTokenTests
         });
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
@@ -463,8 +437,6 @@ public class TransferTokenTests
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
 
@@ -474,8 +446,6 @@ public class TransferTokenTests
         });
         Assert.Equal(ResponseCode.AccountKycNotGrantedForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountKycNotGrantedForToken", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
@@ -509,8 +479,6 @@ public class TransferTokenTests
         await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, (long)xferAmount, fxAccount1);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         // Check our Balances
         Assert.Equal((long)(circulation - xferAmount), await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
@@ -542,8 +510,6 @@ public class TransferTokenTests
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         // Balances should not have changed
         Assert.Equal((long)(circulation - xferAmount), await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
@@ -565,8 +531,6 @@ public class TransferTokenTests
         // Move coins to account 2 via 1
         await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount1, (long)xferAmount, fxToken.TreasuryAccount);
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, (long)xferAmount, fxAccount1);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         // Check our Balances
         Assert.Equal((long)(circulation - xferAmount), await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
@@ -600,8 +564,6 @@ public class TransferTokenTests
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Receipt.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         // Balances should not have changed
         Assert.Equal((long)(circulation - xferAmount), await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
@@ -614,8 +576,6 @@ public class TransferTokenTests
         // Move coins to back via 1
         await fxToken.Client.TransferTokensAsync(fxToken, fxAccount2, fxAccount1, (long)xferAmount, fxAccount2);
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxAccount1, fxToken.TreasuryAccount, (long)xferAmount, fxAccount1);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         // Check our Final Balances
         Assert.Equal((long)circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
@@ -636,8 +596,6 @@ public class TransferTokenTests
 
         var receipt = await fxContract.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxContract.ContractRecord.Contract, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         var tokens = await fxContract.GetTokenBalancesAsync();
         var association = tokens.FirstOrDefault(t => t.Token == fxToken.Record.Token);
@@ -662,8 +620,6 @@ public class TransferTokenTests
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxContract.ContractRecord.Contract, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal(0UL, await fxContract.GetCryptoBalanceAsync());
         Assert.Single(await fxContract.GetTokenBalancesAsync());
         Assert.Equal((long)xferAmount, await fxContract.GetTokenBalanceAsync(fxToken));
@@ -674,8 +630,6 @@ public class TransferTokenTests
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxContract.ContractRecord.Contract, fxToken.TreasuryAccount.Record.Address, (long)xferAmount, fxContract.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.Equal((long)totalCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxContract.GetTokenBalanceAsync(fxToken));
@@ -696,8 +650,6 @@ public class TransferTokenTests
         // Transfer a third of the treasury to the other account.
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         // Double check balances.
         Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)partialTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
@@ -709,8 +661,6 @@ public class TransferTokenTests
             Treasury = fxAccount,
             Signatory = new Signatory(fxToken.AdminPrivateKey, fxAccount.PrivateKey)
         });
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         // All coins swept into new treasury account.
         Assert.Equal((long)circulation, await fxAccount.GetTokenBalanceAsync(fxToken));
@@ -747,8 +697,6 @@ public class TransferTokenTests
             Signatory = new Signatory(fxToken.AdminPrivateKey, fxToken.TreasuryAccount.PrivateKey)
         });
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         // All coins swept back to original treasury.
         Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
@@ -780,8 +728,6 @@ public class TransferTokenTests
         var schedulingReceipt = await fxToken.Client.TransferAsync(transfers);
         Assert.Equal(ResponseCode.Success, schedulingReceipt.Status);
 
-        await _network.WaitForMirrorConsensusAsync(schedulingReceipt);
-
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount2.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
@@ -791,8 +737,6 @@ public class TransferTokenTests
 
         var transferReceipt = await fxPayer.Client.GetReceiptAsync(schedulingReceipt.Pending.TxId);
         Assert.Equal(ResponseCode.Success, transferReceipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(transferReceipt);
 
         Assert.Equal((long)xferAmount, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)xferAmount, await fxAccount2.GetTokenBalanceAsync(fxToken));
@@ -830,8 +774,6 @@ public class TransferTokenTests
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.True(await fxAccount.GetCryptoBalanceAsync() > 0);
         Assert.Single(await fxAccount.GetTokenBalancesAsync());
@@ -878,8 +820,6 @@ public class TransferTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(secondReceipt);
-
         Assert.Single(await fxFirstAccount.GetTokenBalancesAsync());
         Assert.Equal(0, await fxFirstAccount.GetTokenBalanceAsync(fxToken));
 
@@ -923,8 +863,6 @@ public class TransferTokenTests
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
         await fxToken.Client.AllocateAsync(new AllowanceParams
@@ -963,8 +901,6 @@ public class TransferTokenTests
         var result = record.CallResult.Result.As<long>();
         Assert.Equal((long)ResponseCode.Success, result);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - (ulong)xferAmount);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, (ulong)xferAmount);
     }
@@ -999,8 +935,6 @@ public class TransferTokenTests
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
         await fxToken.Client.AllocateAsync(new AllowanceParams
@@ -1034,8 +968,6 @@ public class TransferTokenTests
 
         var result = record.CallResult.Result.As<long>();
         Assert.Equal((long)ResponseCode.Success, result);
-
-        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - (ulong)xferAmount);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, (ulong)xferAmount);
@@ -1071,8 +1003,6 @@ public class TransferTokenTests
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
         await fxToken.Client.AllocateAsync(new AllowanceParams
@@ -1106,8 +1036,6 @@ public class TransferTokenTests
 
         var result = record.CallResult.Result.As<long>();
         Assert.Equal((long)ResponseCode.Success, result);
-
-        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - (ulong)xferAmount);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, (ulong)xferAmount);
@@ -1143,8 +1071,6 @@ public class TransferTokenTests
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
         await fxToken.Client.AllocateAsync(new AllowanceParams
@@ -1178,8 +1104,6 @@ public class TransferTokenTests
 
         var result = record.CallResult.Result.As<long>();
         Assert.Equal((long)ResponseCode.Success, result);
-
-        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - (ulong)xferAmount);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, (ulong)xferAmount);
@@ -1215,8 +1139,6 @@ public class TransferTokenTests
 
         long xferAmount = (long)(fxToken.Params.Circulation / 3);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, 0);
 
         await fxToken.Client.AllocateAsync(new AllowanceParams
@@ -1250,8 +1172,6 @@ public class TransferTokenTests
 
         var result = record.CallResult.Result.As<long>();
         Assert.Equal((long)ResponseCode.Success, result);
-
-        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxToken.TreasuryAccount, fxToken.Params.Circulation - (ulong)xferAmount);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount, (ulong)xferAmount);

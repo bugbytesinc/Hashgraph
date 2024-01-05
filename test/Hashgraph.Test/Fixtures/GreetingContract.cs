@@ -91,13 +91,13 @@ public class GreetingContract : IHasCryptoBalance, IHasTokenBalance, IAsyncDispo
 
     public async Task<long?> GetTokenBalanceAsync(Address token)
     {
-        return await Network.MirrorRestClient.GetAccountTokenBalanceAsync(ContractRecord.Contract, token);
+        return await (await Network.GetMirrorRestClientAsync()).GetAccountTokenBalanceAsync(ContractRecord.Contract, token);
     }
 
     public async Task<TokenHoldingData[]> GetTokenBalancesAsync()
     {
         var list = new List<TokenHoldingData>();
-        await foreach (var info in Network.MirrorRestClient.GetAccountTokenHoldingsAsync(ContractRecord.Contract))
+        await foreach (var info in (await Network.GetMirrorRestClientAsync()).GetAccountTokenHoldingsAsync(ContractRecord.Contract))
         {
             list.Add(info);
         }

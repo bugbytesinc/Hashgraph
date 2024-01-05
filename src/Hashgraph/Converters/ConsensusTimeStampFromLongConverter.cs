@@ -17,7 +17,7 @@ public class ConsensusTimeStampFromLongConverter : JsonConverter<ConsensusTimeSt
     /// <param name="options">json options</param>
     /// <returns>ConsensusTimestamp object</returns>
     public override ConsensusTimeStamp Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {                
+    {
         return new ConsensusTimeStamp(reader.GetDecimal() / 1000000000m);
     }
     /// <summary>

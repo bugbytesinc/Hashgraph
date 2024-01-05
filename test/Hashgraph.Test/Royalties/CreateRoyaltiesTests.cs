@@ -268,8 +268,6 @@ public class CreateRoyaltiesTests
             await fxToken.TreasuryAccount.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, xferAmount, fxAccount1);
         });
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         Assert.Equal(ResponseCode.TokenNotAssociatedToAccount, tex.Status);
         await AssertHg.TokenBalanceAsync(comToken, fxAccount1, 200);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, (ulong)xferAmount);
@@ -302,8 +300,6 @@ public class CreateRoyaltiesTests
         {
             await fxToken.TreasuryAccount.Client.TransferTokensAsync(fxToken, fxAccount1, fxAccount2, xferAmount, fxAccount1);
         });
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal(ResponseCode.AccountDeleted, tex.Status);
         await AssertHg.TokenBalanceAsync(comToken, fxAccount1, 200);

@@ -852,8 +852,6 @@ public class UpdateTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
     }
@@ -902,8 +900,6 @@ public class UpdateTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxToken));
     }
@@ -928,8 +924,6 @@ public class UpdateTokenTests
 
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
         Assert.Equal(fxContract.ContractRecord.Contract, info.Treasury);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.Equal((long)fxToken.Params.Circulation, await fxContract.GetTokenBalanceAsync(fxToken));
     }
@@ -977,8 +971,6 @@ public class UpdateTokenTests
         });
         var totalCirculation = fxToken.Params.Circulation;
 
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
-
         Assert.Null(await fxAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)totalCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
 
@@ -1011,8 +1003,6 @@ public class UpdateTokenTests
             fx.Params.GrantKycEndorsement = null;
         });
         var totalCirculation = fxToken.Params.Circulation;
-
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
 
         Assert.Null(await fxAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)totalCirculation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));

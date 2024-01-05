@@ -205,11 +205,11 @@ public class DeleteAllowancesTests
     {
         await using var fxAllowances = await TestAllowance.CreateAsync(_network);
 
-        Assert.True(await hasNonZeroTokenAllowanceAsync(fxAllowances.DelegationRecord.Id));
+        Assert.True(await hasNonZeroTokenAllowanceAsync());
 
-        var deleteReceipt = await fxAllowances.Client.DeleteAccountAsync(fxAllowances.Agent, _network.Payer, fxAllowances.Agent.PrivateKey);
+        await fxAllowances.Client.DeleteAccountAsync(fxAllowances.Agent, _network.Payer, fxAllowances.Agent.PrivateKey);
 
-        Assert.True(await hasNonZeroTokenAllowanceAsync(deleteReceipt.Id));
+        Assert.True(await hasNonZeroTokenAllowanceAsync());
 
         var clearReceipt = await fxAllowances.Client.AllocateAsync(new AllowanceParams
         {
@@ -218,12 +218,11 @@ public class DeleteAllowancesTests
         });
         Assert.Equal(ResponseCode.Success, clearReceipt.Status);
 
-        Assert.False(await hasNonZeroTokenAllowanceAsync(clearReceipt.Id));
+        Assert.False(await hasNonZeroTokenAllowanceAsync());
 
-        async Task<bool> hasNonZeroTokenAllowanceAsync(TxId consensusTxId)
+        async Task<bool> hasNonZeroTokenAllowanceAsync()
         {
-            await _network.WaitForMirrorConsensusAsync(consensusTxId);
-            await foreach (var record in _network.MirrorRestClient.GetAccountTokenAllowancesAsync(fxAllowances.Owner.Record.Address))
+            await foreach (var record in (await _network.GetMirrorRestClientAsync()).GetAccountTokenAllowancesAsync(fxAllowances.Owner.Record.Address))
             {
                 if (record.Spender == fxAllowances.Agent.Record.Address && record.Token == fxAllowances.TestToken.Record.Token && record.Amount > 0)
                 {

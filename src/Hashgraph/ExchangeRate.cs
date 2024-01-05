@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hashgraph;
+﻿namespace Hashgraph;
 
 /// <summary>
 /// Exchange rate information as known by the 

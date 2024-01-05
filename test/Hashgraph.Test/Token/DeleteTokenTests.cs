@@ -70,8 +70,6 @@ public class DeleteTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         var accountInfo = await fxToken.Client.GetAccountInfoAsync(fxAccount.Record.Address);
         var token = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.NotNull(token);
@@ -265,8 +263,6 @@ public class DeleteTokenTests
         Assert.Equal(ResponseCode.AccountIsTreasury, tex.Status);
         Assert.StartsWith("Unable to delete account, status: AccountIsTreasury", tex.Message);
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         // Confirm Tokens still exist in account 2
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)fxToken.Params.Circulation, await fxAccount2.GetTokenBalanceAsync(fxToken));
@@ -300,8 +296,6 @@ public class DeleteTokenTests
             Treasury = fxAccount1,
             Signatory = new Signatory(fxToken.AdminPrivateKey, fxAccount1.PrivateKey)
         });
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         // Double check balances
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxToken));
@@ -376,8 +370,6 @@ public class DeleteTokenTests
 
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
         Assert.True(info.Deleted);
-
-        await _network.WaitForMirrorConsensusAsync(record);
 
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount1, 1);
         await AssertHg.TokenBalanceAsync(fxToken, fxAccount2, 1);

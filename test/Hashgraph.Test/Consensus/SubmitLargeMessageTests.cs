@@ -42,7 +42,7 @@ public class SubmiLargeMessageTests
 
         try
         {
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, expectedCount, 7000);
             if (topicMessages.Length == 0)
             {
@@ -216,7 +216,7 @@ public class SubmiLargeMessageTests
 
         try
         {
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, expectedCount, 7000);
             if (topicMessages.Length == 0)
             {
@@ -282,7 +282,7 @@ public class SubmiLargeMessageTests
 
         try
         {
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, expectedCount, 7000);
             if (topicMessages.Length == 0)
             {
@@ -348,7 +348,7 @@ public class SubmiLargeMessageTests
 
         try
         {
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, expectedCount, 7000);
             if (topicMessages.Length == 0)
             {

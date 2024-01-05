@@ -14,8 +14,7 @@ public class MirrorDataTests
     {
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         var info = await fxAccount.Client.GetAccountInfoAsync(fxAccount);
-        await _network.WaitForMirrorConsensusAsync(fxAccount.Record.Concensus.Value);
-        var data = await _network.MirrorRestClient.GetAccountDataAsync(fxAccount);
+        var data = await (await _network.GetMirrorRestClientAsync()).GetAccountDataAsync(fxAccount);
 
         Assert.Equal(info.Address, data.Account);
         Assert.Null(data.Alias);
@@ -47,7 +46,7 @@ public class MirrorDataTests
     {
         var list = new List<Task<long>>();
         await using var grpClient = _network.NewClient();
-        await foreach (var node in _network.MirrorRestClient.GetGossipNodesAsync())
+        await foreach (var node in (await _network.GetMirrorRestClientAsync()).GetGossipNodesAsync())
         {
             Assert.False(node.Account.IsNullOrNone());
             Assert.NotEmpty(node.Endpoints);
@@ -95,7 +94,7 @@ public class MirrorDataTests
         _network.Output.WriteLine(JsonSerializer.Serialize(results));
         Assert.Equal(list.Count, results.Length);
 
-        var activeGateways = await _network.MirrorRestClient.GetActiveGatewaysAsync(15000);
+        var activeGateways = await (await _network.GetMirrorRestClientAsync()).GetActiveGatewaysAsync(15000);
         // Yes, this is a fuzzy test in that network circumstances
         // could cause this to fail.  But most of the time since the
         // timeout is higher in the second series of pings, this value
@@ -107,8 +106,8 @@ public class MirrorDataTests
     {
         await using var fxToken = await TestToken.CreateAsync(_network);
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken);
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record.Concensus.Value);
-        var data = await _network.MirrorRestClient.GetTokenAsync(fxToken);
+
+        var data = await (await _network.GetMirrorRestClientAsync()).GetTokenAsync(fxToken);
 
         Assert.NotNull(data);
         Assert.Equal(info.Token, data.Token);
@@ -145,8 +144,7 @@ public class MirrorDataTests
     {
         await using var fxAsset = await TestAsset.CreateAsync(_network);
         var info = await fxAsset.Client.GetTokenInfoAsync(fxAsset);
-        await _network.WaitForMirrorConsensusAsync(fxAsset.MintRecord.Concensus.Value);
-        var data = await _network.MirrorRestClient.GetTokenAsync(fxAsset);
+        var data = await (await _network.GetMirrorRestClientAsync()).GetTokenAsync(fxAsset);
 
         Assert.NotNull(data);
         Assert.Equal(info.Token, data.Token);
@@ -190,9 +188,8 @@ public class MirrorDataTests
         }
         var expectedMessage = Encoding.ASCII.GetBytes(Generator.String(10, 100));
         var record = await fxTopic.Client.SubmitMessageWithRecordAsync(fxTopic.Record.Topic, expectedMessage, fxTopic.ParticipantPrivateKey);
-        await _network.WaitForMirrorConsensusAsync(record.Concensus.Value);
 
-        var data = await _network.MirrorRestClient.GetHcsMessageAsync(fxTopic, 11);
+        var data = await (await _network.GetMirrorRestClientAsync()).GetHcsMessageAsync(fxTopic, 11);
 
         Assert.NotNull(data);
         Assert.Null(data.ChunkInfo);
@@ -216,10 +213,9 @@ public class MirrorDataTests
             messages[i] = Encoding.ASCII.GetBytes(Generator.String(10, 100));
             records[i] = await fxTopic.Client.SubmitMessageWithRecordAsync(fxTopic.Record.Topic, messages[i], fxTopic.ParticipantPrivateKey);
         }
-        await _network.WaitForMirrorConsensusAsync(records[^1].Concensus.Value);
 
         var index = 0;
-        await foreach (var data in _network.MirrorRestClient.GetHcsMessagesAsync(fxTopic))
+        await foreach (var data in (await _network.GetMirrorRestClientAsync()).GetHcsMessagesAsync(fxTopic))
         {
             Assert.NotNull(data);
             Assert.Null(data.ChunkInfo);
@@ -248,8 +244,8 @@ public class MirrorDataTests
             xferAmounts[i] = 2 * fxTokens[i].Params.Circulation / 3;
             xferRecords[i] = await fxTokens[i].Client.TransferTokensWithRecordAsync(fxTokens[i].Record.Token, fxTokens[i].TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmounts[i], fxTokens[i].TreasuryAccount.PrivateKey);
         }
-        await _network.WaitForMirrorConsensusAsync(xferRecords[^1].Concensus.Value);
-        await foreach (var data in _network.MirrorRestClient.GetAccountTokenHoldingsAsync(fxAccount))
+        var mirror = await _network.GetMirrorRestClientAsync();
+        await foreach (var data in mirror.GetAccountTokenHoldingsAsync(fxAccount))
         {
             var index = findTokenIndex(data.Token);
             Assert.NotNull(data);
@@ -262,9 +258,10 @@ public class MirrorDataTests
             index++;
         }
 
+        mirror = await _network.GetMirrorRestClientAsync();
         for (int i = 0; i < fxTokens.Length; i++)
         {
-            var balance = await _network.MirrorRestClient.GetAccountTokenBalanceAsync(fxAccount, fxTokens[i]);
+            var balance = await mirror.GetAccountTokenBalanceAsync(fxAccount, fxTokens[i]);
             Assert.Equal(xferAmounts[i], (ulong)balance);
         }
 
@@ -295,14 +292,14 @@ public class MirrorDataTests
             xferAmounts[i] = 2 * fxTokens[i].Params.Circulation / 3;
             xferRecords[i] = await fxTokens[i].Client.TransferTokensWithRecordAsync(fxTokens[i].Record.Token, fxTokens[i].TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmounts[i], fxTokens[i].TreasuryAccount.PrivateKey);
         }
-        await _network.WaitForMirrorConsensusAsync(xferRecords[^1].Concensus.Value);
         long feeLimit = 0;
         TimeSpan validDuration = TimeSpan.Zero;
         fxAccount.Client.Configure(ctx => { feeLimit = ctx.FeeLimit; validDuration = ctx.TransactionDuration; });
+        var mirror = await _network.GetMirrorRestClientAsync();
         for (int i = 0; i < xferAmounts.Length; i++)
         {
             var record = xferRecords[i];
-            var dataList = await _network.MirrorRestClient.GetTransactionGroupAsync(xferRecords[i].Id);
+            var dataList = await mirror.GetTransactionGroupAsync(xferRecords[i].Id);
             Assert.NotNull(dataList);
             Assert.Single(dataList);
             var data = dataList[0];
@@ -352,10 +349,8 @@ public class MirrorDataTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        await _network.WaitForMirrorConsensusAsync(receipt.Id);
-
         var list = new List<CryptoAllowanceData>();
-        await foreach (var record in _network.MirrorRestClient.GetAccountCryptoAllowancesAsync(fxOwner))
+        await foreach (var record in (await _network.GetMirrorRestClientAsync()).GetAccountCryptoAllowancesAsync(fxOwner))
         {
             list.Add(record);
         }
@@ -381,10 +376,9 @@ public class MirrorDataTests
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        await _network.WaitForMirrorConsensusAsync(receipt.Id);
-
+        var client = await _network.GetMirrorRestClientAsync();
         var list = new List<TokenAllowanceData>();
-        await foreach (var record in _network.MirrorRestClient.GetAccountTokenAllowancesAsync(fxToken.TreasuryAccount))
+        await foreach (var record in client.GetAccountTokenAllowancesAsync(fxToken.TreasuryAccount))
         {
             list.Add(record);
         }

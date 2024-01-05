@@ -17,19 +17,13 @@ public class GrantTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
@@ -51,19 +45,13 @@ public class GrantTokenTests
             var circulation = fxToken.Params.Circulation;
             var xferAmount = circulation / 3;
 
-            await _network.WaitForMirrorConsensusAsync();
-
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
             var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.GrantPrivateKey);
 
-            await _network.WaitForMirrorConsensusAsync(receipt);
-
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
             receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-            await _network.WaitForMirrorConsensusAsync(receipt);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
         }
@@ -75,8 +63,6 @@ public class GrantTokenTests
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
-
-        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
@@ -91,13 +77,9 @@ public class GrantTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
@@ -108,8 +90,6 @@ public class GrantTokenTests
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
-
-        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
@@ -124,13 +104,9 @@ public class GrantTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
@@ -143,8 +119,6 @@ public class GrantTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey, ctx =>
@@ -153,13 +127,9 @@ public class GrantTokenTests
             ctx.Signatory = fxOther.PrivateKey;
         });
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
@@ -183,8 +153,6 @@ public class GrantTokenTests
     {
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.NotApplicable);
 
@@ -220,8 +188,6 @@ public class GrantTokenTests
         await using var fxToken = await TestToken.CreateAsync(_network, null, fxAccount);
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
-
-        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 

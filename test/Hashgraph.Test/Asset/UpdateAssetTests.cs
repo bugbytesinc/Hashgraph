@@ -865,8 +865,6 @@ public class UpdateAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         Assert.Equal((long)fxAsset.Metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxAsset));
     }
@@ -913,8 +911,6 @@ public class UpdateAssetTests
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal((long)fxAsset.Metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(0, await fxAccount.GetTokenBalanceAsync(fxAsset));
@@ -989,8 +985,6 @@ public class UpdateAssetTests
         });
         var totalCirculation = (ulong)fxAsset.Metadata.Length;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         Assert.Null(await fxAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((long)totalCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
 
@@ -1022,8 +1016,6 @@ public class UpdateAssetTests
             fx.Params.GrantKycEndorsement = null;
         });
         var totalCirculation = (ulong)fxAsset.Metadata.Length;
-
-        await _network.WaitForMirrorConsensusAsync(fxAsset.MintRecord);
 
         Assert.Null(await fxAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((long)totalCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));

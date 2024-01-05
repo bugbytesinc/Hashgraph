@@ -147,7 +147,7 @@ internal static class TransactionRecordExtensions
     internal static ReadOnlyDictionary<Address, long> AsStakingRewards(this RepeatedField<AccountAmount> rewards)
     {
         var results = new Dictionary<Address, long>();
-        if(rewards is not null)
+        if (rewards is not null)
         {
             foreach (var xfer in rewards)
             {
