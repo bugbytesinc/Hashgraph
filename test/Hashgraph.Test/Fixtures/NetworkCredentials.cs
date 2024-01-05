@@ -20,6 +20,7 @@ public class NetworkCredentials
     private readonly string _mirrorGrpcUrl = default;
     private ConsensusTimeStamp _latestKnownMutatingTimestamp = ConsensusTimeStamp.MinValue;
     private ConsensusTimeStamp _latestKnownMirrorTimestamp = ConsensusTimeStamp.MinValue;
+    private bool _hapiTokenBalanceQueriesEnabeled = false;
 
     public ITestOutputHelper Output { get; set; }
     public Gateway Gateway => _gateway;
@@ -28,6 +29,7 @@ public class NetworkCredentials
     public ReadOnlyMemory<byte> PublicKey => _rootPayer.Endorsement.ToBytes();
     public Signatory Signatory => _signatory;
     public ReadOnlyMemory<byte> Ledger => _ledger;
+    public bool HapiTokenBalanceQueriesEnabled => _hapiTokenBalanceQueriesEnabeled;
     public NetworkCredentials()
     {
         _configuration = new ConfigurationBuilder()
@@ -72,9 +74,11 @@ public class NetworkCredentials
             });
             var info = await _rootClient.GetAccountInfoAsync(_rootPayer.Account);
             _ledger = info.Ledger;
+
+            _hapiTokenBalanceQueriesEnabeled = await QueryHapiBalanceQueryStatusAsync();
+
         }).Wait();
     }
-
     public Client NewClient()
     {
         return _rootClient.Clone();
@@ -380,6 +384,22 @@ public class NetworkCredentials
         {
             return privateKey.Parameters.G.Multiply(privateKey.D).GetEncoded(true);
         }
+    }
+
+    private async Task<bool> QueryHapiBalanceQueryStatusAsync()
+    {
+        await using var fxAccount = await TestAccount.CreateAsync(this);
+        await using var fxToken = await TestToken.CreateAsync(this, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
+        var xferAmount = 2 * fxToken.Params.Circulation / 3;
+        var receipt = await fxToken.Client.TransferTokensAsync(fxToken.Record.Token, fxToken.TreasuryAccount.Record.Address, fxAccount.Record.Address, (long)xferAmount, fxToken.TreasuryAccount.PrivateKey);
+        Assert.Equal(ResponseCode.Success, receipt.Status);
+
+        IMessage interceptedMessage = null;
+        await fxToken.Client.GetAccountBalanceAsync(fxAccount, ctx => ctx.OnResponseReceived += (int arg1, IMessage message) => interceptedMessage = message);
+        var balances = (interceptedMessage as Response)?.CryptogetAccountBalance;
+#pragma warning disable CS0612 // Type or member is obsolete
+        return balances.TokenBalances?.Count > 0;
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 
 
