@@ -44,8 +44,6 @@ public class CreateTokenTests
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         var tokens = await fxToken.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
 
@@ -209,8 +207,6 @@ public class CreateTokenTests
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
         Assert.Equal(0ul, info.Decimals);
 
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
-
         Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
     [Fact(DisplayName = "Create Token: Missing Treasury Address Raises Error")]
@@ -262,8 +258,6 @@ public class CreateTokenTests
 
         var info = await fxToken.Client.GetTokenInfoAsync(fxToken.Record.Token);
         Assert.Equal(fxContract.ContractRecord.Contract, info.Treasury);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         Assert.Equal((long)fxToken.Params.Circulation, await fxContract.GetTokenBalanceAsync(fxToken));
     }
@@ -468,8 +462,6 @@ public class CreateTokenTests
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
 
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
-
         var tokens = await fxToken.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
 
@@ -519,7 +511,6 @@ public class CreateTokenTests
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
 
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
 
         var tokens = await fxToken.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
@@ -605,8 +596,6 @@ public class CreateTokenTests
 
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
 
         var tokens = await fxToken.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
@@ -804,8 +793,6 @@ public class CreateTokenTests
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
 
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
-
         var tokens = await fxToken.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
 
@@ -856,8 +843,6 @@ public class CreateTokenTests
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
 
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
-
         var tokens = await fxToken.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);
 
@@ -903,8 +888,6 @@ public class CreateTokenTests
 
         Assert.Equal((ulong)fxContract.ContractParams.InitialBalance, await fxContract.GetCryptoBalanceAsync());
 
-        await _network.WaitForMirrorConsensusAsync();
-
         var tokens = await fxContract.GetTokenBalancesAsync();
         Assert.Single(tokens);
 
@@ -948,8 +931,6 @@ public class CreateTokenTests
 
         var treasury = await fxToken.Client.GetAccountInfoAsync(fxToken.TreasuryAccount.Record.Address);
         Assert.Equal(fxToken.TreasuryAccount.CreateParams.InitialBalance, treasury.Balance);
-
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
 
         var tokens = await fxToken.TreasuryAccount.GetTokenBalancesAsync();
         Assert.Single(tokens);

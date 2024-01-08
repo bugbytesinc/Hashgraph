@@ -135,16 +135,12 @@ public class ContinueTokenTests
 
         var receipt = await fxToken.Client.ContinueTokenAsync(fxToken.Record.Token, fxToken.PausePrivateKey);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.Equal(0, info.Balance);
         Assert.Equal(TokenTradableStatus.Tradable, info.FreezeStatus);
         Assert.False(info.AutoAssociated);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.Equal((long)xferAmount, info.Balance);

@@ -49,8 +49,6 @@ public class BurnAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Burn Assets: Can Burn Single Asset")]
@@ -93,8 +91,6 @@ public class BurnAssetTests
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
@@ -140,8 +136,6 @@ public class BurnAssetTests
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
@@ -190,8 +184,6 @@ public class BurnAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Burn Assets: Can Burn Single Asset")]
@@ -231,8 +223,6 @@ public class BurnAssetTests
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
@@ -282,8 +272,6 @@ public class BurnAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
     [Fact(DisplayName = "Burn Assets: Can Burn Asset Coins and get Record Without Extra Signatory")]
@@ -330,8 +318,6 @@ public class BurnAssetTests
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(record);
 
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
@@ -380,8 +366,6 @@ public class BurnAssetTests
         Assert.False(info.Deleted);
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(record);
 
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
     }
@@ -435,8 +419,6 @@ public class BurnAssetTests
             Assert.Equal(Address.None, xfer.To);
         }
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         Assert.Equal((long)expectedCirculation, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(expectedCirculation, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
     }
@@ -446,8 +428,6 @@ public class BurnAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null);
 
         var serialNumbers = Enumerable.Range(1, fxAsset.Metadata.Length + 1).Select(i => (long)i);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         Assert.Equal(fxAsset.Metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
@@ -460,8 +440,6 @@ public class BurnAssetTests
         Assert.Equal(ResponseCode.InvalidNftId, tex.Receipt.Status);
         Assert.StartsWith("Unable to Burn Token Coins, status: InvalidNftId", tex.Message);
 
-        await _network.WaitForMirrorConsensusAsync(tex);
-
         Assert.Equal((long)fxAsset.Metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
     }
@@ -473,8 +451,6 @@ public class BurnAssetTests
         var amountToDestroy = fxAsset.Metadata.Length / 3 + 1;
         var serialNumbers = Enumerable.Range(1, amountToDestroy).Select(i => (long)i);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         Assert.Equal(fxAsset.Metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
 
@@ -485,8 +461,6 @@ public class BurnAssetTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
         Assert.StartsWith("Unable to Burn Token Coins, status: InvalidSignature", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal(fxAsset.Metadata.Length, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
@@ -511,8 +485,6 @@ public class BurnAssetTests
 
         var receipt = await fxAsset.Client.TransferAsync(transferParams);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal(amountToTransfer, await fxAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(expectedTreasury, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
@@ -524,8 +496,6 @@ public class BurnAssetTests
         Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
         Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Receipt.Status);
         Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal(amountToTransfer, await fxAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(expectedTreasury, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
@@ -549,8 +519,6 @@ public class BurnAssetTests
 
         var receipt = await fxAsset.Client.TransferAsync(transferParams);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal(amountToTransfer, await fxAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(expectedTreasury, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
@@ -562,8 +530,6 @@ public class BurnAssetTests
         Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
         Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Receipt.Status);
         Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal(amountToTransfer, await fxAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(expectedTreasury, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
@@ -587,8 +553,6 @@ public class BurnAssetTests
 
         var receipt = await fxAsset.Client.TransferAsync(transferParams);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal(amountToTransfer, await fxAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(expectedTreasury, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal((ulong)fxAsset.Metadata.Length, (await fxAsset.Client.GetTokenInfoAsync(fxAsset)).Circulation);
@@ -600,8 +564,6 @@ public class BurnAssetTests
         Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Status);
         Assert.Equal(ResponseCode.TreasuryMustOwnBurnedNft, tex.Receipt.Status);
         Assert.StartsWith("Unable to Burn Token Coins, status: TreasuryMustOwnBurnedNft", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal(amountToTransfer, await fxAccount.GetTokenBalanceAsync(fxAsset));
         Assert.Equal(expectedTreasury, await fxAsset.TreasuryAccount.GetTokenBalanceAsync(fxAsset));
@@ -630,8 +592,6 @@ public class BurnAssetTests
         // This should be considered a network bug.
         Assert.Equal(0UL, pendingReceipt.Circulation);
 
-        await _network.WaitForMirrorConsensusAsync(pendingReceipt);
-
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, (ulong)fxAsset.Metadata.Length);
 
         var signingReceipt = await fxPayer.Client.SignPendingTransactionAsync(pendingReceipt.Pending.Id, fxPayer.PrivateKey); // As TokenReceipt
@@ -644,8 +604,6 @@ public class BurnAssetTests
         var executedRecord = await fxPayer.Client.GetTransactionRecordAsync(pendingReceipt.Pending.TxId) as TokenRecord;
         Assert.Equal(ResponseCode.Success, executedRecord.Status);
         Assert.Equal(expectedCirculation, executedRecord.Circulation);
-
-        await _network.WaitForMirrorConsensusAsync(executedRecord);
 
         await AssertHg.AssetBalanceAsync(fxAsset, fxAsset.TreasuryAccount, expectedCirculation);
 

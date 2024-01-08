@@ -1,12 +1,4 @@
 ﻿#pragma warning disable CS8892 //Main will not be used as an entry point
-using Google.Protobuf;
-using Hashgraph.Implementation;
-using Hashgraph.Test.Fixtures;
-using System;
-using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-
 namespace Hashgraph.Tests.Docs.Recipe;
 
 [Collection(nameof(NetworkCredentials))]

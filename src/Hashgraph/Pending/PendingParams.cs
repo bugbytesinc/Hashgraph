@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hashgraph;
+﻿namespace Hashgraph;
 
 /// <summary>
 /// Pending (Scheduled) Transaction Parameters.  Used for creating

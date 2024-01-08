@@ -347,8 +347,6 @@ public class GetRecordTests
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         Assert.Equal((long)xferAmount, await fxAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(fxToken.Params.Circulation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Hashgraph;
+﻿namespace Hashgraph;
 
 /// <summary>
 /// Represents a token transfer (Token, Account, Amount)

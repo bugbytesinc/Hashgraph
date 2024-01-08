@@ -78,8 +78,6 @@ public class DeleteAssetTests
         Assert.Equal(fxAsset.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         var asset = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxAsset.Record.Token);
         Assert.NotNull(asset);
         Assert.Equal(fxAsset.Record.Token, asset.Token);
@@ -294,8 +292,6 @@ public class DeleteAssetTests
         Assert.Equal(ResponseCode.AccountIsTreasury, tex.Status);
         Assert.Equal(ResponseCode.AccountIsTreasury, tex.Receipt.Status);
         Assert.StartsWith("Unable to delete account, status: AccountIsTreasury", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         // Confirm Assets still exist in account 2
         Assert.Equal(0, await fxAccount1.GetTokenBalanceAsync(fxAsset));

@@ -20,8 +20,6 @@ public class AssociateAssetTests
         var receipt = await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
         Assert.Equal(0, association.Balance);
@@ -47,8 +45,6 @@ public class AssociateAssetTests
 
             var receipt = await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount.Alias, fxAccount.PrivateKey);
             Assert.Equal(ResponseCode.Success, receipt.Status);
-
-            await _network.WaitForMirrorConsensusAsync(receipt);
 
             var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
             Assert.Equal(fxAsset.Record.Token, association.Token);
@@ -78,8 +74,6 @@ public class AssociateAssetTests
         Assert.Equal(_network.Payer, record.Id.Address);
         Assert.Null(record.ParentTransactionConcensus);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
         Assert.Equal(0, association.Balance);
@@ -101,8 +95,6 @@ public class AssociateAssetTests
             ctx.Signatory = fxAccount.PrivateKey;
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
@@ -135,8 +127,6 @@ public class AssociateAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(fxAccount.Record.Address, record.Id.Address);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
         Assert.Equal(0, association.Balance);
@@ -160,8 +150,6 @@ public class AssociateAssetTests
 
         var receipt = await fxAccount.Client.AssociateTokensAsync(assets, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         Assert.Equal(fxAsset1.Record.Token, association.Token);
@@ -208,8 +196,6 @@ public class AssociateAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         Assert.Equal(fxAsset1.Record.Token, association.Token);
         Assert.Equal(0, association.Balance);
@@ -242,8 +228,6 @@ public class AssociateAssetTests
             ctx.Signatory = fxAccount.PrivateKey;
         });
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         Assert.Equal(fxAsset1.Record.Token, association.Token);
@@ -287,8 +271,6 @@ public class AssociateAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(fxAccount.Record.Address, record.Id.Address);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset1, fxAccount);
         Assert.Equal(fxAsset1.Record.Token, association.Token);
         Assert.Equal(0, association.Balance);
@@ -313,8 +295,6 @@ public class AssociateAssetTests
 
         var receipt = await fxAccount.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount.Record.Address, fxAccount.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         var association = await AssertHg.AssetIsAssociatedAsync(fxAsset, fxAccount);
         Assert.Equal(fxAsset.Record.Token, association.Token);
@@ -453,8 +433,6 @@ public class AssociateAssetTests
 
         var receipt = await fxContract.Client.AssociateTokenAsync(fxAsset.Record.Token, fxContract.ContractRecord.Contract, fxContract.PrivateKey);
         Assert.Equal(ResponseCode.Success, receipt.Status);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         info = await fxContract.GetTokenBalancesAsync();
         var association = info.FirstOrDefault(t => t.Token == fxAsset.Record.Token);

@@ -43,7 +43,7 @@ public class SubmitSegmentedMessageTests
 
         TopicMessage topicMessage = null;
         using var ctx = new CancellationTokenSource();
-        await using var mirror = _network.NewMirror();
+        await using var mirror = _network.NewMirrorGrpcClient();
         try
         {
             var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
@@ -135,7 +135,7 @@ public class SubmitSegmentedMessageTests
 
         try
         {
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, submitParams.Length, 7000);
             if (topicMessages.Length == 0)
             {
@@ -199,7 +199,7 @@ public class SubmitSegmentedMessageTests
 
         try
         {
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var topicMessages = await TopicMessageCapture.CaptureOrTimeoutAsync(mirror, fx.Record.Topic, 1, 7000);
             if (topicMessages.Length == 0)
             {

@@ -21,19 +21,13 @@ public class ResumeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var receipt = await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -59,19 +53,13 @@ public class ResumeTokenTests
             var circulation = fxToken.Params.Circulation;
             var xferAmount = circulation / 3;
 
-            await _network.WaitForMirrorConsensusAsync();
-
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
             var receipt = await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.SuspendPrivateKey);
 
-            await _network.WaitForMirrorConsensusAsync(receipt);
-
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
             receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-            await _network.WaitForMirrorConsensusAsync(receipt);
 
             await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
         }
@@ -88,8 +76,6 @@ public class ResumeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var record = await fxToken.Client.ResumeTokenWithRecordAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
@@ -103,13 +89,9 @@ public class ResumeTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -125,8 +107,6 @@ public class ResumeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var record = await fxToken.Client.ResumeTokenWithRecordAsync(fxToken.Record.Token, fxAccount, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxToken.SuspendPrivateKey));
@@ -140,13 +120,9 @@ public class ResumeTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -163,8 +139,6 @@ public class ResumeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var receipt = await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey, ctx =>
@@ -173,13 +147,9 @@ public class ResumeTokenTests
             ctx.Signatory = fxOther.PrivateKey;
         });
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -195,13 +165,9 @@ public class ResumeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.Equal(0, info.Balance);
@@ -209,8 +175,6 @@ public class ResumeTokenTests
         Assert.False(info.AutoAssociated);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.Equal((long)xferAmount, info.Balance);
@@ -229,25 +193,17 @@ public class ResumeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         receipt = await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
     }
@@ -263,8 +219,6 @@ public class ResumeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -273,8 +227,6 @@ public class ResumeTokenTests
         });
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.StartsWith("Unable to Resume Token, status: InvalidSignature", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.Equal(0, info.Balance);
@@ -301,8 +253,6 @@ public class ResumeTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await _network.WaitForMirrorConsensusAsync();
-
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
@@ -311,8 +261,6 @@ public class ResumeTokenTests
         });
         Assert.Equal(ResponseCode.TokenHasNoFreezeKey, tex.Status);
         Assert.StartsWith("Unable to Resume Token, status: TokenHasNoFreezeKey", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         var info = (await fxAccount.GetTokenBalancesAsync()).FirstOrDefault(t => t.Token == fxToken.Record.Token);
         Assert.Equal(0, info.Balance);
@@ -333,8 +281,6 @@ public class ResumeTokenTests
             fx.Params.GrantKycEndorsement = null;
             fx.Params.InitializeSuspended = true;
         }, fxAccount);
-
-        await _network.WaitForMirrorConsensusAsync();
 
         await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>

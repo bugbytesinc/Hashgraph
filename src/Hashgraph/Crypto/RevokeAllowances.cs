@@ -39,7 +39,7 @@ public partial class Client
     /// <exception cref="TransactionException">If the network rejected the create request as invalid or had missing data.</exception>
     public async Task<TransactionReceipt> RevokeAssetAllowancesAsync(Address token, Address owner, IReadOnlyCollection<long> serialNumbers, Signatory? signatory = null, Action<IContext>? configure = null)
     {
-        return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoDeleteAllowanceTransactionBody(token,owner,serialNumbers), configure, false, signatory).ConfigureAwait(false));
+        return new TransactionReceipt(await ExecuteTransactionAsync(new CryptoDeleteAllowanceTransactionBody(token, owner, serialNumbers), configure, false, signatory).ConfigureAwait(false));
     }
     /// <summary>
     /// Removes approved spending allowance(s) for specific assets (NFTs).

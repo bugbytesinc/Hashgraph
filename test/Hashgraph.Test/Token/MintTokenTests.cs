@@ -45,8 +45,6 @@ public class MintTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         var expectedTreasury = 2 * fxToken.Params.Circulation;
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
@@ -85,8 +83,6 @@ public class MintTokenTests
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
 
         var expectedTreasury = 2 * fxToken.Params.Circulation;
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
@@ -135,8 +131,6 @@ public class MintTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         var expectedTreasury = 2 * fxToken.Params.Circulation;
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
@@ -181,9 +175,6 @@ public class MintTokenTests
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
 
-
-        await _network.WaitForMirrorConsensusAsync(receipt);
-
         var expectedTreasury = 2 * fxToken.Params.Circulation;
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
@@ -207,8 +198,6 @@ public class MintTokenTests
         Assert.Equal(fxToken.TreasuryAccount.Record.Address, xfer.Address);
         Assert.Equal(treasuryMintTransfer, xfer.Amount);
 
-        await _network.WaitForMirrorConsensusAsync(record);
-
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
@@ -228,8 +217,6 @@ public class MintTokenTests
         Assert.Equal("amount", aoe.ParamName);
         Assert.StartsWith("The token amount must be greater than zero.", aoe.Message);
 
-        await _network.WaitForMirrorConsensusAsync(fxToken.Record);
-
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
     }
@@ -248,8 +235,6 @@ public class MintTokenTests
         });
         Assert.Equal(ResponseCode.InvalidSignature, tex.Status);
         Assert.StartsWith("Unable to Mint Token Coins, status: InvalidSignature", tex.Message);
-
-        await _network.WaitForMirrorConsensusAsync(tex);
 
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         Assert.Equal(expectedCirculation, (await fxToken.Client.GetTokenInfoAsync(fxToken)).Circulation);
@@ -285,8 +270,6 @@ public class MintTokenTests
                 {
                     PendingPayer = fxPayer
                 }));
-
-        await _network.WaitForMirrorConsensusAsync(pendingReceipt);
 
         Assert.Equal((long)fxToken.Params.Circulation, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
         // This should be considered a network bug.
@@ -327,11 +310,6 @@ public class MintTokenTests
         Assert.False(info.Deleted);
         Assert.Equal(fxToken.Params.Memo, info.Memo);
         AssertHg.Equal(_network.Ledger, info.Ledger);
-
-        await _network.WaitForMirrorConsensusAsync(record);
-
-        await _network.WaitForMirrorConsensusAsync(record);
-
         Assert.Equal((long)expectedTreasury, await fxToken.TreasuryAccount.GetTokenBalanceAsync(fxToken));
     }
 }

@@ -34,7 +34,7 @@ public sealed partial class ConsensusUpdateTopicTransactionBody : INetworkTransa
 
     internal ConsensusUpdateTopicTransactionBody(UpdateTopicParams updateParameters) : this()
     {
-        TopicID = new TopicID(updateParameters.Topic); 
+        TopicID = new TopicID(updateParameters.Topic);
         if (updateParameters is null)
         {
             throw new ArgumentNullException(nameof(updateParameters), "Topic Update Parameters argument is missing. Please check that it is not null.");

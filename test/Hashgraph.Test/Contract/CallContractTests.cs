@@ -195,7 +195,7 @@ public class CallContractTests
         var deleteReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
         Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
 
-        var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
         {
             await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
@@ -204,8 +204,8 @@ public class CallContractTests
                 FunctionName = "greet",
             });
         });
-        Assert.Equal(ResponseCode.ContractDeleted, tex.Status);
-        Assert.StartsWith("Contract call failed, status: ContractDeleted", tex.Message);
+        Assert.Equal(ResponseCode.ContractDeleted, pex.Status);
+        Assert.StartsWith("Transaction Failed Pre-Check: ContractDeleted", pex.Message);
     }
     [Fact(DisplayName = "Call Contract: Can Not Schedule Call Contract")]
     public async Task CanNotScheduleCallContract()

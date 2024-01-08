@@ -27,7 +27,7 @@ public class SubscribeTopicTests
 
             TopicMessage topicMessage = null;
             using var ctx = new CancellationTokenSource();
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
             {
                 Topic = fx.Record.Topic,
@@ -89,7 +89,7 @@ public class SubscribeTopicTests
 
         TopicMessage topicMessage = null;
         using var ctx = new CancellationTokenSource();
-        await using var mirror = _network.NewMirror();
+        await using var mirror = _network.NewMirrorGrpcClient();
         try
         {
             var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
@@ -141,7 +141,7 @@ public class SubscribeTopicTests
             await Task.Delay(5000); // give the beta net time to sync
 
             var capture = new TopicMessageCapture(1);
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             using var cts = new CancellationTokenSource();
             var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
             {
@@ -176,7 +176,7 @@ public class SubscribeTopicTests
     public async Task MissingChannelWriterRaisesError()
     {
         await using var fx = await TestTopicMessage.CreateAsync(_network);
-        await using var mirror = _network.NewMirror();
+        await using var mirror = _network.NewMirrorGrpcClient();
         var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
         {
             await mirror.SubscribeTopicAsync(new SubscribeTopicParams
@@ -190,7 +190,7 @@ public class SubscribeTopicTests
     [Fact(DisplayName = "Subscribe Topic: Missing Topic Raises Error")]
     public async Task MissingTopicIdRaisesError()
     {
-        await using var mirror = _network.NewMirror();
+        await using var mirror = _network.NewMirrorGrpcClient();
         var capture = new TopicMessageCapture(1);
 
         var ane = await Assert.ThrowsAsync<ArgumentNullException>(async () =>
@@ -222,7 +222,7 @@ public class SubscribeTopicTests
         //[Fact(DisplayName = "Subscribe Topic: Invalid Topic Raises Error")]
         async Task InvalidTopicIdRaisesError()
         {
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var capture = new TopicMessageCapture(1);
             var mex = await Assert.ThrowsAsync<MirrorException>(async () =>
             {
@@ -253,7 +253,7 @@ public class SubscribeTopicTests
         //[Fact(DisplayName = "Subscribe Topic: Non-Existant ID Raises Error")]
         async Task NonExistantTopicIdRaisesError()
         {
-            await using var mirror = _network.NewMirror();
+            await using var mirror = _network.NewMirrorGrpcClient();
             var capture = new TopicMessageCapture(1);
             var me = await Assert.ThrowsAsync<MirrorException>(async () =>
             {
@@ -277,7 +277,7 @@ public class SubscribeTopicTests
 
         using var cts = new CancellationTokenSource();
         var capture = new TopicMessageCapture(1);
-        await using var mirror = _network.NewMirror();
+        await using var mirror = _network.NewMirrorGrpcClient();
         var aoe = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
         {
             cts.CancelAfter(500);
@@ -309,7 +309,7 @@ public class SubscribeTopicTests
         {
             try
             {
-                var captured = await TopicMessageCapture.CaptureOrTimeoutAsync(_network.NewMirror(), fx.TestTopic.Record.Topic, 4, 5000);
+                var captured = await TopicMessageCapture.CaptureOrTimeoutAsync(_network.NewMirrorGrpcClient(), fx.TestTopic.Record.Topic, 4, 5000);
                 if (captured.Length > 2)
                 {
                     break;
@@ -324,7 +324,7 @@ public class SubscribeTopicTests
 
         // Now we can try the real test on the limits.
         var capture = new TopicMessageCapture(10);
-        await using var mirror = _network.NewMirror();
+        await using var mirror = _network.NewMirrorGrpcClient();
         using var cts = new CancellationTokenSource();
         try
         {
