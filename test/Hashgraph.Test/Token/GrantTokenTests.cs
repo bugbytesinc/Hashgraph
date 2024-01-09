@@ -17,15 +17,15 @@ public class GrantTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Grant Tokens: Can Grant Token Coins to Alias Account")]
     public async Task CanGrantTokensToAliasAccountDefect()
@@ -45,15 +45,15 @@ public class GrantTokenTests
             var circulation = fxToken.Params.Circulation;
             var xferAmount = circulation / 3;
 
-            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+            await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
             var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.GrantPrivateKey);
 
-            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+            await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
             receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+            await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
         }
     }
     [Fact(DisplayName = "Grant Tokens: Can Grant Token Coins and get Record")]
@@ -64,7 +64,7 @@ public class GrantTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
         var record = await fxToken.Client.GrantTokenKycWithRecordAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);
@@ -77,11 +77,11 @@ public class GrantTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
     [Fact(DisplayName = "Grant Tokens: Can Grant Token Coins and get Record (Without Extra Signatory)")]
     public async Task CanGrantTokensAndGetRecordWithoutExtraSignatory()
@@ -91,7 +91,7 @@ public class GrantTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
         var record = await fxToken.Client.GrantTokenKycWithRecordAsync(fxToken.Record.Token, fxAccount, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxToken.GrantPrivateKey));
         Assert.Equal(ResponseCode.Success, record.Status);
@@ -104,11 +104,11 @@ public class GrantTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         var receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
     [Fact(DisplayName = "Grant Tokens: Can Grant Token Coins from any Account with Grant Key")]
     public async Task CanGrantTokenCoinsFromWnyAccountWithGrantKey()
@@ -119,7 +119,7 @@ public class GrantTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxToken.Client.GrantTokenKycAsync(fxToken.Record.Token, fxAccount, fxToken.GrantPrivateKey, ctx =>
         {
@@ -127,11 +127,11 @@ public class GrantTokenTests
             ctx.Signatory = fxOther.PrivateKey;
         });
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
 
         receipt = await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Granted);
     }
     [Fact(DisplayName = "Grant Tokens: Grant Token Coins Requires Grant Key Signature")]
     public async Task GrantTokenCoinsRequiresGrantKeySignature()
@@ -154,7 +154,7 @@ public class GrantTokenTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxToken = await TestToken.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.NotApplicable);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.NotApplicable);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -189,7 +189,7 @@ public class GrantTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.TokenKycStatusAsync(fxToken, fxAccount, TokenKycStatus.Revoked);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {

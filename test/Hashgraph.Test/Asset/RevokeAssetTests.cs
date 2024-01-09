@@ -15,17 +15,17 @@ public class RevokeAssetTests
         await using var fxAccount = await TestAccount.CreateAsync(_network);
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset, fxAccount, fxAsset.GrantPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
         await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
         receipt = await fxAsset.Client.RevokeTokenKycAsync(fxAsset.Record.Token, fxAccount, fxAsset.GrantPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -50,17 +50,17 @@ public class RevokeAssetTests
             await using var fxAsset = await TestAsset.CreateAsync(_network);
             await fxAsset.Client.AssociateTokenAsync(fxAsset.Record.Token, fxAccount, fxAccount.PrivateKey);
 
-            await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+            await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
             var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset, fxAccount, fxAsset.GrantPrivateKey);
 
-            await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+            await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
             await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
             receipt = await fxAsset.Client.RevokeTokenKycAsync(fxAsset.Record.Token, fxAccount.Alias, fxAsset.GrantPrivateKey);
 
-            await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+            await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -79,11 +79,11 @@ public class RevokeAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
         var circulation = (ulong)fxAsset.Metadata.Length;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset, fxAccount, fxAsset.GrantPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
         await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
@@ -98,7 +98,7 @@ public class RevokeAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -115,11 +115,11 @@ public class RevokeAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
         var circulation = (ulong)fxAsset.Metadata.Length;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset, fxAccount, fxAsset.GrantPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
         await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
@@ -134,7 +134,7 @@ public class RevokeAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -152,11 +152,11 @@ public class RevokeAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
         var circulation = (ulong)fxAsset.Metadata.Length;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset, fxAccount, fxAsset.GrantPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
         await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
@@ -166,7 +166,7 @@ public class RevokeAssetTests
             ctx.Signatory = fxOther.PrivateKey;
         });
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -183,11 +183,11 @@ public class RevokeAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
         var circulation = (ulong)fxAsset.Metadata.Length;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset, fxAccount, fxAsset.GrantPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
         await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
@@ -199,7 +199,7 @@ public class RevokeAssetTests
         Assert.Equal(ResponseCode.InvalidSignature, tex.Receipt.Status);
         Assert.StartsWith("Unable to Revoke Token, status: InvalidSignature", tex.Message);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
     }
     [Fact(DisplayName = "Revoke Assets: Cannot Revoke Assets When Grant KYC is Turned Off")]
     public async Task CannotRevokeTokenCoinsWhenGrantKycIsTurnedOff()
@@ -208,7 +208,7 @@ public class RevokeAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network, fx => fx.Params.GrantKycEndorsement = null, fxAccount);
         var circulation = (ulong)fxAsset.Metadata.Length;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.NotApplicable);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.NotApplicable);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -226,11 +226,11 @@ public class RevokeAssetTests
         await using var fxAsset = await TestAsset.CreateAsync(_network, null, fxAccount);
         var circulation = (ulong)fxAsset.Metadata.Length;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Revoked);
 
         var receipt = await fxAsset.Client.GrantTokenKycAsync(fxAsset, fxAccount, fxAsset.GrantPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
+        await AssertHg.AssetKycStatusAsync(fxAsset, fxAccount, TokenKycStatus.Granted);
 
         await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 

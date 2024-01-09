@@ -21,11 +21,11 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -34,7 +34,7 @@ public class SuspendTokenTests
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
     [Fact(DisplayName = "NETWORK V0.21.0 UNSUPPORTED: Suspend Tokens: Can Suspend Token Coin Trading with Alias Address")]
     public async Task CanSuspendTokenCoinTradingWithAliasAddressDefect()
@@ -58,11 +58,11 @@ public class SuspendTokenTests
             var circulation = fxToken.Params.Circulation;
             var xferAmount = circulation / 3;
 
-            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+            await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
             var receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount.Alias, fxToken.SuspendPrivateKey);
 
-            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+            await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
             var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
             {
@@ -71,7 +71,7 @@ public class SuspendTokenTests
             Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
             Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
-            await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+            await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
         }
     }
     [Fact(DisplayName = "Suspend Tokens: Can Suspend Token Coin Trading and get Record")]
@@ -86,7 +86,7 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var record = await fxToken.Client.SuspendTokenWithRecordAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);
@@ -99,7 +99,7 @@ public class SuspendTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -108,7 +108,7 @@ public class SuspendTokenTests
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
     [Fact(DisplayName = "Suspend Tokens: Can Suspend Token Coin Trading and get Record (No Extra Signatory)")]
     public async Task CanSuspendTokenCoinTradingAndGetRecordNoExtraSignatory()
@@ -122,7 +122,7 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var record = await fxToken.Client.SuspendTokenWithRecordAsync(fxToken.Record.Token, fxAccount, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxToken.SuspendPrivateKey));
         Assert.Equal(ResponseCode.Success, record.Status);
@@ -135,7 +135,7 @@ public class SuspendTokenTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -144,7 +144,7 @@ public class SuspendTokenTests
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
     [Fact(DisplayName = "Suspend Tokens: Can Suspend Token Coin Trading from Any Account with Suspend Key")]
     public async Task CanSuspendTokenCoinTradingFromAnyAccountWithSuspendKey()
@@ -159,7 +159,7 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey, ctx =>
         {
@@ -167,7 +167,7 @@ public class SuspendTokenTests
             ctx.Signatory = fxOther.PrivateKey;
         });
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -176,7 +176,7 @@ public class SuspendTokenTests
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
     [Fact(DisplayName = "Suspend Tokens: Suspending a Frozen Account is a Noop")]
     public async Task SuspendingAFrozenAccountIsANoop()
@@ -190,7 +190,7 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
 
@@ -213,15 +213,15 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var receipt = await fxToken.Client.ResumeTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
 
         receipt = await fxToken.Client.SuspendTokenAsync(fxToken.Record.Token, fxAccount, fxToken.SuspendPrivateKey);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -230,7 +230,7 @@ public class SuspendTokenTests
         Assert.Equal(ResponseCode.AccountFrozenForToken, tex.Status);
         Assert.StartsWith("Unable to execute transfers, status: AccountFrozenForToken", tex.Message);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Suspended);
     }
     [Fact(DisplayName = "Suspend Tokens: Suspend Token Requires Suspend Key to Sign Transaciton")]
     public async Task SuspendTokenRequiresSuspendKeyToSignTransaciton()
@@ -268,7 +268,7 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -277,11 +277,11 @@ public class SuspendTokenTests
         Assert.Equal(ResponseCode.TokenHasNoFreezeKey, tex.Status);
         Assert.StartsWith("Unable to Suspend Token, status: TokenHasNoFreezeKey", tex.Message);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
 
         await fxToken.Client.TransferTokensAsync(fxToken, fxToken.TreasuryAccount, fxAccount, (long)xferAmount, fxToken.TreasuryAccount);
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.NotApplicable);
     }
     [Fact(DisplayName = "Suspend Tokens: Can Not Schedule Suspend Token Coin Trading")]
     public async Task CanNotScheduleSuspendTokenCoinTrading()
@@ -296,7 +296,7 @@ public class SuspendTokenTests
         var circulation = fxToken.Params.Circulation;
         var xferAmount = circulation / 3;
 
-        await AssertHg.TokenStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.TokenTradableStatusAsync(fxToken, fxAccount, TokenTradableStatus.Tradable);
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
             await fxToken.Client.SuspendTokenAsync(
