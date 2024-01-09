@@ -2,7 +2,7 @@
 
 public static class AssertHg
 {
-    public static async Task TokenStatusAsync(TestToken fxToken, TestAccount fxAccount, TokenKycStatus status)
+    public static async Task TokenKycStatusAsync(TestToken fxToken, TestAccount fxAccount, TokenKycStatus status)
     {
         var tokens = await fxAccount.GetTokenBalancesAsync();
         Assert.NotNull(tokens);
@@ -13,7 +13,7 @@ public static class AssertHg
         Assert.Equal(status, tokenRecord.KycStatus);
     }
 
-    public static async Task TokenStatusAsync(TestToken fxToken, TestAliasAccount fxAccount, TokenKycStatus status)
+    public static async Task TokenKycStatusAsync(TestToken fxToken, TestAliasAccount fxAccount, TokenKycStatus status)
     {
         var tokens = await fxAccount.GetTokenBalancesAsync();
         Assert.NotNull(tokens);
@@ -24,7 +24,7 @@ public static class AssertHg
         Assert.Equal(status, tokenRecord.KycStatus);
     }
 
-    public static async Task AssetStatusAsync(TestAsset fxAsset, TestAccount fxAccount, TokenKycStatus status)
+    public static async Task AssetKycStatusAsync(TestAsset fxAsset, TestAccount fxAccount, TokenKycStatus status)
     {
         var tokens = await fxAccount.GetTokenBalancesAsync();
         Assert.NotNull(tokens);
@@ -35,7 +35,7 @@ public static class AssertHg
         Assert.Equal(status, tokenRecord.KycStatus);
     }
 
-    public static async Task AssetStatusAsync(TestAsset fxAsset, TestAliasAccount fxAccount, TokenKycStatus status)
+    public static async Task AssetKycStatusAsync(TestAsset fxAsset, TestAliasAccount fxAccount, TokenKycStatus status)
     {
         var tokens = await fxAccount.GetTokenBalancesAsync();
         Assert.NotNull(tokens);
@@ -46,7 +46,7 @@ public static class AssertHg
         Assert.Equal(status, tokenRecord.KycStatus);
     }
 
-    public static async Task TokenStatusAsync(TestToken fxToken, TestAccount fxAccount, TokenTradableStatus status)
+    public static async Task TokenTradableStatusAsync(TestToken fxToken, TestAccount fxAccount, TokenTradableStatus status)
     {
         var tokens = await fxAccount.GetTokenBalancesAsync();
         Assert.NotNull(tokens);
@@ -57,7 +57,7 @@ public static class AssertHg
         Assert.Equal(status, tokenRecord.FreezeStatus);
     }
 
-    public static async Task TokenStatusAsync(TestToken fxToken, TestAliasAccount fxAccount, TokenTradableStatus status)
+    public static async Task TokenTradableStatusAsync(TestToken fxToken, TestAliasAccount fxAccount, TokenTradableStatus status)
     {
         var tokens = await fxAccount.GetTokenBalancesAsync();
         Assert.NotNull(tokens);
@@ -68,7 +68,7 @@ public static class AssertHg
         Assert.Equal(status, tokenRecord.FreezeStatus);
     }
 
-    public static async Task AssetStatusAsync(TestAsset fxAsset, TestAccount fxAccount, TokenTradableStatus status)
+    public static async Task AssetTradableStatusAsync(TestAsset fxAsset, TestAccount fxAccount, TokenTradableStatus status)
     {
         var tokens = await fxAccount.GetTokenBalancesAsync();
         Assert.NotNull(tokens);
@@ -79,7 +79,7 @@ public static class AssertHg
         Assert.Equal(status, tokenRecord.FreezeStatus);
     }
 
-    public static async Task AssetStatusAsync(TestAsset fxAsset, TestAliasAccount fxAccount, TokenTradableStatus status)
+    public static async Task AssetTradableStatusAsync(TestAsset fxAsset, TestAliasAccount fxAccount, TokenTradableStatus status)
     {
         var tokens = await fxAccount.GetTokenBalancesAsync();
         Assert.NotNull(tokens);

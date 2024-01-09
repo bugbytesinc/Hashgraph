@@ -122,7 +122,12 @@ public class NetworkCredentials
                     Output.WriteLine($"{DateTime.UtcNow}  QX PYMT  {JsonFormatter.Default.Format(transactionBody)}");
                     Output.WriteLine($"{DateTime.UtcNow}  ├─ SIG → {JsonFormatter.Default.Format(signedTransaction.SigMap)}");
                     Output.WriteLine($"{DateTime.UtcNow}  └─ QRY → {JsonFormatter.Default.Format(query)}");
-                    _latestKnownMutatingTimestamp = ConsensusTimeStamp.MinValue;
+                    // Mutating the payer account balance will not change
+                    // the state of an account under test via a Query.
+                    if (transactionBody.TransactionID.AccountID.AsAddress() != _rootPayer.Account)
+                    {
+                        _latestKnownMutatingTimestamp = ConsensusTimeStamp.MinValue;
+                    }
                 }
             }
             else if (message is Com.Hedera.Mirror.Api.Proto.ConsensusTopicQuery)

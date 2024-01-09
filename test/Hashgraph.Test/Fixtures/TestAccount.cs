@@ -73,16 +73,60 @@ public class TestAccount : IHasCryptoBalance, IHasTokenBalance, IAsyncDisposable
 
     public async Task<long?> GetTokenBalanceAsync(Address token)
     {
-        return await (await Network.GetMirrorRestClientAsync()).GetAccountTokenBalanceAsync(Record.Address, token);
+        var result = await (await Network.GetMirrorRestClientAsync()).GetAccountTokenBalanceAsync(Record.Address, token);
+#pragma warning disable CS0618 // Type or member is obsolete
+        var balance = await Client.GetAccountTokenBalanceAsync(Record.Address, token);
+        if (Network.HapiTokenBalanceQueriesEnabled && result > 0)
+        {
+            Assert.Equal(result, (long)balance);
+        }
+        else
+        {
+            Assert.Equal(0UL, balance);
+        }
+#pragma warning restore CS0618 // Type or member is obsolete
+        return result;
     }
 
     public async Task<TokenHoldingData[]> GetTokenBalancesAsync()
     {
         var list = new List<TokenHoldingData>();
-        await foreach (var info in (await Network.GetMirrorRestClientAsync()).GetAccountTokenHoldingsAsync(Record.Address))
+        await foreach (var record in (await Network.GetMirrorRestClientAsync()).GetAccountTokenHoldingsAsync(Record.Address))
         {
-            list.Add(info);
+            list.Add(record);
         }
+#pragma warning disable CS0618 // Type or member is obsolete
+        var balances = await Client.GetAccountBalancesAsync(Record.Address);
+        if (Network.HapiTokenBalanceQueriesEnabled)
+        {
+            Assert.Equal(balances.Tokens.Count, list.Count);
+            foreach (var item in balances.Tokens)
+            {
+                var match = list.FirstOrDefault(t => t.Token == item.Key);
+                Assert.NotNull(match);
+                Assert.Equal(item.Value.Balance, (ulong)match.Balance);
+            }
+        }
+        else
+        {
+            Assert.Empty(balances.Tokens);
+        }
+        var info = await Client.GetAccountInfoAsync(Record.Address);
+        if (Network.HapiTokenBalanceQueriesEnabled)
+        {
+            Assert.Equal(info.Tokens.Count, list.Count);
+            foreach (var item in info.Tokens)
+            {
+                var match = list.FirstOrDefault(t => t.Token == item.Token);
+                Assert.NotNull(match);
+                Assert.Equal(item.Balance, (ulong)match.Balance);
+            }
+        }
+        else
+        {
+            Assert.Empty(info.Tokens);
+        }
+#pragma warning restore CS0618 // Type or member is obsolete
         return list.ToArray();
     }
 

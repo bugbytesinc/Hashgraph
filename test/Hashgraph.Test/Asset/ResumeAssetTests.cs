@@ -19,15 +19,15 @@ public class ResumeAssetTests
             fx.Params.InitializeSuspended = true;
         }, fxAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var receipt = await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
         receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
     [Fact(DisplayName = "Resume Assets: Can Resume Asset Coin Trading and get Record")]
     public async Task CanReumeAssetCoinTradingAndGetRecord()
@@ -41,7 +41,7 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var record = await fxAsset.Client.ResumeTokenWithRecordAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
         Assert.Equal(ResponseCode.Success, record.Status);
@@ -54,11 +54,11 @@ public class ResumeAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
     [Fact(DisplayName = "Resume Assets: Can Resume Asset Coin Trading and get Record (No Extra Signatory)")]
     public async Task CanReumeAssetCoinTradingAndGetRecordNoExtraSignatory()
@@ -72,7 +72,7 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var record = await fxAsset.Client.ResumeTokenWithRecordAsync(fxAsset.Record.Token, fxAccount, ctx => ctx.Signatory = new Signatory(_network.Signatory, fxAsset.SuspendPrivateKey));
         Assert.Equal(ResponseCode.Success, record.Status);
@@ -85,11 +85,11 @@ public class ResumeAssetTests
         Assert.InRange(record.Fee, 0UL, ulong.MaxValue);
         Assert.Equal(_network.Payer, record.Id.Address);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
     [Fact(DisplayName = "Resume Assets: Can Reume Asset Coin Trading from Any Account with Suspend Key")]
     public async Task CanReumeAssetCoinTradingFromAnyAccountWithSuspendKey()
@@ -104,7 +104,7 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var receipt = await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey, ctx =>
         {
@@ -112,11 +112,11 @@ public class ResumeAssetTests
             ctx.Signatory = fxOther.PrivateKey;
         });
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
         receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
     [Fact(DisplayName = "Resume Assets: Resuming an Unfrozen Account is Noop")]
     public async Task ResumingAnUnfrozenAccountIsNoop()
@@ -129,7 +129,7 @@ public class ResumeAssetTests
         }, fxAccount);
         var circulation = (ulong)fxAsset.Metadata.Length;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
 
@@ -157,19 +157,19 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
         var receipt = await fxAsset.Client.SuspendTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         receipt = await fxAsset.Client.ResumeTokenAsync(fxAsset.Record.Token, fxAccount, fxAsset.SuspendPrivateKey);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
 
         receipt = await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Tradable);
     }
     [Fact(DisplayName = "Resume Assets: Resume Asset Requires Suspend Key to Sign Transaction")]
     public async Task ResumeAssetRequiresSuspendKeyToSignTransaction()
@@ -183,7 +183,7 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -219,7 +219,7 @@ public class ResumeAssetTests
         var circulation = fxAsset.Metadata.Length;
         var xferAmount = circulation / 3;
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.NotApplicable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.NotApplicable);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {
@@ -236,7 +236,7 @@ public class ResumeAssetTests
 
         await fxAsset.Client.TransferAssetAsync(new Asset(fxAsset, 1), fxAsset.TreasuryAccount, fxAccount, fxAsset.TreasuryAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.NotApplicable);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.NotApplicable);
     }
     [Fact(DisplayName = "Resume Assets: Can Not Schedule Reume Asset Coin Trading")]
     public async Task CanNotScheduleReumeAssetCoinTrading()
@@ -249,7 +249,7 @@ public class ResumeAssetTests
             fx.Params.InitializeSuspended = true;
         }, fxAccount);
 
-        await AssertHg.AssetStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
+        await AssertHg.AssetTradableStatusAsync(fxAsset, fxAccount, TokenTradableStatus.Suspended);
 
         var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
         {

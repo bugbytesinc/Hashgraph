@@ -79,10 +79,42 @@ public class TestAliasAccount : IHasCryptoBalance, IHasTokenBalance, IAsyncDispo
     public async Task<TokenHoldingData[]> GetTokenBalancesAsync()
     {
         var list = new List<TokenHoldingData>();
-        await foreach (var info in (await Network.GetMirrorRestClientAsync()).GetAccountTokenHoldingsAsync(CreateRecord.Address))
+        await foreach (var record in (await Network.GetMirrorRestClientAsync()).GetAccountTokenHoldingsAsync(CreateRecord.Address))
         {
-            list.Add(info);
+            list.Add(record);
         }
+#pragma warning disable CS0618 // Type or member is obsolete
+        var balances = await Client.GetAccountBalancesAsync(CreateRecord.Address);
+        if (Network.HapiTokenBalanceQueriesEnabled)
+        {
+            Assert.Equal(balances.Tokens.Count, list.Count);
+            foreach (var item in balances.Tokens)
+            {
+                var match = list.FirstOrDefault(t => t.Token == item.Key);
+                Assert.NotNull(match);
+                Assert.Equal(item.Value.Balance, (ulong)match.Balance);
+            }
+        }
+        else
+        {
+            Assert.Empty(balances.Tokens);
+        }
+        var info = await Client.GetAccountInfoAsync(CreateRecord.Address);
+        if (Network.HapiTokenBalanceQueriesEnabled)
+        {
+            Assert.Equal(info.Tokens.Count, list.Count);
+            foreach (var item in info.Tokens)
+            {
+                var match = list.FirstOrDefault(t => t.Token == item.Token);
+                Assert.NotNull(match);
+                Assert.Equal(item.Balance, (ulong)match.Balance);
+            }
+        }
+        else
+        {
+            Assert.Empty(info.Tokens);
+        }
+#pragma warning restore CS0618 // Type or member is obsolete
         return list.ToArray();
     }
 
