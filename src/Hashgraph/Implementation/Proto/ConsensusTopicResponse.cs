@@ -2,7 +2,7 @@
 
 public sealed partial class ConsensusTopicResponse
 {
-    public Hashgraph.TopicMessage ToTopicMessage(Hashgraph.Address topic)
+    internal Hashgraph.TopicMessage ToTopicMessage(Hashgraph.Address topic)
     {
         return new Hashgraph.TopicMessage
         {

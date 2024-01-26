@@ -20,7 +20,7 @@ namespace Hashgraph;
 /// underlying protobuf communication layer but does provide hooks 
 /// allowing advanced low-level manipulation of messages if necessary.
 /// </remarks>
-public  partial class MirrorGrpcClient : IAsyncDisposable
+public sealed partial class MirrorGrpcClient : IAsyncDisposable
 {
     /// <summary>
     /// The context (stack) keeps a memory of configuration and preferences 
@@ -148,17 +148,7 @@ public  partial class MirrorGrpcClient : IAsyncDisposable
         configure?.Invoke(context);
         return context;
     }
-
-    public GrpcChannel GetChannel(Action<IMirrorContext>? configure)
-    {
-        var context = new MirrorContextStack(_context);
-        configure?.Invoke(context);
-        if (context.Uri is null)
-        {
-            throw new InvalidOperationException("The Mirror Node Url has not been configured. Please check that 'Url' is set in the Mirror context.");
-        }
-        return context.GetChannel();
-    }
+    
     /// <summary>
     /// .NET Asynchronous dispose method.
     /// </summary>

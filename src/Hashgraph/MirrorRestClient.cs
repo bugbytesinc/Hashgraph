@@ -10,11 +10,10 @@ using System.Threading.Tasks;
 using System.Web;
 
 namespace Hashgraph;
-
 /// <summary>
 /// The Mirror Node REST Client.
 /// </summary>
-public class MirrorRestClient
+public partial class MirrorRestClient
 {
     /// <summary>
     /// The base REST endpoint for the mirror node.
