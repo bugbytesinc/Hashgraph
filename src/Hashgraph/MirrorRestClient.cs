@@ -13,7 +13,7 @@ namespace Hashgraph;
 /// <summary>
 /// The Mirror Node REST Client.
 /// </summary>
-public partial class MirrorRestClient
+public partial class MirrorRestClient : IMirrorRestClient
 {
     /// <summary>
     /// The base REST endpoint for the mirror node.
@@ -27,12 +27,20 @@ public partial class MirrorRestClient
     /// The remote mirror node endpoint url.
     /// </summary>
     public string EndpointUrl => _endpointUrl;
+
+    public MirrorRestClient(HttpClient httpClient)
+    {
+        _client = httpClient;
+        _endpointUrl = httpClient.BaseAddress?.ToString() ??
+                       throw new InvalidOperationException("HttpClient must have a base address set.");
+    }
     /// <summary>
     /// Constructor, requires the mirror node’s base REST API endpoint url.
     /// </summary>
     /// <param name="endpointUrl">
     /// The mirror node’s base REST API endpoint url.
     /// </param>
+    [Obsolete("Use the constructor that takes an HttpClient instead. or inject the Interface instead of the implementation.")]
     public MirrorRestClient(string endpointUrl)
     {
         _endpointUrl = endpointUrl.EndsWith('/') ? endpointUrl[..^1] : endpointUrl;
@@ -295,7 +303,7 @@ public partial class MirrorRestClient
         var fullPath = "/api/v1/" + path;
         do
         {
-            var payload = await _client.GetFromJsonAsync<TList>(_endpointUrl + fullPath);
+            var payload = await _client.GetFromJsonAsync<TList>(fullPath);
             if (payload is not null)
             {
                 foreach (var item in payload.GetItems())
@@ -325,7 +333,7 @@ public partial class MirrorRestClient
     /// </summary>
     private async Task<TItem?> GetSingleItemAsync<TItem>(string path)
     {
-        return await _client.GetFromJsonAsync<TItem>($"{_endpointUrl}/api/v1/{path}");
+        return await _client.GetFromJsonAsync<TItem>($"/api/v1/{path}");
     }
     /// <summary>
     /// Helper function to generate the root path to a mirror node query
