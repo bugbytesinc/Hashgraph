@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hashgraph", "src\Hashgraph\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hashgraph.Test", "test\Hashgraph.Test\Hashgraph.Test.csproj", "{B15808B7-09DE-4048-9573-A682946FBA5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hashgraph.Extensions", "src\Hashgraph.Extensions\Hashgraph.Extensions.csproj", "{3B93D980-2C5E-4E3A-83AF-89E57C30F467}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{B15808B7-09DE-4048-9573-A682946FBA5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B15808B7-09DE-4048-9573-A682946FBA5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B15808B7-09DE-4048-9573-A682946FBA5D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B93D980-2C5E-4E3A-83AF-89E57C30F467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B93D980-2C5E-4E3A-83AF-89E57C30F467}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B93D980-2C5E-4E3A-83AF-89E57C30F467}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3B93D980-2C5E-4E3A-83AF-89E57C30F467}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

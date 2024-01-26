@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Hashgraph.Extensions\Hashgraph.Extensions.csproj" />
     <ProjectReference Include="..\..\src\Hashgraph\Hashgraph.csproj" />
   </ItemGroup>
 
