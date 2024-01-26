@@ -4,13 +4,13 @@ namespace Proto;
 
 public sealed partial class Timestamp
 {
-    public Timestamp(ConsensusTimeStamp consensusTimeStamp) : this()
+    internal Timestamp(ConsensusTimeStamp consensusTimeStamp) : this()
     {
         var seconds = decimal.Truncate(consensusTimeStamp.Seconds);
         Seconds = (long)seconds;
         Nanos = (int)decimal.Multiply(decimal.Subtract(consensusTimeStamp.Seconds, seconds), 1000000000m);
     }
-    public ConsensusTimeStamp ToConsensusTimeStamp()
+    internal ConsensusTimeStamp ToConsensusTimeStamp()
     {
         return new ConsensusTimeStamp(Seconds, Nanos);
     }

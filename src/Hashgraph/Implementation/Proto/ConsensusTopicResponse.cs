@@ -14,17 +14,4 @@ public sealed partial class ConsensusTopicResponse
             SegmentInfo = ChunkInfo?.ToMessageSegmentInfo()
         };
     }
-    
-    public Hashgraph.TopicMessage<T> ToTopicMessage<T>(Hashgraph.Address topic)
-    {
-        return new Hashgraph.TopicMessage<T>
-        {
-            Topic = topic,
-            Concensus = ConsensusTimestamp.ToConsensusTimeStamp(),
-            Messsage = Message.Memory,
-            RunningHash = RunningHash.Memory,
-            SequenceNumber = SequenceNumber,
-            SegmentInfo = ChunkInfo?.ToMessageSegmentInfo()
-        };
-    }
 }

@@ -5,7 +5,7 @@ namespace Proto;
 
 public sealed partial class TopicID
 {
-    public TopicID(Address topic) : this()
+    internal TopicID(Address topic) : this()
     {
         if (topic is null)
         {
