@@ -42,22 +42,9 @@ public partial class MirrorGrpcClient
         {
             throw new InvalidOperationException("The Mirror Node Urul has not been configured. Please check that 'Url' is set in the Mirror context.");
         }
-        var query = new ConsensusTopicQuery()
-        {
-            TopicID = new Proto.TopicID(subscribeParameters.Topic),
-            Limit = subscribeParameters.MaxCount
-        };
-        if (subscribeParameters.Starting.HasValue)
-        {
-            query.ConsensusStartTime = new Proto.Timestamp(subscribeParameters.Starting.Value);
-        }
-        if (subscribeParameters.Ending.HasValue)
-        {
-            query.ConsensusEndTime = new Proto.Timestamp(subscribeParameters.Ending.Value);
-        }
+        var query = CreateConsensusTopicQuery(subscribeParameters);
         using var cancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(subscribeParameters.CancellationToken);
         context.InstantiateOnSendingRequestHandler()(query);
-        
         
         var policy = Policy
             .Handle<RpcException>(ex => ex.StatusCode == StatusCode.Unavailable)
@@ -86,10 +73,6 @@ public partial class MirrorGrpcClient
         {
             throw new MirrorException($"The address exists, but is not a topic.", MirrorExceptionCode.InvalidTopicAddress, ex);
         }
-        catch (RpcException ex) when (ex.StatusCode == StatusCode.Unavailable)
-        {
-            throw new MirrorException($"The Mirror node is not avaliable at this time.", MirrorExceptionCode.Unavailable, ex);
-        }
         catch (RpcException ex)
         {
             throw new MirrorException($"Stream Terminated with Error: {ex.StatusCode}", MirrorExceptionCode.CommunicationError, ex);
@@ -111,6 +94,25 @@ public partial class MirrorGrpcClient
                 Console.WriteLine($"Received Message from Topic: {subscribeParameters.Topic} with consensus timestamp: {stream.Current.ConsensusTimestamp}");
             }
         }
+    }
+
+    private static ConsensusTopicQuery CreateConsensusTopicQuery(SubscribeTopicParams subscribeParameters)
+    {
+        var query = new ConsensusTopicQuery()
+        {
+            TopicID = new Proto.TopicID(subscribeParameters.Topic),
+            Limit = subscribeParameters.MaxCount
+        };
+        if (subscribeParameters.Starting.HasValue)
+        {
+            query.ConsensusStartTime = new Proto.Timestamp(subscribeParameters.Starting.Value);
+        }
+        if (subscribeParameters.Ending.HasValue)
+        {
+            query.ConsensusEndTime = new Proto.Timestamp(subscribeParameters.Ending.Value);
+        }
+
+        return query;
     }
 
     private static void ValidateInputs(SubscribeTopicParams subscribeParameters)
