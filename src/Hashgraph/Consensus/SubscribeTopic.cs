@@ -56,10 +56,8 @@ public partial class MirrorGrpcClient
                 });
         try
         {
-            await policy.ExecuteAsync(async () =>
-            {
-                await ProcessResultStreamAsync(query);
-            });
+            await policy.ExecuteAsync(ProcessResultStreamAsync, cancelTokenSource.Token);
+           
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
         {
@@ -78,10 +76,10 @@ public partial class MirrorGrpcClient
             throw new MirrorException($"Stream Terminated with Error: {ex.StatusCode}", MirrorExceptionCode.CommunicationError, ex);
         }
 
-        async Task ProcessResultStreamAsync(ConsensusTopicQuery query)
+        async Task ProcessResultStreamAsync(CancellationToken cancellationToken)
         {
             var service = new ConsensusService.ConsensusServiceClient(_context.GetChannel());
-            var options = new CallOptions(cancellationToken: cancelTokenSource.Token);
+            var options = new CallOptions(cancellationToken: cancellationToken);
             context.InstantiateOnSendingRequestHandler()(query);
             using var response = service.subscribeTopic(query, options);
 
@@ -91,7 +89,6 @@ public partial class MirrorGrpcClient
                 var message = stream.Current.ToTopicMessage(subscribeParameters.Topic); // Can be improved
                 subscribeParameters.SubscribeMethod?.Invoke(message);
                 query.ConsensusStartTime = stream.Current.ConsensusTimestamp;
-                Console.WriteLine($"Received Message from Topic: {subscribeParameters.Topic} with consensus timestamp: {stream.Current.ConsensusTimestamp}");
             }
         }
     }
