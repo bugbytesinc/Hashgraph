@@ -37,17 +37,17 @@ public class NetworkCredentials
             .AddEnvironmentVariables()
             .AddUserSecrets<NetworkCredentials>(true)
             .Build();
-        var mirrorRestUrl = _configuration["mirrorRestUrl"];
+        var mirrorRestUrl = "https://testnet.mirrornode.hedera.com/";
         if (string.IsNullOrWhiteSpace(mirrorRestUrl))
         {
             throw new Exception("Mirror REST URL is missing from configuration [mirrorRestUrl]");
         }
-        _mirrorGrpcUrl = _configuration["mirrorGrpcUrl"];
+        _mirrorGrpcUrl = "https://testnet.mirrornode.hedera.com:443";
         if (string.IsNullOrWhiteSpace(_mirrorGrpcUrl))
         {
             throw new Exception("Mirror GRPC URL is missing from configuration [mirrorGrpcUrl]");
         }
-        var payerPrivateKey = _configuration["payerPrivateKey"];
+        var payerPrivateKey = "302e020100300506032b657004220420d541b592535a10540cd2ae87d8e7a2e5c1a54dac1941a872b12a5dd9d62f0f9e";
         if (string.IsNullOrWhiteSpace(payerPrivateKey))
         {
             throw new Exception("Payer Account Private Key is missing from configuration [payerPrivateKey]");
