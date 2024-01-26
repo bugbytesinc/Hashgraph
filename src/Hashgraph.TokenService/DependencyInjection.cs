@@ -1,27 +1,29 @@
-using System;
+using Hashgraph.Extensions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hashgraph;
+namespace Hashgraph.Extensions;
 
 public static class DependencyInjection
 {
-    public static void AddHashgraph(this IServiceCollection services, HederaNetwork hederaNetwork)
+    /// <summary>
+    /// Registers the Hashgraph services with the DI container.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="hederaNetwork"> passing null will result in using the mainnet</param>
+    public static void AddConsensusServices(this IServiceCollection services, HederaNetwork hederaNetwork = HederaNetwork.Testnet)
     {
-        services.AddHttpClient<IMirrorRestClient, MirrorRestClient>(
-            client =>
+        services.AddScoped<IMirrorGrpcClient>((_) => 
+            new MirrorGrpcClient(ctx =>
             {
-                client.BaseAddress = new Uri(GetMirrorRestUrl(hederaNetwork));
-            }
+                ctx.Uri = new Uri(GetMirrorNodeGrpcUrl(hederaNetwork));
+            })
         );
-
-        services.AddScoped<IMirrorGrpcClient>((_) => new MirrorGrpcClient(ctx =>
-        {
-            ctx.Uri = new Uri(GetMirrorNodeGrpcUrl(hederaNetwork));
-            // ctx.OnSendingRequest = OutputSendingRequest; //TODO: Need to think about this
-        }));
+        services.AddScoped<IMirrorRestClient>((_) => 
+            new MirrorRestClient(GetMirrorRestUrl(hederaNetwork))
+        );
+        services.AddScoped<IConsensusService, ConsensusService>();
     }
     
-    //TODO: double check the urls
     private static string GetMirrorRestUrl(HederaNetwork hederaNetwork) =>
         hederaNetwork switch
         {
@@ -37,12 +39,4 @@ public static class DependencyInjection
             HederaNetwork.Previewnet => "previewnet.mirrornode.hedera.com:5600",
             _ => "mainnet.mirrornode.hedera.com:5600"
         };
-}
-
-//TODO: Move to a different file
-public enum HederaNetwork
-{
-    Mainnet,
-    Testnet,
-    Previewnet
 }
