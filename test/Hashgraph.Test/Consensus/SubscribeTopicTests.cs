@@ -32,11 +32,12 @@ public class SubscribeTopicTests
             {
                 Topic = fx.Record.Topic,
                 Starting = DateTime.UtcNow.AddHours(-1),
-                MessageWriter = new TopicMessageWriterAdapter(m =>
+                SubscribeMethod = (message) =>
                 {
-                    topicMessage = m;
+                    topicMessage = message;
                     ctx.Cancel();
-                }),
+                    return Task.CompletedTask;
+                },
                 CancellationToken = ctx.Token
             });
 
@@ -96,11 +97,12 @@ public class SubscribeTopicTests
             {
                 Topic = fx.TestTopic.Record.Topic,
                 Starting = DateTime.UtcNow.AddHours(-1),
-                MessageWriter = new TopicMessageWriterAdapter(m =>
+                SubscribeMethod = (message) =>
                 {
-                    topicMessage = m;
+                    topicMessage = message;
                     ctx.Cancel();
-                }),
+                    return Task.CompletedTask;
+                },
                 CancellationToken = ctx.Token
             });
 
@@ -127,6 +129,7 @@ public class SubscribeTopicTests
             return;
         }
     }
+
     [Fact(DisplayName = "Subscribe Topic: Can Capture Topic Test Message from Stream")]
     public async Task CanCaptureATestTopic()
     {
@@ -140,25 +143,29 @@ public class SubscribeTopicTests
 
             await Task.Delay(5000); // give the beta net time to sync
 
-            var capture = new TopicMessageCapture(1);
+            var captureList = new List<TopicMessage>(1);
             await using var mirror = _network.NewMirrorGrpcClient();
             using var cts = new CancellationTokenSource();
             var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
             {
                 Topic = fx.TestTopic.Record.Topic,
                 Starting = DateTime.UtcNow.AddHours(-1),
-                MessageWriter = capture,
+                SubscribeMethod = (message) =>
+                {
+                    captureList.Add(message);
+                    return Task.CompletedTask;
+                },
                 CancellationToken = cts.Token
             });
             cts.CancelAfter(500);
             await subscribeTask;
-            if (capture.CapturedList.Count == 0)
+            if (captureList.Count == 0)
             {
                 _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
             }
             else
             {
-                var message = capture.CapturedList[0];
+                var message = captureList[0];
                 Assert.Equal(fx.TestTopic.Record.Topic, message.Topic);
                 Assert.Equal(1ul, message.SequenceNumber);
                 Assert.Equal(fx.Record.RunningHash.ToArray(), message.RunningHash.ToArray());
@@ -173,7 +180,7 @@ public class SubscribeTopicTests
         }
     }
     [Fact(DisplayName = "Subscribe Topic: Missing Channel Writer Raises Error")]
-    public async Task MissingChannelWriterRaisesError()
+    public async Task MissingSubscribeMethodRaisesError()
     {
         await using var fx = await TestTopicMessage.CreateAsync(_network);
         await using var mirror = _network.NewMirrorGrpcClient();
@@ -184,8 +191,8 @@ public class SubscribeTopicTests
                 Topic = fx.TestTopic.Record.Topic
             });
         });
-        Assert.Equal("MessageWriter", ane.ParamName);
-        Assert.StartsWith("The destination channel writer missing. Please check that it is not null.", ane.Message);
+        Assert.Equal("SubscribeMethod", ane.ParamName);
+        Assert.StartsWith("The destination method missing. Please check that it is not null.", ane.Message);
     }
     [Fact(DisplayName = "Subscribe Topic: Missing Topic Raises Error")]
     public async Task MissingTopicIdRaisesError()
@@ -276,7 +283,7 @@ public class SubscribeTopicTests
         await Task.Delay(5000); // give the beta net time to sync
 
         using var cts = new CancellationTokenSource();
-        var capture = new TopicMessageCapture(1);
+        List<TopicMessage> captured = new();
         await using var mirror = _network.NewMirrorGrpcClient();
         var aoe = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
         {
@@ -286,13 +293,17 @@ public class SubscribeTopicTests
                 Topic = fx.TestTopic.Record.Topic,
                 Starting = DateTime.UtcNow.AddDays(-1),
                 Ending = DateTime.UtcNow.AddDays(-2),
-                MessageWriter = capture,
+                SubscribeMethod = (message) =>
+                {
+                    captured.Add(message);
+                    return Task.CompletedTask;
+                },
                 CancellationToken = cts.Token
             });
         });
         Assert.Equal("Ending", aoe.ParamName);
         Assert.StartsWith("The ending filter date is less than the starting filter date, no records can be returned.", aoe.Message);
-        Assert.Empty(capture.CapturedList);
+        Assert.Empty(captured);
     }
     [Fact(DisplayName = "Subscribe Topic: Return Limit is Enforced")]
     public async Task ReturnLimitIsEnforced()
@@ -323,7 +334,7 @@ public class SubscribeTopicTests
         }
 
         // Now we can try the real test on the limits.
-        var capture = new TopicMessageCapture(10);
+        List<TopicMessage> capturedList = new();
         await using var mirror = _network.NewMirrorGrpcClient();
         using var cts = new CancellationTokenSource();
         try
@@ -332,19 +343,23 @@ public class SubscribeTopicTests
             {
                 Topic = fx.TestTopic.Record.Topic,
                 Starting = DateTime.UtcNow.AddHours(-1),
-                MessageWriter = capture,
+                SubscribeMethod = (message) =>
+                {
+                    capturedList.Add(message);
+                    return Task.CompletedTask;
+                },
                 CancellationToken = cts.Token,
                 MaxCount = 2
             });
             cts.CancelAfter(10000);
             await subscribeTask;
-            if (capture.CapturedList.Count == 0)
+            if (capturedList.Count == 0)
             {
                 _network.Output?.WriteLine("INDETERMINATE TEST - MIRROR NODE DID NOT RETURN TOPIC IN ALLOWED TIME");
             }
             else
             {
-                Assert.Equal(2, capture.CapturedList.Count);
+                Assert.Equal(2, capturedList.Count);
             }
         }
         catch (MirrorException mex) when (mex.Code == MirrorExceptionCode.TopicNotFound)

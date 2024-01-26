@@ -37,12 +37,12 @@ public class NetworkCredentials
             .AddEnvironmentVariables()
             .AddUserSecrets<NetworkCredentials>(true)
             .Build();
-        var mirrorRestUrl = "https://testnet.mirrornode.hedera.com/";
+        var mirrorRestUrl = _configuration["mirrorRestUrl"];
         if (string.IsNullOrWhiteSpace(mirrorRestUrl))
         {
             throw new Exception("Mirror REST URL is missing from configuration [mirrorRestUrl]");
         }
-        _mirrorGrpcUrl = "https://testnet.mirrornode.hedera.com:443";
+        _mirrorGrpcUrl = _configuration["mirrorGrpcUrl"];
         if (string.IsNullOrWhiteSpace(_mirrorGrpcUrl))
         {
             throw new Exception("Mirror GRPC URL is missing from configuration [mirrorGrpcUrl]");
