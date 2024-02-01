@@ -1,4 +1,5 @@
-﻿namespace Hashgraph.Tests;
+﻿
+namespace Hashgraph.Tests;
 
 public class ConsensusTimeStampTests
 {
