@@ -188,24 +188,33 @@ public class CallContractTests
         Assert.Equal(0, getRecord.CallResult.PayableAmount);
         Assert.Equal(Address.None, getRecord.CallResult.MessageSender);
     }
-    [Fact(DisplayName = "Call Contract: Calling Deleted Contract Raises Error")]
-    public async Task CallingDeletedContractRaisesError()
+    [Fact(DisplayName = "NETWORK 0.46 DEFECT: Call Contract: Calling Deleted Contract Raises Error")]
+    public async Task CallingDeletedContractRaisesErrorFails()
     {
-        await using var fx = await GreetingContract.CreateAsync(_network);
-        var deleteReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
-        Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
+        // There is a regression in the nework that allows for calling of a contract
+        // after it has been deleted.        
+        var testFailException = (await Assert.ThrowsAsync<Xunit.Sdk.ThrowsException>(CallingDeletedContractRaisesError));
+        Assert.StartsWith("Assert.Throws() Failure: No exception was", testFailException.Message);
 
-        var tex = await Assert.ThrowsAsync<TransactionException>(async () =>
+        //[Fact(DisplayName = "Call Contract: Calling Deleted Contract Raises Error")]
+        async Task CallingDeletedContractRaisesError()
         {
-            await fx.Client.CallContractWithRecordAsync(new CallContractParams
+            await using var fx = await GreetingContract.CreateAsync(_network);
+            var deleteReceipt = await fx.Client.DeleteContractAsync(fx.ContractRecord.Contract, _network.Payer, fx.PrivateKey);
+            Assert.Equal(ResponseCode.Success, deleteReceipt.Status);
+
+            var pex = await Assert.ThrowsAsync<PrecheckException>(async () =>
             {
-                Contract = fx.ContractRecord.Contract,
-                Gas = 33000,
-                FunctionName = "greet",
+                await fx.Client.CallContractWithRecordAsync(new CallContractParams
+                {
+                    Contract = fx.ContractRecord.Contract,
+                    Gas = 53000,
+                    FunctionName = "greet",
+                });
             });
-        });
-        Assert.Equal(ResponseCode.ContractDeleted, tex.Status);
-        Assert.StartsWith("Contract call failed, status: ContractDeleted", tex.Message);
+            Assert.Equal(ResponseCode.ContractDeleted, pex.Status);
+            Assert.StartsWith("Transaction Failed Pre-Check: ContractDeleted", pex.Message);
+        }
     }
     [Fact(DisplayName = "Call Contract: Can Not Schedule Call Contract")]
     public async Task CanNotScheduleCallContract()
