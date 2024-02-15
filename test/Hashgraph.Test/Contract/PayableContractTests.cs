@@ -187,7 +187,7 @@ public class PayableContractTests
         var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 30000,
+            Gas = 45000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceBefore);
@@ -208,19 +208,19 @@ public class PayableContractTests
             await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = 30000,
+                Gas = 95000,
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fxAccount.Record.Address }
             });
         });
-        Assert.Equal(ResponseCode.InvalidSolidityAddress, tex.Status);
-        Assert.StartsWith("Contract call failed, status: InvalidSolidityAddress", tex.Message);
+        Assert.Equal(ResponseCode.InvalidAliasKey, tex.Status);
+        Assert.StartsWith("Contract call failed, status: InvalidAliasKey", tex.Message);
 
         // Confirm that the balance on the contract remained unchanged.
         var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 30000,
+            Gas = 45000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceAfter);
@@ -245,13 +245,13 @@ public class PayableContractTests
             await fx.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fx.ContractRecord.Contract,
-                Gas = 40000,
+                Gas = 65000,
                 FunctionName = "send_to",
                 FunctionArgs = new[] { new Address(0, 0, long.MaxValue) }
             });
         });
-        Assert.Equal(ResponseCode.InvalidSolidityAddress, tex.Status);
-        Assert.StartsWith("Contract call failed, status: InvalidSolidityAddress", tex.Message);
+        Assert.Equal(ResponseCode.InvalidAliasKey, tex.Status);
+        Assert.StartsWith("Contract call failed, status: InvalidAliasKey", tex.Message);
     }
     [Fact(DisplayName = "Payable Contract: Attempts to Misplace hBars Should Fail")]
     public async Task AttemptsToMisplaceHbarsThruPayableContractShouldFail()
@@ -271,7 +271,7 @@ public class PayableContractTests
         var contractBalanceBefore = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
         {
             Contract = fxContract.ContractRecord.Contract,
-            Gas = 30000,
+            Gas = 40000,
             FunctionName = "get_balance"
         });
         Assert.NotNull(contractBalanceBefore);
@@ -289,13 +289,13 @@ public class PayableContractTests
             await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
             {
                 Contract = fxContract.ContractRecord.Contract,
-                Gas = 30000,
+                Gas = 70000,
                 FunctionName = "send_to",
                 FunctionArgs = new[] { fxAccount1.Record.Address }
             });
         });
-        Assert.Equal(ResponseCode.InvalidSolidityAddress, tex.Status);
-        Assert.StartsWith("Contract call failed, status: InvalidSolidityAddress", tex.Message);
+        Assert.Equal(ResponseCode.InvalidAliasKey, tex.Status);
+        Assert.StartsWith("Contract call failed, status: InvalidAliasKey", tex.Message);
 
         // Confirm that the balance on the contract did not change.
         var contractBalanceAfter = await fxContract.Client.CallContractWithRecordAsync(new CallContractParams
