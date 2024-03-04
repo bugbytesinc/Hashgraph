@@ -51,19 +51,24 @@ public sealed class TopicMessageCapture
         return adapter.MessageWriter;
     }
 
-    public static async Task<TopicMessage[]> CaptureOrTimeoutAsync(MirrorGrpcClient mirror, Address topic, int expectedCount, int timeoutInMiliseconds)
+    public static async Task<TopicMessage[]> CaptureOrTimeoutAsync(IMirrorGrpcClient mirror, Address topic, int expectedCount, int timeoutInMiliseconds)
     {
         using var cts = new CancellationTokenSource();
-        var capture = new TopicMessageCapture(expectedCount);
+        List<TopicMessage> capture = new ();
         var subscribeTask = mirror.SubscribeTopicAsync(new SubscribeTopicParams
         {
             Topic = topic,
             Starting = DateTime.UtcNow.AddHours(-1),
-            MessageWriter = capture,
+            SubscribeMethod = (message) =>
+            {
+                capture.Add(message);
+                return Task.CompletedTask;
+            },
+            MaxCount = 4,
             CancellationToken = cts.Token
         });
         cts.CancelAfter(timeoutInMiliseconds);
         await subscribeTask;
-        return capture.CapturedList.ToArray();
+        return capture.ToArray();
     }
 }

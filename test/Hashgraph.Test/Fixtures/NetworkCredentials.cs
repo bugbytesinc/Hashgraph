@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Hashgraph.Test.Fixtures;
@@ -7,7 +8,7 @@ public class NetworkCredentials
 {
     private readonly IConfiguration _configuration;
     private Client _rootClient;
-    private MirrorRestClient _mirrorClient;
+    private IMirrorRestClient _mirrorClient;
     private Gateway _gateway;
     private ReadOnlyMemory<byte> _privateKey;
     private Signatory _signatory;
@@ -30,6 +31,7 @@ public class NetworkCredentials
     public Signatory Signatory => _signatory;
     public ReadOnlyMemory<byte> Ledger => _ledger;
     public bool HapiTokenBalanceQueriesEnabled => _hapiTokenBalanceQueriesEnabeled;
+    ServiceProvider _serviceProvider;
     public NetworkCredentials()
     {
         _configuration = new ConfigurationBuilder()
@@ -37,16 +39,19 @@ public class NetworkCredentials
             .AddEnvironmentVariables()
             .AddUserSecrets<NetworkCredentials>(true)
             .Build();
-        var mirrorRestUrl = _configuration["mirrorRestUrl"];
-        if (string.IsNullOrWhiteSpace(mirrorRestUrl))
-        {
-            throw new Exception("Mirror REST URL is missing from configuration [mirrorRestUrl]");
-        }
-        _mirrorGrpcUrl = _configuration["mirrorGrpcUrl"];
-        if (string.IsNullOrWhiteSpace(_mirrorGrpcUrl))
-        {
-            throw new Exception("Mirror GRPC URL is missing from configuration [mirrorGrpcUrl]");
-        }
+        IServiceCollection services = new ServiceCollection();
+        services.AddHashgraph(HederaNetwork.Testnet);
+        _serviceProvider = services.BuildServiceProvider();
+        // var mirrorRestUrl = _configuration["mirrorRestUrl"];
+        // if (string.IsNullOrWhiteSpace(mirrorRestUrl))
+        // {
+        //     throw new Exception("Mirror REST URL is missing from configuration [mirrorRestUrl]");
+        // }
+        // _mirrorGrpcUrl = _configuration["mirrorGrpcUrl"];
+        // if (string.IsNullOrWhiteSpace(_mirrorGrpcUrl))
+        // {
+        //     throw new Exception("Mirror GRPC URL is missing from configuration [mirrorGrpcUrl]");
+        // }
         var payerPrivateKey = _configuration["payerPrivateKey"];
         if (string.IsNullOrWhiteSpace(payerPrivateKey))
         {
@@ -54,7 +59,7 @@ public class NetworkCredentials
         }
         Task.Run(async () =>
         {
-            _mirrorClient = new MirrorRestClient(mirrorRestUrl);
+            _mirrorClient = _serviceProvider.GetService<IMirrorRestClient>();
             _gateway = await PickGatewayAsync();
             _privateKey = Hex.ToBytes(payerPrivateKey);
             _signatory = new Signatory(_privateKey);
@@ -83,15 +88,11 @@ public class NetworkCredentials
     {
         return _rootClient.Clone();
     }
-    public MirrorGrpcClient NewMirrorGrpcClient()
+    public IMirrorGrpcClient NewMirrorGrpcClient()
     {
-        return new MirrorGrpcClient(ctx =>
-        {
-            ctx.Uri = new Uri(_mirrorGrpcUrl);
-            ctx.OnSendingRequest = OutputSendingRequest;
-        });
+        return _serviceProvider.GetService<IMirrorGrpcClient>();
     }
-    public async Task<MirrorRestClient> GetMirrorRestClientAsync()
+    public async Task<IMirrorRestClient> GetMirrorRestClientAsync()
     {
         await WaitForMirrorConsensusCatchUpAsync();
         return _mirrorClient;

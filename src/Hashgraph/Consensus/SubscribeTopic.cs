@@ -3,6 +3,7 @@ using Grpc.Core;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Polly;
 
 namespace Hashgraph;
 
@@ -35,53 +36,28 @@ public partial class MirrorGrpcClient
     /// <exception cref="MirrorException">If the mirror node stream faulted during request processing or upon submission.</exception>
     public async Task SubscribeTopicAsync(SubscribeTopicParams subscribeParameters, Action<IMirrorContext>? configure = null)
     {
-        if (subscribeParameters is null)
-        {
-            throw new ArgumentNullException(nameof(subscribeParameters), "Topic Subscribe Parameters argument is missing. Please check that it is not null.");
-        }
-        if (subscribeParameters.Topic is null)
-        {
-            throw new ArgumentNullException(nameof(subscribeParameters.Topic), "Topic address is missing. Please check that it is not null.");
-        }
-        if (subscribeParameters.MessageWriter is null)
-        {
-            throw new ArgumentNullException(nameof(subscribeParameters.MessageWriter), "The destination channel writer missing. Please check that it is not null.");
-        }
-        if (subscribeParameters.Starting.HasValue && subscribeParameters.Ending.HasValue)
-        {
-            if (subscribeParameters.Ending.Value < subscribeParameters.Starting.Value)
-            {
-                throw new ArgumentOutOfRangeException(nameof(subscribeParameters.Ending), "The ending filter date is less than the starting filter date, no records can be returned.");
-            }
-        }
+        ValidateInputs(subscribeParameters);
         await using var context = CreateChildContext(configure);
         if (context.Uri is null)
         {
             throw new InvalidOperationException("The Mirror Node Urul has not been configured. Please check that 'Url' is set in the Mirror context.");
         }
-        var query = new ConsensusTopicQuery()
-        {
-            TopicID = new Proto.TopicID(subscribeParameters.Topic),
-            Limit = subscribeParameters.MaxCount
-        };
-        if (subscribeParameters.Starting.HasValue)
-        {
-            query.ConsensusStartTime = new Proto.Timestamp(subscribeParameters.Starting.Value);
-        }
-        if (subscribeParameters.Ending.HasValue)
-        {
-            query.ConsensusEndTime = new Proto.Timestamp(subscribeParameters.Ending.Value);
-        }
-        var service = new ConsensusService.ConsensusServiceClient(context.GetChannel());
+        var query = CreateConsensusTopicQuery(subscribeParameters);
         using var cancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(subscribeParameters.CancellationToken);
-        var options = new CallOptions(cancellationToken: cancelTokenSource.Token);
         context.InstantiateOnSendingRequestHandler()(query);
-        using var response = service.subscribeTopic(query, options);
-        var stream = response.ResponseStream;
-        var writer = subscribeParameters.MessageWriter;
+        
+        var policy = Policy
+            .Handle<RpcException>(ex => ex.StatusCode == StatusCode.Unavailable)
+            .WaitAndRetryForeverAsync(
+                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), // exponential back-off
+                onRetryAsync: async (exception, context) =>
+                {
+                    // Log the retry attempt or perform other actions
+                });
         try
         {
-            await ProcessResultStreamAsync(subscribeParameters.Topic).ConfigureAwait(false);
+            await policy.ExecuteAsync(ProcessResultStreamAsync, cancelTokenSource.Token);
+           
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.Cancelled)
         {
@@ -95,39 +71,68 @@ public partial class MirrorGrpcClient
         {
             throw new MirrorException($"The address exists, but is not a topic.", MirrorExceptionCode.InvalidTopicAddress, ex);
         }
-        catch (RpcException ex) when (ex.StatusCode == StatusCode.Unavailable)
-        {
-            throw new MirrorException($"The Mirror node is not avaliable at this time.", MirrorExceptionCode.Unavailable, ex);
-        }
         catch (RpcException ex)
         {
             throw new MirrorException($"Stream Terminated with Error: {ex.StatusCode}", MirrorExceptionCode.CommunicationError, ex);
         }
-        finally
-        {
-            if (subscribeParameters.CompleteChannelWhenFinished)
-            {
-                writer.TryComplete();
-            }
-        }
 
-        async Task ProcessResultStreamAsync(Address topic)
+        async Task ProcessResultStreamAsync(CancellationToken cancellationToken)
         {
-            while (await stream.MoveNext().ConfigureAwait(false))
+            var service = new ConsensusService.ConsensusServiceClient(_context.GetChannel());
+            var options = new CallOptions(cancellationToken: cancellationToken);
+            context.InstantiateOnSendingRequestHandler()(query);
+            using var response = service.subscribeTopic(query, options);
+
+            var stream = response.ResponseStream;
+            while (await stream.MoveNext())
             {
-                var message = stream.Current.ToTopicMessage(topic);
-                if (!writer.TryWrite(message))
-                {
-                    while (await writer.WaitToWriteAsync().ConfigureAwait(false))
-                    {
-                        if (!writer.TryWrite(message))
-                        {
-                            cancelTokenSource.Cancel();
-                            return;
-                        }
-                    }
-                }
+                var message = stream.Current.ToTopicMessage(subscribeParameters.Topic); // Can be improved
+                subscribeParameters.SubscribeMethod?.Invoke(message);
+                query.ConsensusStartTime = stream.Current.ConsensusTimestamp;
             }
         }
     }
+
+    private static ConsensusTopicQuery CreateConsensusTopicQuery(SubscribeTopicParams subscribeParameters)
+    {
+        var query = new ConsensusTopicQuery()
+        {
+            TopicID = new Proto.TopicID(subscribeParameters.Topic),
+            Limit = subscribeParameters.MaxCount
+        };
+        if (subscribeParameters.Starting.HasValue)
+        {
+            query.ConsensusStartTime = new Proto.Timestamp(subscribeParameters.Starting.Value);
+        }
+        if (subscribeParameters.Ending.HasValue)
+        {
+            query.ConsensusEndTime = new Proto.Timestamp(subscribeParameters.Ending.Value);
+        }
+
+        return query;
+    }
+
+    private static void ValidateInputs(SubscribeTopicParams subscribeParameters)
+    {
+        if (subscribeParameters is null)
+        {
+            throw new ArgumentNullException(nameof(subscribeParameters), "Topic Subscribe Parameters argument is missing. Please check that it is not null.");
+        }
+        if (subscribeParameters.Topic is null)
+        {
+            throw new ArgumentNullException(nameof(subscribeParameters.Topic), "Topic address is missing. Please check that it is not null.");
+        }
+        if (subscribeParameters.SubscribeMethod is null)
+        {
+            throw new ArgumentNullException(nameof(subscribeParameters.SubscribeMethod), "The destination method missing. Please check that it is not null.");
+        }
+        if (subscribeParameters.Starting.HasValue && subscribeParameters.Ending.HasValue)
+        {
+            if (subscribeParameters.Ending.Value < subscribeParameters.Starting.Value)
+            {
+                throw new ArgumentOutOfRangeException(nameof(subscribeParameters.Ending), "The ending filter date is less than the starting filter date, no records can be returned.");
+            }
+        }
+    }
+    
 }

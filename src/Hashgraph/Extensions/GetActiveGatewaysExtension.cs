@@ -24,7 +24,7 @@ public static class GetActiveGatewaysExtension
     /// A dictionary of gateways and the corresponding response
     /// time (in miliseconds).
     /// </returns>
-    public static async Task<IReadOnlyDictionary<Gateway, long>> GetActiveGatewaysAsync(this MirrorRestClient client, int maxTimeoutInMiliseconds)
+    public static async Task<IReadOnlyDictionary<Gateway, long>> GetActiveGatewaysAsync(this IMirrorRestClient client, int maxTimeoutInMiliseconds)
     {
         var list = new List<Task<(Gateway gatway, long response)>>();
         await foreach (var node in client.GetGossipNodesAsync())
