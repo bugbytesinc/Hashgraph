@@ -1,6 +1,8 @@
 ﻿#pragma warning disable CS8618
+using System;
 using System.Threading;
 using System.Threading.Channels;
+using System.Threading.Tasks;
 
 namespace Hashgraph;
 
@@ -35,7 +37,13 @@ public class SubscribeTopicParams
     /// the stream will close the streaming connection to the 
     /// mirror node and cause this method to return without error.
     /// </summary>
+    [Obsolete("Use SubscribeMethod instead. Will be deprecated in a future release.")]
     public ChannelWriter<TopicMessage> MessageWriter { get; set; }
+    
+    /// <summary>
+    /// Method to be called when a message is received from the mirror node.
+    /// </summary>
+    public Func<TopicMessage,Task> SubscribeMethod { get; set; }
     /// <summary>
     /// Indicate that the .net channel should be "completed" when
     /// the streaming connection to the mirror node completes, both
@@ -43,6 +51,7 @@ public class SubscribeTopicParams
     /// to re-use the channel or for scenarios where it may be combined
     /// and multiplexed with other channel combinations.
     /// </summary>
+    [Obsolete("Will be deprecated in a future release. No longer needed")]
     public bool CompleteChannelWhenFinished { get; set; } = true;
     /// <summary>
     /// Optional cancelation token, that when set, closes the mirror node

@@ -148,6 +148,7 @@ public sealed partial class MirrorGrpcClient : IAsyncDisposable
         configure?.Invoke(context);
         return context;
     }
+    
     /// <summary>
     /// .NET Asynchronous dispose method.
     /// </summary>
